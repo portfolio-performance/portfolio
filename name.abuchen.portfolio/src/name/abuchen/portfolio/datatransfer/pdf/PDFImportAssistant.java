@@ -7,7 +7,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 
@@ -24,6 +23,7 @@ public class PDFImportAssistant
     private final List<File> files;
     private final List<Extractor> extractors = new ArrayList<>();
     private final Map<File, PDFInputFile> failedInputFiles = new HashMap<>();
+    private final Map<String, Extractor> labeledExtractors = new HashMap<>();
 
     public PDFImportAssistant(Client client, List<File> files)
     {
@@ -38,11 +38,13 @@ public class PDFImportAssistant
         extractors.add(new AudiBankPDFExtractor(client));
         extractors.add(new AustrianAnadiBankPDFExtractor(client));
         extractors.add(new AlpacCapitalPDFExtractor(client));
+        extractors.add(new AlpianPDFExtractor(client));
         extractors.add(new ApoBankPDFExtractor(client));
         extractors.add(new AvivaPLCPDFExtractor(client));
         extractors.add(new AyvensBankPDFExtractor(client));
         extractors.add(new BaaderBankPDFExtractor(client));
         extractors.add(new Bank11PDFExtractor(client));
+        extractors.add(new Bank99PDFExtractor(client));
         extractors.add(new BancoBilbaoVizcayaArgentariaPDFExtractor(client));
         extractors.add(new BankSLMPDFExtractor(client));
         extractors.add(new BarclaysBankIrelandPLCPDFExtractor(client));
@@ -57,6 +59,7 @@ public class PDFImportAssistant
         extractors.add(new BundesschatzPDFExtractor(client));
         extractors.add(new C24BankGmbHPDFExtractor(client));
         extractors.add(new CetesDirectoPDFExtractor(client));
+        extractors.add(new ChasePDFExtractor(client));
         extractors.add(new ComdirectPDFExtractor(client));
         extractors.add(new CommerzbankPDFExtractor(client));
         extractors.add(new CommSecPDFExtractor(client));
@@ -86,6 +89,7 @@ public class PDFImportAssistant
         extractors.add(new FindependentAGPDFExtractor(client));
         extractors.add(new FinTechGroupBankPDFExtractor(client));
         extractors.add(new FirstradeSecuritiesIncPDFExtractor(client));
+        extractors.add(new FondsdepotBankPDFExtractor(client));
         extractors.add(new FordMoneyPDFExtractor(client));
         extractors.add(new FreiburgerKantonalbankPDFExtractor(client));
         extractors.add(new GenoBrokerPDFExtractor(client));
@@ -103,6 +107,7 @@ public class PDFImportAssistant
         extractors.add(new MeDirectBankPlcPDFExtractor(client));
         extractors.add(new MLPBankingAGPDFExtractor(client));
         extractors.add(new ModenaEstoniaPDFExtractor(client));
+        extractors.add(new MorganStanleyPDFExtractor(client));
         extractors.add(new N26BankAGPDFExtractor(client));
         extractors.add(new NeonSwitzerlandAGPDFExtractor(client));
         extractors.add(new NIBCBankPDFExtractor(client));
@@ -111,7 +116,7 @@ public class PDFImportAssistant
         extractors.add(new OldenburgischeLandesbankAGPDFExtractor(client));
         extractors.add(new LGTBankPDFExtractor(client));
         extractors.add(new LibertyVorsorgeAGPDFExtractor(client));
-        extractors.add(new LiechtensteinischeLandesbankAGPDFExtractor(client));
+        extractors.add(new LiechtensteinischeLBPDFExtractor(client));
         extractors.add(new LimeTradingCorpPDFExtractor(client));
         extractors.add(new OnvistaPDFExtractor(client));
         extractors.add(new OpenBankSAPDFExtractor(client));
@@ -123,34 +128,43 @@ public class PDFImportAssistant
         extractors.add(new QuirinBankAGPDFExtractor(client));
         extractors.add(new RaiffeisenBankgruppePDFExtractor(client));
         extractors.add(new RaisinBankAGPDFExtractor(client));
+        extractors.add(new RelaiPDFExtractor(client));
         extractors.add(new RenaultBankDirektPDFExtractor(client));
         extractors.add(new RevolutLtdPDFExtractor(client));
+        extractors.add(new RobinhoodPDFExtractor(client));
         extractors.add(new SantanderConsumerBankPDFExtractor(client));
         extractors.add(new SaxoBankPDFExtractor(client));
         extractors.add(new SberbankEuropeAGPDFExtractor(client));
         extractors.add(new SBrokerPDFExtractor(client));
         extractors.add(new ScalableCapitalPDFExtractor(client));
         extractors.add(new SchelhammerCapitalBankAG(client));
+        extractors.add(new SchwabPDFExtractor(client));
         extractors.add(new ScorePriorityIncPDFExtractor(client));
         extractors.add(new SelfWealthPDFExtractor(client));
         extractors.add(new SimpelPDFExtractor(client));
         extractors.add(new SolarisbankAGPDFExtractor(client));
         extractors.add(new StakeshopPtyLtdPDFExtractor(client));
+        extractors.add(new StGallerKantonalbankPDFExtractor(client));
         extractors.add(new SunrisePDFExtractor(client));
         extractors.add(new SuresseDirektBankPDFExtractor(client));
         extractors.add(new SutorBankGmbHPDFExtractor(client));
+        extractors.add(new SwisscardAECSPDFExtractor(client));
         extractors.add(new SwissquotePDFExtractor(client));
         extractors.add(new SydbankASPDFExtractor(client));
         extractors.add(new TargobankPDFExtractor(client));
+        extractors.add(new ThurgauerKantonalbankPDFExtractor(client));
         extractors.add(new TigerBrokersPteLtdPDFExtractor(client));
         extractors.add(new TradegateAGPDFExtractor(client));
         extractors.add(new TradeRepublicPDFExtractor(client));
+        extractors.add(new Trading212PDFExtractor(client));
         extractors.add(new UBSAGBankingAGPDFExtractor(client));
         extractors.add(new UmweltbankAGPDFExtractor(client));
         extractors.add(new UnicreditPDFExtractor(client));
+        extractors.add(new UpvestPDFExtractor(client));
         extractors.add(new VanguardGroupEuropePDFExtractor(client));
         extractors.add(new VBankAGPDFExtractor(client));
         extractors.add(new VDKBankNVPDFExtractor(client));
+        extractors.add(new VolksbankWienPDFExtractor(client));
         extractors.add(new VolkswagenBankPDFExtractor(client));
         extractors.add(new VZVermoegenszentrumAGPDFExtractor(client));
         extractors.add(new WealthsimpleInvestmentsIncPDFExtractor(client));
@@ -164,19 +178,25 @@ public class PDFImportAssistant
     {
         monitor.beginTask(Messages.PDFMsgExtracingFiles, files.size());
 
-        List<PDFInputFile> inputFiles = files.stream().map(PDFInputFile::new).collect(Collectors.toList());
-
         Map<Extractor, List<Item>> itemsByExtractor = new HashMap<>();
 
         var securityCache = new SecurityCache(client);
 
-        for (PDFInputFile inputFile : inputFiles)
+        for (File file : files)
         {
-            monitor.setTaskName(inputFile.getName());
+            monitor.setTaskName(file.getName());
 
             try
             {
-                inputFile.convertPDFtoText();
+                // text files hold the text previously extracted from a PDF
+                // document (used to debug the extractors without the original
+                // document); they skip the PDF conversion and the fallbacks
+                var isTextFile = PDFInputFile.isTextFile(file);
+
+                var inputFile = isTextFile ? PDFInputFile.fromTextFile(file) : new PDFInputFile(file);
+
+                if (!isTextFile)
+                    inputFile.convertPDFtoText();
 
                 var extracted = false;
 
@@ -188,12 +208,13 @@ public class PDFImportAssistant
                     if (!items.isEmpty())
                     {
                         extracted = true;
-                        itemsByExtractor.computeIfAbsent(extractor, e -> new ArrayList<Item>()).addAll(items);
+                        var key = lookupExtractor(extractor, inputFile);
+                        itemsByExtractor.computeIfAbsent(key, e -> new ArrayList<Item>()).addAll(items);
                         break;
                     }
                 }
 
-                if (!extracted)
+                if (!extracted && !isTextFile)
                 {
                     try
                     {
@@ -205,7 +226,8 @@ public class PDFImportAssistant
                             if (!items.isEmpty())
                             {
                                 extracted = true;
-                                itemsByExtractor.computeIfAbsent(extractor, e -> new ArrayList<Item>()).addAll(items);
+                                var key = lookupExtractor(extractor, inputFile);
+                                itemsByExtractor.computeIfAbsent(key, e -> new ArrayList<Item>()).addAll(items);
                                 break;
                             }
                         }
@@ -233,7 +255,8 @@ public class PDFImportAssistant
                     // the text with the version 1 conversion; restore the
                     // PDFBox 3 text so the manual entry view (and any test
                     // cases derived from it) use the latest conversion
-                    inputFile.convertPDFtoText();
+                    if (!isTextFile)
+                        inputFile.convertPDFtoText();
 
                     if (inputFile.getText() != null)
                         failedInputFiles.put(inputFile.getFile(), inputFile);
@@ -241,7 +264,7 @@ public class PDFImportAssistant
             }
             catch (IOException e)
             {
-                errors.computeIfAbsent(inputFile.getFile(), f -> new ArrayList<>()).add(e);
+                errors.computeIfAbsent(file, f -> new ArrayList<>()).add(e);
             }
 
             monitor.worked(1);
@@ -258,5 +281,65 @@ public class PDFImportAssistant
     public Map<File, PDFInputFile> getFailedInputFiles()
     {
         return failedInputFiles;
+    }
+
+    /**
+     * Returns the extractor under which the extracted items are grouped. If
+     * the extractor returns a document specific label (see
+     * {@link AbstractPDFExtractor#getLabel(PDFInputFile)}), the items
+     * are grouped per label. The import wizard creates one page per group and
+     * remembers the target portfolio and account per label.
+     */
+    private Extractor lookupExtractor(Extractor extractor, PDFInputFile inputFile)
+    {
+        if (!(extractor instanceof AbstractPDFExtractor pdfExtractor))
+            return extractor;
+
+        var label = pdfExtractor.getLabel(inputFile);
+
+        if (label == null || label.equals(extractor.getLabel()))
+            return extractor;
+
+        return labeledExtractors.computeIfAbsent(label, l -> new LabeledExtractor(extractor, l));
+    }
+
+    /**
+     * Delegates to the original extractor but returns a document specific
+     * label.
+     */
+    private static final class LabeledExtractor implements Extractor
+    {
+        private final Extractor delegate;
+        private final String label;
+
+        private LabeledExtractor(Extractor delegate, String label)
+        {
+            this.delegate = delegate;
+            this.label = label;
+        }
+
+        @Override
+        public String getLabel()
+        {
+            return label;
+        }
+
+        @Override
+        public List<Item> extract(SecurityCache securityCache, InputFile file, List<Exception> errors)
+        {
+            return delegate.extract(securityCache, file, errors);
+        }
+
+        @Override
+        public List<Item> extract(List<InputFile> files, List<Exception> errors)
+        {
+            return delegate.extract(files, errors);
+        }
+
+        @Override
+        public void postProcessing(List<Item> items)
+        {
+            delegate.postProcessing(items);
+        }
     }
 }

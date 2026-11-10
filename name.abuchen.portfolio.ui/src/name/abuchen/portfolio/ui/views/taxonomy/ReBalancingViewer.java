@@ -5,14 +5,22 @@ import java.time.LocalDate;
 
 import jakarta.inject.Inject;
 
+import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.Separator;
+import org.eclipse.jface.layout.GridDataFactory;
+import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Text;
 
 import name.abuchen.portfolio.model.Classification;
 import name.abuchen.portfolio.model.InvestmentVehicle;
@@ -25,7 +33,10 @@ import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.editor.AbstractFinanceView;
 import name.abuchen.portfolio.ui.util.Colors;
+import name.abuchen.portfolio.ui.util.CurrencyToStringConverter;
+import name.abuchen.portfolio.ui.util.SWTHelper;
 import name.abuchen.portfolio.ui.util.SimpleAction;
+import name.abuchen.portfolio.ui.util.StringToCurrencyConverter;
 import name.abuchen.portfolio.ui.util.ValueColorScheme;
 import name.abuchen.portfolio.ui.util.swt.ActiveShell;
 import name.abuchen.portfolio.ui.util.viewers.Column;
@@ -36,10 +47,167 @@ import name.abuchen.portfolio.ui.util.viewers.ValueEditingSupport;
 
 public class ReBalancingViewer extends AbstractNodeTreeViewer
 {
+    private final StringToCurrencyConverter amountConverter = new StringToCurrencyConverter(Values.Amount, true);
+    private final CurrencyToStringConverter amountFormatter = new CurrencyToStringConverter(Values.Amount);
+
+    /**
+     * Whether the "Amount to invest" row is shown. Transient view state; off by
+     * default and never persisted.
+     */
+    private boolean showAmountToInvest = false;
+
+    /** Last text typed into the amount field; transient view state. */
+    private String amountText = ""; //$NON-NLS-1$
+
+    private Composite amountRow;
+    private Text amountInput;
+    private Label amountCurrency;
+
+    /** Guards the modify listener while the input field is updated in code. */
+    private boolean isUpdatingAmountInput = false;
+
     @Inject
     public ReBalancingViewer(AbstractFinanceView view, TaxonomyModel model, TaxonomyNodeRenderer renderer)
     {
         super(view, model, renderer);
+    }
+
+    @Override
+    public Control createControl(Composite parent)
+    {
+        Composite wrapper = new Composite(parent, SWT.NONE);
+        GridLayoutFactory.fillDefaults().numColumns(1).applyTo(wrapper);
+
+        amountRow = createAmountToInvestRow(wrapper);
+
+        Control tree = super.createControl(wrapper);
+        GridDataFactory.fillDefaults().grab(true, true).applyTo(tree);
+
+        updateAmountRowVisibility();
+
+        return wrapper;
+    }
+
+    private Composite createAmountToInvestRow(Composite parent)
+    {
+        Composite row = new Composite(parent, SWT.NONE);
+        GridDataFactory.fillDefaults().grab(true, false).applyTo(row);
+        GridLayoutFactory.swtDefaults().numColumns(3).margins(5, 0).applyTo(row);
+
+        Label label = new Label(row, SWT.NONE);
+        label.setText(Messages.LabelRebalancingAmountToInvest);
+
+        amountInput = new Text(row, SWT.BORDER | SWT.RIGHT);
+        amountInput.setText(amountText);
+
+        GridDataFactory.fillDefaults().hint(SWTHelper.amountWidth(amountInput), SWT.DEFAULT).applyTo(amountInput);
+
+        amountInput.addModifyListener(e -> {
+            if (isUpdatingAmountInput)
+                return;
+
+            amountText = amountInput.getText();
+            applyAmount();
+        });
+
+        amountCurrency = new Label(row, SWT.NONE);
+        amountCurrency.setText(getModel().getCurrencyCode());
+
+        return row;
+    }
+
+    /**
+     * Parses the field text and pushes the resulting amount to the model. While
+     * the row is hidden the effective amount is always zero. An empty field or
+     * an explicit zero is a valid zero (normal background); only a parse error
+     * paints the warning background and falls back to zero.
+     */
+    private void applyAmount()
+    {
+        var currencyCode = getModel().getCurrencyCode();
+
+        if (!showAmountToInvest)
+        {
+            getModel().setAmountToInvest(Money.of(currencyCode, 0));
+            return;
+        }
+
+        var text = amountText != null ? amountText.trim() : ""; //$NON-NLS-1$
+        if (text.isEmpty())
+        {
+            amountInput.setBackground(null);
+            getModel().setAmountToInvest(Money.of(currencyCode, 0));
+            return;
+        }
+
+        try
+        {
+            var value = amountConverter.convert(text);
+            amountInput.setBackground(null);
+            getModel().setAmountToInvest(Money.of(currencyCode, value));
+        }
+        catch (IllegalArgumentException e)
+        {
+            amountInput.setBackground(Colors.theme().warningBackground());
+            getModel().setAmountToInvest(Money.of(currencyCode, 0));
+        }
+    }
+
+    /**
+     * Follows a change of the model currency: the model has converted the
+     * amount to invest into the new currency, hence the currency label and the
+     * input field must be updated accordingly.
+     */
+    private void updateAmountCurrency()
+    {
+        if (amountRow == null || amountRow.isDisposed())
+            return;
+
+        var currencyCode = getModel().getCurrencyCode();
+        if (currencyCode.equals(amountCurrency.getText()))
+            return;
+
+        amountCurrency.setText(currencyCode);
+        amountRow.layout(true);
+
+        // a zero amount has no converted value to show: keep the text as it is
+        // so that an empty or an invalid input is not overwritten
+        var amount = getModel().getAmountToInvest();
+        if (amount.isZero())
+            return;
+
+        isUpdatingAmountInput = true;
+        try
+        {
+            amountText = amountFormatter.convert(amount.getAmount());
+            amountInput.setText(amountText);
+        }
+        finally
+        {
+            isUpdatingAmountInput = false;
+        }
+    }
+
+    private void updateAmountRowVisibility()
+    {
+        if (amountRow == null || amountRow.isDisposed())
+            return;
+
+        var data = (GridData) amountRow.getLayoutData();
+        data.exclude = !showAmountToInvest;
+        amountRow.setVisible(showAmountToInvest);
+        amountRow.getParent().layout(true);
+
+        if (showAmountToInvest)
+            amountInput.setFocus();
+    }
+
+    @Override
+    public void nodeChange(TaxonomyNode node)
+    {
+        super.nodeChange(node);
+
+        updateAmountCurrency();
     }
 
     @Override
@@ -556,6 +724,14 @@ public class ReBalancingViewer extends AbstractNodeTreeViewer
 
         manager.add(new Separator());
 
+        var toggleAmount = new SimpleAction(Messages.MenuShowAmountToInvest, IAction.AS_CHECK_BOX, a -> {
+            showAmountToInvest = !showAmountToInvest;
+            updateAmountRowVisibility();
+            applyAmount();
+        });
+        toggleAmount.setChecked(showAmountToInvest);
+        manager.add(toggleAmount);
+        
         RebalancingColoringRule rule = new RebalancingColoringRule(getModel().getClient());
         manager.add(new SimpleAction(MessageFormat.format(Messages.MenuConfigureRebalancingIndicator, //
                         rule.getAbsoluteThreshold(), rule.getRelativeThreshold()),

@@ -36,12 +36,12 @@ public class LGTBankPDFExtractor extends AbstractPDFExtractor
 
     private void addBuySellTransaction()
     {
-        DocumentType type = new DocumentType("Abrechnung (Kauf|Verkauf|Zeichnung)");
+        final var type = new DocumentType("Abrechnung (Kauf|Verkauf|Zeichnung)");
         this.addDocumentTyp(type);
 
-        Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
+        var pdfTransaction = new Transaction<BuySellEntry>();
 
-        Block firstRelevantLine = new Block("^Abrechnung (Kauf|Verkauf|Zeichnung).*$", "^Valuta [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}$");
+        var firstRelevantLine = new Block("^Abrechnung (Kauf|Verkauf|Zeichnung).*$", "^Valuta [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -72,7 +72,7 @@ public class LGTBankPDFExtractor extends AbstractPDFExtractor
                                                         .match("^(?<nameContinued>.*)$") //
                                                         .match("^ISIN (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
                                                         .match("^Wertpapierkennnummer (?<wkn>.*)$") //
-                                                        .match("^Kurswert (?<currency>[\\w]{3}) [\\.'\\d]+$") //
+                                                        .match("^Kurswert (?<currency>[A-Z]{3}) [\\.'\\d]+$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
                                         // @formatter:off
                                         // Titel JPMorgan Funds SICAV - Emerging Markets Sustainable Equity
@@ -87,7 +87,7 @@ public class LGTBankPDFExtractor extends AbstractPDFExtractor
                                                         .match("^Titel (?<name>.*)$") //
                                                         .match("^(?<nameContinued>.*)$") //
                                                         .match("^ISIN (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
-                                                        .match("^Kurswert (?<currency>[\\w]{3}) [\\.'\\d]+$") //
+                                                        .match("^Kurswert (?<currency>[A-Z]{3}) [\\.'\\d]+$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))))
 
                         // @formatter:off
@@ -103,7 +103,7 @@ public class LGTBankPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("date", "time") //
-                                                        .match("^Abschlussdatum (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}:[\\d]{2})$") //
+                                                        .match("^Abschlussdatum (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<time>[\\d]{2}\\:[\\d]{2}\\:[\\d]{2})$") //
                                                         .assign((t, v) -> t.setDate(asDate(v.get("date"), v.get("time")))),
                                         // @formatter:off
                                         // Abschlussdatum 04.07.2023
@@ -126,7 +126,7 @@ public class LGTBankPDFExtractor extends AbstractPDFExtractor
                         // Gutschrift USD Konto 2026457.055 USD 8'332.19
                         // @formatter:on
                         .section("currency", "amount") //
-                        .match("^(Belastung|Gutschrift) [\\w]{3} .* (?<currency>[\\w]{3}) (?<amount>[\\.'\\d]+)$") //
+                        .match("^(Belastung|Gutschrift) [A-Z]{3} .* (?<currency>[A-Z]{3}) (?<amount>[\\.'\\d]+)$") //
                         .assign((t, v) -> {
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(asAmount(v.get("amount")));
@@ -136,7 +136,7 @@ public class LGTBankPDFExtractor extends AbstractPDFExtractor
                         // Auftragsnummer: 210796978 Kundenportfolio
                         // @formatter:on
                         .section("note").optional() //
-                        .match("^(?<note>Auftragsnummer: .*) .*$") //
+                        .match("^(?<note>Auftragsnummer: [\\d]+) .*$") //
                         .assign((t, v) -> t.setNote(trim(v.get("note"))))
 
                         // @formatter:off
@@ -154,12 +154,12 @@ public class LGTBankPDFExtractor extends AbstractPDFExtractor
 
     private void addDividendeTransaction()
     {
-        DocumentType type = new DocumentType("Baraussch.ttung");
+        final var type = new DocumentType("Baraussch.ttung");
         this.addDocumentTyp(type);
 
-        Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
+        var pdfTransaction = new Transaction<AccountTransaction>();
 
-        Block firstRelevantLine = new Block("^Baraussch.ttung .*$");
+        var firstRelevantLine = new Block("^Baraussch.ttung .*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -178,7 +178,7 @@ public class LGTBankPDFExtractor extends AbstractPDFExtractor
                         .match("^[\\.,\\d]+ (?<name>.*)$") //
                         .match("^(?<nameContinued>.*)$") //
                         .match("^.*ISIN: (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]), Valoren\\-Nr\\.: (?<wkn>.*)$") //
-                        .match("^Aussch.ttung (?<currency>[\\w]{3}) [\\.,'\\d]+$") //
+                        .match("^Aussch.ttung (?<currency>[A-Z]{3}) [\\.,'\\d]+$") //
                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
                         // @formatter:off
@@ -197,10 +197,17 @@ public class LGTBankPDFExtractor extends AbstractPDFExtractor
                         .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
 
                         // @formatter:off
+                        // Ex-Datum 12. Mai 2020
+                        // @formatter:on
+                        .section("exDate").optional() //
+                        .match("^Ex\\-Datum (?<exDate>[\\d]{1,2}\\. .* [\\d]{4})$") //
+                        .assign((t, v) -> t.setExDate(asDate(v.get("exDate"))))
+
+                        // @formatter:off
                         // Netto EUR 198.36
                         // @formatter:on
                         .section("currency", "amount") //
-                        .match("^Netto (?<currency>[\\w]{3}) (?<amount>[\\.'\\d]+)$") //
+                        .match("^Netto (?<currency>[A-Z]{3}) (?<amount>[\\.'\\d]+)$") //
                         .assign((t, v) -> {
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(asAmount(v.get("amount")));
@@ -235,21 +242,21 @@ public class LGTBankPDFExtractor extends AbstractPDFExtractor
                         // Eidg. Umsatzabgabe  USD -12.51
                         // @formatter:on
                         .section("tax", "currency").optional() //
-                        .match("^Eidg\\. Umsatzabgabe ([\\s]+)?(?<currency>[\\w]{3}) (\\-)?(?<tax>[\\.'\\d]+)$") //
+                        .match("^Eidg\\. Umsatzabgabe ([\\s]+)?(?<currency>[A-Z]{3}) (\\-)?(?<tax>[\\.'\\d]+)$") //
                         .assign((t, v) -> processTaxEntries(t, v, type))
 
                         // @formatter:off
                         // Verrechnungssteuer 35 % CHF -851.20
                         // @formatter:on
                         .section("tax", "currency").optional() //
-                        .match("^Verrechnungssteuer [\\d]+ % (?<currency>[\\w]{3}) (\\-)?(?<tax>[\\.'\\d]+)$") //
+                        .match("^Verrechnungssteuer [\\d]+ % (?<currency>[A-Z]{3}) (\\-)?(?<tax>[\\.'\\d]+)$") //
                         .assign((t, v) -> processTaxEntries(t, v, type))
 
                         // @formatter:off
                         // Quellensteuer 28 % EUR -77.14
                         // @formatter:on
                         .section("withHoldingTax", "currency").optional() //
-                        .match("^Quellensteuer [\\d]+ % (?<currency>[\\w]{3}) (\\-)?(?<withHoldingTax>[\\.'\\d]+)$") //
+                        .match("^Quellensteuer [\\d]+ % (?<currency>[A-Z]{3}) (\\-)?(?<withHoldingTax>[\\.'\\d]+)$") //
                         .assign((t, v) -> processWithHoldingTaxEntries(t, v, "withHoldingTax", type));
     }
 
@@ -261,7 +268,7 @@ public class LGTBankPDFExtractor extends AbstractPDFExtractor
                         // Courtage  DKK 1'534.90
                         // @formatter:on
                         .section("fee", "currency").optional() //
-                        .match("^Courtage[\\s]{1,}(?<currency>[\\w]{3}) (\\-)?(?<fee>[\\.'\\d]+)$") //
+                        .match("^Courtage[\\s]{1,}(?<currency>[A-Z]{3}) (\\-)?(?<fee>[\\.'\\d]+)$") //
                         .assign((t, v) -> processFeeEntries(t, v, type))
 
                         // @formatter:off
@@ -269,21 +276,21 @@ public class LGTBankPDFExtractor extends AbstractPDFExtractor
                         // SIX Meldegebühr  CHF -0.20
                         // @formatter:on
                         .section("fee", "currency").optional() //
-                        .match("^.* Meldegeb.hr[\\s]{1,}(?<currency>[\\w]{3}) (\\-)?(?<fee>[\\.'\\d]+)$") //
+                        .match("^.* Meldegeb.hr[\\s]{1,}(?<currency>[A-Z]{3}) (\\-)?(?<fee>[\\.'\\d]+)$") //
                         .assign((t, v) -> processFeeEntries(t, v, type))
 
                         // @formatter:off
                         // SIX Börsengebühr  CHF -8.80
                         // @formatter:on
                         .section("fee", "currency").optional() //
-                        .match("^.* B.rsengeb.hr[\\s]{1,}(?<currency>[\\w]{3}) (\\-)?(?<fee>[\\.'\\d]+)$") //
+                        .match("^.* B.rsengeb.hr[\\s]{1,}(?<currency>[A-Z]{3}) (\\-)?(?<fee>[\\.'\\d]+)$") //
                         .assign((t, v) -> processFeeEntries(t, v, type))
 
                         // @formatter:off
                         // Broker Kommission  DKK 12.12
                         // @formatter:on
                         .section("fee", "currency").optional() //
-                        .match("^Broker Kommission[\\s]{1,}(?<currency>[\\w]{3}) (\\-)?(?<fee>[\\.'\\d]+)$") //
+                        .match("^Broker Kommission[\\s]{1,}(?<currency>[A-Z]{3}) (\\-)?(?<fee>[\\.'\\d]+)$") //
                         .assign((t, v) -> processFeeEntries(t, v, type));
     }
 

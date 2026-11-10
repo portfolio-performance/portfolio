@@ -1,0 +1,115 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.67.1
+-----------------------------------------
+VR Bank Main-Kinzig-Büdingen eG
+Bahnhofstr. 16, 63654 Büdingen
+Tel 06042 888-0   BLZ 506 616 39                          www.vrbank-mkb.de
+Ausbildungskonto
+EUR-Konto Kontonummer 1522168
+VR Bank Main-Kinzig-Büdingen eG
+Stadtweg 9, 63589 Linsengericht Kontoauszug Nr.   5/2017
+erstellt am 31.05.2017 23:13 Blatt    1 von 2
+IBAN: DE00 2267 3030 3189 7471 29  BIC: yIrASnS2ZyR
+Herrn
+iuAzy eFKWbT
+sCaBmh vdQbwfvdF 48
+32969 jLkbTBdaC Fm tKlA
+Bu-Tag Wert Vorgang
+alter Kontostand vom 28.04.2017                          95,06 H
+02.05. 02.05. Dauerauftrag PN:900                                                            50,00 H
+              TQjGVP tPoAR
+              Taschengeld                           1941921693342
+03.05. 03.05. Basislastschrift PN:931                                               3,49 S
+              PayPal Europe S.a.r.l. et Cie S.C.A
+              PP.5293.PP . OVH, Ihr Einkauf bei OVH EREF: 3954963279
+              508 PP.5293.PP PAYPAL MREF: 96X8780O11Y0B CRED: LU96ZZ
+              Z0000000000000000058
+10.05. 10.05. Basislastschrift PN:931                                               5,99 S
+              Drillisch Online AG
+              I3041188 b309683933                J641706391 maXXim R
+              echnung MREF: DBD22DE46CDCFAB4ABC1353A87F CRED: Ye42eH
+              z06453900153
+16.05. 16.05. Steuererstattung durch PN:967                                                   0,27 H
+              Steuerausgleich            Kundennummer    1234567
+16.05. 16.05. Steuererstattung durch PN:967                                                   0,44 H
+              Steuerausgleich            Kundennummer    1234567
+16.05. 16.05. Steuererstattung durch PN:967                                                   4,93 H
+              Steuerausgleich            Kundennummer    1234567
+16.05. 16.05. Basislastschrift PN:931                                               5,00 S
+              PayPal Europe S.a.r.l. et Cie S.C.A
+              PP.5293.PP . STEAM GAMES, Ihr Einkauf bei STEAM GAMES
+              EREF: 5611914778792 PP.5293.PP PAYPAL MREF: 84D7808O25
+              L5S CRED: LU96ZZZ0000000000000000058
+23.05. 23.05. Überweisungsgutschr. PN:932                                                   500,00 H
+              Xdbss UFXYYn
+              Umbuchung.                           123456789123
+26.05. 26.05. Auszahlung girocard PN:931                                          100,00 S
+              FRANKFURTER VOLKSBANK
+              hcl2HcGqp-wkp4akhcl2Hc/GqpXwkp4a/DE
+              26.05.2017 um 10:31:22 Uhr GA 50190000/00001460/006292
+              50661639/0005640199/0/1217 REF 750139/260021
+29.05. 29.05. Basislastschrift PN:931                                               5,00 S
+              PayPal Europe S.a.r.l. et Cie S.C.A
+              PP.5293.PP . STEAM GAMES, Ihr Einkauf bei STEAM GAMES
+              EREF: 7306395667970 PP.5293.PP PAYPAL MREF: 53G2224Q48
+              L5S CRED: LU96ZZZ0000000000000000058
+                                            Übertrag auf Blatt 2                            531,22 H
+0439
+000
+K00011401
+5M Bitte beachten Sie die Hinweise auf der Rückseite!
+VR Bank Main-Kinzig-Büdingen eG
+Bahnhofstr. 16, 63654 Büdingen
+Tel 06042 888-0   BLZ 506 616 39                          www.vrbank-mkb.de
+Ausbildungskonto
+EUR-Konto Kontonummer 2647513
+OHyKY IxBuSm
+Kontoauszug Nr.   5/2017
+erstellt am 31.05.2017 23:13 Blatt    2 von 2
+Bu-Tag Wert Vorgang
+                                            Übertrag von Blatt 1                            531,22 H
+29.05. 29.05. Basislastschrift PN:931                                               8,99 S
+              PayPal Europe S.a.r.l. et Cie S.C.A
+              PP.5293.PP . NETFLIX COM, Ihr Einkauf bei NETFLIX COM
+              EREF: YYIJ22222AQP4WLW PP.5293.PP PAYPAL MREF: 58C8048
+              Q48L5S CRED: LU96ZZZ0000000000000000058
+29.05. 29.05. Basislastschrift PN:931                                              37,74 S
+              PayPal Europe S.a.r.l. et Cie S.C.A
+              PP.5293.PP . GLORYPROFIT, Ihr Einkauf bei GLORYPROFIT
+              EREF: 1001128215531 PP.5293.PP PAYPAL MREF: 02h9223Q64
+              L5S CRED: LU96ZZZ0000000000000000058
+30.05. 30.05. Basislastschrift PN:931                                              13,58 S
+              AMAZON PAYMENTS EUROPE S.C.A.
+              302-9822594-5845138 Amazon .Mktplce EU-DE 238256777724
+              4018 EREF: 2382567777244018 MREF: qjVW+C,?LEtTGKk,OAoA
+              hA-,oxpw.d CRED: DE94ZZZ00000561653
+                                    neuer Kontostand vom 31.05.2017                         470,91 H
+0439
+000
+K00011401 Bitte beachten Sie die Hinweise auf der Rückseite!
+Sehr geehrte Kundin, sehr geehrter Kunde,
+dieses Formular verwenden wir für Bankmitteilungen verschiedenster Art (z.B. Konto- und Sparkontoauszüge, Dividendenabrech-
+nungen). Wir bitten Sie deshalb, diese bei Empfang zu prüfen und uns über etwaige Unstimmigkeiten zu unterrichten.
+Sind umseitig Bankdienstleistungen aufgeführt, so sind diese umsatzsteuerfrei, sofern nichts Abweichendes angegeben ist.
+Der auf dem Kontoauszug ausgewiesene Kontostand berücksichtigt nicht die Wertstellung der einzelnen Buchungen. Dies bedeu-
+tet, dass der im Kontoauszug ausgewiesene Betrag nicht dem tatsächlichen Kontoguthaben entsprechen muss und bei Verfügungen
+möglicherweise Zinsen für die Inanspruchnahme einer eingeräumten oder geduldeten Kontoüberziehung anfallen können.
+Rechnungsabschlüsse. Ist der Kontoauszug zusätzlich mit dem Hinweis "Rechnungsabschluss" versehen, haben wir für Ihr Konto
+einen Rechnungsabschluss durchgeführt. Dabei werden die in dem Abrechnungszeitraum entstandenen beiderseitigen Ansprüche
+(einschließlich Zinsen und Entgelte) verrechnet. Umsätze und Kontoauszüge, die nach dem Erstellungsdatum anfallen und sich auf
+den Abrechnungssaldo des abgelaufenen Abrechnungszeitraumes auswirken, werden erst in der folgenden Abrechnung berücksich-
+tigt. Korrekturen, die sich auf Zinsen beziehen, werden entsprechend gekennzeichnet.
+Einwendungen gegen Rechnungsabschlüsse bei Kontokorrentkonten sowie gegen den Inhalt von Sparkontoauszügen sind spätestens
+vor Ablauf von sechs Wochen nach Zugang des Rechnungsabschlusses oder des Sparkontoauszugs zu erheben. Machen Sie Ihre
+Einwendungen schriftlich geltend, genügt die Absendung innerhalb der Sechs-Wochen-Frist. Das Unterlassen rechtzeitiger
+Einwendungen gilt als Genehmigung.
+Den Rechnungsabschluss können Sie zur Vorlage beim Finanzamt verwenden.
+Einzugsaufträge. Einzugspapiere wie z.B. Schecks und Lastschriften werden unter dem Vorbehalt des Eingangs gutgeschrieben,
+und zwar auch dann, wenn diese Papiere bei uns selbst zahlbar sind.
+Schecks und Lastschriften sind erst eingelöst, wenn die Belastungsbuchung nicht spätestens am zweiten Bankarbeitstag nach ihrer
+Vornahme rückgängig gemacht wird. Barschecks sind bereits mit Zahlung an den Scheckvorleger eingelöst. Schecks sind auch
+schon dann eingelöst, wenn wir im Einzelfall eine Bezahltmeldung absenden.
+Guthaben sind als Einlagen nach Maßgabe des Einlagensicherungsgesetzes entschädigungsfähig.
+Nähere Informationen können dem "Informationsbogen für den Einleger" entnommen werden.
+Mit freundlichen Grüßen
+Ihre Bank

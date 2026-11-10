@@ -158,12 +158,6 @@ Maven is used for CI/CD builds. Local development can use Eclipse or Maven.
 **Standard Build:**
 
 ```bash
-# Linux/macOS
-export MAVEN_OPTS="-Xmx4g"
-mvn -f portfolio-app/pom.xml clean verify
-
-# Windows
-set MAVEN_OPTS="-Xmx4g"
 mvn -f portfolio-app/pom.xml clean verify
 ```
 

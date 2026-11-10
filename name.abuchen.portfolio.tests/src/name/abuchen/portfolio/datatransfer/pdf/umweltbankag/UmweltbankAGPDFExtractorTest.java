@@ -1,5 +1,6 @@
 package name.abuchen.portfolio.datatransfer.pdf.umweltbankag;
 
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.deposit;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasAmount;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasCurrencyCode;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasDate;
@@ -105,5 +106,43 @@ public class UmweltbankAGPDFExtractorTest
                         hasNote("Auftragsnummer 653140/64.00"), //
                         hasAmount("EUR", 13040.15 - 380.70), hasGrossValue("EUR", 13040.15 - 380.70 - 247.76), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 247.76))));
+    }
+
+    @Test
+    public void testKontoauszug01()
+    {
+        var extractor = new UmweltbankAGPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug01.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(3));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("LU3093383670"), hasWkn("A41CHM"), hasTicker(null), //
+                        hasName("UMWELTBA-GR.SO.BD EO PEOD"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2026-04-15"), hasShares(20.0224), //
+                        hasSource("Kontoauszug01.txt"), //
+                        hasNote("Auftragsnummer 9028797680"), //
+                        hasAmount("EUR", 200.00), hasGrossValue("EUR", 200.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check deposit transaction
+        assertThat(results, hasItem(deposit(hasDate("2026-04-10"), hasAmount("EUR", 200.00), //
+                        hasSource("Kontoauszug01.txt"), hasNote("Dauerauftragsgutschrift"))));
     }
 }

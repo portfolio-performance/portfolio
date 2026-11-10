@@ -1,0 +1,178 @@
+PDFBox Version: 3.0.6
+Portfolio Performance Version: 0.81.1
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+KUNDEN-ID NAME DES KUNDEN
+12462350 bAtaN HvbOoe
+Aktivitätsauszug
+Erstellt von FXFlat Bank GmbH am 14. Januar 2026, über von 12.01.2026 22:00 (UTC) bis 13.01.2026 21:59 (UTC).
+Übersicht
+Trading 212 Invest
+Konto-ID: 13673009
+Einzahlungen €20.55
+Auszahlungen €0.00
+Realisierte Rendite €0.00
+Unrealisierte Rendite €0.01
+Unrealisierte Renditeänderung €0.01
+Dividenden €0.00
+Verzinsung von Geld €0.00
+FX Gebühr €0.00
+Gebühren von Dritten €0.00
+Kontowert €25.54
+1/8
+KUNDEN-ID NAME DES KUNDEN
+70194194 gDFVv ZrgSes
+Invest-Konto - ausgeführte Aufträge
+GEBÜHREN DER
+INSTRUMENT AUSFÜHRUNGSP HANDELSPLATTF
+AUSFÜHRUNGSZEITPUNKT WERTPAPIER ISIN WÄHRUNG AUFTRAGS-ID-NR. ANWEISUNG ANZAHL AUSFÜHRUNGSKURS WERT AUFTRAGSTYP LATZES SITZUNG DEVISENKURS TRANSAKTIONS WÄHRUNG FX GEBÜHR ORM & STEUERN RENDITE WERT
+2026-01-13 13:45:41 CTP2 US20030N1019 EUR 44853850736 Kaufen 0.04070231 25.06 1.02 Market OTC Reguläre Zeiten 1 EUR - - - 1.02
+2026-01-13 13:45:41 ASML NL0010273215 EUR 44853850742 Kaufen 0.00092744 1099.8 1.02 Market OTC Reguläre Zeiten 1 EUR - - - 1.02
+2026-01-13 13:45:42 NKE US6541061031 EUR 44853850750 Kaufen 0.01810436 56.34 1.02 Market OTC Reguläre Zeiten 1 EUR - - - 1.02
+2026-01-13 13:45:43 VFEM IE00B3VVMM84 EUR 44853850758 Kaufen 0.01522388 67 1.02 Market OTC Reguläre Zeiten 1 EUR - - - 1.02
+2026-01-13 13:45:43 PRG US7427181091 EUR 44853850764 Kaufen 0.00827653 123.24 1.02 Market OTC Reguläre Zeiten 1 EUR - - - 1.02
+2026-01-13 13:45:44 4OQ1 US00123Q1040 EUR 44853850770 Kaufen 0.10393315 9.814 1.02 Market OTC Reguläre Zeiten 1 EUR - - - 1.02
+2026-01-13 13:45:44 CCC3 US1912161007 EUR 44853850777 Kaufen 0.01696042 60.14 1.02 Market OTC Reguläre Zeiten 1 EUR - - - 1.02
+2026-01-13 13:45:44 UWS US94106L1098 EUR 44853850783 Kaufen 0.00543304 187.74 1.02 Market OTC Reguläre Zeiten 1 EUR - - - 1.02
+2026-01-13 13:45:44 MSF US5949181045 EUR 44853850791 Kaufen 0.00249694 408.5 1.02 Market OTC Reguläre Zeiten 1 EUR - - - 1.02
+2026-01-13 13:45:45 PHM7 US02209S1033 EUR 44853850797 Kaufen 0.02034303 50.14 1.02 Market OTC Reguläre Zeiten 1 EUR - - - 1.02
+2026-01-13 13:45:46 LIN IE000S9YS762 EUR 44853850811 Kaufen 0.00268562 379.8 1.02 Market OTC Reguläre Zeiten 1 EUR - - - 1.02
+2026-01-13 13:45:47 VHYL IE00B8GKDB10 EUR 44853850817 Kaufen 0.03549851 71.834 2.55 Market OTC Reguläre Zeiten 1 EUR - - - 2.55
+2026-01-13 13:45:47 SHELL GB00BP6MXD84 EUR 44853850823 Kaufen 0.03286082 31.04 1.02 Market OTC Reguläre Zeiten 1 EUR - - - 1.02
+2026-01-13 13:45:47 RY6 US7561091049 EUR 44853850829 Kaufen 0.02020602 50.48 1.02 Market OTC Reguläre Zeiten 1 EUR - - - 1.02
+2026-01-13 13:45:48 VERX IE00BKX55S42 EUR 44853850839 Kaufen 0.02148499 47.475 1.02 Market OTC Reguläre Zeiten 1 EUR - - - 1.02
+2026-01-13 13:45:48 NOV DK0062498333 EUR 44853850845 Kaufen 0.01969111 51.8 1.02 Market OTC Reguläre Zeiten 1 EUR - - - 1.02
+Die FXFlat Bank GmbH empfängt und übermittelt deine Aufträge, die anschließend, einschließlich eventueller Währungsumrechnungen, von Trading 212 Markets Ltd. ausgeführt werden. 2/8
+KUNDEN-ID NAME DES KUNDEN
+92354426 uABMp qEdgSD
+GEBÜHREN DER
+INSTRUMENT AUSFÜHRUNGSP HANDELSPLATTF
+AUSFÜHRUNGSZEITPUNKT WERTPAPIER ISIN WÄHRUNG AUFTRAGS-ID-NR. ANWEISUNG ANZAHL AUSFÜHRUNGSKURS WERT AUFTRAGSTYP LATZES SITZUNG DEVISENKURS TRANSAKTIONS WÄHRUNG FX GEBÜHR ORM & STEUERN RENDITE WERT
+2026-01-13 13:45:49 RIO1 GB0007188757 EUR 44853850851 Kaufen 0.01424779 71.59 1.02 Market OTC Reguläre Zeiten 1 EUR - - - 1.02
+2026-01-13 13:45:49 MDO US5801351017 EUR 44853850857 Kaufen 0.00387832 263 1.02 Market OTC Reguläre Zeiten 1 EUR - - - 1.02
+2026-01-13 13:45:50 FTWD IE0000QLH0G6 EUR 44853850864 Kaufen 0.35971223 7.089 2.55 Market OTC Reguläre Zeiten 1 EUR - - - 2.55
+2026-01-13 13:46:00 AWC US0304201033 EUR 44853851006 Kaufen 0.00906666 112.5 1.02 Market OTC Reguläre Zeiten 1 EUR - - - 1.02
+2026-01-13 13:46:02 EN3 CA29250N1050 EUR 44853851023 Kaufen 0.02579013 39.55 1.02 Market OTC Reguläre Zeiten 1 EUR - - - 1.02
+2026-01-13 13:47:23 CAT1 US1491231015 EUR 44853851247 Kaufen 0.00186813 546 1.02 Market OTC Reguläre Zeiten 1 EUR - - - 1.02
+Die FXFlat Bank GmbH empfängt und übermittelt deine Aufträge, die anschließend, einschließlich eventueller Währungsumrechnungen, von Trading 212 Markets Ltd. ausgeführt werden. 3/8
+KUNDEN-ID NAME DES KUNDEN
+70021066 WczjT IwlEkW
+Invest-Konto - Zusammenfassung offener Positionen
+Offene Aufträge
+WERTPAPIER ISIN INSTRUMENT WÄHRUNG AUFTRAGS-ID-NR. ART ANWEISUNG ABLAUF ANZAHL LIMIT-PREIS STOP-KURS WERT
+Keine Daten verfügbar
+Offene Positionen
+DURCHSCHNITTLICHER
+WERTPAPIER ISIN INSTRUMENT WÄHRUNG ANZAHL PREIS KURS RENDITE WERT DEVISENKURS RENDITE WERT
+4OQ1 US00123Q1040 EUR 0.10393315 9.81400063 9.698 -0.01 1.0079 1 €-0.01 €1.01
+ASML NL0010273215 EUR 0.00092744 1099.80160442 1102.6 0 1.0226 1 €0.00 €1.02
+AWC US0304201033 EUR 0.00906666 112.50008272 110.85 -0.01 1.005 1 €-0.01 €1.01
+CAT1 US1491231015 EUR 0.00186813 546.000546 551 0.01 1.0293 1 €0.01 €1.03
+CCC3 US1912161007 EUR 0.01696042 60.14002012 60.61 0.01 1.028 1 €0.01 €1.03
+CTP2 US20030N1019 EUR 0.04070231 25.06000274 24.69 -0.02 1.0049 1 €-0.02 €1.00
+EN3 CA29250N1050 EUR 0.02579013 39.5500139 39.792 0.01 1.0262 1 €0.01 €1.03
+FTWD IE0000QLH0G6 EUR 0.35971223 7.089 7.078 0 2.546 1 €0.00 €2.55
+LIN IE000S9YS762 EUR 0.00268562 379.80056747 378.6 0 1.0168 1 €0.00 €1.02
+MDO US5801351017 EUR 0.00387832 263.00047443 263.7 0 1.0227 1 €0.00 €1.02
+MSF US5949181045 EUR 0.00249694 408.500004 403.4 -0.01 1.0073 1 €-0.01 €1.01
+NKE US6541061031 EUR 0.01810436 56.34001975 56.85 0.01 1.0292 1 €0.01 €1.03
+NOV DK0062498333 EUR 0.01969111 51.80002549 51.5 -0.01 1.0141 1 €-0.01 €1.01
+PHM7 US02209S1033 EUR 0.02034303 50.14002339 50.92 0.02 1.0359 1 €0.02 €1.04
+PRG US7427181091 EUR 0.00827653 123.2400535 123.32 0 1.0207 1 €0.00 €1.02
+RIO1 GB0007188757 EUR 0.01424779 71.59005011 71.91 0 1.0246 1 €0.00 €1.02
+RY6 US7561091049 EUR 0.02020602 50.48000546 50.818 0.01 1.0268 1 €0.01 €1.03
+SHELL GB00BP6MXD84 EUR 0.03286082 31.04000448 31.455 0.01 1.0336 1 €0.01 €1.03
+UWS US94106L1098 EUR 0.00543304 187.74019702 185.22 -0.01 1.0063 1 €-0.01 €1.01
+VERX IE00BKX55S42 EUR 0.02148499 47.47500464 47.46 0 1.0197 1 €0.00 €1.02
+VFEM IE00B3VVMM84 EUR 0.01522388 67.00000263 67.11 0 1.0217 1 €0.00 €1.02
+VHYL IE00B8GKDB10 EUR 0.03549851 71.83400092 71.747 0 2.5469 1 €0.00 €2.55
+Dein Bargeld ist jederzeit geschützt und deine Aufträge werden von der FXFlat Bank GmbH (Firmennummer 101710/Lizenznummer 10109603) empfangen und übermittelt. Deine Aufträge und etwaige Währungsumrechnungen werden von Trading 212 Markets Ltd (Firmennummer: HE 409763 / CySEC-Lizenznummer: 398/21) ausgeführt und dein Vermögen wird gesichert. 4/8
+KUNDEN-ID NAME DES KUNDEN
+77072707 DhBTZ rJnPGo
+Invest-Konto - Barmittelübersicht
+Gesamtes Geldvermögen
+WERT WERT (EUR)
+EUR barmittel 0.04 0.04
+USD barmittel 0 0
+Dein Bargeld ist jederzeit durch die FXFlat Bank GmbH geschützt. Dein Gesamtbetrag an Barmitteln kann abgerechnete und nicht abgerechnete Geldmittel umfassen. Nur abgerechnete Barmittel können in QMMFs gehalten werden, so dass in der Regel eine Differenz zwischen deinen gesamten Barmitteln und dem in QMMFs gehaltenen Betrag besteht. Erfahre mehr über die
+Bargeldabwicklung hier. 5/8
+KUNDEN-ID NAME DES KUNDEN
+54547947 TRhmZ KJDGEE
+Invest-Konto - Transaktionen und Dividenden
+Transaktionen
+ZEIT ART WÄHRUNG BETRAG BETRAG
+2026-01-12 22:15:23 JP Morgan Bankeinzahlung EUR 0.39 €0.39
+2026-01-12 22:17:23 Währungsumtausch EUR -0.2 €-0.20
+2026-01-12 22:17:23 Währungsumtausch USD 0.23 €0.20
+2026-01-12 22:17:23 Währungsumtauschgebühr USD 0 €0.00
+2026-01-13 11:37:21 Währungsumtausch USD -0.23 €-0.20
+2026-01-13 11:37:21 Währungsumtausch EUR 0.19 €0.20
+2026-01-13 11:37:21 Währungsumtauschgebühr EUR 0 €0.00
+2026-01-13 12:30:09 JP Morgan Bankeinzahlung EUR 5.16 €5.16
+2026-01-13 12:30:09 JP Morgan Bankeinzahlung EUR 10 €10.00
+2026-01-13 13:45:09 JP Morgan Bankeinzahlung EUR 5 €5.00
+Dividenden
+WERTPAPIER ISIN INSTRUMENT WÄHRUNG AUSGABELAND ZULÄSSIGE BESTÄNDE ZAHLUNGSDATUM BETRAG PRO AKTIE GESAMTBETRAG QST-TARIFE WHT DEVISENKURS KONTOWÄHRUNG NETTOBETRAG
+Keine Daten verfügbar
+6/8
+KUNDEN-ID NAME DES KUNDEN
+98834264 DIMow CqfTjU
+Glossar
+Wert Devisenkurs
+Der gesamte Wert des Trades/der Position, wobei die Quantität mit dem Preis multipliziert wird. • Ausgeführte Trades: Der zum Zeitpunkt der Trade-Ausführung geltende Wechselkurs.
+• Zusammenfassung offener Positionen: Der Bloomberg-Zinssatz zum Monatsende dient ausschließlich zur Orientierung.
+Ergebnis geschlossener Positionen/Realisierte Rendite
+Das Gesamtergebnis/die Gesamtrendite aus geschlossenen Positionen während des Zeitraums. Transaktions währung
+Die Währung, in der die Transaktion ausgeführt wird. Dabei kann es sich um die Hauptwährung des Kontos oder um die Währung der Wallet bei Konten
+Offenes Ergebnis/Rendite mit mehreren Währungen handeln.
+Das gesamte schwebende Ergebnis/Rendite deiner offenen Positionen, berechnet seit ihrer Eröffnung.
+WHT (Quellensteuer)
+Offene Ergebnis/Renditeänderung Eine an der Quelle einbehaltene Steuer, oft auf an Gebietsfremde gezahlte Zinsen oder Dividenden. Der Quellensteuersatz ist der Prozentsatz, der auf
+Die Veränderung des schwebenden Ergebnisses/Rendite deiner Positionen zwischen dem Beginn und dem Ende des Abrechnungszeitraums. diese Zahlungen angewendet wird.
+Kontowert Sitzung
+Die Summe der offenen Positionen und der Geldmittel auf dem Konto am Ende des ausgewählten Zeitraums. Die Sitzung, in der der Handel ausgeführt wurde, so dass Kunden zwischen Aufträgen während der Hauptzeiten, der verlängerten (vor- und
+nachbörslichen) und der Über-Nacht-Handelszeiten unterscheiden können.
+Instrument Währung
+Die Währung, in der das Instrument denominiert ist und gehandelt wird. Bonus
+Transaktionen, bei denen ein zusätzlicher Wert zugewiesen wird, wie z. B. Gratisaktien, Barauszahlungen oder Bezugsrechte.
+Auftrags-ID-Nr.
+Eine eindeutige Kennung für einen Auftrag. Ein Auftrag kann mehrere Ausführungen haben. Sonstiges
+Umfasst alle Transaktionen, die nicht unter die Hauptkategorien fallen, wie z. B. Anpassungen und Aktiensplits.
+Steuern
+Der Gesamtbetrag der auf Ihr Konto anfallenden Steuern, einschließlich Abgeltungssteuer, Solidaritätszuschlag und ggf. Kirchensteuer. Gebühren von Dritten
+Die Übersicht zeigt die Summe der Börsen- und Regierungsgebühren sowie der ADR-Gebühren.
+Ablauf
+Zeigt an, wann eine ausstehende Order ablaufen würde. Gebühren der Handelsplattform & Steuern
+Alle von den Behörden auferlegten obligatorischen Gebühren , darunter Stempelgebühren, Finanztransaktionssteuern, PTM-Abgaben, FINRA-Gebühren,
+Dividenden SEC-Gebühren und Quellensteuern.
+Bezieht sich auf den Teil des Gewinns eines Unternehmens, der an die Aktionäre ausgeschüttet wird. Der Betrag wird in der Regel auf der Grundlage
+der Anzahl der von jedem Aktionär gehaltenen Aktien ausgeschüttet. ADR-Gebühr
+Eine Verwaltungsgebühr für das Halten von American Depositary Receipts (ADRs). Diese geringe Gebühr wird von der Depotbank erhoben, die die
+Aktien verwaltet. Wir geben sie in der Regel in Höhe von 0,01 bis 0,05 US-Dollar pro Aktie direkt an dich weiter.
+7/8
+KUNDEN-ID NAME DES KUNDEN
+10629962 NidVm KpyrQS
+Offenlegungen
+Die Übersicht wird in der Hauptwährung des Kontos dargestellt. Bei Transaktionen in mehreren Währungen werden die Beträge anhand der zum Zeitpunkt der Transaktion geltenden
+Interbanken-Wechselkurse umgerechnet.
+Die Bargeld-Aufschlüsselung zeigt den Wert jeder Geldbörse in der jeweiligen Währung und in der Hauptwährung deines Kontos an. Der in der Währung des Hauptkontos angezeigte Wert
+wird zum aktuellen Wechselkurs am letzten Tag des Monats, für den dieser Auszug erstellt wurde, umgerechnet.
+Die Ausführungszeiten aller Transaktionen sind UTC.
+Die an einer Börse getätigten Anlagegeschäfte folgen dem Standardabwicklungszyklus für Aktien: Abschlusstag plus zwei Tage (T+2), auch wenn dieser Zeitraum aus betrieblichen Gründen
+gelegentlich verlängert werden kann. Wie in unseren AGB beschrieben, wird eine Transaktion, die nicht abgewickelt werden kann, storniert und dein Konto wird auf den Stand vor der
+Transaktion zurückgesetzt. Auf deinem Kontoauszug, den du bei der Transaktion bekommst, siehst du, ob die Transaktion an einer Börse ausgeführt wurde.
+Wurde ein Depotübertrag durchgeführt, ist der Ausführungspreis für die Übertragung in der Regel der Preis, zu dem eine Anlage gekauft wurde, wie vom Kunden während der Übertragung
+angegeben. Dessen Richtigkeit liegt in der alleinigen Verantwortung des Kunden. Bei einer Übertragung wäre der Ausführungskurs der Kurs, zu dem die Anlage gekauft wurde.
+Der Auszug umfasst auch die schwebenden Aufträge zum Zeitpunkt der Erstellung. Alle Aufträge, die danach aufgegeben oder storniert werden, werden nicht angezeigt. Es wird empfohlen,
+die Kontobewegungen auf der Online-Plattform regelmäßig zu überprüfen, um über alle Änderungen auf dem Laufenden zu bleiben.
+Bitte beachte, dass du für die Überprüfung deiner Auszüge verantwortlich bist und dafür, uns innerhalb von 24 Stunden nach Erhalt über Abweichungen zu informieren. Nach Ablauf dieser
+Frist gelten alle Geschäfte als von dir bestätigt. Diese Nachricht und alle Anhänge wurden vertraulich nur zu Händen des Adressaten versandt. Solltest du diese irrtümlich erhalten haben,
+teile uns das bitte mit, indem du uns unter info@trading212.com kontaktierst.
+Beim Investieren ist dein Kapital Risiken ausgesetzt und möglicherweise erhältst du weniger zurück als du ursprünglich investiert hast. Historische Entwicklungen sind keine Garantie für
+zukünftige Ergebnisse. Trading 212 ist ein Handelsname von FXFlat Bank GmbH. FXFlat Bank GmbH ist in Deutschland registriert (Firmennummer 101710). Eingetragene Adresse: Bahnstraße
+47, 40878 Ratingen, Deutschland. FXFlat Bank GmbH ist von der BaFin autorisiert und reguliert (Lizenznummer 10109603).
+Trading 212 Markets Ltd. ist in Zypern registriert (Firmennummer: 409763), autorisiert und reguliert durch die Cyprus Securities and Exchange Commission, CySEC (Register number 398/21).
+Dieser Auszug dient nur zu Informationszwecken und enthält keine Anlageberatung, Empfehlung oder Aufforderung zum Kauf oder Verkauf von Finanzinstrumenten.
+Trading 212 handelt bei allen Geschäften als Auftraggeber oder Vermittler und auf reiner Ausführungsbasis. Die Veröffentlichung dieses Auszugs ist gesetzlich vorgeschrieben und du kannst
+sie nicht abbestellen.
+8/8

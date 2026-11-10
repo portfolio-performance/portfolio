@@ -1,0 +1,13 @@
+# Redocly configuration for linting the REST API specification.
+#
+# Lint locally with:
+#   npx @redocly/cli@2 lint
+#
+# Maven runs the same command with -Popenapi-lint, which CI activates
+# (see name.abuchen.portfolio.rest/pom.xml and .github/workflows/main.yml).
+apis:
+  portfolio-rest@v1:
+    root: name.abuchen.portfolio.rest/openapi.yaml
+
+extends:
+  - recommended

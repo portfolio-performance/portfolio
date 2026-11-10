@@ -16,6 +16,7 @@ import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.PortfolioTransferEntry;
 import name.abuchen.portfolio.model.Transaction;
+import name.abuchen.portfolio.model.Transaction.Unit;
 
 public class DetectDuplicatesAction implements ImportAction
 {
@@ -152,16 +153,35 @@ public class DetectDuplicatesAction implements ImportAction
         if (!other.getCurrencyCode().equals(subject.getCurrencyCode()))
             return false;
 
-        if (other.getAmount() != subject.getAmount())
+        if (other.getAmount() != subject.getAmount() && !hasEquivalentInterestAmount(subject, other))
             return false;
 
-        if (other.getShares() != subject.getShares())
+        if (other.getShares() != subject.getShares() && !hasMissingDividendShares(subject, other))
             return false;
 
         if (!Objects.equals(other.getSecurity(), subject.getSecurity())) // NOSONAR
             return false;
 
         return true;
+    }
+
+    private boolean hasEquivalentInterestAmount(Transaction subject, Transaction other)
+    {
+        if (!(subject instanceof AccountTransaction accountTransaction)
+                        || accountTransaction.getType() != AccountTransaction.Type.INTEREST)
+            return false;
+
+        long subjectTax = subject.getUnitSum(Unit.Type.TAX).getAmount();
+        long otherTax = other.getUnitSum(Unit.Type.TAX).getAmount();
+        return (subjectTax > 0 && otherTax == 0 && subject.getGrossValue().getAmount() == other.getAmount())
+                        || (otherTax > 0 && subjectTax == 0 && other.getGrossValue().getAmount() == subject.getAmount());
+    }
+
+    private boolean hasMissingDividendShares(Transaction subject, Transaction other)
+    {
+        return subject instanceof AccountTransaction accountTransaction
+                        && accountTransaction.getType() == AccountTransaction.Type.DIVIDENDS
+                        && (subject.getShares() == 0 || other.getShares() == 0);
     }
 
     /*

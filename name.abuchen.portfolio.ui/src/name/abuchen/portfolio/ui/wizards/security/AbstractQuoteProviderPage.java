@@ -56,6 +56,7 @@ import name.abuchen.portfolio.online.impl.MFAPIQuoteFeed;
 import name.abuchen.portfolio.online.impl.PortfolioPerformanceFeed;
 import name.abuchen.portfolio.online.impl.PortfolioReportQuoteFeed;
 import name.abuchen.portfolio.online.impl.QuandlQuoteFeed;
+import name.abuchen.portfolio.online.impl.SiftingQuoteFeed;
 import name.abuchen.portfolio.online.impl.TwelveDataQuoteFeed;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
@@ -106,6 +107,9 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
     private Text textCoinGeckoCoinId;
 
     private Text textSchemeCode;
+
+    private Label labelSiftingAssetClass;
+    private ComboViewer comboSiftingAssetClass;
 
     private final EditSecurityModel model;
     private final EditSecurityCache cache;
@@ -327,6 +331,11 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
             textCoinGeckoCoinId.setText(coinId != null ? coinId : ""); //$NON-NLS-1$
         }
 
+        if (comboSiftingAssetClass != null && !Objects.equals(
+                        comboSiftingAssetClass.getStructuredSelection().getFirstElement(),
+                        SiftingQuoteFeed.AssetClass.of(model.getFeedProperty(SiftingQuoteFeed.SIFTING_ASSET_CLASS))))
+            selectSiftingAssetClass();
+
         if (textSchemeCode != null
                         && !textSchemeCode.getText().equals(model.getFeedProperty(MFAPIQuoteFeed.SCHEME_CODE)))
         {
@@ -515,8 +524,12 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
                                         BitfinexQuoteFeed.ID, //
                                         CoinGeckoQuoteFeed.ID, //
                                         KrakenQuoteFeed.ID, //
-                                        EODHistoricalDataQuoteFeed.ID) //
+                                        EODHistoricalDataQuoteFeed.ID, //
+                                        SiftingQuoteFeed.ID) //
                                         .contains(feed.getId());
+
+        boolean needsSiftingAssetClass = feed != null && feed.getId() != null
+                        && feed.getId().equals(SiftingQuoteFeed.ID);
 
         boolean needsQuandlCode = feed != null && feed.getId() != null && feed.getId().equals(QuandlQuoteFeed.ID);
 
@@ -574,6 +587,14 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
         textCoinGeckoCoinId = disposeIf(textCoinGeckoCoinId);
 
         textSchemeCode = disposeIf(textSchemeCode);
+
+        labelSiftingAssetClass = disposeIf(labelSiftingAssetClass);
+
+        if (comboSiftingAssetClass != null)
+        {
+            comboSiftingAssetClass.getControl().dispose();
+            comboSiftingAssetClass = null;
+        }
 
         if ((dropDown || needsTicker) && hasTickerOverrideOption())
         {
@@ -799,8 +820,38 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
             textSchemeCode.addModifyListener(e -> onSchemeCodeChanged());
         }
 
+        if (needsSiftingAssetClass)
+        {
+            labelSiftingAssetClass = new Label(grpQuoteFeed, SWT.NONE);
+            labelSiftingAssetClass.setText(Messages.LabelSiftingAssetClass);
+
+            comboSiftingAssetClass = new ComboViewer(grpQuoteFeed, SWT.READ_ONLY);
+            comboSiftingAssetClass.setContentProvider(ArrayContentProvider.getInstance());
+            comboSiftingAssetClass.setLabelProvider(new LabelProvider()
+            {
+                @Override
+                public String getText(Object element)
+                {
+                    return ((SiftingQuoteFeed.AssetClass) element).getLabel();
+                }
+            });
+            comboSiftingAssetClass.setInput(SiftingQuoteFeed.AssetClass.values());
+            GridDataFactory.fillDefaults().span(2, 1).hint(200, SWT.DEFAULT)
+                            .applyTo(comboSiftingAssetClass.getControl());
+
+            // the asset class is always stored explicitly. Otherwise the user
+            // cannot tell from the file which asset class is used
+            if (model.getFeedProperty(SiftingQuoteFeed.SIFTING_ASSET_CLASS) == null)
+                model.setFeedProperty(SiftingQuoteFeed.SIFTING_ASSET_CLASS,
+                                SiftingQuoteFeed.AssetClass.of(null).getPathSegment());
+
+            selectSiftingAssetClass();
+
+            comboSiftingAssetClass.addSelectionChangedListener(e -> onSiftingAssetClassChanged());
+        }
+
         if (!dropDown && !feedURL && !needsTicker && !needsQuandlCode && !needsJsonPath && !needsCoinGeckoCoinId
-                        && !needsSchemeCode)
+                        && !needsSchemeCode && !needsSiftingAssetClass)
         {
             labelDetailData.setText(""); //$NON-NLS-1$
         }
@@ -925,6 +976,9 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
             if (schemeCode != null)
                 textSchemeCode.setText(schemeCode);
         }
+
+        if (comboSiftingAssetClass != null)
+            selectSiftingAssetClass();
 
         refreshTickerWidgets();
     }
@@ -1120,8 +1174,11 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
                 textSchemeCode.setText(schemeCode);
         }
 
+        if (comboSiftingAssetClass != null)
+            selectSiftingAssetClass();
+
         if (comboExchange == null && textFeedURL == null && textQuandlCode == null && textJsonPathDate == null
-                        && textCoinGeckoCoinId == null && textSchemeCode == null)
+                        && textCoinGeckoCoinId == null && textSchemeCode == null && comboSiftingAssetClass == null)
         {
             // get sample quotes?
             if (feed != null)
@@ -1385,6 +1442,23 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
         QuoteFeed feed = (QuoteFeed) ((IStructuredSelection) comboProvider.getSelection()).getFirstElement();
         showSampleQuotes(feed, null);
         setStatus(null);
+    }
+
+    private void selectSiftingAssetClass()
+    {
+        comboSiftingAssetClass.setSelection(new StructuredSelection(
+                        SiftingQuoteFeed.AssetClass.of(model.getFeedProperty(SiftingQuoteFeed.SIFTING_ASSET_CLASS))));
+    }
+
+    private void onSiftingAssetClassChanged()
+    {
+        var assetClass = (SiftingQuoteFeed.AssetClass) comboSiftingAssetClass.getStructuredSelection()
+                        .getFirstElement();
+
+        model.setFeedProperty(SiftingQuoteFeed.SIFTING_ASSET_CLASS,
+                        assetClass != null ? assetClass.getPathSegment() : null);
+
+        onTickerSymbolChanged();
     }
 
     private void onSchemeCodeChanged()

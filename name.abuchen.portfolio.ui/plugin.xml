@@ -104,6 +104,18 @@
          <property-name
                name="hyperlink">
          </property-name>
+         <property-name
+               name="arrow-down">
+         </property-name>
+         <property-name
+               name="arrow-left">
+         </property-name>
+         <property-name
+               name="arrow-right">
+         </property-name>
+         <property-name
+               name="arrow-up">
+         </property-name>
       </handler>
       <handler
             adapter="name.abuchen.portfolio.ui.theme.TableElementAdapter"

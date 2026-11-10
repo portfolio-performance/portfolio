@@ -55,6 +55,11 @@
 			<filename>labels</filename>
 		</artifact>
 		<artifact>
+			<context>rest.messages</context>
+			<path>name.abuchen.portfolio.rest/src/name/abuchen/portfolio/rest</path>
+			<filename>messages</filename>
+		</artifact>
+		<artifact>
 			<context>ui.messages</context>
 			<path>name.abuchen.portfolio.ui/src/name/abuchen/portfolio/ui</path>
 			<filename>messages</filename>

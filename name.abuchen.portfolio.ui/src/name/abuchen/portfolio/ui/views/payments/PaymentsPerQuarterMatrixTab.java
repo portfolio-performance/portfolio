@@ -37,6 +37,8 @@ public class PaymentsPerQuarterMatrixTab extends PaymentsMatrixTab
     @Override
     public void addConfigActions(IMenuManager manager)
     {
+        addShowOnlyFirstYearAction(manager);
+
         addReverseColumnAction(manager);
         addAverageColumnAction(manager);
         addSumColumnAction(manager);
@@ -54,7 +56,7 @@ public class PaymentsPerQuarterMatrixTab extends PaymentsMatrixTab
             createAveragePerQuarterColumn(records, layout);
         }
 
-        createSumColumn(records, layout, false);
+        createSumColumn(records, layout, showOnlyFirstYear);
 
         updateColumnOrder();
     }
@@ -70,8 +72,8 @@ public class PaymentsPerQuarterMatrixTab extends PaymentsMatrixTab
     {
         var date = LocalDate.of(model.getStartYear(), Month.JANUARY, 1);
 
-        var nMonths = model.getNoOfMonths();
-        var nQuarters = getNoOfQuarters();
+        var nMonths = showOnlyFirstYear ? Math.min(12, model.getNoOfMonths()) : model.getNoOfMonths();
+        var nQuarters = getNoOfQuarters(nMonths);
 
         var quarterBeginIndex = 0;
         var quarterEndIndex = Math.min(MONTHS_IN_QUARTER, nMonths);
@@ -122,6 +124,9 @@ public class PaymentsPerQuarterMatrixTab extends PaymentsMatrixTab
         };
 
         var column = new TableViewerColumn(records, SWT.RIGHT);
+        // register layout data first: on GTK, configuring the column can trigger a layout
+        layout.setColumnData(column.getColumn(), new ColumnPixelData(50));
+
         column.getColumn().setText(columnCaption);
         column.setLabelProvider(new ColumnLabelProvider()
         {
@@ -150,14 +155,10 @@ public class PaymentsPerQuarterMatrixTab extends PaymentsMatrixTab
 
         createSorter((l1, l2) -> Long.compare(valueFunction.applyAsLong(l1), valueFunction.applyAsLong(l2)))
                         .attachTo(records, column);
-
-        layout.setColumnData(column.getColumn(), new ColumnPixelData(50));
     }
 
-    private int getNoOfQuarters()
+    private int getNoOfQuarters(int nMonths)
     {
-        var nMonths = model.getNoOfMonths();
-
         // How many quarters we are about to display. We show every started
         // quarter, hence the Math.ceil
         return (int) Math.ceil((double) nMonths / (double) MONTHS_IN_QUARTER);
@@ -166,6 +167,9 @@ public class PaymentsPerQuarterMatrixTab extends PaymentsMatrixTab
     protected void createAveragePerQuarterColumn(TableViewer records, TableColumnLayout layout)
     {
         var column = new TableViewerColumn(records, SWT.RIGHT);
+        // register layout data first: on GTK, configuring the column can trigger a layout
+        layout.setColumnData(column.getColumn(), new ColumnPixelData(200));
+
         column.getColumn().setText(Messages.ColumnAverage);
         column.setLabelProvider(new ColumnLabelProvider()
         {
@@ -173,8 +177,19 @@ public class PaymentsPerQuarterMatrixTab extends PaymentsMatrixTab
             public String getText(Object element)
             {
                 var line = (Line) element;
-                var average = PaymentsAverageCalculator.calculateAveragePerQuarter(line.getSum(), line.getNoOfMonths());
-                return Values.Amount.formatNonZero(average);
+
+                if (showOnlyFirstYear)
+                {
+                    var noOfMonths = Math.min(12, line.getNoOfMonths());
+                    var average = PaymentsAverageCalculator.calculateAveragePerQuarter(sumFirstYear(line), noOfMonths);
+                    return Values.Amount.formatNonZero(average);
+                }
+                else
+                {
+                    var average = PaymentsAverageCalculator.calculateAveragePerQuarter(line.getSum(),
+                                    line.getNoOfMonths());
+                    return Values.Amount.formatNonZero(average);
+                }
             }
 
             @Override
@@ -186,12 +201,24 @@ public class PaymentsPerQuarterMatrixTab extends PaymentsMatrixTab
         });
 
         createSorter((l1, l2) -> {
-            var avg1 = PaymentsAverageCalculator.calculateAveragePerQuarter(l1.getSum(), l1.getNoOfMonths());
-            var avg2 = PaymentsAverageCalculator.calculateAveragePerQuarter(l2.getSum(), l2.getNoOfMonths());
+            long avg1, avg2;
+
+            if (showOnlyFirstYear)
+            {
+                var m1 = Math.min(12, l1.getNoOfMonths());
+                var m2 = Math.min(12, l2.getNoOfMonths());
+
+                avg1 = PaymentsAverageCalculator.calculateAveragePerQuarter(sumFirstYear(l1), m1);
+                avg2 = PaymentsAverageCalculator.calculateAveragePerQuarter(sumFirstYear(l2), m2);
+            }
+            else
+            {
+                avg1 = PaymentsAverageCalculator.calculateAveragePerQuarter(l1.getSum(), l1.getNoOfMonths());
+                avg2 = PaymentsAverageCalculator.calculateAveragePerQuarter(l2.getSum(), l2.getNoOfMonths());
+            }
+
             return Long.compare(avg1, avg2);
         }).attachTo(records, column);
-
-        layout.setColumnData(column.getColumn(), new ColumnPixelData(200));
     }
 
 }

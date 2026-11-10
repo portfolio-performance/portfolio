@@ -67,7 +67,15 @@ public class ImportCSVHandler
             return;
         }
 
-        FilePathHelper helper = new FilePathHelper(part, UIConstants.Preferences.CSV_IMPORT_PATH);
+        // remember the path for the depot the import was triggered for
+        // (portfolio > account)
+        String qualifier = null;
+        if (portfolio != null)
+            qualifier = portfolio.getUUID();
+        else if (account != null)
+            qualifier = account.getUUID();
+
+        FilePathHelper helper = new FilePathHelper(part, UIConstants.Preferences.CSV_IMPORT_PATH, qualifier);
 
         FileDialog fileDialog = new FileDialog(shell, SWT.OPEN);
         fileDialog.setFilterNames(new String[] { Messages.CSVImportLabelFileCSV, Messages.CSVImportLabelFileAll });

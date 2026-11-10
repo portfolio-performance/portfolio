@@ -8,6 +8,7 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.feeRefund;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasAmount;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasCurrencyCode;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasDate;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasExDate;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasFees;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasForexGrossValue;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasGrossValue;
@@ -78,7 +79,7 @@ public class FindependentAGPDFExtractorTest
 
         // check buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2023-12-01T00:00"), hasShares(2), //
+                        hasDate("2023-12-01T00:00"), hasShares(2.00), //
                         hasSource("Kauf01.txt"), //
                         hasNote(null), //
                         hasAmount("CHF", 200.43), hasGrossValue("CHF", 200.08), //
@@ -112,7 +113,7 @@ public class FindependentAGPDFExtractorTest
 
         // check buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2023-12-12T00:00"), hasShares(1), //
+                        hasDate("2023-12-12T00:00"), hasShares(1.00), //
                         hasSource("Kauf02.txt"), //
                         hasNote(null), //
                         hasAmount("CHF", 800.19), hasGrossValue("CHF", 798.94), //
@@ -147,7 +148,7 @@ public class FindependentAGPDFExtractorTest
 
         // check buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2023-12-12T00:00"), hasShares(1), //
+                        hasDate("2023-12-12T00:00"), hasShares(1.00), //
                         hasSource("Kauf02.txt"), //
                         hasNote(null), //
                         hasAmount("CHF", 800.19), hasGrossValue("CHF", 798.94), //
@@ -186,7 +187,7 @@ public class FindependentAGPDFExtractorTest
 
         // check buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2023-08-11T00:00"), hasShares(117), //
+                        hasDate("2023-08-11T00:00"), hasShares(117.00), //
                         hasSource("Kauf03.txt"), //
                         hasNote(null), //
                         hasAmount("CHF", 912.74), hasGrossValue("CHF", 911.32), //
@@ -221,7 +222,7 @@ public class FindependentAGPDFExtractorTest
 
         // check buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2023-08-11T00:00"), hasShares(117), //
+                        hasDate("2023-08-11T00:00"), hasShares(117.00), //
                         hasSource("Kauf03.txt"), //
                         hasNote(null), //
                         hasAmount("CHF", 912.74), hasGrossValue("CHF", 911.32), //
@@ -260,7 +261,7 @@ public class FindependentAGPDFExtractorTest
 
         // check buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2023-08-11T00:00"), hasShares(58), //
+                        hasDate("2023-08-11T00:00"), hasShares(58.00), //
                         hasSource("Kauf04.txt"), //
                         hasNote(null), //
                         hasAmount("CHF", 491.16), hasGrossValue("CHF", 490.74), //
@@ -294,7 +295,7 @@ public class FindependentAGPDFExtractorTest
 
         // check buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2023-08-11T00:00"), hasShares(54), //
+                        hasDate("2023-08-11T00:00"), hasShares(54.00), //
                         hasSource("Kauf05.txt"), //
                         hasNote(null), //
                         hasAmount("CHF", 378.55), hasGrossValue("CHF", 377.93), //
@@ -329,7 +330,7 @@ public class FindependentAGPDFExtractorTest
 
         // check buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2023-08-11T00:00"), hasShares(54), //
+                        hasDate("2023-08-11T00:00"), hasShares(54.00), //
                         hasSource("Kauf05.txt"), //
                         hasNote(null), //
                         hasAmount("CHF", 378.55), hasGrossValue("CHF", 377.93), //
@@ -368,7 +369,7 @@ public class FindependentAGPDFExtractorTest
 
         // check buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2023-08-11T00:00"), hasShares(26), //
+                        hasDate("2023-08-11T00:00"), hasShares(26.00), //
                         hasSource("Kauf06.txt"), //
                         hasNote(null), //
                         hasAmount("CHF", 134.00), hasGrossValue("CHF", 133.75), //
@@ -403,7 +404,7 @@ public class FindependentAGPDFExtractorTest
 
         // check buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2023-08-11T00:00"), hasShares(26), //
+                        hasDate("2023-08-11T00:00"), hasShares(26.00), //
                         hasSource("Kauf06.txt"), //
                         hasNote(null), //
                         hasAmount("CHF", 134.00), hasGrossValue("CHF", 133.75), //
@@ -442,7 +443,7 @@ public class FindependentAGPDFExtractorTest
 
         // check buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2023-08-11T00:00"), hasShares(61), //
+                        hasDate("2023-08-11T00:00"), hasShares(61.00), //
                         hasSource("Kauf07.txt"), //
                         hasNote(null), //
                         hasAmount("CHF", 317.42), hasGrossValue("CHF", 316.89), //
@@ -477,7 +478,7 @@ public class FindependentAGPDFExtractorTest
 
         // check buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2023-08-11T00:00"), hasShares(61), //
+                        hasDate("2023-08-11T00:00"), hasShares(61.00), //
                         hasSource("Kauf07.txt"), //
                         hasNote(null), //
                         hasAmount("CHF", 317.42), hasGrossValue("CHF", 316.89), //
@@ -516,7 +517,7 @@ public class FindependentAGPDFExtractorTest
 
         // check buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2023-08-11T00:00"), hasShares(7), //
+                        hasDate("2023-08-11T00:00"), hasShares(7.00), //
                         hasSource("Kauf08.txt"), //
                         hasNote(null), //
                         hasAmount("CHF", 953.04), hasGrossValue("CHF", 952.28), //
@@ -550,7 +551,7 @@ public class FindependentAGPDFExtractorTest
 
         // check buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2023-08-11T00:00"), hasShares(12), //
+                        hasDate("2023-08-11T00:00"), hasShares(12.00), //
                         hasSource("Kauf09.txt"), //
                         hasNote(null), //
                         hasAmount("CHF", 1105.71), hasGrossValue("CHF", 1104.58), //
@@ -584,7 +585,7 @@ public class FindependentAGPDFExtractorTest
 
         // check buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2023-08-11T00:00"), hasShares(60), //
+                        hasDate("2023-08-11T00:00"), hasShares(60.00), //
                         hasSource("Kauf10.txt"), //
                         hasNote(null), //
                         hasAmount("CHF", 265.27), hasGrossValue("CHF", 264.82), //
@@ -619,7 +620,7 @@ public class FindependentAGPDFExtractorTest
 
         // check buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2023-08-11T00:00"), hasShares(60), //
+                        hasDate("2023-08-11T00:00"), hasShares(60.00), //
                         hasSource("Kauf10.txt"), //
                         hasNote(null), //
                         hasAmount("CHF", 265.27), hasGrossValue("CHF", 264.82), //
@@ -658,11 +659,85 @@ public class FindependentAGPDFExtractorTest
 
         // check buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2023-08-11T00:00"), hasShares(3), //
+                        hasDate("2023-08-11T00:00"), hasShares(3.00), //
                         hasSource("Kauf11.txt"), //
                         hasNote(null), //
                         hasAmount("CHF", 344.95), hasGrossValue("CHF", 344.64), //
                         hasTaxes("CHF", 0.26), hasFees("CHF", 0.05))));
+    }
+
+    @Test
+    public void testWertpapierKauf12()
+    {
+        var extractor = new FindependentAGPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf12.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "CHF");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00BFNM3G45"), hasWkn(null), hasTicker(null), //
+                        hasName("iShares MSCI USA Screened ETF"), //
+                        hasCurrencyCode("USD"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2026-03-19T00:00"), hasShares(142.00), //
+                        hasSource("Kauf12.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 1536.76), hasGrossValue("CHF", 1527.81), //
+                        hasForexGrossValue("USD", 1920.69), //
+                        hasTaxes("CHF", 2.29), hasFees("CHF", 6.42 + 0.24))));
+    }
+
+    @Test
+    public void testWertpapierKauf12WithSecurityInCHF()
+    {
+        var security = new Security("iShares MSCI USA Screened ETF", "CHF");
+        security.setIsin("IE00BFNM3G45");
+
+        var client = new Client();
+        client.addSecurity(security);
+
+        var extractor = new FindependentAGPDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf12.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, "CHF");
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2026-03-19T00:00"), hasShares(142.00), //
+                        hasSource("Kauf12.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 1536.76), hasGrossValue("CHF", 1527.81), //
+                        hasTaxes("CHF", 2.29), hasFees("CHF", 6.42 + 0.24), //
+                        check(tx -> {
+                            var c = new CheckCurrenciesAction();
+                            var s = c.process((PortfolioTransaction) tx, new Portfolio());
+                            assertThat(s, is(Status.OK_STATUS));
+                        }))));
     }
 
     @Test
@@ -692,11 +767,159 @@ public class FindependentAGPDFExtractorTest
 
         // check buy sell transaction
         assertThat(results, hasItem(sale( //
-                        hasDate("2023-12-12T00:00"), hasShares(7), //
+                        hasDate("2023-12-12T00:00"), hasShares(7.00), //
                         hasSource("Verkauf01.txt"), //
                         hasNote(null), //
                         hasAmount("CHF", 700.02), hasGrossValue("CHF", 701.12), //
                         hasTaxes("CHF", 1.05), hasFees("CHF", 0.05))));
+    }
+
+    @Test
+    public void testWertpapierVerkauf02()
+    {
+        var extractor = new FindependentAGPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf02.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "CHF");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00BFNM3G45"), hasWkn(null), hasTicker(null), //
+                        hasName("iShares MSCI USA Screened ETF"), //
+                        hasCurrencyCode("USD"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2026-04-02T00:00"), hasShares(96.00), //
+                        hasSource("Verkauf02.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 1016.83), hasGrossValue("CHF", 1022.81), //
+                        hasForexGrossValue("USD", 1278.91), //
+                        hasTaxes("CHF", 1.53), hasFees("CHF", 4.30 + 0.15))));
+    }
+
+    @Test
+    public void testWertpapierVerkauf02WithSecurityInCHF()
+    {
+        var security = new Security("iShares MSCI USA Screened ETF", "CHF");
+        security.setIsin("IE00BFNM3G45");
+
+        var client = new Client();
+        client.addSecurity(security);
+
+        var extractor = new FindependentAGPDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf02.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, "CHF");
+
+        // check buy sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2026-04-02T00:00"), hasShares(96.00), //
+                        hasSource("Verkauf02.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 1016.83), hasGrossValue("CHF", 1022.81), //
+                        hasTaxes("CHF", 1.53), hasFees("CHF", 4.30 + 0.15), //
+                        check(tx -> {
+                            var c = new CheckCurrenciesAction();
+                            var s = c.process((PortfolioTransaction) tx, new Portfolio());
+                            assertThat(s, is(Status.OK_STATUS));
+                        }))));
+    }
+
+    @Test
+    public void testWertpapierVerkauf03()
+    {
+        var extractor = new FindependentAGPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf03.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "CHF");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00BFNM3D14"), hasWkn(null), hasTicker(null), //
+                        hasName("iShares MSCI Europe Screened ETF"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2026-04-02T00:00"), hasShares(2.00), //
+                        hasSource("Verkauf03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 18.08), hasGrossValue("CHF", 18.19), //
+                        hasForexGrossValue("EUR", 19.73), //
+                        hasTaxes("CHF", 0.03), hasFees("CHF", 0.08 + 0.00))));
+    }
+
+    @Test
+    public void testWertpapierVerkauf03WithSecurityInCHF()
+    {
+        var security = new Security("iShares MSCI Europe Screened ETF", "CHF");
+        security.setIsin("IE00BFNM3D14");
+
+        var client = new Client();
+        client.addSecurity(security);
+
+        var extractor = new FindependentAGPDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf03.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, "CHF");
+
+        // check buy sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2026-04-02T00:00"), hasShares(2.00), //
+                        hasSource("Verkauf03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CHF", 18.08), hasGrossValue("CHF", 18.19), //
+                        hasTaxes("CHF", 0.03), hasFees("CHF", 0.08 + 0.00), //
+                        check(tx -> {
+                            var c = new CheckCurrenciesAction();
+                            var s = c.process((PortfolioTransaction) tx, new Portfolio());
+                            assertThat(s, is(Status.OK_STATUS));
+                        }))));
     }
 
     @Test
@@ -726,7 +949,8 @@ public class FindependentAGPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2023-09-13T00:00"), hasShares(58), //
+                        hasDate("2023-09-13T00:00"), hasExDate(null), //
+                        hasShares(58.00), //
                         hasSource("Dividende01.txt"), //
                         hasNote(null), //
                         hasAmount("CHF", 4.52), hasGrossValue("CHF", 6.96), //
@@ -760,7 +984,8 @@ public class FindependentAGPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2023-09-13T00:00"), hasShares(58), //
+                        hasDate("2023-09-13T00:00"), hasExDate(null), //
+                        hasShares(58.00), //
                         hasSource("Dividende02.txt"), //
                         hasNote(null), //
                         hasAmount("CHF", 5.22), hasGrossValue("CHF", 5.22), //
@@ -859,8 +1084,12 @@ public class FindependentAGPDFExtractorTest
         new AssertImportActions().check(results, "CHF");
 
         // assert transaction
-        assertThat(results, hasItem(fee(hasDate("2023-09-29"), hasAmount("CHF", 1.95), //
-                        hasSource("Depotgebuehren01.txt"), hasNote("Depotgebühren 01.07.2023 - 30.09.2023"))));
+        assertThat(results, hasItem(fee( //
+                        hasDate("2023-09-29"), //
+                        hasSource("Depotgebuehren01.txt"), //
+                        hasNote("Depotgebühren 01.07.2023 - 30.09.2023"), //
+                        hasAmount("CHF", 1.95), hasGrossValue("CHF", 1.95), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.00))));
     }
 
     @Test
@@ -883,9 +1112,12 @@ public class FindependentAGPDFExtractorTest
         new AssertImportActions().check(results, "CHF");
 
         // assert transaction
-        assertThat(results, hasItem(fee(hasDate("2023-10-10"), hasAmount("CHF", 2.45), //
-                        hasSource("Verwaltungsgebuehren01.txt"),
-                        hasNote("Verwaltungsgebühren 01.10.2023 - 31.12.2023"))));
+        assertThat(results, hasItem(fee( //
+                        hasDate("2023-10-10"), //
+                        hasSource("Verwaltungsgebuehren01.txt"), //
+                        hasNote("Verwaltungsgebühren 01.10.2023 - 31.12.2023"), //
+                        hasAmount("CHF", 2.45), hasGrossValue("CHF", 2.45), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.00))));
     }
 
     @Test
@@ -908,7 +1140,11 @@ public class FindependentAGPDFExtractorTest
         new AssertImportActions().check(results, "CHF");
 
         // assert transaction
-        assertThat(results, hasItem(feeRefund(hasDate("2023-10-10"), hasAmount("CHF", 2.20), //
-                        hasSource("Gebuehrenerstattung01.txt"), hasNote("findependent Gutschrift Q3"))));
+        assertThat(results, hasItem(feeRefund( //
+                        hasDate("2023-10-10"), //
+                        hasSource("Gebuehrenerstattung01.txt"), //
+                        hasNote("findependent Gutschrift Q3"), //
+                        hasAmount("CHF", 2.20), hasGrossValue("CHF", 2.20), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.00))));
     }
 }

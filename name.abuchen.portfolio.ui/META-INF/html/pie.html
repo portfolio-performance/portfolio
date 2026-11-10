@@ -28,6 +28,8 @@ var thePieChart = {
         this.height = pp.getInitialHeight();
         this.radius = (Math.min(this.width, this.height) / 2) - 10;
 
+        // start at 3 o'clock: rotating to 12 o'clock (0 .. 2*PI, see #5962)
+        // pushes the position labels into each other
         this.pie = d3.layout.pie()
             .startAngle(Math.PI / 2)
             .endAngle(2.5 * Math.PI)

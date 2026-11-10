@@ -123,6 +123,7 @@ public class ClientSecurityFilter implements ClientFilter
 
                 AccountTransaction copy = new AccountTransaction(t.getDateTime(), t.getCurrencyCode(), amount + taxes,
                                 t.getSecurity(), t.getType());
+                copy.setNote(t.getNote());
 
                 t.getUnits().filter(u -> u.getType() != Unit.Type.TAX).forEach(copy::addUnit);
 
@@ -166,6 +167,7 @@ public class ClientSecurityFilter implements ClientFilter
         pseudo.setDateTime(t.getDateTime());
         pseudo.setCurrencyCode(t.getCurrencyCode());
         pseudo.setSecurity(t.getSecurity());
+        pseudo.setNote(t.getNote());
         pseudo.setShares(t.getShares());
         pseudo.setType(targetType);
 

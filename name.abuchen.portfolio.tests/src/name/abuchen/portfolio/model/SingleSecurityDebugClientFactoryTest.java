@@ -28,7 +28,6 @@ public class SingleSecurityDebugClientFactoryTest
     private Security securityA;
     private Security securityB;
     private Account accountA;
-    private Account accountB;
     private Portfolio portfolio;
     private AttributeType attributeType;
 
@@ -67,7 +66,7 @@ public class SingleSecurityDebugClientFactoryTest
                         .addTo(client);
         accountA.setName("My Real Account");
 
-        accountB = new AccountBuilder(CurrencyUnit.EUR) //
+        new AccountBuilder(CurrencyUnit.EUR) //
                         .deposit_("2020-01-01", Values.Amount.factorize(5000)) //
                         .dividend("2020-04-01", Values.Amount.factorize(10), securityB) //
                         .addTo(client);

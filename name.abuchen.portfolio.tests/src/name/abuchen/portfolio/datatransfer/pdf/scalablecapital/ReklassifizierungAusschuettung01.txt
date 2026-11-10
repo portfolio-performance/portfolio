@@ -1,0 +1,41 @@
+PDFBox Version: 3.0.6
+Portfolio Performance Version: 0.82.1
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+Scalable Capital Bank GmbH • Seitzstraße 8e • 80538 München • Deutschland 
+VlMpiu zhwxUVPl
+vWDVvxooKNsROjGv 06 
+81237 kGUdVGSTpg Datum 07.04.2026
+Deutschland Seite 1 / 2
+Reklassifizierung einer Ausschüttung 
+Für 01.10.2025 - 30.09.2026 
+Berechtigtes Wertpapier Realty Income Corp. 
+ISIN US7561091049 
+Berechtigte Anzahl 1,776463 
+Ex Tag 28.11.2025 
+Verrechnungskonto wJ15726314137802777869 (oVfrFjCnJSB) 
+Kontobewegung 
+Buchung Wertstellung Typ Betrag / Stk. Berechtigte Anzahl Gesamt 
+Wechselkurs 
+07.04.2026 08.04.2026 Gutschrift 0,09063285 USD 1,776463 0,14 EUR 
+USD / EUR 1,1732 
+Steuern -0,03 EUR
+Gesamtbetrag 0,11 EUR
+Ermittlung steuerrelevante Erträge
+Typ Betrag
+Gewinn oder Verlust 0,14 EUR
+Zu versteuern 0,14 EUR
+Scalable Capital Bank GmbH HRB 217778 Geschäftsführer: Aufsichtsrat: Seite 
+Seitzstraße 8e Amtsgericht München Florian Prucker, Martin Krebs, Patrick Olson (Vorsitzender) 
+80538 München USt.-Id. Nr.: DE300434774 Dirk Franzmeyer,
+Andreas Schranzhofer 1 / 2
+Reklassifizierung einer Ausschüttung 
+Anfallende Steuern 
+Typ Betrag
+Kapitalertragsteuer 0,03 EUR
+Solidaritätszuschlag 0,00 EUR
+Anfallende Steuern 0,03 EUR
+Scalable Capital Bank GmbH HRB 217778 Geschäftsführer: Aufsichtsrat: Seite 
+Seitzstraße 8e Amtsgericht München Florian Prucker, Martin Krebs, Patrick Olson (Vorsitzender) 
+80538 München USt.-Id. Nr.: DE300434774 Dirk Franzmeyer,
+Andreas Schranzhofer 2 / 2

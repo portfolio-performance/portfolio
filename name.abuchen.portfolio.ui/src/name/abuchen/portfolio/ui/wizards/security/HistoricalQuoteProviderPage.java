@@ -43,11 +43,13 @@ import name.abuchen.portfolio.online.impl.MFAPIQuoteFeed;
 import name.abuchen.portfolio.online.impl.PortfolioPerformanceFeed;
 import name.abuchen.portfolio.online.impl.PortfolioReportQuoteFeed;
 import name.abuchen.portfolio.online.impl.QuandlQuoteFeed;
+import name.abuchen.portfolio.online.impl.SiftingQuoteFeed;
 import name.abuchen.portfolio.online.impl.TwelveDataQuoteFeed;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.util.BindingHelper;
 import name.abuchen.portfolio.ui.util.QuotesTableViewer;
+import name.abuchen.portfolio.ui.util.viewers.SafeTableColumnLayout;
 
 public class HistoricalQuoteProviderPage extends AbstractQuoteProviderPage
 {
@@ -215,7 +217,7 @@ public class HistoricalQuoteProviderPage extends AbstractQuoteProviderPage
     protected void createSampleArea(Composite container)
     {
         Composite composite = new Composite(container, SWT.NONE);
-        TableColumnLayout layout = new TableColumnLayout();
+        TableColumnLayout layout = new SafeTableColumnLayout();
         composite.setLayout(layout);
 
         tableSampleData = new QuotesTableViewer(composite);
@@ -270,8 +272,12 @@ public class HistoricalQuoteProviderPage extends AbstractQuoteProviderPage
                             + getModel().getTickerSymbol() //
                             + getModel().getCurrencyCode()
                             + String.valueOf(getModel().getFeedProperty(CoinGeckoQuoteFeed.COINGECKO_COIN_ID));
+        else if (SiftingQuoteFeed.ID.equals(getFeed()))
+            return SiftingQuoteFeed.ID //
+                            + getModel().getTickerSymbol() //
+                            + String.valueOf(getModel().getFeedProperty(SiftingQuoteFeed.SIFTING_ASSET_CLASS));
         else if (MFAPIQuoteFeed.ID.equals(getFeed()))
-            return MFAPIQuoteFeed.ID + String.valueOf(getModel().getFeedProperty(CoinGeckoQuoteFeed.COINGECKO_COIN_ID));
+            return MFAPIQuoteFeed.ID + String.valueOf(getModel().getFeedProperty(MFAPIQuoteFeed.SCHEME_CODE));
         else if (EODHistoricalDataQuoteFeed.ID.equals(getFeed()))
             return EODHistoricalDataQuoteFeed.ID + getModel().getTickerSymbol();
         else if (QuandlQuoteFeed.ID.equals(getFeed()))

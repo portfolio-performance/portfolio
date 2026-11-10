@@ -1,0 +1,43 @@
+PDFBox Version: 3.0.5
+Portfolio Performance Version: 0.78.1
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+$FORM=D5012,01,700000004104998681,0,0001,FD501200.PUBXL,83278,18.07.2025,ODEP,IE00BFNM3J75,6120,6120000000011508,J,100001,
+Es betreut Sie:
+
+ServiceCenter:
+Telefon: +49 9281 7258-3000
+Telefax: +49 9281 7258-46118
+E-Mail: info@fondsdepotbank.de
+Herrn - Servicezeiten:
+Frau - Mo. - Fr.: 8 Uhr bis 20 Uhr
+-
+- Datum: Hof, 18. Juli 2025
+Depotabrechnung Auszug Nr. 5 Seite 1/1
+Fondsdepot Online Nr. -
+Depotinhaber/-in: -
+Fondsbezeichnung: iSharesIV MSCIWoScr UCETFUa
+ISIN/WKN: IE00BFNM3J75/A2N6TD Ertragsverwendung: thesaurierend
+Verwahrart/Lagerort: Wertpapierrechnung/Irland
+Fondsklasse/Teilfreistellung: Aktienfonds/30%
+Transaktion Anlagebetrag Wertermittlungstag Preis je Anteil 3) Abgerechnete Anteile
+Entgelt 1) Währungsbetrag Ausgabeaufschlag Bestand alt
+Einzahlbetrag Devisenkurs 2) Rabatt 3) Bestand neu
+Kauf 24,86 EUR 16.07.2025 11,1035 USD +2,590
+-0,15 EUR 28,76 USD 0,00 EUR 10,933
+25,00 EUR 1,157098 USD 100 % 13,523
+1) ETF Transaktionsentgelt 0,6%
+2) enthält Konvertierungsmarge in Höhe von 0,50% des Devisenkurses
+3) Rücknahmepreis zzgl. Ausgabeaufschlag des Fonds; Berücksichtigung der vertragsgemäßen Konditionen
+Hinterlegter Freistellungsauftrag 300,00 EUR Verfügbarer Freistellungsauftrag 299,55 EUR
+Konto- und Depotabrechnungen, Depot- und Erträgnisaufstellungen, sonstige Auszüge und Anzeigen über die Ausführung von Aufträgen sind
+auf ihre Richtigkeit und Vollständigkeit unverzüglich zu überprüfen. Etwaige Einwendungen sind unverzüglich geltend zu machen. Die Unter-
+lassung rechtzeitiger Einwendungen gilt als Genehmigung. Die vorstehenden girosammelverwahrten/gegen Wertpapierrechnung verwahrten
+Anteile oder Aktien an Investmentvermögen haben wir Ihrem Depot bei Kauf gutgeschrieben/bei Verkauf belastet.
+Dieses Schreiben wurde maschinell erstellt und ist ohne Unterschrift gültig.
+Fondsdepot Bank – Amtsgericht München Kontakt: Vorstand:
+eine Marke der FNZ Bank SE HRB 289 271 Tel.: +49 9281 7258-3000 Peter Karst (Vorsitzender),
+Postanschrift: 95025 Hof USt-IdNr.: Fax: +49 9281 7258-46118 Philip Laucks,
+Hausanschrift: DE 813330104 E-Mail: info@fondsdepotbank.de Pamela Schmidt-Fischbach
+Windmühlenweg 12 Gläubiger-ID Web: www.fondsdepotbank.de Aufsichtsratsvorsitzende:
+95030 Hof DE68ZZZ00000025032 Zvezdana Seeger

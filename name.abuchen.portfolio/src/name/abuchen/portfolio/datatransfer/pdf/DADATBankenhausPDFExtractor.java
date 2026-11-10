@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
 import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetGrossUnit;
+import static name.abuchen.portfolio.util.TextUtil.concatenate;
 import static name.abuchen.portfolio.util.TextUtil.replaceMultipleBlanks;
 import static name.abuchen.portfolio.util.TextUtil.trim;
 
@@ -15,6 +16,7 @@ import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.money.Money;
+import name.abuchen.portfolio.money.Values;
 
 @SuppressWarnings("nls")
 public class DADATBankenhausPDFExtractor extends AbstractPDFExtractor
@@ -304,16 +306,30 @@ public class DADATBankenhausPDFExtractor extends AbstractPDFExtractor
                         // 16.12 Kauf aus Dauerauftrag            Depot    7800000000/20191216-45514943 18.12 99,68-
                         // ISIN LU0378449770 COMST.-NASDAQ-100 U.ETF I               1,22000 STK
                         // Kurs                     80,340000  KURSWERT               -98,01 EUR
+                        //
+                        // 19.11 Kauf                             Depot     123456246/20241119-55110950 21.11 15.812,91-
+                        // ISIN XS1458408561 1.625% GOLDM.S.GRP 16/26 MT        16.000,00000 EUR
+                        // Kurs                     98,195000  Kurswert           -15.711,20 EUR
                         // @formatter:on
-                        .section("date", "isin", "name", "shares", "currency") //
+                        .section("date", "isin", "name", "shares", "notation", "currency") //
                         .documentContext("year") //
                         .match("^(?<date>[\\d]{1,2}\\.[\\d]{1,2}) (Kauf|Kauf aus Dauerauftrag|Verkauf)[\\s]{1,}Depot[\\s]{1,}[\\d]+\\/[\\d]+\\-[\\d]+ [\\d]{1,2}\\.[\\d]{1,2} [\\.,\\d]+(\\-)?$") //
-                        .match("^ISIN (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) (?<name>.*)[\\s]{1,}(?<shares>[\\.,\\d]+) STK$") //
+                        .match("^ISIN (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) (?<name>.*)[\\s]{1,}(?<shares>[\\.,\\d]+) (?<notation>[A-Z]{3})$") //
                         .match("^(?i).* KURSWERT[\\s]{1,}(\\-)?[\\.,\\d]+ (?<currency>[A-Z]{3})$") //
                         .assign((t, v) -> {
                             v.put("name", replaceMultipleBlanks(v.get("name")));
                             t.setDate(asDate(v.get("date") + "." + v.get("year")));
-                            t.setShares(asShares(v.get("shares")));
+
+                            if (!"STK".equalsIgnoreCase(v.get("notation")))
+                            {
+                                // Percentage quotation, workaround for bonds
+                                var shares = asBigDecimal(v.get("shares"));
+                                t.setShares(Values.Share.factorize(shares.doubleValue() / 100));
+                            }
+                            else
+                            {
+                                t.setShares(asShares(v.get("shares")));
+                            }
 
                             t.setSecurity(getOrCreateSecurity(v));
                         })
@@ -346,6 +362,16 @@ public class DADATBankenhausPDFExtractor extends AbstractPDFExtractor
                             var gross = rate.convert(rate.getBaseCurrency(), fxGross);
 
                             checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
+                        })
+
+                        // @formatter:off
+                        // Stückzinsen             -83,34 EUR  Handelsspesen          -16,27 EUR
+                        // @formatter:on
+                        .section("note1", "note2").optional() //
+                        .match("^(?<note1>St.ckzinsen)[\\s]{1,}\\-(?<note2>[\\-\\.,\\d]+ [A-Z]{3}).*$") //
+                        .assign((t, v) -> {
+                            t.setNote(concatenate(t.getNote(), v.get("note1"), " | "));
+                            t.setNote(concatenate(t.getNote(), v.get("note2"), " "));
                         })
 
                         .wrap(BuySellEntryItem::new);
@@ -424,14 +450,38 @@ public class DADATBankenhausPDFExtractor extends AbstractPDFExtractor
                                                             t.setShares(asShares(v.get("shares")));
 
                                                             t.setSecurity(getOrCreateSecurity(v));
+                                                        }),
+                                        // @formatter:off
+                                        // 04.06 Ertrag              2,8750 %     Depot     639456246/20250603-64126838 03.06 270,97
+                                        // ISIN XS1074144871 2.875% GOLDM.S.GRP 14/26 MT        13.000,00000 EUR
+                                        // Kurs                      2,875000  Zinsen/Dividenden       373,75 EUR
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("date", "isin", "name", "shares", "currency") //
+                                                        .documentContext("year") //
+                                                        .match("^(?i)(?<date>[\\d]{1,2}\\.[\\d]{1,2}) Ertrag[\\s]{1,}[\\.,\\d]+ %[\\s]{1,}Depot[\\s]{1,}[\\d]+\\/[\\d]+\\-[\\d]+ [\\d]{1,2}\\.[\\d]{1,2} [\\.,\\d]+(\\-)?$") //
+                                                        .match("^(?i)ISIN (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) (?<name>.*)[\\s]{1,}(?<shares>[\\.,\\d]+) [A-Z]{3}$") //
+                                                        .match("^(?i).* Zinsen\\/Dividenden[\\s]{1,}(\\-)?[\\.,\\d]+ (?<currency>[A-Z]{3})$") //
+                                                        .assign((t, v) -> {
+                                                            v.put("name", replaceMultipleBlanks(v.get("name")));
+                                                            t.setDateTime(asDate(v.get("date") + "." + v.get("year")));
+
+                                                            // @formatter:off
+                                                            // Percentage quotation, workaround for bonds
+                                                            // @formatter:on
+                                                            var shares = asBigDecimal(v.get("shares"));
+                                                            t.setShares(Values.Share.factorize(shares.doubleValue() / 100));
+
+                                                            t.setSecurity(getOrCreateSecurity(v));
                                                         }))
 
                         // @formatter:off
                         // 30.07 Kauf                             Depot    780680000/20200730-45125411 31.07 1.250,01-
+                        // 04.06 Ertrag              2,8750 %     Depot     639456246/20250603-64126838 03.06 270,97
                         // @formatter:on
                         .section("amount") //
                         .documentContext("currency") //
-                        .match("^[\\d]{1,2}\\.[\\d]{1,2} Ertrag[\\s]{1,}Depot[\\s]{1,}[\\d]+\\/[\\d]{4}[\\d]+\\-[\\d]+ [\\d]{1,2}\\.[\\d]{1,2} (?<amount>[\\.,\\d]+)(\\-)?$") //
+                        .match("^[\\d]{1,2}\\.[\\d]{1,2} Ertrag[\\s]{1,}([\\.,\\d]+ %[\\s]{1,})?Depot[\\s]{1,}[\\d]+\\/[\\d]{4}[\\d]+\\-[\\d]+ [\\d]{1,2}\\.[\\d]{1,2} (?<amount>[\\.,\\d]+)(\\-)?$") //
                         .assign((t, v) -> {
                             t.setCurrencyCode(v.get("currency"));
                             t.setAmount(asAmount(v.get("amount")));
@@ -888,6 +938,27 @@ public class DADATBankenhausPDFExtractor extends AbstractPDFExtractor
                                                             t.setCurrencyCode(v.get("currency"));
                                                             t.setAmount(asAmount(v.get("amount")));
                                                             t.setNote(v.get("note"));
+                                                        }),
+                                        // @formatter:off
+                                        // 04.06 IBAN: AT39 1234 5678 1234 5678 04.06 270,00-
+                                        // Max Mustermann
+                                        // EIGENÜBERTRAG
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("date", "amount", "note") //
+                                                        .documentContext("year", "currency") //
+                                                        .match("^(?i)(?<date>[\\d]{1,2}\\.[\\d]{1,2}) IBAN: .* [\\d]{1,2}\\.[\\d]{1,2} (?<amount>[\\.,\\d]+)\\-$") //
+                                                        .match("^(?<note>.*)$") //
+                                                        .assign((t, v) -> {
+                                                            // @formatter:off
+                                                            // Change from DEPOSIT to REMOVAL
+                                                            // @formatter:on
+                                                            t.setType(AccountTransaction.Type.REMOVAL);
+
+                                                            t.setDateTime(asDate(v.get("date") + "." + v.get("year")));
+                                                            t.setCurrencyCode(v.get("currency"));
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                            t.setNote(v.get("note"));
                                                         }))
 
                         .wrap(t -> {
@@ -984,6 +1055,13 @@ public class DADATBankenhausPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("tax", "currency").optional() //
                         .match("^(?i)KEST[\\s]{1,}\\-(?<tax>[\\-\\.,\\d]+) (?<currency>[A-Z]{3}).*$") //
+                        .assign((t, v) -> processTaxEntries(t, v, type))
+
+                        // @formatter:off
+                        // Kapitalertragsteuer    -102,78 EUR
+                        // @formatter:on
+                        .section("tax", "currency").optional() //
+                        .match("^(?i)Kapitalertragsteuer[\\s]{1,}\\-(?<tax>[\\-\\.,\\d]+) (?<currency>[A-Z]{3}).*$") //
                         .assign((t, v) -> processTaxEntries(t, v, type));
     }
 

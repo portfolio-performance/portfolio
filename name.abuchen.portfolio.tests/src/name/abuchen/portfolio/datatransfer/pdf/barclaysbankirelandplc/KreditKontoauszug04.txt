@@ -1,0 +1,113 @@
+PDFBox Version: 3.0.7
+Portfolio Performance Version: 0.86.2.qualifier
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+Barclays Bank Ireland PLC
+Hamburg Branch
+Gasstraße 4c
+22761 Hamburg
+Herrn
+Vorname Nachname Kundenservice
+Adress Str. 1 Tel: (0 40) 8 90 99-866
+01234 STADT Mo.-Fr. 8 - 20 Uhr
+Fax: (0 40) 8 90 99 - 298
+E-Mail: service@barclaycard.de
+Bei Kartenverlust
+Tel: (0 40) 8 90 99 - 877
+Produkt ID: 1234567890
+Kontoübersicht vom 18. August 2020
+Abrechnungszeitraum: 20.07.2020 - 18.08.2020 Alter Saldo: EUR           364,81+
+Barclaycard Kontonr.: 1234567890 Neuer Saldo: EUR           388,00 -
+IBAN: DE12 3456 7800 1234 5678 90 Kreditrahmen: EUR         2.800,00
+BIC: BARCDEHAXXX Offener Verfügungsrahmen: EUR         2.412,00
+Schon gewusst: Wir bieten auch Ratenkredite an
+Unser Ratenkredit gibt Ihnen Spielraum für Ihre Ideen. Und ist für Sie als Barclaycard Kunde besonders einfach und
+schnell. Gern erstellen wir Ihnen ein kostenloses und unverbindliches Angebot.
+Alle Informationen finden Sie mit einem Klick auf barclaycard.de/kredit
+Konto-Saldo und Rückzahlung
+Bezeichnung/Individueller Verwendungszweck Neuer Saldo Zahlungsmodalität Nächste Zahlung
+(EUR) (EUR)
+Allgemeine Umsätze    388,00- 2,0% (mind. EUR 15,00)      15,00
+Gesamt (EUR)    388,00-      15,00
+Überweisen Sie bitte mindestens EUR 15,00 auf Ihr Konto mit der IBAN DE12 3456 7800 1234 5678 90 und dem
+BIC BARCDEHAXXX. Bitte berücksichtigen Sie, dass der Betrag bis spätestens 15.09.2020 auf Ihrem
+Barclaycard-Konto verbucht sein muss.
+Ihre aktuelle Zahlungsmodalität können Sie jederzeit im Online-Banking oder telefonisch ändern.
+Tipp: Begleichen Sie Ihre allgemeinen Umsätze von EUR 388,00 in 12 Monatsraten à EUR 33,21 zu einem Sollzins
+von 4,99% p.a. Richten Sie Ihren Barclaycard Ratenkauf bis zum 10.09.2020 im Barclaycard Online-Banking ein.
+Weitere Informationen finden Sie auf barclaycard.de/ratenkauf
+         Seite 1 von 3 Bitte wenden
+Umsatzübersicht
+Beleg- Buchungs-/ Beschreibung Karte Betrag (EUR)
+datum Valutadatum
+Alter Saldo vom 19. Juli 2020            364,81+
+Hauptkarte/n, Vorname Nachname
+19.07.2020 20.07.2020 Onlineshop Umsatz      123-456-7890  LU Visa             89,94-
+18.07.2020 20.07.2020 LADEN1                 MUENCHEN      DE Visa A             45,00-
+19.07.2020 20.07.2020 Onlineshop3 Umsatz     Luxembourg    LU Visa            187,04+
+ORIGINAL UMSATZ USD         214,09
+WECHSELKURS 1 EUR =         1,144 USD
+18.07.2020 20.07.2020 Onlineshop2 Umsatz     EXAMPLE.COM   LU Visa             38,80-
+20.07.2020 21.07.2020 Onlineshop2 Umsatz     EXAMPLE.COM   LU Visa             40,89-
+21.07.2020 22.07.2020 Onlineshop Umsatz      123-456-7890  LU Visa             58,99-
+22.07.2020 23.07.2020 LADEN2                 MÜNCHEN       DE Visa A              7,61-
+23.07.2020 24.07.2020 Onlineshop Umsatz      123-456-7890  LU Visa             50,77-
+24.07.2020 25.07.2020 Onlineshop Umsatz      123-456-7890  LU Visa             32,75-
+24.07.2020 25.07.2020 LADEN2                 MÜNCHEN       DE Visa A             18,69-
+25.07.2020 27.07.2020 LADEN3                 MUENCHEN      DE Visa             17,40-
+25.07.2020 27.07.2020 LADEN2                 MÜNCHEN       DE Visa A             18,61-
+30.07.2020 31.07.2020 LADEN 3 weitweg        Eching        DE Visa             96,45-
+30.07.2020 31.07.2020 Laden 4                ECHING        DE Visa A             50,95-
+01.08.2020 03.08.2020 Laden 5                Muenchen      DE Visa A             19,49-
+01.08.2020 03.08.2020 LADEN2                 MÜNCHEN       DE Visa A              9,80-
+04.08.2020 05.08.2020 Onlineshop2 Umsatz     EXAMPLE.COM   LU Visa             38,98-
+04.08.2020 05.08.2020 Onlineshop2 Umsatz     EXAMPLE.COM   LU Visa             12,42-
+06.08.2020 07.08.2020 Onlineshop Umsatz      123-456-7890  LU Visa             38,70-
+08.08.2020 10.08.2020 Laden 6                MUENCHEN      DE Visa A             13,21-
+08.08.2020 10.08.2020 Laden 4                ECHING        DE Visa A             22,91-
+08.08.2020 10.08.2020 Onlineshop2 Umsatz     EXAMPLE.COM   LU Visa             73,77-
+08.08.2020 10.08.2020 LADEN2                 MÜNCHEN       DE Visa A             24,49-
+11.08.2020 12.08.2020 Onlineshop Umsatz      123-456-7890  LU Visa             19,99-
+11.08.2020 12.08.2020 Onlineshop Umsatz      123-456-7890  LU Visa             19,98+
+17.08.2020 18.08.2020 Onlineshop2 Umsatz     EXAMPLE.COM   LU Visa            119,22-
+Neuer Saldo am 18. August 2020            388,00-
+Hauptkarte/n, Vorname Nachname
+Umsätze Visa Karten-Nr. 491234XXXXXX7890  EUR           752,81
+         Seite 2 von 3 Bitte wenden
+Zinssätze
+Allgemeine Umsätze
+Allgemeine Umsätze sind alle Umsätze, für deren Rückzahlung Sie keinen Ratenkauf eingerichtet haben. Für diese
+allgemeinen Umsätze gelten folgende Sollzinssätze:
+Sollzinsen bei Einkäufen und Überweisungen (einschl. möglicher Gebühren) 15,23 % p.a.
+Sollzinsen bei Barabhebungen (einschl. möglicher Gebühren) 16,94 % p.a.
+Sofern Sie alle allgemeinen Umsätze bis zum 15.09.2020 vollständig zurückgezahlt haben, fallen die oben
+genannten Zinsen nicht an. Bei Teilzahlung werden Zinsen taggenau ab dem Buchungs-/Valutadatum berechnet.
+Barclaycard Ratenkauf-Optionen
+Für größere Umsätze können wir Ihnen einen Ratenkauf gemäß unseren AGB anbieten. Diesen können Sie einfach
+im Online-Banking einrichten. Voraussetzung ist, dass Ihr Barclaycard Kreditkarten-Konto zum Zeitpunkt der
+Einrichtung ordnungsgemäß geführt ist, das heißt insbesondere: Es darf nicht im Verzug sein. Weitere
+Informationen sowie Bedingungen können Sie jederzeit auf barclaycard.de/ratenkauf einsehen.
+Für folgende Umsätze aus dieser Kontoübersicht können Sie einen Ratenkauf einrichten:
+Belegdatum Beschreibung Betrag (EUR) Einrichtung
+möglich bis
+30.07.2020 LADEN 3 weitweg        Eching        DE             96,45- 10.09.2020
+17.08.2020 EXAMPLE.COM            EXAMPLE.COM   LU            119,22- 10.09.2020
+Für Umsätze in den unten genannten Monaten können Sie Ratenkäufe mit folgenden Konditionen einrichten:
+Belegdatum Umsatzart/Händler Laufzeit Sollzins p.a.
+im (betragsabhängig)
+August Gesamte Kontoübersicht ab 95 Euro 6 - 24 Monate  4,99%
+September Gesamte Kontoübersicht ab 95 Euro 6 - 24 Monate  4,99%
+August Einzelne Umsätze und Überweisungen ab 95 Euro 6 - 24 Monate  4,99%
+September Einzelne Umsätze und Überweisungen ab 95 Euro 6 - 24 Monate  4,99%
+Wichtige Hinweise
+Bitte überprüfen Sie Ihre Kontoübersicht. Eventuelle Beanstandungen können Sie uns schnell und sicher über die
+Nachrichtfunktion des Online-Banking oder in sonstiger Textform mitteilen, z.B. per Post oder Fax an die Nummer
+040 89099-285. Bitte nennen Sie den Reklamationsgrund und erheben Sie Ihre Einwendung innerhalb von 6
+Wochen nach Zugang der Kontoübersicht. Es genügt die Absendung innerhalb der Frist. Das Unterlassen
+rechtzeitiger Einwendungen gilt als Genehmigung.
+Guthaben auf Ihrem Konto sind als Einlagen nach Maßgabe des Einlagensicherungsgesetzes
+entschädigungsfähig. Nähere Informationen finden Sie im "Informationsbogen für Einleger" auf barclaycard.de
+unter "AGB & Dokumente".
+Vielen Dank, dass Sie Ihre Barclaycard Kreditkarten eingesetzt haben!
+         Seite 3 von 3
+

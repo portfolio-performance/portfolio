@@ -16,6 +16,7 @@ import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.widgets.Composite;
 
 import name.abuchen.portfolio.datatransfer.Extractor;
 import name.abuchen.portfolio.datatransfer.Extractor.Item;
@@ -222,6 +223,30 @@ public final class ImportExtractedItemsWizard extends Wizard
                         });
 
         AbstractWizardPage.attachPageListenerTo(getContainer());
+    }
+
+    @Override
+    public void createPageControls(Composite pageContainer)
+    {
+        // Create the controls of the review pages up front (there are only a
+        // few of them: one per detected bank plus the error page), but not
+        // those of the manual entry pages: there is one such page per
+        // unrecognized PDF document and each holds a PDF viewer plus a table,
+        // i.e. dozens of operating system widget handles. Importing a few
+        // hundred documents would create them all at once and exhaust the
+        // handle limit, so the wizard fails to even open with "SWTError: No
+        // more handles".
+        //
+        // Instead the manual pages create their controls on demand when the
+        // user navigates to them (WizardDialog#updateForPage creates the
+        // control of a page whose getControl() is null) and dispose them again
+        // when the user leaves (ManualTransactionEntryPage#afterPage), which
+        // bounds the number of handles regardless of the number of documents.
+        for (IWizardPage page : getPages())
+        {
+            if (!(page instanceof ManualTransactionEntryPage))
+                page.createControl(pageContainer);
+        }
     }
 
     @Override

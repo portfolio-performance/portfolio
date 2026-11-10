@@ -1,0 +1,51 @@
+PDFBox Version: 3.0.5
+Portfolio Performance Version: 0.80.3
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+$FORM=D5012,01,700000004104276791,0,0001,FD501200.PUBXL,01591,12.11.2025,STDDEP,LU0187079347,5050,5050000000094197,J,100001,
+Es betreut Sie:
+TNhxNg jMD
+vA gBQHPsLFiB 51
+14131 xQVVv
+Telefon: +49 3896 659624
+ServiceCenter:
+Telefon: +49 9281 7258-3000
+Telefax: +49 9281 7258-46118
+E-Mail: info@fondsdepotbank.de
+Frau Servicezeiten:
+jpyOv OXLsT Mo. - Fr.: 8 Uhr bis 20 Uhr
+Abcstr. 864i
+75442 dXiHC Datum: Hof, 12. November 2025
+Depotabrechnung Auszug Nr. 6 Seite 1/1
+Fondsdepot Nr. 4420459056
+Depotinhaber/-in: RhIhE XdZxk
+Fondsbezeichnung: Robeco GlobConsTrend D EUR
+ISIN/WKN: LU0187079347/A0CA0W Ertragsverwendung: thesaurierend
+Verwahrart/Lagerort: Wertpapierrechnung/Luxemburg
+Fondsklasse/Teilfreistellung: Aktienfonds/30%
+Transaktion Anlagebetrag Wertermittlungstag Preis je Anteil 1) Abgerechnete Anteile
+Entgelt Währungsbetrag Ausgabeaufschlag Bestand alt
+Einzahlbetrag Devisenkurs Rabatt 1) Bestand neu
+Kauf 50,00 EUR 15.09.2025 400,2271 EUR +0,125
+0,00 EUR 1,43 EUR 0,000
+50,00 EUR 40 % 0,125
+Lastschrifteinzug 2): IBAN: Fz52 4141 7320 5484 5750 48 BIC: SgUgIdbzPZl Mandatsreferenz: 57121159k1611182950
+Kauf 50,00 EUR 15.10.2025 397,4255 EUR +0,126
+0,00 EUR 1,38 EUR 0,125
+50,00 EUR 40 % 0,251
+Lastschrifteinzug 2): IBAN: Na17 0580 0809 1340 2998 80 BIC: EgvFMMuvFWC Mandatsreferenz: 05092980l2382499631
+1) Rücknahmepreis zzgl. Ausgabeaufschlag des Fonds; Berücksichtigung der vertragsgemäßen Konditionen
+2) Wir ziehen/zogen den Einzahlbetrag frühestens 2 Tage nach dem Ausführungstermin mit der Gläubiger-ID DE68ZZZ00000025032 von o.g.
+Bankverbindung ein. Bei abweichendem Kontoinhaber bitten wir um Weiterleitung der Information an den Zahlungspflichtigen.
+Hinterlegter Freistellungsauftrag 625,00 EUR Verfügbarer Freistellungsauftrag 0,00 EUR
+Konto- und Depotabrechnungen, Depot- und Erträgnisaufstellungen, sonstige Auszüge und Anzeigen über die Ausführung von Aufträgen sind
+auf ihre Richtigkeit und Vollständigkeit unverzüglich zu überprüfen. Etwaige Einwendungen sind unverzüglich geltend zu machen. Die Unter-
+lassung rechtzeitiger Einwendungen gilt als Genehmigung. Die vorstehenden girosammelverwahrten/gegen Wertpapierrechnung verwahrten
+Anteile oder Aktien an Investmentvermögen haben wir Ihrem Depot bei Kauf gutgeschrieben/bei Verkauf belastet.
+Dieses Schreiben wurde maschinell erstellt und ist ohne Unterschrift gültig.
+Fondsdepot Bank – Amtsgericht München Kontakt: Vorstand:
+eine Marke der FNZ Bank SE HRB 289 271 Tel.: +49 9281 7258-3000 Peter Karst (Vorsitzender),
+Postanschrift: USt-IdNr.: Fax: +49 9281 7258-46118 Jürgen Fiedler, Philip Laucks,
+95025 Hof DE 813330104 E-Mail: info@fondsdepotbank.de Pamela Schmidt-Fischbach
+Gläubiger-ID Web: www.fondsdepotbank.de Aufsichtsratsvorsitzende:
+DE68ZZZ00000025032 Zvezdana Seeger

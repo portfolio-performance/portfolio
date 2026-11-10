@@ -23,6 +23,9 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.ScrolledComposite;
+import org.eclipse.swt.events.ControlAdapter;
+import org.eclipse.swt.events.ControlEvent;
 import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -130,6 +133,8 @@ public class AttributesPage extends AbstractPage implements IMenuListener
     private final EditSecurityModel model;
     private final BindingHelper bindings;
 
+    private ScrolledComposite scrolledComposite;
+    private Composite content;
     private Composite attributeContainer;
     private Menu menu;
 
@@ -143,11 +148,17 @@ public class AttributesPage extends AbstractPage implements IMenuListener
     @Override
     public void createControl(Composite parent)
     {
-        Composite composite = new Composite(parent, SWT.NULL);
-        setControl(composite);
-        GridLayoutFactory.fillDefaults().numColumns(1).applyTo(composite);
+        scrolledComposite = new ScrolledComposite(parent, SWT.H_SCROLL | SWT.V_SCROLL);
+        setControl(scrolledComposite);
 
-        attributeContainer = new Composite(composite, SWT.NULL);
+        content = new Composite(scrolledComposite, SWT.NULL);
+        GridLayoutFactory.fillDefaults().numColumns(1).applyTo(content);
+
+        scrolledComposite.setContent(content);
+        scrolledComposite.setExpandVertical(true);
+        scrolledComposite.setExpandHorizontal(true);
+
+        attributeContainer = new Composite(content, SWT.NULL);
         GridDataFactory.fillDefaults().grab(true, false).applyTo(attributeContainer);
         GridLayoutFactory.fillDefaults().numColumns(3).margins(5, 5).applyTo(attributeContainer);
 
@@ -155,7 +166,7 @@ public class AttributesPage extends AbstractPage implements IMenuListener
             addAttributeBlock(attributeContainer, attribute);
 
         // add button
-        final Button addButton = new Button(composite, SWT.PUSH);
+        final Button addButton = new Button(content, SWT.PUSH);
         addButton.setImage(Images.ADD.image());
         addButton.addSelectionListener(new SelectionAdapter()
         {
@@ -168,10 +179,25 @@ public class AttributesPage extends AbstractPage implements IMenuListener
 
         GridDataFactory.fillDefaults().align(SWT.BEGINNING, SWT.CENTER).applyTo(addButton);
 
+        scrolledComposite.addControlListener(new ControlAdapter()
+        {
+            @Override
+            public void controlResized(ControlEvent e)
+            {
+                scrolledComposite.setMinSize(content.computeSize(SWT.DEFAULT, SWT.DEFAULT));
+            }
+        });
+
         parent.addDisposeListener(e -> {
             if (menu != null && !menu.isDisposed())
                 menu.dispose();
         });
+    }
+
+    private void layoutContent()
+    {
+        content.layout(true, true);
+        scrolledComposite.setMinSize(content.computeSize(SWT.DEFAULT, SWT.DEFAULT));
     }
 
     private void addAttributeBlock(Composite container, final AttributeDesignation attribute)
@@ -302,11 +328,10 @@ public class AttributesPage extends AbstractPage implements IMenuListener
                 model.getAttributes().remove(attribute);
                 bindings.getBindingContext().removeBinding(binding);
 
-                Composite parent = deleteButton.getParent();
                 label.dispose();
                 value.dispose();
                 deleteButton.dispose();
-                parent.getParent().layout(true);
+                layoutContent();
             }
         });
     }
@@ -352,7 +377,7 @@ public class AttributesPage extends AbstractPage implements IMenuListener
                 AttributeDesignation a = new AttributeDesignation(attribute, null);
                 model.getAttributes().add(a);
                 addAttributeBlock(attributeContainer, a);
-                attributeContainer.getParent().layout(true);
+                layoutContent();
             }
         });
     }

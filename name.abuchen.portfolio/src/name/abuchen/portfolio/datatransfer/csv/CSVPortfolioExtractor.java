@@ -25,25 +25,25 @@ import name.abuchen.portfolio.money.CurrencyUnit;
         super(client, Messages.CSVDefPortfolio);
 
         var fields = getFields();
-        fields.add(new DateField("date", Messages.CSVColumn_DateValue).setOptional(true)); //$NON-NLS-1$
-        fields.add(new Field("time", Messages.CSVColumn_Time).setOptional(true)); //$NON-NLS-1$
+        fields.add(new DateField(FieldCode.DATE, Messages.CSVColumn_DateValue).setOptional(true));
+        fields.add(new Field(FieldCode.TIME, Messages.CSVColumn_Time).setOptional(true));
 
-        fields.add(new ISINField("isin", Messages.CSVColumn_ISIN).setOptional(true)); //$NON-NLS-1$
-        fields.add(new Field("ticker", Messages.CSVColumn_TickerSymbol).setOptional(true)); //$NON-NLS-1$
-        fields.add(new Field("wkn", Messages.CSVColumn_WKN).setOptional(true)); //$NON-NLS-1$
-        fields.add(new Field("name", Messages.CSVColumn_SecurityName).setOptional(true)); //$NON-NLS-1$
+        fields.add(new ISINField(FieldCode.ISIN, Messages.CSVColumn_ISIN).setOptional(true));
+        fields.add(new Field(FieldCode.TICKER, Messages.CSVColumn_TickerSymbol).setOptional(true));
+        fields.add(new Field(FieldCode.WKN, Messages.CSVColumn_WKN).setOptional(true));
+        fields.add(new Field(FieldCode.NAME, Messages.CSVColumn_SecurityName).setOptional(true));
 
-        fields.add(new AmountField("value", Messages.CSVColumn_Value)); //$NON-NLS-1$
-        fields.add(new Field("currency", Messages.CSVColumn_Currency).setOptional(true)); //$NON-NLS-1$
+        fields.add(new AmountField(FieldCode.VALUE, Messages.CSVColumn_Value));
+        fields.add(new Field(FieldCode.CURRENCY, Messages.CSVColumn_Currency).setOptional(true));
 
-        fields.add(new AmountField("shares", Messages.CSVColumn_Shares)); //$NON-NLS-1$
-        fields.add(new Field("note", Messages.CSVColumn_Note).setOptional(true)); //$NON-NLS-1$
+        fields.add(new AmountField(FieldCode.SHARES, Messages.CSVColumn_Shares));
+        fields.add(new Field(FieldCode.NOTE, Messages.CSVColumn_Note).setOptional(true));
 
-        fields.add(new DateField("date-quote", Messages.CSVColumn_DateQuote).setOptional(true)); //$NON-NLS-1$
-        fields.add(new AmountField("quote", Messages.CSVColumn_Quote, "Schluss", "Schlusskurs", "Close") //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+        fields.add(new DateField(FieldCode.DATE_QUOTE, Messages.CSVColumn_DateQuote).setOptional(true));
+        fields.add(new AmountField(FieldCode.QUOTE, Messages.CSVColumn_Quote, "Schluss", "Schlusskurs", "Close") //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
                         .setOptional(true));
-        fields.add(new Field("account", Messages.CSVColumn_AccountName).setOptional(true)); //$NON-NLS-1$
-        fields.add(new Field("portfolio", Messages.CSVColumn_PortfolioName).setOptional(true)); //$NON-NLS-1$
+        fields.add(new Field(FieldCode.ACCOUNT, Messages.CSVColumn_AccountName).setOptional(true));
+        fields.add(new Field(FieldCode.PORTFOLIO, Messages.CSVColumn_PortfolioName).setOptional(true));
     }
 
     @Override
@@ -57,7 +57,7 @@ import name.abuchen.portfolio.money.CurrencyUnit;
     {
         // check if we have a security
         var security = getSecurity(rawValues, field2column, s -> {
-            var currency = getText(Messages.CSVColumn_Currency, rawValues, field2column);
+            var currency = getText(FieldCode.CURRENCY, rawValues, field2column);
             if (currency != null)
             {
                 var unit = CurrencyUnit.getInstance(currency.trim());
@@ -72,20 +72,20 @@ import name.abuchen.portfolio.money.CurrencyUnit;
                             0);
 
         // check for valuation (either current or historic)
-        var valuation = getMoney(Messages.CSVColumn_Value, Messages.CSVColumn_Currency, rawValues, field2column);
+        var valuation = getMoney(FieldCode.VALUE, FieldCode.CURRENCY, rawValues, field2column);
 
         // check for the number of shares
-        var shares = getShares(Messages.CSVColumn_Shares, rawValues, field2column);
+        var shares = getShares(FieldCode.SHARES, rawValues, field2column);
         if (shares == null)
             throw new ParseException(MessageFormat.format(Messages.CSVImportMissingField, Messages.CSVColumn_Shares),
                             0);
 
         // determine remaining fields
-        var date = getDate(Messages.CSVColumn_DateValue, Messages.CSVColumn_Time, rawValues, field2column);
+        var date = getDate(FieldCode.DATE, FieldCode.TIME, rawValues, field2column);
         if (date == null)
             date = LocalDate.now().atStartOfDay();
 
-        var note = getText(Messages.CSVColumn_Note, rawValues, field2column);
+        var note = getText(FieldCode.NOTE, rawValues, field2column);
 
         var account = getAccount(getClient(), rawValues, field2column);
         var portfolio = getPortfolio(getClient(), rawValues, field2column);
@@ -108,7 +108,7 @@ import name.abuchen.portfolio.money.CurrencyUnit;
 
         // check if the data contains price
 
-        getSecurityPrice(Messages.CSVColumn_DateQuote, rawValues, field2column)
+        getSecurityPrice(FieldCode.DATE_QUOTE, rawValues, field2column)
                         .ifPresent(price -> items.add(new SecurityPriceItem(security, price)));
     }
 }

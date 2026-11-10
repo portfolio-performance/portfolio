@@ -3,6 +3,7 @@ package name.abuchen.portfolio.ui.views.panes;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
 
+import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.action.ToolBarManager;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
@@ -14,20 +15,25 @@ import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.CurrencyConverterImpl;
 import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
+import name.abuchen.portfolio.snapshot.security.SnapshotCache;
 import name.abuchen.portfolio.snapshot.trades.TradeCollector;
 import name.abuchen.portfolio.snapshot.trades.TradeCollectorException;
+import name.abuchen.portfolio.snapshot.trades.TradeGrouping;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.editor.AbstractFinanceView;
 import name.abuchen.portfolio.ui.util.DropDown;
+import name.abuchen.portfolio.ui.util.LabelOnly;
 import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.util.TableViewerCSVExporter;
 import name.abuchen.portfolio.ui.views.TradesTableViewer;
 
 public class TradesPane implements InformationPanePage
 {
+    private static final String PREF_TRADE_GROUPING = TradesPane.class.getSimpleName() + "-tradeGrouping"; //$NON-NLS-1$
+
     @Inject
     @Named(UIConstants.Context.ACTIVE_CLIENT)
     private Client client;
@@ -41,6 +47,8 @@ public class TradesPane implements InformationPanePage
     private TradesTableViewer trades;
 
     private Security source;
+
+    private TradeGrouping grouping;
 
     @Override
     public String getLabel()
@@ -61,8 +69,31 @@ public class TradesPane implements InformationPanePage
         toolBar.add(new SimpleAction(Messages.MenuExportData, Images.EXPORT,
                         a -> new TableViewerCSVExporter(trades.getTableViewer()).export(getLabel(), source)));
 
-        toolBar.add(new DropDown(Messages.MenuShowHideColumns, Images.CONFIG, SWT.NONE,
-                        manager -> trades.getShowHideColumnHelper().menuAboutToShow(manager)));
+        toolBar.add(new DropDown(Messages.MenuShowHideColumns, Images.CONFIG, SWT.NONE, manager -> {
+            trades.getShowHideColumnHelper().menuAboutToShow(manager);
+
+            manager.add(new Separator());
+            manager.add(new LabelOnly(Messages.LabelTradeGrouping));
+
+            for (TradeGrouping tradeGrouping : TradeGrouping.values())
+            {
+                var action = new SimpleAction(tradeGrouping.getLabel(), a -> {
+                    grouping = tradeGrouping;
+                    view.getPreferenceStore().setValue(PREF_TRADE_GROUPING, tradeGrouping.name());
+                    onRecalculationNeeded();
+                });
+                action.setChecked(tradeGrouping == getGrouping());
+                manager.add(action);
+            }
+        }));
+    }
+
+    private TradeGrouping getGrouping()
+    {
+        if (grouping == null)
+            grouping = TradeGrouping.fromString(view.getPreferenceStore().getString(PREF_TRADE_GROUPING));
+
+        return grouping;
     }
 
     @Override
@@ -79,7 +110,10 @@ public class TradesPane implements InformationPanePage
             try
             {
                 CurrencyConverter converter = new CurrencyConverterImpl(factory, client.getBaseCurrency());
-                trades.setInput(new TradeCollector(client, converter).collect(source));
+
+                var collector = new TradeCollector(client, converter, getGrouping(), new SnapshotCache());
+
+                trades.setInput(collector.collect(source));
             }
             catch (TradeCollectorException e)
             {

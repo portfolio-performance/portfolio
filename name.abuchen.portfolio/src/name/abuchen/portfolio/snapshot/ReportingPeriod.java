@@ -252,7 +252,19 @@ public abstract class ReportingPeriod
 
     public static class LastXTradingDays extends ReportingPeriod
     {
+        /**
+         * The interval only depends on the reference date and the default
+         * trade calendar. As column option, toInterval is called for every
+         * cell (and multiple times per cell). Counting the trading days day by
+         * day is therefore cached for the last reference date.
+         */
+        private record CachedInterval(LocalDate relativeTo, TradeCalendar calendar, Interval interval)
+        {
+        }
+
         private final int tradingDays;
+
+        private volatile CachedInterval cachedInterval; // NOSONAR
 
         public LastXTradingDays(String code)
         {
@@ -267,13 +279,24 @@ public abstract class ReportingPeriod
         @Override
         public Interval toInterval(LocalDate relativeTo)
         {
-            return Interval.of(tradingDaysUntil(relativeTo, tradingDays), relativeTo);
+            var calendar = TradeCalendarManager.getDefaultInstance();
+
+            var cached = cachedInterval;
+            if (cached != null && cached.relativeTo().equals(relativeTo) && cached.calendar() == calendar)
+                return cached.interval();
+
+            var interval = Interval.of(tradingDaysUntil(relativeTo, tradingDays, calendar), relativeTo);
+            cachedInterval = new CachedInterval(relativeTo, calendar, interval);
+            return interval;
         }
 
         public static final LocalDate tradingDaysUntil(LocalDate referenceDate, int tradingDays)
         {
-            TradeCalendar calendar = TradeCalendarManager.getDefaultInstance();
+            return tradingDaysUntil(referenceDate, tradingDays, TradeCalendarManager.getDefaultInstance());
+        }
 
+        private static LocalDate tradingDaysUntil(LocalDate referenceDate, int tradingDays, TradeCalendar calendar)
+        {
             LocalDate date = referenceDate;
             int daysToGo = tradingDays;
 

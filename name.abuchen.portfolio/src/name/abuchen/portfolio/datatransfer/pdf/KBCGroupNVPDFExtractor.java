@@ -312,12 +312,35 @@ public class KBCGroupNVPDFExtractor extends AbstractPDFExtractor
                         .match("^.* van (?<shares>[\\.,\\d]+) .*$") //
                         .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
+                        .oneOf( //
+                                        // @formatter:off
+                                        // 24/01/2024 02:35:28 Valuta 24/01/2024
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("date", "time") //
+                                                        .match("^(?<date>[\\d]{2}\\/[\\d]{2}\\/[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}:[\\d]{2}) Valuta [\\d]{2}\\/[\\d]{2}\\/[\\d]{4}.*$") //
+                                                        .assign((t, v) -> t.setDateTime(asDate(v.get("date"), v.get("time")))),
+                                        // @formatter:off
+                                        // Uitvoeringsdatum : 29/01/2025 Uitvoeringstijdstip : 02:35:19 Valuta : 29/01/2025
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("date", "time") //
+                                                        .match("^Uitvoeringsdatum : (?<date>[\\d]{2}\\/[\\d]{2}\\/[\\d]{4}) Uitvoeringstijdstip : (?<time>[\\d]{2}:[\\d]{2}:[\\d]{2}).*$") //
+                                                        .assign((t, v) -> t.setDateTime(asDate(v.get("date"), v.get("time")))),
+                                        // @formatter:off
+                                        // 24/01/2024 Uitbetaling dividenden ISHAR.III CORE EUR Valuta 24/01/2024 2.862,79 EUR
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("date") //
+                                                        .match("^(?<date>[\\d]{2}\\/[\\d]{2}\\/[\\d]{4}) Uitbetaling dividenden.*$") //
+                                                        .assign((t, v) -> t.setDateTime(asDate(v.get("date")))))
+
                         // @formatter:off
-                        // 24/01/2024 Uitbetaling dividenden ISHAR.III CORE EUR Valuta 24/01/2024 2.862,79 EUR
+                        // Cash Dividend IE00B1XNHC34ex 2026-05-21 pd 2026-05-29
                         // @formatter:on
-                        .section("date") //
-                        .match("^(?<date>[\\d]{2}\\/[\\d]{2}\\/[\\d]{4}) Uitbetaling dividenden.*$") //
-                        .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
+                        .section("exDate") //
+                        .match("^Cash Dividend [A-Z]{2}[A-Z0-9]{9}[0-9]ex (?<exDate>[\\d]{4}\\-[\\d]{2}\\-[\\d]{2}) .*$") //
+                        .assign((t, v) -> t.setExDate(asDate(v.get("exDate"))))
 
                         // @formatter:off
                         // Netto credit 2.862,79 EUR
@@ -364,6 +387,25 @@ public class KBCGroupNVPDFExtractor extends AbstractPDFExtractor
                                                             var fxGross = rate.convert(rate.getBaseCurrency(), gross);
 
                                                             checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
+                                                        }),
+                                        // @formatter:off
+                                        // Uw Uitbetaling dividenden van 1.000 ISHARES PLCS P GL.CLEAN ENERGY T.-D 19,20 USD
+                                        // aan 0,0192 USD
+                                        // 1 EUR = 1,172292 USD
+                                        // Netto credit 11,23 EUR
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("fxGross", "baseCurrency", "exchangeRate", "termCurrency") //
+                                                        .match("^Uw Uitbetaling dividenden van [\\.,\\d]+ .* (?<fxGross>[\\.,\\d]+) [A-Z]{3}$") //
+                                                        .match("^[\\.,\\d]+ (?<baseCurrency>[A-Z]{3}) = (?<exchangeRate>[\\.,\\d]+) (?<termCurrency>[A-Z]{3})$") //
+                                                        .assign((t, v) -> {
+                                                            var rate = asExchangeRate(v);
+                                                            type.getCurrentContext().putType(rate);
+
+                                                            var fxGross = Money.of(rate.getTermCurrency(), asAmount(v.get("fxGross")));
+                                                            var gross = rate.convert(rate.getBaseCurrency(), fxGross);
+
+                                                            checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                                                         }))
 
                         // @formatter:off
@@ -372,6 +414,8 @@ public class KBCGroupNVPDFExtractor extends AbstractPDFExtractor
                         .section("note").optional() //
                         .match("^(?<note>Borderel [\\d]+)$") //
                         .assign((t, v) -> t.setNote(trim(v.get("note"))))
+
+                        .conclude(ExtractorUtils.fixGrossValueA())
 
                         .wrap(TransactionItem::new);
 

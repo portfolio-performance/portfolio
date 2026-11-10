@@ -7,6 +7,7 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.fee;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasAmount;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasCurrencyCode;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasDate;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasExDate;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasFees;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasForexGrossValue;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasGrossValue;
@@ -396,7 +397,8 @@ public class KBCGroupNVPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2024-01-24T00:00"), hasShares(2065.00), //
+                        hasDate("2024-01-24T02:35:28"), hasExDate("2024-01-11"), //
+                        hasShares(2065.00), //
                         hasSource("Dividende01.txt"), //
                         hasNote("Borderel 003308592"), //
                         hasAmount("EUR", 2862.79), hasGrossValue("EUR", 4173.16), //
@@ -430,7 +432,8 @@ public class KBCGroupNVPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2025-03-14T00:00"), hasShares(2130.00), //
+                        hasDate("2025-03-14T02:39:42"), hasExDate("2025-02-28"), //
+                        hasShares(2130.00), //
                         hasSource("Dividende02.txt"), //
                         hasNote("Borderel 019817049"), //
                         hasAmount("USD", 6.37), hasGrossValue("USD", 12.14), //
@@ -464,7 +467,8 @@ public class KBCGroupNVPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2025-03-14T00:00"), hasShares(2130.00), //
+                        hasDate("2025-03-14T02:39:42"), hasExDate("2025-02-28"), //
+                        hasShares(2130.00), //
                         hasSource("Dividende02.txt"), //
                         hasNote("Borderel 019817049"), //
                         hasAmount("USD", 6.37), hasGrossValue("USD", 12.14), //
@@ -506,7 +510,8 @@ public class KBCGroupNVPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2024-01-02T00:00"), hasShares(43.00), //
+                        hasDate("2024-01-02T02:38:33"), hasExDate("2023-12-14"), //
+                        hasShares(43.00), //
                         hasSource("Dividende03.txt"), //
                         hasNote("Borderel 000167639"), //
                         hasAmount("USD", 10.23), hasGrossValue("USD", 17.20), //
@@ -540,7 +545,8 @@ public class KBCGroupNVPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2024-01-02T00:00"), hasShares(43.00), //
+                        hasDate("2024-01-02T02:38:33"), hasExDate("2023-12-14"), //
+                        hasShares(43.00), //
                         hasSource("Dividende03.txt"), //
                         hasNote("Borderel 000167639"), //
                         hasAmount("USD", 10.23), hasGrossValue("USD", 17.20), //
@@ -582,11 +588,119 @@ public class KBCGroupNVPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2025-01-29T00:00"), hasShares(912.00), //
+                        hasDate("2025-01-29T02:35:19"), hasExDate("2025-01-16"), //
+                        hasShares(912.00), //
                         hasSource("Dividende04.txt"), //
                         hasNote("Borderel 006631462"), //
                         hasAmount("EUR", 1276.04), hasGrossValue("EUR", 1860.12), //
                         hasTaxes("EUR", 558.04 + 4.52), hasFees("EUR", 21.52))));
+    }
+
+    @Test
+    public void testDividende05()
+    {
+        var extractor = new KBCGroupNVPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende05.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(2L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(2L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(4));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00B1XNHC34"), hasWkn(null), hasTicker(null), //
+                        hasName("ISHARES PLCS P GL.CLEAN ENERGY T.-D"), //
+                        hasCurrencyCode("USD"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("BE0003717312"), hasWkn(null), hasTicker(null), //
+                        hasName("CP SOFINA (BR) 27.05.26"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2026-05-29T02:37:36"), hasExDate("2026-05-21"), //
+                        hasShares(1000.00), //
+                        hasSource("Dividende05.txt"), //
+                        hasNote("Borderel 067498551"), //
+                        hasAmount("EUR", 11.23), hasGrossValue("EUR", 16.37), //
+                        hasForexGrossValue("USD", 19.20), //
+                        hasTaxes("EUR", 0.00 + 4.91 + 0.04), hasFees("EUR", 0.19))));
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2026-05-29T09:57:53"), hasExDate("2026-05-27"), //
+                        hasShares(25.00), //
+                        hasSource("Dividende05.txt"), //
+                        hasNote("Borderel 067784648"), //
+                        hasAmount("EUR", 64.05), hasGrossValue("EUR", 91.50), //
+                        hasTaxes("EUR", 27.45), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testDividende05WithSecurityInEUR()
+    {
+        var security = new Security("ISHARES PLCS P GL.CLEAN ENERGY T.-D", "EUR");
+        security.setIsin("IE00B1XNHC34");
+
+        var client = new Client();
+        client.addSecurity(security);
+
+        var extractor = new KBCGroupNVPDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende05.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(2L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(3));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("BE0003717312"), hasWkn(null), hasTicker(null), //
+                        hasName("CP SOFINA (BR) 27.05.26"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2026-05-29T02:37:36"), hasExDate("2026-05-21"), //
+                        hasShares(1000.00), //
+                        hasSource("Dividende05.txt"), //
+                        hasNote("Borderel 067498551"), //
+                        hasAmount("EUR", 11.23), hasGrossValue("EUR", 16.37), //
+                        hasTaxes("EUR", 0.00 + 4.91 + 0.04), hasFees("EUR", 0.19), //
+                        check(tx -> {
+                            var c = new CheckCurrenciesAction();
+                            var account = new Account();
+                            account.setCurrencyCode("EUR");
+                            var s = c.process((AccountTransaction) tx, account);
+                            assertThat(s, is(Status.OK_STATUS));
+                        }))));
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2026-05-29T09:57:53"), hasExDate("2026-05-27"), //
+                        hasShares(25.00), //
+                        hasSource("Dividende05.txt"), //
+                        hasNote("Borderel 067784648"), //
+                        hasAmount("EUR", 64.05), hasGrossValue("EUR", 91.50), //
+                        hasTaxes("EUR", 27.45), hasFees("EUR", 0.00))));
     }
 
     @Test

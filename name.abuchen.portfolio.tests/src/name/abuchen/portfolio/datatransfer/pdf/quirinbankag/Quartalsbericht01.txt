@@ -1,0 +1,319 @@
+PDFBox Version: 3.0.6
+Portfolio Performance Version: 0.81.5
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+Herrn
+Max Mustermann
+Musterweg 10
+55555 Musterhausen
+PFM_REPORT / 85695353 / 20250118 00:36:51
+Kunde 63667609
+Herrn Quartalsbericht Stammnummer 25781271
+Max Mustermann Mustermann, Max
+Musterweg 10 Globales Portfolio 100 % Aktien/ 0 % Anleihen
+55555 Musterhausen Referenzwährung EUR
+Datum 20.01.2025 Seite 1 von 10
+Verehrte quirion-Kundin, verehrter quirion-Kunde,
+Sie erhalten heute das aktuelle regulatorische Reporting über die Entwicklung Ihrer Vermögensverwaltung Globales Portfolio. Den Quartalsbericht des Portfolio Managements
+senden wir Ihnen separat zu.
+Rechtlicher Hinweis
+Zentraler Maßstab für die von uns getroffenen Anlageentscheidungen war die von Ihnen gewählte Anlagestrategie mit den zugehörigen Anlagerichtlinien. Diese ist im Hinblick
+auf die von Ihnen gemachten Angaben („Kundenangaben“) zu Ihren Kenntnissen und Erfahrungen, Ihren finanziellen Verhältnissen, dem von Ihnen verfolgten Anlagehorizont
+sowie Ihrer Risikoneigung und Risikotragfähigkeit grundsätzlich zur Erreichung Ihrer Anlageziele geeignet. Alle im Berichtszeitraum getroffenen Anlageentscheidungen,
+einschließlich der Entscheidung, keine Veränderungen der verwendeten Finanzinstrumente vorzunehmen, erfolgten im Einklang mit den vereinbarten Anlagerichtlinien, so
+dass die aktuelle Ausrichtung Ihrer Vermögensverwaltungsstrategie im Hinblick auf die uns vorliegenden Kundenangaben nach wie vor geeignet ist. Im Rahmen dieser
+Bewertung sind wir davon ausgegangen, dass die uns vorliegenden Kundenangaben nach wie vor aktuell und vollständig sind.
+Bitte beachten Sie, dass Änderungen der Kundenangaben Auswirkungen auf die Frage haben können, ob die gewählte Anlagestrategie auch weiterhin für Sie geeignet ist
+oder ob dadurch Änderungen der Anlagerichtlinien erforderlich werden. Sollten sich im Hinblick auf die Kundenangaben, insbesondere hinsichtlich Ihrer Anlageziele
+und -wünsche, Änderungen ergeben, aktualisieren Sie diese bitte umgehend.
+Die diesem Finanzprodukt zugrundeliegenden Investitionen berücksichtigen nicht die EU-Kriterien für ökologisch nachhaltige Wirtschaftsaktivitäten.
+Sehr geehrte Kundin, sehr geehrter Kunde, wir danken Ihnen für das Vertrauen, das Sie uns mit der Anlage Ihres Vermögens in unserer Vermögensverwaltung entgegenbringen.
+Bitte zögern Sie nicht, bei allen Fragen und Wünschen zu Ihrer Vermögensverwaltung jederzeit Ihre quirion-Kundenbetreuung anzusprechen.
+Erläuterungen siehe letzte Seite
+Quirin Privatbank AG; Handelsregister: Berlin Charlottenburg, HRB 87859; Kurfürstendamm 119; 10711 Berlin; Telefon +49 (0)30 890 21-300; Fax +49 (0)30 890 21-301; www.quirinprivatbank.de
+PFM_REPORT / 85695353 / 20250118 00:36:51
+Kunde 77777777
+Historische Performance Stammnummer 6666666
+Mustermann, Max
+vom 13.11.2024 bis 31.12.2024
+Datum 20.01.2025 Seite 2 von 10
+Vermögen EUR (13.11.2024) 0,00 Vermögen EUR (31.12.2024) 77,23 Performance seit Beginn des lfd. Jahres -0,84 % Benchmark 0,61 %
+Performance lfd. Jahr in %
+Datum Vermögen EUR Mittelzu-/abfluss Performance Benchmark
+Periode Lfd. Jahr Periode Lfd. Jahr 1,20 %
+Per Monat 0,80 %
+November 2024 26,31 26,00 1,19 % 1,19 % 0,90 % 0,90 % Performance
+(vom 13.11) 0,40 %
+Benchmark
+Dezember 2024 77,23 51,97 -2,01 % -0,84 % -0,28 % 0,61 % 0,00 %
+-0,40 %
+-0,80 %
+-1,20 %
+Erläuterungen siehe letzte Seite
+Quirin Privatbank AG; Handelsregister: Berlin Charlottenburg, HRB 87859; Kurfürstendamm 119; 10711 Berlin; Telefon +49 (0)30 890 21-300; Fax +49 (0)30 890 21-301; www.quirinprivatbank.de
+PFM_REPORT / 85695353 / 20250118 00:36:51
+Dez 24
+Nov 24
+Okt 24
+Sep 24
+Aug 24
+Jul 24
+Jun 24
+Mai 24
+Apr 24
+Mär 24
+Feb 24
+Jan 24
+Kunde 31199857
+Rechenschaftsbericht Stammnummer 97093240
+Mustermann, Max
+vom 13.11.2024 bis 31.12.2024
+Datum 20.01.2025 Seite 3 von 10
+Der Bericht zeigt die Vermögensentwicklung der jeweiligen Anlagestrategie für den genannten Zeitraum sowie die Kapitalveränderung durch Mittelzu- und Mittelabfluss.
+Vermögen EUR Vermögen EUR Wertveränderung EUR
+Vermögensstand per %-Anteil %-Anteil
+13.11.2024 31.12.2024 (bereinigt)
+Total 0,00 77,23 -0,74
+Liquidität 0,00 0,00 % 26,18 33,90 % 0,00
+Aktien und ähnliche Anlagen 0,00 0,00 % 51,05 66,10 % 0,00
+Vermögensänderung im Berichtszeitraum
+Mittelzufluss (Einlagen bzw. Aufstockungen, Einlieferungen, erstattete Steuern) 78,00
+Mittelabfluss (Entnahmen, Auslieferungen, gezahlte Steuern) -0,03
+Vermögensstand bereinigt -0,74
+Durchschnittlich investiertes Kapital 41,92
+Periodenvergleich (13.11.2024 - 31.12.2024)
+Performance vor Gebühren in % (zeitgewichtet) -0,84 %
+Benchmark Markt 100 / 0 0,61 %
+Wertveränderung in Referenzwährung -0,74
+Jahresvergleich (13.11.2024 - 31.12.2024)
+Performance vor Gebühren in % (zeitgewichtet) -0,84 %
+Benchmark Markt 100 / 0 0,61 %
+Wertveränderung in Referenzwährung -0,74
+Performance seit Start (13.11.2024 - 31.12.2024)
+Performance vor Gebühren in % (zeitgewichtet) 0,00 %
+Benchmark Markt 100 / 0 0,61 %
+Wertveränderung in Referenzwährung -0,74
+Erläuterungen siehe letzte Seite
+Quirin Privatbank AG; Handelsregister: Berlin Charlottenburg, HRB 87859; Kurfürstendamm 119; 10711 Berlin; Telefon +49 (0)30 890 21-300; Fax +49 (0)30 890 21-301; www.quirinprivatbank.de
+PFM_REPORT / 85695353 / 20250118 00:36:51
+Kunde 77777777
+Rechenschaftsbericht Stammnummer 6666666
+Mustermann, Max
+vom 13.11.2024 bis 31.12.2024
+Datum 20.01.2025 Seite 4 von 10
+Realisiertes Ergebnis im Berichtszeitraum -0,03 EUR
+Erträge (inkl. Kapitalgewinne) 0,00 EUR Aufwendungen -0,03 EUR
+Kapitalerträge 0,00 EUR Gebühren aus Konten -0,03 EUR
+Zinsen aus Guthaben und Einlagen 0,00 EUR Soll-Zinsen 0,00 EUR
+Zinsen aus Wertpapieren 0,00 EUR Vermögensverwaltungsgebühr -0,03 EUR
+Dividenden und ähnliche Erträge 0,00 EUR Beratungsgebühr 0,00 EUR
+Andere Erträge 0,00 EUR USt. 0,00 EUR
+Aufgelaufene Zinserträge 0,00 EUR Sonstige Gebühren 0,00 EUR
+Aufgelaufene Zinsaufwände 0,00 EUR
+Nachrichtlich
+Realisierte Kursgewinne/Kursverluste Wertpapiere 0,00 EUR
+Gezahlte Transaktionskosten 0,00 EUR
+Kursgewinne / Kursverluste 0,00 EUR
+Kursgewinne / Kursverluste Devisen 0,00 EUR Abwicklungsgebühren 0,00 EUR
+Courtage 0,00 EUR
+Sonstige Kapitalerträge 0,00 EUR Provision 0,00 EUR
+Rückvergütung Bestandsprovision 0,00 EUR Spesen 0,00 EUR
+Gezahlte Ausgabeaufschläge 0,00 EUR
+Bonifikation 0,00 EUR
+Nicht realisiertes Ergebnis -0,74 EUR
+Nicht realisiertes Ergebnis seit Einstand 13.11.2024 31.12.2024
+0,00 EUR -0,74 EUR
+Kursgewinne 0,00 EUR 0,03 EUR
+Kursverluste 0,00 EUR -0,77 EUR
+Stückzinsen 0,00 EUR 0,00 EUR
+Kursgewinne Devisen 0,00 EUR 0,00 EUR
+Kursverluste Devisen 0,00 EUR 0,00 EUR
+Erläuterungen siehe letzte Seite
+Quirin Privatbank AG; Handelsregister: Berlin Charlottenburg, HRB 87859; Kurfürstendamm 119; 10711 Berlin; Telefon +49 (0)30 890 21-300; Fax +49 (0)30 890 21-301; www.quirinprivatbank.de
+PFM_REPORT / 85695353 / 20250118 00:36:51
+Kunde 77777777
+Vermögensübersicht Stammnummer 6666666
+Mustermann, Max
+per 31.12.2024
+Datum 20.01.2025 Seite 5 von 10
+Vermögensübersicht nach Assetklassen sortiert Anzahl Positionen Kurswert EUR inkl. Stückzinsen %-Anteil Gesamtvermögen
+Liquidität 1 26,18 33,90 %
+Aktien und ähnliche Anlagen 7 51,05 66,10 %
+Gesamtvermögen 8 77,23 100,00%
+Konten-Übersicht (in obiger Vermögensübersicht enthalten) Liquidität
+Konto-Nr Kontoart Saldo (Whg) Saldo EUR
+666666620 EUR Vermögensverwaltungskonto in EUR 26,18
+Kontensaldo 26,18
+Aktien und
+ähnliche
+Anlagen
+Erläuterungen siehe letzte Seite
+Quirin Privatbank AG; Handelsregister: Berlin Charlottenburg, HRB 87859; Kurfürstendamm 119; 10711 Berlin; Telefon +49 (0)30 890 21-300; Fax +49 (0)30 890 21-301; www.quirinprivatbank.de
+PFM_REPORT / 85695353 / 20250118 00:36:51
+Kunde 77777777
+Detailreport Assetklassen Stammnummer 6666666
+Mustermann, Max
+per 31.12.2024
+Datum 20.01.2025 Seite 6 von 10
+Liquidität
+Nominal/Stück Bezeichnung Letzter Zugang Kaufpreis Kurs Wertentwicklung seit Einstand Kurswert %-Anteil
+ISIN Devisenkurs Devisenkurs Nicht real. GuV Stückzinsen
+Kontoguthaben EUR 0,00 EUR 26,18 EUR 33,90 %
+26,18 Vermögensverwaltungskonto in EUR
+666666620 26,18 EUR 33,90 %
+Summe Liquidität 0,00 EUR 26,18 EUR 33,90 %
+Erläuterungen siehe letzte Seite
+Quirin Privatbank AG; Handelsregister: Berlin Charlottenburg, HRB 87859; Kurfürstendamm 119; 10711 Berlin; Telefon +49 (0)30 890 21-300; Fax +49 (0)30 890 21-301; www.quirinprivatbank.de
+PFM_REPORT / 85695353 / 20250118 00:36:51
+Kunde 77777777
+Detailreport Assetklassen Stammnummer 6666666
+Mustermann, Max
+per 31.12.2024
+Datum 20.01.2025 Seite 7 von 10
+Aktien und ähnliche Anlagen
+Nominal/Stück Bezeichnung Letzter Zugang Kaufpreis Kurs Wertentwicklung seit Einstand Kurswert %-Anteil
+ISIN Fälligkeit Devisenkurs Devisenkurs Nicht real. GuV Stückzinsen
+Branche
+Aktien und ähnliche Anlagen EUR -0,74 EUR 51,05 EUR 66,10 %
+0,35330 ST Amu.ETF ICAV-PRIME Glbl ETF Bear.Shs USD Dis. oN
+IE000QIF5N15 16.12.2024 36,569488 EUR 36,1900 EUR -1,01 % 12,79 EUR 16,56 %
+Fonds -0,13 EUR
+0,00920 ST SPDR MSCI Emer.Mkts Sm.Cap ETF Registered Shares o.N.
+IE00B48X4842 05.12.2024 110,869565 EUR 110,2800 EUR -0,98 % 1,01 EUR 1,31 %
+Fonds -0,01 EUR
+1,24850 ST iShsIII-MSCI Wld Sm.Ca.UCI.ETF Registered Shares USD(Acc)o.N.
+IE00BF4RFH31 13.12.2024 7,496996 EUR 7,2220 EUR -3,63 % 9,02 EUR 11,68 %
+Fonds -0,34 EUR
+0,31080 ST SPDR MSCI World UCITS ETF Reg.Shares USD Unhgd Acc. o.N.
+IE00BFY0GT14 06.12.2024 38,223938 EUR 37,8290 EUR -1,01 % 11,76 EUR 15,23 %
+Fonds -0,12 EUR
+0,05470 ST iShsIV-Edge MSCI EM Value F. Registered Shares USD (Acc.)oN
+IE00BG0SKF03 05.12.2024 47,349177 EUR 47,9850 EUR 1,16 % 2,62 EUR 3,39 %
+Fonds 0,03 EUR
+0,10910 ST iShs Core MSCI EM IMI U.ETF Registered Shares o.N.
+IE00BKM4GZ66 05.12.2024 32,905591 EUR 32,7300 EUR -0,56 % 3,57 EUR 4,62 %
+Fonds -0,02 EUR
+0,24270 ST Xtr.(IE) - MSCI World Value Registered Shares 1C USD o.N.
+IE00BL25JM42 13.12.2024 42,974866 EUR 42,3550 EUR -1,44 % 10,28 EUR 13,31 %
+Fonds -0,15 EUR
+Summe Aktien und ähnliche Anlagen -0,74 EUR 51,05 EUR 66,10 %
+Summe Stammnummer 67944633 77,23 EUR
+Erläuterungen siehe letzte Seite
+Quirin Privatbank AG; Handelsregister: Berlin Charlottenburg, HRB 87859; Kurfürstendamm 119; 10711 Berlin; Telefon +49 (0)30 890 21-300; Fax +49 (0)30 890 21-301; www.quirinprivatbank.de
+PFM_REPORT / 85695353 / 20250118 00:36:51
+Kunde 77777777
+Wertpapierumsätze Stammnummer 41671811
+Mustermann, Max
+vom 13.11.2024 bis 31.12.2024
+Datum 20.01.2025 Seite 8 von 10
+Depot-Nr. 666666620
+ISIN Wertpapier Schlußtag Geschäftsart Erläuterung Nominal Wertpapierkurs Kurswert Gebühren/Steuern Ausmachender
+Währung Wertpapierart Valutadatum Referenz Börsenplatz Stück Devisenkurs Betrag
+LU1931974692 Amundi Index Solu.-A.PRIME GL. 14.11.2024 Kauf 0,17890 ST 36,1050 EUR -6,46 EUR 0,00 EUR -6,46 EUR
+EUR Nam.-Ant.UCI.ETF DR USD Dis.oN 18.11.2024 535338205 Berlin - Tradegate Exchange
+Aktienfonds
+IE00BFY0GT14 SPDR MSCI World UCITS ETF 14.11.2024 Kauf 0,15700 ST 37,8220 EUR -5,94 EUR 0,00 EUR -5,94 EUR
+EUR Reg.Shares USD Unhgd Acc. o.N. 18.11.2024 535338209 Berlin - Tradegate Exchange
+Aktienfonds
+IE00BL25JM42 Xtr.(IE) - MSCI World Value 14.11.2024 Kauf 0,12180 ST 42,698416 EUR -5,20 EUR 0,00 EUR -5,20 EUR
+EUR Registered Shares 1C USD o.N. 18.11.2024 535338214 Berlin - Tradegate Exchange
+Aktienfonds
+IE00BF4RFH31 iShsIII-MSCI Wld Sm.Ca.UCI.ETF 14.11.2024 Kauf 0,62720 ST 7,410755 EUR -4,65 EUR 0,00 EUR -4,65 EUR
+EUR Registered Shares USD(Acc)o.N. 18.11.2024 535338219 Berlin - Tradegate Exchange
+Aktienfonds
+IE00BKM4GZ66 iShs Core MSCI EM IMI U.ETF 14.11.2024 Kauf 0,05560 ST 32,5258 EUR -1,81 EUR 0,00 EUR -1,81 EUR
+EUR Registered Shares o.N. 18.11.2024 535338225 Berlin - Tradegate Exchange
+Aktienfonds
+IE00BG0SKF03 iShsIV-Edge MSCI EM Value F. 14.11.2024 Kauf 0,02740 ST 47,0400 EUR -1,29 EUR 0,00 EUR -1,29 EUR
+EUR Registered Shares USD (Acc.)oN 18.11.2024 535338232 Berlin - Tradegate Exchange
+Aktienfonds
+IE00B48X4842 SPDR MSCI Emer.Mkts Sm.Cap ETF 14.11.2024 Kauf 0,00470 ST 108,8400 EUR -0,51 EUR 0,00 EUR -0,51 EUR
+EUR Registered Shares o.N. 18.11.2024 535338238 Berlin - Tradegate Exchange
+Aktienfonds
+IE00BFY0GT14 SPDR MSCI World UCITS ETF 05.12.2024 Kauf 0,15260 ST 38,619056 EUR -5,89 EUR 0,00 EUR -5,89 EUR
+EUR Reg.Shares USD Unhgd Acc. o.N. 09.12.2024 541851657 Berlin - Tradegate Exchange
+Aktienfonds
+IE00BL25JM42 Xtr.(IE) - MSCI World Value 05.12.2024 Kauf 0,11890 ST 43,2700 EUR -5,14 EUR 0,00 EUR -5,14 EUR
+EUR Registered Shares 1C USD o.N. 09.12.2024 541851660 Berlin - Tradegate Exchange
+Aktienfonds
+IE00BF4RFH31 iShsIII-MSCI Wld Sm.Ca.UCI.ETF 05.12.2024 Kauf 0,60040 ST 7,6010 EUR -4,56 EUR 0,00 EUR -4,56 EUR
+EUR Registered Shares USD(Acc)o.N. 09.12.2024 541851664 Berlin - Tradegate Exchange
+Aktienfonds
+Erläuterungen siehe letzte Seite
+Quirin Privatbank AG; Handelsregister: Berlin Charlottenburg, HRB 87859; Kurfürstendamm 119; 10711 Berlin; Telefon +49 (0)30 890 21-300; Fax +49 (0)30 890 21-301; www.quirinprivatbank.de
+PFM_REPORT / 85695353 / 20250118 00:36:51
+Kunde 92947498
+Wertpapierumsätze Stammnummer 13319169
+Mustermann, Max
+vom 13.11.2024 bis 31.12.2024
+Datum 20.01.2025 Seite 9 von 10
+Depot-Nr. 5996755721
+ISIN Wertpapier Schlußtag Geschäftsart Erläuterung Nominal Wertpapierkurs Kurswert Gebühren/Steuern Ausmachender
+Währung Wertpapierart Valutadatum Referenz Börsenplatz Stück Devisenkurs Betrag
+IE00BKM4GZ66 iShs Core MSCI EM IMI U.ETF 05.12.2024 Kauf 0,05440 ST 33,216691 EUR -1,81 EUR 0,00 EUR -1,81 EUR
+EUR Registered Shares o.N. 09.12.2024 541851669 Berlin - Tradegate Exchange
+Aktienfonds
+IE00BG0SKF03 iShsIV-Edge MSCI EM Value F. 05.12.2024 Kauf 0,02730 ST 47,6100 EUR -1,30 EUR 0,00 EUR -1,30 EUR
+EUR Registered Shares USD (Acc.)oN 09.12.2024 541851672 Berlin - Tradegate Exchange
+Aktienfonds
+IE00B48X4842 SPDR MSCI Emer.Mkts Sm.Cap ETF 05.12.2024 Kauf 0,00450 ST 112,9200 EUR -0,51 EUR 0,00 EUR -0,51 EUR
+EUR Registered Shares o.N. 09.12.2024 541851675 Berlin - Tradegate Exchange
+Aktienfonds
+IE00BF4RFH31 iShsIII-MSCI Wld Sm.Ca.UCI.ETF 06.12.2024 Kauf 0,00710 ST 7,606383 EUR -0,05 EUR 0,00 EUR -0,05 EUR
+EUR Registered Shares USD(Acc)o.N. 10.12.2024 542126306 Berlin - Tradegate Exchange
+Aktienfonds
+IE00BFY0GT14 SPDR MSCI World UCITS ETF 06.12.2024 Kauf 0,00120 ST 38,755674 EUR -0,05 EUR 0,00 EUR -0,05 EUR
+EUR Reg.Shares USD Unhgd Acc. o.N. 10.12.2024 542126309 Berlin - Tradegate Exchange
+Aktienfonds
+IE00BKM4GZ66 iShs Core MSCI EM IMI U.ETF 13.12.2024 Verkauf -0,00090 ST 33,556467 EUR 0,03 EUR 0,00 EUR 0,03 EUR
+EUR Registered Shares o.N. 17.12.2024 545602004 Berlin - Tradegate Exchange
+Aktienfonds
+IE000QIF5N15 Amu.ETF ICAV-PRIME Glbl ETF 13.12.2024 Kauf 0,17440 ST 37,018074 EUR -6,46 EUR 0,00 EUR -6,46 EUR
+EUR Bear.Shs USD Dis. oN 17.12.2024 545602008 Berlin - Tradegate Exchange
+Aktienfonds
+IE00BF4RFH31 iShsIII-MSCI Wld Sm.Ca.UCI.ETF 13.12.2024 Kauf 0,01380 ST 7,509228 EUR -0,10 EUR 0,00 EUR -0,10 EUR
+EUR Registered Shares USD(Acc)o.N. 17.12.2024 545602011 Berlin - Tradegate Exchange
+Aktienfonds
+IE00BL25JM42 Xtr.(IE) - MSCI World Value 13.12.2024 Kauf 0,00200 ST 42,9250 EUR -0,09 EUR 0,00 EUR -0,09 EUR
+EUR Registered Shares 1C USD o.N. 17.12.2024 545602013 Berlin - Tradegate Exchange
+Aktienfonds
+Anzahl Kauf 18 51,82 Gegenwert Kauf EUR
+Anzahl Verkauf 1 0,03 Gegenwert Verkauf EUR
+Anzahl Sonstige 0
+Anzahl Transaktionen 19
+Erläuterungen siehe letzte Seite
+Quirin Privatbank AG; Handelsregister: Berlin Charlottenburg, HRB 87859; Kurfürstendamm 119; 10711 Berlin; Telefon +49 (0)30 890 21-300; Fax +49 (0)30 890 21-301; www.quirinprivatbank.de
+PFM_REPORT / 85695353 / 20250118 00:36:51
+Kunde 77777777
+Erläuterungen zur Portfolioübersicht Stammnummer 6666666
+Mustermann, Max
+Datum 20.01.2025 Seite 10 von 10
+Bemerkungen
+Die Aktualität der Konto- und Depotbestände sowie der Börsen- und Devisenkurse ist abhängig vom Zeitpunkt der Erstellung.
+Bewertungen des Depotinhaltes beruhen auf approximativen Kursen und Kurswerten aus banküblichen Informationsquellen. Die angegebenen Bewertungen gelten nur als Richtlinien. Sie sind für die Bank nicht
+verbindlich und verpflichten die Bank insbesondere nicht, zu diesen Werten zu kaufen oder zu verkaufen. Die ausgewiesenen Kurse entsprechen nicht den Steuerkursen. Aus technischen Gründen können bei der
+Berechnung von Werten und Prozentsätzen minimale Rundungsdifferenzen entstehen. Der Verwahrungsort (Lagerstelle), schwebende Geschäfte sowie Verpfändungen von Vermögenswerten sind nicht speziell
+gekennzeichnet. Diese Portfolioübersicht trägt keine Unterschrift.
+Wir bitten Sie, die Portfolioübersicht zu prüfen und uns, im Falle von Unstimmigkeiten, innerhalb von vier Wochen schriftlich zu benachrichtigen. Dieser Auszug kann insoweit Veränderungen erfahren. Im Übrigen
+verweisen wir auf unsere Allgemeinen Geschäftsbedingungen.
+Begriffe und Abkürzungen
+n.a. nicht bewertete Positionen / Wert nicht verfügbar Kurswert Wert der Position per Bewertungsdatum der Portfolioübersicht
+[nnn] Short-Positionen werden in Klammern dargestellt. Sie sind nur Rendite Rendite auf Verfall (Basis aktueller Kurs / aktuelles Datum)
+informativ aufgeführt sind aber in der Bewertung nicht berücksichtigt
+Duration Durchschnittliche Kapitalbindungsdauer einer Geldanlage in einem
+Kaufpreis Preis inkl. Transaktionskosten beim Kauf des Titels festverzinslichen Wertpapier (ab aktuellem Datum)
+(oder Wert des Titels bei Einlieferung) in Handelswährung
+Stückzinsen Summe der aufgelaufenen Stückzinsen und Termingeldzinsen seit
+Devisenkurs Spalte Kaufpreis: historischer Devisenkurs beim Kauf letztem Zinstermin
+Spalte Kurs: Devisenkurs per Bewertungsdatum der
+Portfolioübersicht Wertentwicklung % Differenz zwischen Kurs und Kaufpreis in Bewertungswährung
+seit Einstand
+Kurs Wert des Titels per Bewertungsdatum der Portfolioübersicht in
+Handelswährung Rating Bonitätsmerkmal der Anleihe gemäß aktuellstem, je Position
+verfügbarem, internem od. externem Rating
+Nichtreal GuV nicht realisierter Gewinn/Verlust der Position
+(markt- und währungsbedingt) ohne Berücksichtigung AVG Durchschnittlich investiertes Kapital im Berichtszeitraum
+von Stückzinsen und Dividenden
+Quirin Privatbank AG; Handelsregister: Berlin Charlottenburg, HRB 87859; Kurfürstendamm 119; 10711 Berlin; Telefon +49 (0)30 890 21-300; Fax +49 (0)30 890 21-301; www.quirinprivatbank.de
+PFM_REPORT / 85695353 / 20250118 00:36:51
+

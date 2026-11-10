@@ -58,7 +58,7 @@ public class HargreavesLansdownPlcExtractor extends AbstractPDFExtractor
                         .subject(() -> new BuySellEntry(PortfolioTransaction.Type.BUY))
 
                         // Is type --> "SOLD" change from BUY to SELL
-                        .section("type").optional()
+                        .section("type").optional() //
                         .match("^We have today on your instructions[\\s]{1,}\\*\\*" //
                                         + "(?<type>([A-Z\\s]+))" //
                                         + "\\*\\*[\\s]{1,}?the security detailed below\\.$") //
@@ -139,18 +139,18 @@ public class HargreavesLansdownPlcExtractor extends AbstractPDFExtractor
 
     private <T extends Transaction<?>> void addFeesSectionsTransaction(T transaction, DocumentType type)
     {
-        transaction
+        transaction //
 
-                // @formatter:off
-                // Commission 11.95
-                // @formatter:on
-                .section("fee").optional() //
-                .match("^Commission (?<fee>[\\.,\\d]+)$") //
-                .assign((t, v) -> {
-                    v.put("currency", asCurrencyCode("GBP"));
+                        // @formatter:off
+                        // Commission 11.95
+                        // @formatter:on
+                        .section("fee").optional() //
+                        .match("^Commission (?<fee>[\\.,\\d]+)$") //
+                        .assign((t, v) -> {
+                            v.put("currency", asCurrencyCode(GBP));
 
-                    processFeeEntries(t, v, type);
-                });
+                            processFeeEntries(t, v, type);
+                        });
     }
 
     @Override

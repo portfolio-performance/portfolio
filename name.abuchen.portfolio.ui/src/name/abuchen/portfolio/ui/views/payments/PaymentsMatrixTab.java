@@ -51,6 +51,7 @@ import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.util.TableViewerCSVExporter;
 import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
 import name.abuchen.portfolio.ui.util.viewers.CopyPasteSupport;
+import name.abuchen.portfolio.ui.util.viewers.SafeTableColumnLayout;
 import name.abuchen.portfolio.ui.views.AccountContextMenu;
 import name.abuchen.portfolio.ui.views.SecurityContextMenu;
 import name.abuchen.portfolio.ui.views.payments.PaymentsViewModel.Line;
@@ -75,6 +76,7 @@ public abstract class PaymentsMatrixTab implements PaymentsTab
 
     protected boolean columnsInReverseOrder = false;
     protected boolean showAverageColumn = false;
+    protected boolean showOnlyFirstYear = false;
 
     protected Font boldFont;
     protected TableColumnLayout tableLayout;
@@ -99,6 +101,13 @@ public abstract class PaymentsMatrixTab implements PaymentsTab
         return this.getClass().getSimpleName() + "-showAverages"; //$NON-NLS-1$
     }
 
+    private String getKeyForShowOnlyFirstYear()
+    {
+        // Separate keys for sub-classes. The suffix is kept as
+        // "-showOnlyOneYear" for backward compatibility with stored preferences.
+        return this.getClass().getSimpleName() + "-showOnlyOneYear"; //$NON-NLS-1$
+    }
+
     protected void addReverseColumnAction(IMenuManager manager)
     {
         Action action = new SimpleAction(Messages.LabelColumnsInReverseOrder, a -> {
@@ -119,6 +128,17 @@ public abstract class PaymentsMatrixTab implements PaymentsTab
             model.fireUpdateChange();
         });
         action.setChecked(showAverageColumn);
+        manager.add(action);
+    }
+
+    protected void addShowOnlyFirstYearAction(IMenuManager manager)
+    {
+        Action action = new SimpleAction(Messages.LabelShowOnlyOneYear, a -> {
+            showOnlyFirstYear = !showOnlyFirstYear;
+            updateColumns(tableViewer, tableLayout);
+            preferences.setValue(getKeyForShowOnlyFirstYear(), showOnlyFirstYear);
+        });
+        action.setChecked(showOnlyFirstYear);
         manager.add(action);
     }
 
@@ -156,8 +176,9 @@ public abstract class PaymentsMatrixTab implements PaymentsTab
 
         columnsInReverseOrder = preferences.getBoolean(getKeyForReverseOrder());
         showAverageColumn = preferences.getBoolean(getKeyForShowAverage());
+        showOnlyFirstYear = preferences.getBoolean(getKeyForShowOnlyFirstYear());
 
-        tableLayout = new TableColumnLayout();
+        tableLayout = new SafeTableColumnLayout();
         container.setLayout(tableLayout);
 
         tableViewer = new TableViewer(container, SWT.FULL_SELECTION);
@@ -236,6 +257,9 @@ public abstract class PaymentsMatrixTab implements PaymentsTab
     protected void createVehicleColumn(TableViewer records, TableColumnLayout layout, boolean isSorted)
     {
         TableViewerColumn column = new TableViewerColumn(records, SWT.NONE);
+        // register layout data first: on GTK, configuring the column can trigger a layout
+        layout.setColumnData(column.getColumn(), new ColumnPixelData(200));
+
         column.getColumn().setText(Messages.ColumnSecurity);
         column.setLabelProvider(new ColumnLabelProvider()
         {
@@ -267,8 +291,6 @@ public abstract class PaymentsMatrixTab implements PaymentsTab
 
         createSorter((l1, l2) -> TextUtil.compare(l1.getVehicle().getName(), l2.getVehicle().getName()))
                         .attachTo(records, column, isSorted);
-
-        layout.setColumnData(column.getColumn(), new ColumnPixelData(200));
     }
 
     protected ColumnViewerSorter createSorter(Comparator<PaymentsViewModel.Line> comparator)
@@ -288,27 +310,31 @@ public abstract class PaymentsMatrixTab implements PaymentsTab
         });
     }
 
+    /**
+     * Sums up the payments of the first year (i.e. the first up to twelve
+     * months) of the given line.
+     */
+    protected long sumFirstYear(PaymentsViewModel.Line line)
+    {
+        var noOfMonths = Math.min(12, line.getNoOfMonths());
+
+        var sum = 0L;
+        for (var ii = 0; ii < noOfMonths; ii++)
+            sum += line.getValue(ii);
+
+        return sum;
+    }
+
     protected void createSumColumn(TableViewer records, TableColumnLayout layout, boolean showOnlyFirstYear)
     {
-        ToLongFunction<PaymentsViewModel.Line> valueFunction = line -> {
-            if (showOnlyFirstYear)
-            {
-                int noOfMonths = Math.min(12, line.getNoOfMonths());
-
-                long sum = 0;
-                for (int ii = 0; ii < noOfMonths; ii++)
-                    sum += line.getValue(ii);
-
-                return sum;
-            }
-            else
-            {
-                return line.getSum();
-            }
-        };
+        ToLongFunction<PaymentsViewModel.Line> valueFunction = line -> showOnlyFirstYear ? sumFirstYear(line)
+                        : line.getSum();
 
         TableViewerColumn column;
         column = new TableViewerColumn(records, SWT.RIGHT);
+        // register layout data first: on GTK, configuring the column can trigger a layout
+        layout.setColumnData(column.getColumn(), new ColumnPixelData(200));
+
         column.getColumn().setText(Messages.ColumnSum);
         column.setLabelProvider(new ColumnLabelProvider()
         {
@@ -328,12 +354,16 @@ public abstract class PaymentsMatrixTab implements PaymentsTab
 
         createSorter((l1, l2) -> Long.compare(valueFunction.applyAsLong(l1), valueFunction.applyAsLong(l2)))
                         .attachTo(records, column);
-
-        layout.setColumnData(column.getColumn(), new ColumnPixelData(200));
     }
 
     protected void updateColumns(TableViewer records, TableColumnLayout layout)
     {
+        // defer the layout of the table container until all columns have been
+        // recreated. Otherwise GTK may lay out the table while new columns are
+        // only partially initialized.
+        var container = records.getTable().getParent();
+        container.setLayoutDeferred(true);
+
         try
         {
             // first add, then remove columns
@@ -356,6 +386,7 @@ public abstract class PaymentsMatrixTab implements PaymentsTab
         }
         finally
         {
+            container.setLayoutDeferred(false);
             records.refresh();
             records.getTable().setRedraw(true);
         }

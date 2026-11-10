@@ -183,6 +183,13 @@ public class PictetCieGruppeSAPDFExtractor extends AbstractPDFExtractor
                         .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
 
                         // @formatter:off
+                        // CASH EFFECT in portfolio O-XXXXXX.001 Ex date 01.08.2022Payment date 04.08.2022
+                        // @formatter:on
+                        .section("exDate").optional() //
+                        .match("^.*Ex date (?<exDate>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
+                        .assign((t, v) -> t.setExDate(asDate(v.get("exDate"))))
+
+                        // @formatter:off
                         // 2'304.81 Quantity held 2'420Net amount USD Income per unit USD 0.9524Gross amount USD 2'304.81
                         // @formatter:on
                         .section("amount", "currency") //

@@ -1,0 +1,46 @@
+PDFBox Version: 3.0.7
+Portfolio Performance Version: 0.86.0
+System: macosx | aarch64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+Wilhem Tell
+Wertschriftenkonto CHF
+TKB Beratungsdepot 1234.5678.9012
+Private Banking Oberthurgau IBAN CH12 3456 7890 1234 5678 9
+Rheinstrasse 17
+8500 Frauenfeld
+Telefon 0848 111 444
+info@tkb.ch
+www.tkb.ch
+BIC KBTGCH22
+CHE-108.954.458 MWST
+Elektronisch versandt
+Für Auskünfte: Herr
+Urs Casch Wilhelm Tell
++41 12 345 67 89 Am Äpfeli 2B
+urs.casch@tkb.ch 8572 Berg
+
+
+
+Frauenfeld, 20. Juli 2026
+Referenznummer 1234567890
+Abrechnung: Ihr Kauf
+Wir haben für Sie am 20. Juli 2026, 9:33:00 Uhr gekauft (Ausserbörslich Ausland):
+AUD 40'000.00 4.55% Obl Nestle Capital Corp 2025- Valoren-Nr. 142923838
+13.03.30 ISIN AU3CB0319416
+Währung Betrag
+Kurs 98.594% AUD 39'437.60
+Marchzinsen (131 Tage) AUD 648.00
+Kurswert AUD 40'085.60
+Courtage AUD 160.34
+Umsatzabgabe AUD 60.13
+Gebühren Gegenpartei AUD 8.85
+Total AUD 40'314.92
+Wechselkurs AUD/CHF 0.5751
+Zu Ihren Lasten Valuta 22.07.2026 CHF 23'185.11
+Den Betrag haben wir dem Konto belastet.
+Die Titel haben wir in das Depot eingebucht.
+Wir danken für Ihren Auftrag.
+Freundliche Grüsse
+Thurgauer Kantonalbank
+XDNI stex   1234567890 20260720
+123456 123456789

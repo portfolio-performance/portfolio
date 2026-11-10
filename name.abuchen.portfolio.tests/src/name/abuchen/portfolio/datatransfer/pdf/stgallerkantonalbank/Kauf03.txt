@@ -1,0 +1,44 @@
+PDFBox Version: 3.0.7
+Portfolio Performance Version: 0.87.1.202608241030
+System: win32 | x86_64 | 21.0.12.1+1-LTS | Eclipse Adoptium
+-----------------------------------------
+VVFsFvT wX
+Vermögensverwaltungskonto CHF
+Depot-Nr. 1234.5678.9012 / SAMPLE PORTFOLIO
+IBAN CH00 0000 0000 0000 0000 0
+St.Galler Kantonalbank AG
+St. Leonhardstrasse 25
+9001 St. Gallen
+www.sgkb.ch
+BIC KBSGCH22
+Ihr Kontakt:
+Anna Muster VVFsFvT wX
+Telefon +41 71 000 00 00 Musterweg 1
+anna.muster@sgkb.ch 9000 St. Gallen
+
+St. Gallen, 8. Juli 2026
+Referenznummer 1111111111
+Abrechnung: Ihr Kauf
+Wir haben für Sie am 2. Juni 2026 gekauft (Details siehe Folgeseite):
+30 N-Akt Partners Group Holding AG CHF Valoren-Nr. 2460882
+0.01 nom ISIN CH0024608827
+Währung Betrag
+Kurs CHF 820.40 CHF 24'612.00
+Eidg. Stempelsteuer CHF 18.46
+Ausführungsgebühr SSX CHF 3.10
+Total CHF 24'633.56
+Zu Ihren Lasten Valuta 04.06.2026 CHF 24'633.56
+Die Titel wurden in Ihr Depot eingebucht. Wir danken für Ihren Auftrag.
+Freundliche Grüsse
+St.Galler Kantonalbank AG
+PrintPreview 4118838 229614449 BP00000000 Seite 1 von 2
+VVFsFvT wX
+Vermögensverwaltungskonto CHF
+IBAN CH00 0000 0000 0000 0000 0
+Ausführungsdetails
+Die Abrechnung setzt sich wie folgt zusammen:
+Menge Ausführungszeitpunkt Börsenplatz Währung Kurs
+11 02.06.2026 16:57:26 SIX Swiss Exchange CHF 820.40
+15 02.06.2026 16:57:26 SIX Swiss Exchange CHF 820.40
+4 02.06.2026 16:57:26 SIX Swiss Exchange - EBBO Book CHF 820.40
+PrintPreview 4118838 229614449 BP00000000 Seite 2 von 2

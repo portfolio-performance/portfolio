@@ -16,6 +16,7 @@ import org.eclipse.swtchart.ISeries.SeriesType;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.TabularDataSource;
+import name.abuchen.portfolio.ui.util.chart.ChartLineWidth;
 import name.abuchen.portfolio.ui.util.chart.TimelineChartToolTip;
 import name.abuchen.portfolio.ui.util.format.AmountNumberFormat;
 import name.abuchen.portfolio.ui.util.format.ThousandsNumberFormat;
@@ -75,7 +76,7 @@ public class PaymentsAccumulatedChartBuilder implements PaymentsChartBuilder
             lineSeries.setYSeries(series);
 
             lineSeries.setLineColor(PaymentsColors.getColor(year));
-            lineSeries.setLineWidth(2);
+            lineSeries.setLineWidth(ChartLineWidth.get());
             lineSeries.setSymbolType(PlotSymbolType.NONE);
             lineSeries.setAntialias(SWT.ON);
 

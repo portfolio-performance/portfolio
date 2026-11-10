@@ -35,6 +35,7 @@ import name.abuchen.portfolio.ui.util.viewers.Column;
 import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
 import name.abuchen.portfolio.ui.util.viewers.CopyPasteSupport;
 import name.abuchen.portfolio.ui.util.viewers.DateLabelProvider;
+import name.abuchen.portfolio.ui.util.viewers.SafeTableColumnLayout;
 import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
 import name.abuchen.portfolio.ui.views.AbstractTabbedView;
 
@@ -66,6 +67,18 @@ public class ExchangeRatesListTab implements AbstractTabbedView.Tab
         indeces.refresh();
     }
 
+    @Inject
+    @org.eclipse.e4.core.di.annotations.Optional
+    public void onChartLineWidthChanged(
+                    @UIEventTopic(UIConstants.Event.Global.CHART_LINE_WIDTH_CHANGED) Object obj)
+    {
+        // the view is not rebuilt by the line width change because the tab
+        // creates the chart itself and is not an information pane
+
+        if (chart != null && !chart.isDisposed())
+            refreshChart((ExchangeRateTimeSeries) indeces.getStructuredSelection().getFirstElement());
+    }
+
     @Override
     public Composite createTab(Composite parent)
     {
@@ -85,7 +98,7 @@ public class ExchangeRatesListTab implements AbstractTabbedView.Tab
     protected void createTopTable(Composite parent)
     {
         Composite container = new Composite(parent, SWT.NONE);
-        TableColumnLayout layout = new TableColumnLayout();
+        TableColumnLayout layout = new SafeTableColumnLayout();
         container.setLayout(layout);
 
         indeces = new TableViewer(container, SWT.FULL_SELECTION);

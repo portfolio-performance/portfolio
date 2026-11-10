@@ -1,0 +1,46 @@
+PDFBox Version: 3.0.5
+Portfolio Performance Version: 0.79.1
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+Alpian SA
+Chemin des Crêts 17
+Petit-Saconnex - 1209 Geneva
+Switzerland
+www.alpian.com
+Geneva, 19 October 2023
+UjK
+mIlXK
+sVwYWcSjPJgO
+TXwUwkes
+8165
+CH
+Contract Note Sell - SCTRSC2329278Z05
+Dear OAl mIlXK,
+This is to inform you that based on your sell order of 19.10.2023, we have carried out the following transaction:
+Security name: iShares Core MSCI Europe E
+ISIN: IE00B4K48X80
+Currency: EUR
+TRANSACTION DETAILS
+Trade date: 19.10.2023
+Value date: 23.10.2023
+Quantity: 20
+Unit gross price: EUR 66.33518006
+Stamp tax duty: EUR 1.99
+Net amount: EUR 1,324.71
+Total net amount credited: CHF 1,253.18
+Place of execution: GETTEX2
+AEB
+AEB
+AEB
+AEB
+Time of execution: 2023-10-19-08:12:34
+2023-10-19-08:16:02
+2023-10-19-08:16:12
+2023-10-19-08:16:03
+2023-10-19-08:16:12
+We remain at your disposal for any additional information.
+Kind regards,
+Alpian SA
+Advice without signature
+Disclaimer: This contract note shall be considered to be approved if no complaint is received by Alpian SA within 30 days.
+19.10.2023 10:22:16.967 31e5ba78-b04c-4556-9277-8b59b1db91e2 Page 1 of 1

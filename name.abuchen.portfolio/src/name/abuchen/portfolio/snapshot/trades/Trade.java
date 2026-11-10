@@ -26,7 +26,9 @@ import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.MoneyCollectors;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.snapshot.filter.ClientTransactionFilter;
+import name.abuchen.portfolio.snapshot.filter.ReadOnlyPortfolio;
 import name.abuchen.portfolio.snapshot.security.LazySecurityPerformanceSnapshot;
+import name.abuchen.portfolio.snapshot.security.SnapshotCache;
 import name.abuchen.portfolio.util.Dates;
 import name.abuchen.portfolio.util.Interval;
 import name.abuchen.portfolio.util.LazyValue;
@@ -60,6 +62,13 @@ public class Trade implements Adaptable
     private LocalDateTime end;
     private final long shares;
 
+    /**
+     * Real closing transaction, or null for open trades. Set by the collector
+     * because transaction type alone is ambiguous for short trades, and
+     * {@link ClientTransactionFilter} requires the original object.
+     */
+    private PortfolioTransaction realClosingTransaction;
+
     private List<TransactionPair<PortfolioTransaction>> transactions = new ArrayList<>();
 
     private Money entryValue;
@@ -84,24 +93,24 @@ public class Trade implements Adaptable
         return transactions.get(0).getTransaction().getType().isPurchase();
     }
 
-    /* package */ void calculate(Client client, CurrencyConverter converter)
+    /* package */ void calculate(Client client, CurrencyConverter converter, SnapshotCache snapshotCache)
     {
         boolean isLong = this.isLong();
 
         // for purchases, getMonetaryAmount() returns the value including taxes
-        // and fees paid
+        // and fees paid. Passing the converter applies the exchange rate
+        // recorded on the transaction (if applicable) instead of the historical
+        // rate of that day
         this.entryValue = transactions.stream() //
                         .filter(t -> t.getTransaction().getType().isPurchase() == isLong)
-                        .map(t -> t.getTransaction().getMonetaryAmount()
-                                        .with(converter.at(getEffectiveEntryDateTime(t))))
+                        .map(t -> t.getTransaction().getMonetaryAmount(converter))
                         .collect(MoneyCollectors.sum(converter.getTermCurrency()));
 
         // for purchases, getGrossValue() returns the value without taxes and
         // fees paid
         this.entryValueWithoutTaxesAndFees = transactions.stream() //
                         .filter(t -> t.getTransaction().getType().isPurchase() == isLong)
-                        .map(t -> t.getTransaction().getGrossValue()
-                                        .with(converter.at(getEffectiveEntryDateTime(t))))
+                        .map(t -> t.getTransaction().getGrossValue(converter))
                         .collect(MoneyCollectors.sum(converter.getTermCurrency()));
 
         if (end != null)
@@ -110,16 +119,14 @@ public class Trade implements Adaptable
             // (after) taxes and fees deducted
             this.exitValue = transactions.stream() //
                             .filter(t -> t.getTransaction().getType().isLiquidation() == isLong)
-                            .map(t -> t.getTransaction().getMonetaryAmount()
-                                            .with(converter.at(t.getTransaction().getDateTime())))
+                            .map(t -> t.getTransaction().getMonetaryAmount(converter))
                             .collect(MoneyCollectors.sum(converter.getTermCurrency()));
 
             // for sales, getGrossValue() returns the sales proceeds without
             // (before) taxes and fees deducted
             this.exitValueWithoutTaxesAndFees = transactions.stream() //
                             .filter(t -> t.getTransaction().getType().isLiquidation() == isLong)
-                            .map(t -> t.getTransaction().getGrossValue()
-                                            .with(converter.at(t.getTransaction().getDateTime())))
+                            .map(t -> t.getTransaction().getGrossValue(converter))
                             .collect(MoneyCollectors.sum(converter.getTermCurrency()));
 
             this.holdingPeriod = Math.round(transactions.stream() //
@@ -163,9 +170,9 @@ public class Trade implements Adaptable
         calculateIRR(converter);
 
         this.entryValueMovingAverage = new LazyValue<>(
-                        () -> getMovingAverageCost(client, converter, TaxesAndFees.INCLUDED));
+                        () -> getMovingAverageCost(client, converter, snapshotCache, TaxesAndFees.INCLUDED));
         this.entryValueMovingAverageWithoutTaxesAndFees = new LazyValue<>(
-                        () -> getMovingAverageCost(client, converter, TaxesAndFees.NOT_INCLUDED));
+                        () -> getMovingAverageCost(client, converter, snapshotCache, TaxesAndFees.NOT_INCLUDED));
     }
 
     private void calculateIRR(CurrencyConverter converter)
@@ -182,8 +189,7 @@ public class Trade implements Adaptable
             LocalDateTime effectiveDateTime = getEffectiveEntryDateTime(t);
             dates.add(effectiveDateTime.toLocalDate());
 
-            double amount = t.getTransaction().getMonetaryAmount().with(converter.at(effectiveDateTime))
-                            .getAmount() / Values.Amount.divider();
+            double amount = t.getTransaction().getMonetaryAmount(converter).getAmount() / Values.Amount.divider();
 
             if (t.getTransaction().getType().isPurchase() == isLong())
             {
@@ -273,7 +279,7 @@ public class Trade implements Adaptable
 
     public Portfolio getPortfolio()
     {
-        return portfolio;
+        return portfolio instanceof ReadOnlyPortfolio p ? p.unwrap() : portfolio;
     }
 
     public Optional<LocalDateTime> getEnd()
@@ -284,6 +290,21 @@ public class Trade implements Adaptable
     /* package */ void setEnd(LocalDateTime end)
     {
         this.end = end;
+    }
+
+    /** Sets the original transaction that closed this trade. */
+    /* package */ void setRealClosingTransaction(PortfolioTransaction transaction)
+    {
+        this.realClosingTransaction = transaction;
+    }
+
+    /**
+     * Returns the original closing transaction, unlike
+     * {@link #getClosingTransaction()}, which may return a split copy.
+     */
+    public Optional<PortfolioTransaction> getRealClosingTransaction()
+    {
+        return Optional.ofNullable(realClosingTransaction);
     }
 
     public LocalDateTime getStart()
@@ -326,14 +347,41 @@ public class Trade implements Adaptable
         return entryValue;
     }
 
+    /**
+     * The moving average acquisition cost of the shares, or null when the
+     * trade has none: a short position was never acquired. Every moving
+     * average value of the trade is null together with this one.
+     */
     public Money getEntryValueMovingAverage()
     {
         return entryValueMovingAverage.get();
     }
 
+    public Money getEntryValueWithoutTaxesAndFees()
+    {
+        return entryValueWithoutTaxesAndFees;
+    }
+
+    /** @see #getEntryValueMovingAverage() for when this is null */
+    public Money getEntryValueMovingAverageWithoutTaxesAndFees()
+    {
+        return entryValueMovingAverageWithoutTaxesAndFees.get();
+    }
+
     public Money getExitValue()
     {
         return exitValue;
+    }
+
+    /**
+     * The exit value without the taxes and fees of the closing transactions.
+     * For an open trade this is identical to {@link #getExitValue()}: the exit
+     * is a valuation at the current market price, and no charges have been
+     * incurred.
+     */
+    public Money getExitValueWithoutTaxesAndFees()
+    {
+        return exitValueWithoutTaxesAndFees;
     }
 
     public Money getProfitLoss()
@@ -344,9 +392,11 @@ public class Trade implements Adaptable
             return entryValue.subtract(exitValue);
     }
 
+    /** @see #getEntryValueMovingAverage() for when this is null */
     public Money getProfitLossMovingAverage()
     {
-        return exitValue.subtract(entryValueMovingAverage.get());
+        var entry = entryValueMovingAverage.get();
+        return entry != null ? exitValue.subtract(entry) : null;
     }
 
     public Money getProfitLossWithoutTaxesAndFees()
@@ -357,9 +407,11 @@ public class Trade implements Adaptable
             return entryValueWithoutTaxesAndFees.subtract(exitValueWithoutTaxesAndFees);
     }
 
+    /** @see #getEntryValueMovingAverage() for when this is null */
     public Money getProfitLossMovingAverageWithoutTaxesAndFees()
     {
-        return exitValueWithoutTaxesAndFees.subtract(entryValueMovingAverageWithoutTaxesAndFees.get());
+        var entry = entryValueMovingAverageWithoutTaxesAndFees.get();
+        return entry != null ? exitValueWithoutTaxesAndFees.subtract(entry) : null;
     }
 
     public long getHoldingPeriod()
@@ -380,9 +432,16 @@ public class Trade implements Adaptable
             return 1 - (exitValue.getAmount() / (double) entryValue.getAmount());
     }
 
+    /**
+     * @return NaN when the moving average acquisition cost is undefined
+     * @see #getEntryValueMovingAverage()
+     */
     public double getReturnMovingAverage()
     {
-        return (exitValue.getAmount() / (double) entryValueMovingAverage.get().getAmount()) - 1;
+        var entry = entryValueMovingAverage.get();
+        if (entry == null)
+            return Double.NaN;
+        return (exitValue.getAmount() / (double) entry.getAmount()) - 1;
     }
 
     /**
@@ -428,27 +487,35 @@ public class Trade implements Adaptable
                         shares, start, entryValue, end, exitValue);
     }
 
-    private Money getMovingAverageCost(Client client, CurrencyConverter converter, TaxesAndFees taxesAndFees)
+    private Money getMovingAverageCost(Client client, CurrencyConverter converter, SnapshotCache snapshotCache,
+                    TaxesAndFees taxesAndFees)
     {
-        var closingTransaction = transactions.stream() //
-                        .filter(t -> t.getTransaction().getType().isLiquidation()) //
-                        .findFirst().map(t -> t.getTransaction());
+        // a position that was never acquired has no acquisition cost: for a
+        // short trade the answer is "undefined", not a number the caller has
+        // to know is meaningless
 
-        Client filteredClient = client;
-        if (closingTransaction.isPresent())
-        {
+        if (!isLong())
+            return null;
+
+        var interval = Interval.of(LocalDate.MIN, realClosingTransaction != null
+                        ? realClosingTransaction.getDateTime().toLocalDate()
+                        : LocalDate.now());
+
+        // open trades share one unfiltered snapshot across all securities
+
+        var snapshot = snapshotCache.lookup(client, realClosingTransaction, converter, interval, () -> {
+
             // if a closing transaction is present, we need to calculate the
-            // moving average costs based on all transactions before the
-            // closing transaction
+            // moving average costs based on all transactions before the closing
+            // transaction
 
-            filteredClient = new ClientTransactionFilter(security, closingTransaction.get()).filter(client);
-        }
+            Client filteredClient = realClosingTransaction != null
+                            ? new ClientTransactionFilter(security, realClosingTransaction).filter(client)
+                            : client;
 
-        var snapshot = LazySecurityPerformanceSnapshot.create(filteredClient, converter,
-                        Interval.of(LocalDate.MIN,
-                                        closingTransaction.isPresent()
-                                                        ? closingTransaction.get().getDateTime().toLocalDate()
-                                                        : LocalDate.now()));
+            return LazySecurityPerformanceSnapshot.create(filteredClient, converter, interval);
+        });
+
         var r = snapshot.getRecord(security);
         if (r.isEmpty())
             return null;

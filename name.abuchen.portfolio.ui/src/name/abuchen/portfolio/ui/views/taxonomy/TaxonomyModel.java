@@ -115,6 +115,13 @@ public final class TaxonomyModel
 
     private Rebalancer.RebalancingSolution rebalancingSolution;
 
+    /**
+     * Signed cash flow the user wants to invest (positive) or withdraw
+     * (negative) when rebalancing. Transient session state only; never
+     * persisted.
+     */
+    private Money amountToInvest;
+
     public TaxonomyModel(ExchangeRateProviderFactory factory, Client client, Taxonomy taxonomy)
     {
         this.taxonomy = Objects.requireNonNull(taxonomy);
@@ -122,6 +129,7 @@ public final class TaxonomyModel
         this.factory = Objects.requireNonNull(factory);
 
         this.converter = new CurrencyConverterImpl(factory, client.getBaseCurrency());
+        this.amountToInvest = Money.of(getCurrencyCode(), 0);
 
         this.filteredClient = client;
         this.snapshot = ClientSnapshot.create(client, converter, LocalDate.now());
@@ -251,7 +259,7 @@ public final class TaxonomyModel
     private void runRecalculations()
     {
         this.attachedModels.forEach(m -> m.recalculate(this));
-        rebalance();
+        rebalancingSolution = rebalance(amountToInvest);
     }
 
     public boolean isUnassignedCategoryInChartsExcluded()
@@ -415,7 +423,14 @@ public final class TaxonomyModel
     public void updateClientSnapshot(Client filteredClient)
     {
         if (!filteredClient.getBaseCurrency().equals(converter.getTermCurrency()))
+        {
             this.converter = new CurrencyConverterImpl(factory, filteredClient.getBaseCurrency());
+
+            // the amount to invest is held in the currency of the model. It
+            // must follow the new currency, otherwise the rebalancing
+            // calculation mixes currencies and fails
+            this.amountToInvest = converter.convert(LocalDate.now(), amountToInvest);
+        }
 
         this.filteredClient = filteredClient;
         this.snapshot = ClientSnapshot.create(filteredClient, converter, LocalDate.now());
@@ -507,20 +522,43 @@ public final class TaxonomyModel
         return rebalancingSolution;
     }
 
-    private void rebalance()
+    /**
+     * Returns the signed amount to invest (positive) or withdraw (negative)
+     * the current rebalancing solution is based on. Always denominated in the
+     * currency of this model.
+     */
+    public Money getAmountToInvest()
+    {
+        return amountToInvest;
+    }
+
+    /**
+     * Sets the signed amount to invest (positive) or withdraw (negative) and
+     * recomputes the single rebalancing solution for that amount. The amount is
+     * transient session state; this must not mark the client dirty.
+     */
+    public void setAmountToInvest(Money amount)
+    {
+        this.amountToInvest = amount;
+        this.rebalancingSolution = rebalance(amount);
+        fireTaxonomyModelChange(getVirtualRootNode());
+    }
+
+    private Rebalancer.RebalancingSolution rebalance(Money amount)
     {
         List<InvestmentVehicle> inexactResultsDueToEmptyClassifications = new ArrayList<>();
-        FixedSumRebalancer rebalancer = new FixedSumRebalancer(Money.of(this.getCurrencyCode(), 0));
+        FixedSumRebalancer rebalancer = new FixedSumRebalancer(amount);
         collectConstraints(classificationRootNode, rebalancer, Collections.emptyMap(),
-                        inexactResultsDueToEmptyClassifications, Money.of(snapshot.getCurrencyCode(), 0));
-        rebalancingSolution = rebalancer.solve();
-        rebalancingSolution.markAllAsInexact(inexactResultsDueToEmptyClassifications);
+                        inexactResultsDueToEmptyClassifications, Money.of(getCurrencyCode(), 0), amount);
+        Rebalancer.RebalancingSolution solution = rebalancer.solve();
+        solution.markAllAsInexact(inexactResultsDueToEmptyClassifications);
+        return solution;
     }
 
     private void collectConstraints(ClassificationNode node, FixedSumRebalancer rebalancer,
                     Map<InvestmentVehicle, Double> investmentVehiclesInParentNodes,
                     List<? super InvestmentVehicle> inexactResultsDueToEmptyClassifications,
-                    Money unbalancedSumToHandle)
+                    Money unbalancedSumToHandle, Money amountToInvest)
     {
         double thisWeight = node.getWeight() / (double) Classification.ONE_HUNDRED_PERCENT;
         List<TaxonomyNode> allChildren = node.getChildren();
@@ -560,11 +598,15 @@ public final class TaxonomyModel
 
         for (ClassificationNode child : childsToRebalance)
         {
-            // Rebalance the rebalancable classification children
+            // Rebalance the rebalancable classification children. The amount to
+            // invest is split by the same weight ratio as the unbalanced sum,
+            // but tracked separately so that fully placeable new money does not
+            // trip the "inexact" heuristic below.
+            double weightRatio = (double) child.getWeight() / (double) rebalancableNodesWeight;
             collectConstraints(child, rebalancer,
                             new HashMap<InvestmentVehicle, Double>(newInvestmentVehiclesInParentNodes),
-                            inexactResultsDueToEmptyClassifications, unbalancedSum.multiplyAndRound(
-                                            (double) child.getWeight() / (double) rebalancableNodesWeight));
+                            inexactResultsDueToEmptyClassifications, unbalancedSum.multiplyAndRound(weightRatio),
+                            amountToInvest.multiplyAndRound(weightRatio));
         }
 
         if (unbalancedSum.getAmount() != 0)
@@ -596,7 +638,7 @@ public final class TaxonomyModel
                 addToMap(equation, entry.getKey(), entry.getValue() * thisWeight);
 
             rebalancer.addConstraint(new Rebalancer.RebalancingConstraint(equation,
-                            node.getTarget().subtract(node.getActual()).add(unbalancedSumToHandle)));
+                            node.getTarget().subtract(node.getActual()).add(unbalancedSumToHandle).add(amountToInvest)));
         }
     }
 

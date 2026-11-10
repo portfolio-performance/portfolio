@@ -1,0 +1,135 @@
+PDFBox Version: 3.0.6
+Portfolio Performance Version: 0.81.4
+System: macosx | aarch64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+S t e u e r - I n f o r m a t i o n s b e l e g
+- keine Steuerbescheinigung -
+Konto- / Depotnummer Abrechnungstag Seite
+0000 3484249337 02.01.2026  1 / 1 
+Buchungs-Kontonummer Steuer-Informationsbeleg-Nr.
+0000 9433405345 (R1) 679178241/26/0002
+0000 313 Auslösendes Ereignis für diesen Steuer-Informationsbeleg    
+Vorabpauschale für 2025
+Herrn
+iVxfgKKfJ NRzbZpRxG
+RJZDGkTeReEuM zwI. 6
+92999 oAmkZDB
+QLSxPoTtG oFpPkhVOo
+XtMeAuwNBAbPL RlR. 6
+91651 VPfFynu
+Nennwert / Stück / Kontraktzahl Wertpapier- bzw. Derivatbezeichnung     Wertpapierkennnummer/ISIN
+St. 2.000,000 iShs Core MSCI EM IMI U.ETF   A111X9
+Registered Shares o.N. IE00BKM4GZ66
+Steuerberechnung
+Kapitalertragsteuer (KESt) 25,00% EUR 205,53-
+Solidaritätszuschlag (SolZ)  5,50% EUR 11,30-
+Kirchensteuer (KiSt)  0,00% EUR 0,00
+----------------------------------------
+Belastung/Gutschrift EUR 216,83-
+Valuta 24.01.2026
+=====================================================================================
+Die Vorabpauschale ist ein nach gesetzlicher Vorgabe anhand des bewertungs-
+rechtlichen Basiszinses ermittelter fiktiver Ertrag, der dem Anleger jährlich
+am ersten Werktag des Folgejahres zufließt und bei dem die Bank zu einem
+Steuereinbehalt verpflichtet ist. Die Wertentwicklung des Investmentfonds und
+mögliche Ausschüttungen beeinflussen die Höhe der Vorabpauschale und können
+diese ggf. auf 0 Euro reduzieren.
+Bei Aktienfonds beträgt der steuerfreie Anteil 30% der Vorabpauschale.
+Aktienfonds (steuerpflichtiger Anteil): EUR 822,12
+Vorabpauschale Aktienfonds: EUR 1.174,46
+Aktienfonds (steuerfreier Anteil): EUR 352,34
+Salden vor Berechnung Berechnung Salden nach Berechnung
+Brutto-Bemessungsgrundlage
+EUR 822,12 
+Aktienverluste Verwendung Aktienverluste Aktienverluste
+EUR 128,78 EUR 0,00 EUR 128,78 
+Sonstige Verluste und Stückzinsen Verwendung sonstige Verluste Sonstige Verluste und Stückzinsen
+EUR 0,00 EUR 0,00 EUR 0,00 
+Sparer-Pauschbetrag Verwendung Sparer-Pauschbetrag Sparer-Pauschbetrag
+EUR 0,00 EUR 0,00 EUR 0,00 
+Netto-Bemessungsgrundlage für KESt
+EUR 822,12 
+25% aus Netto-Bemessungsgrundlage
+EUR 205,53 
+Quellensteuer-Anrechnungsguthaben Minderung durch Quellensteuerguth. Quellensteuer-Anrechnungsguthaben
+EUR 0,00 EUR 0,00 EUR 0,00 
+Bereits bezahlte Kapitalertragsteuer    Kapitalertragsteuer (KESt) Bereits bezahlte Kapitalertragsteuer    
+EUR 0,00 EUR 205,53 EUR 205,53 
+Bereits bezahlte Solidaritätszuschläge  daraus 5,5% Solidaritätszuschlag (SolZ) Bereits bezahlte Solidaritätszuschläge  
+EUR 0,00 EUR 11,30 EUR 11,30 
+Bereits bezahlte Kirchensteuer Kirchensteuer (KiSt) Bereits bezahlte Kirchensteuer
+EUR 0,00 EUR 0,00 EUR 0,00 
+Bitte beachten Sie: Dieser Steuer-Informationsbeleg ist keine Steuerbescheinigung. Über Änderungen der enthaltenen Angaben werden Sie nur informiert, wenn Sie  
+den regelmäßigen Versand der Steuer-Informationsbelege beauftragt haben. Die Steuer-Informationsbelege sind auf Ebene aller Konto-/Depotnummern fortlaufend     
+nummeriert. Eine Steuerbescheinigung wird auf Wunsch erstellt.
+BV083/VK083/08.2025
+Eingestellt am: 20260127 05:08:241 -F1 10 100 G1Q1R750 366984771    00000037767603 000000068538  
+Wir bitten Sie, die Angaben auf Richtig- Please check whether the information Nous vous prions de vérifier l'exactitude et
+keit und Vollständigkeit zu überprüfen. is complete and correct. Please report l'intégralité des données au verso et de soulever
+Einwendungen bitten wir unverzüglich any problems immediately. sans retard vos éventuelles objections.
+zu erheben.  
+ Cheques, bills of exchange, other items Les chèques, effets, autres titres reçus à
+Schecks, Wechsel, sonstige Einzugs- sent for collection and credit advices for l'encaissement et avoirs résultant du
+papiere und Gutschriften aus Wertpapier- investment income will be credited to the placement des titres sont crédités sauf
+erträgen werden unter dem Vorbehalt des account subject to final payment. bonne fin.
+Eingangs gutgeschrieben.  
+ Daily and other statements as well as Nous ne signons pas les extraits et
+Maschinell erstellte Auszüge, Abrechnun- accounting advices issued by computer will autres décomptes ainsi que les avis
+gen, Buchungsaufgaben und Anzeigen not be signed by us. comptables établis par ordinateur.
+werden von uns nicht unterzeichnet.  
+ Notice for payments relating to external Remarques pour des paiements trans-
+Hinweise bei grenzüberschreitendem transactions frontaliers
+Zahlungsverkehr According to Section 11 (2) of the Foreign En vertu du § 11 nº 2 du Règlement de
+Nach § 11 Abs. 2 des Außenwirtschaftsge- Trade and Payments Act (AWG) Residents l'économie extérieure (Außenwirtschafts-
+setzes (AWG) sind Inländer verpflichtet, have to report to the German Bundesbank all gesetz) vous êtes en tant que résident de
+Zahlungen von mehr als EUR 50.000 oder payments of more than 50.000,-- EURO or the l'Allemagne tenu de déclarer à la Deutsche
+Gegenwert an die Deutsche Bundesbank zu equivalent which they receive from or pay to Bundesbank tous paiements dépassant
+melden, die sie von Ausländern entgegen- non-residents. To these belong income from 50.000,- EUR ou sa contre-valeur que vous
+nehmen oder an Ausländer leisten. Hierzu foreign securities (interest or dividends). recevez de ou que vous payez à des non-
+zählen auch Erträge aus ausländischen Wert- Further information may be obtained from the résidents. Ça inclut des revenus sur titres
+papieren (Zinsen oder Dividenden). Hinweise Website www.bundesbank.de or phone étrangers (intérêts et dividendes). Vour pouvez
+zur Meldeeinreichung erhalten Sie auf der 0800-1234 111 (freephone when calling from obtenir plus d'information sur le site internet
+Website www.bundesbank.de oder über die within Germany). www.bundesbank.de ou par téléphone
+Hotline der Deutschen Bundesbank  0800-1234 111 (sans frais pour des communi-
+0800-1234 111 (entgeltfrei). Information on VAT: cations téléphoniques émamant de l'Allemagne).
+ Our VAT ID No.: DE 129 273 380
+Umsatzsteuerliche Angaben:  Indications concernant la taxe sur la
+Unsere Umsatzsteuer-Identifikationsnummer: The services which we billed you are exempt valeur ajoutée :
+DE 129 273 380 from VAT (Value Added Tax) according to Notre numéro intracommunautaire d'identi-
+Section 4, No. 8 UStG (German Turnover Tax fication à la TVA : DE 129 273 380
+Die von uns abgerechneten Leistungen sind Act). If a service was billed which is subject
+umsatzsteuerfrei nach § 4 Nr. 8 UStG. Inso- to VAT, attention is called to this and you will Les prestations que nous facturons sont
+weit über eine umsatzsteuerpflichtige Leis- receive a separate invoice. exonérées de taxe sur la valeur ajoutée
+tung abgerechnet wird, ist darauf gesondert The invoice number for a service exempt from selon l'art. 4 nº 8 de la Loi concernant la
+hingewiesen bzw. Sie erhalten eine separate VAT on this statement of account from our taxe sur la valeur ajoutée (UStG). Dans la
+Rechnung. current account/payments and transfers busi- mesure où il s'agit d'une prestation soumise
+Die Rechnungsnummer für die mit diesem ness is made up of the following: 9-account á la taxe sur la valeur ajoutée, cela est
+Kontoauszug umsatzsteuerfrei abgerechnete number-bank routing code-date. signalé séparément, respectivement vous
+Leistung aus unserer Kontokorrentbeziehung /  recevez une facture séparée.
+unserem Zahlungs- und Überweisungsverkehr For our service from the giro account relation- Le numéro de la facture pour la prestation
+setzt sich wie folgt zusammen: ship/payments and transfer business this facturée avec ce relevé de compte et
+9-Kontonummer-Bankleitzahl-Datum. statement of account and the underlying exonérée de la TVA découlant de notre
+ contractual agreement constitutes our invoice relation de compte courant/de nos trans-
+Für unsere Leistung aus der Kontokorrentbe- according to Section 14 UStG (German Turn- actions de paiement et de virement se
+ziehung / dem Zahlungs- und Überweisungs- over Tax Act). compose de la manière suivante :
+verkehr stellt dieser Kontoauszug und die zu-  9 - numeró de compte - code banque -
+grundeliegende vertragliche Vereinbarung Remarks on the account balance and the date.
+unsere Rechnung gemäß § 14 Umsatzsteuer- value date
+gesetz dar. The account balance given does not take the Pour notre prestation découlant de notre
+ value of the account transactions into relation de compte courant/ de nos trans-
+Hinweise zur Wertstellung consideration. This means that the amount actions de paiement et de virement, ce
+Der angegebene Kontostand berücksichtigt shown does not necessarily have to corres- relevé de compte et la convention contrac-
+nicht die Wertstellung der Buchungen. Dies pond to the credit balance which is actually tuelle sur laquelle il est basé représente notre
+bedeutet, dass der genannte Betrag nicht dem available. facture conformément à l'article 14 UStG.
+tatsächlich zur Verfügung stehenden Guthaben  
+entsprechen muss. With regard to withdrawals, interest could be Remarques concernant la datation de la
+Somit können bei Verfügungen möglicherweise charged for the usage of an account overdraft valeur
+Zinsen für die Inanspruchnahme einer einge- which has been granted or allowed. La situation indiquée du compte ne tient pas
+räumten oder geduldeten Kontoüberziehung compte de la datation de la valeur des
+anfallen. opérations comptables. Cela signifie que le
+montant indiqué ne doit pas correspondre
+obligatoirement à l'avoir effectivement à
+disposition.
+Il est donc possible que des dispositions
+entraînent des intérêts pour le recours à un
+découvert de compte accordé ou toléré.

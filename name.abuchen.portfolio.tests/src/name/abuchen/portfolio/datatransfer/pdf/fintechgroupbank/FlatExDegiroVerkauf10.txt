@@ -1,0 +1,69 @@
+PDFBox Version: 3.0.7
+Portfolio Performance Version: 0.87.0
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+flatexDEGIRO Bank SE
+Postfach 100551
+41405 Neuss
+USt-IdNr.: DE 246 786 363
+Kundenservice:
+Tel.: +49 9221 7035898
+E-Mail: info@flatex.de
+flatexDEGIRO Bank SE -  Hammfelddamm 4 - 41460 Neuss, Deutschland
+0303502000006238270840
+smzCNY ajxBQ
+sm fwSmqLqAVh 9
+41469 LxfkltGWYfXR
+          Frankfurt, 15.08.2026
+Sammelabrechnung (Wertpapierkauf/-verkauf)
+Ihre Depotnummer: 4225264789
+Depotinhaber:     lpcYDF dPRQi
+Nr.315894915/1    Verkauf                  QUANTUM CORP. (US7479066000/A40M9N)
+Ordervolumen  : 60,00 St.               Handelsplatz  :                 NASDAQ
+davon ausgef. : 60,00 St.               Schlusstag    :  14.08.2026, 15:30 Uhr
+Kurs          : 24,6800 USD             Kurswert      :           1.274,85 EUR
+Devisenkurs   : 1,161544                Provision     :               5,90 EUR
+Bew-Faktor    : 1,0000                  Eigene Spesen :
+Verwahrart    : Wertpapierrechnung     *Fremde Spesen :               0,03 EUR
+Lagerstelle   : International
+Lagerland     : USA                     Bemessungs-
+Gewinn/Verlust: -214,05 EUR             grundlage     :            -219,98 EUR
+Valuta        : 17.08.2026            **Einbeh. Steuer:             -58,02 EUR
+                                        Endbetrag     :           1.326,94 EUR
+*   Enthalten sind folgende Gebühren
+                                Courtage                :             0,00 EUR
+                                Tradinggebühr           :             0,00 EUR
+                                Regulierung             :             0,00 EUR
+                                Schlussnoten            :             0,00 EUR
+                                Finanztransaktionssteuer:             0,00 EUR
+                                Sonstige                :             0,03 EUR
+**  Enthalten sind folgende Steuern (negative Werte bedeuten Steuererstattung)
+                                Kapitalertragsteuer   :             -55,00 EUR
+                                Solidaritätszuschlag  :              -3,02 EUR
+                                Kirchensteuer         :               0,00 EUR
+    Evtl. Details dazu finden Sie im Steuerreport unter der Transaktion-Nr.:
+    5164291571.
+Die Verrechnung der Endbeträge erfolgt über Ihr Konto Nr.: 7220105375
+______________________________________________________________________________
+                                                                     Seite 1/2
+BLZ 101 308 00 / BIC: BIWBDE33XXX  -  Societas Europaea, Sitz Frankfurt  -  Amtsgericht Frankfurt am Main (HRB 141330)
+Vorsitzender des Aufsichtsrats: Hans-Hermann Lotter  -  Vorstand: Oliver Behrens (Vorsitzender), Dr. Benon Janos (stellv. Vorsitzender),
+ Evgeni Kaplun, Jens Möbitz, Christiane Strubel
+2000006238270840 0113303500000101
+Die Wertpapiere sowie den Gegenwert werden wir entsprechend der Abrechnung mit
+dem angegebenen Valutatag buchen. Bitte prüfen Sie diese Abrechnung auf
+Richtigkeit und Vollständigkeit. Etwaige Einwendungen gegen diese Abrechnung
+müssen unverzüglich nach Zugang bei der Bank erhoben werden. Die
+Unterlassung rechtzeitiger Einwendung gilt als Genehmigung. Bitte beachten
+Sie mögliche Hinweise des Emittenten hinsichtlich vorzeitiger Fälligstellung,
+beispielsweise wegen Knock-Out, in den jeweiligen Optionsscheinbedingungen und
+informieren Sie sich rechtzeitig, welche spezielle Fälligkeitsregelung auf die
+von Ihnen gehaltenen Wertpapiere zutreffen. Kapitalerträge sind ESt-pflichtig.
+Diese Mitteilung ist maschinell erstellt und wird nicht unterschrieben.
+Für weitergehende Fragen wenden Sie sich bitte an Ihr flatex-Service-Team.
+______________________________________________________________________________
+                                                                     Seite 2/2
+BLZ 101 308 00 / BIC: BIWBDE33XXX  -  Societas Europaea, Sitz Frankfurt  -  Amtsgericht Frankfurt am Main (HRB 141330)
+Vorsitzender des Aufsichtsrats: Hans-Hermann Lotter  -  Vorstand: Oliver Behrens (Vorsitzender), Dr. Benon Janos (stellv. Vorsitzender),
+ Evgeni Kaplun, Jens Möbitz, Christiane Strubel
+2000006238270840

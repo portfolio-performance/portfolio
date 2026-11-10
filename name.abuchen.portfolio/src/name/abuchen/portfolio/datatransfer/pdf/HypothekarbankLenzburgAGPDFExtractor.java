@@ -93,9 +93,9 @@ public class HypothekarbankLenzburgAGPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("name", "wkn", "isin", "currency") //
-                                                        .find("Aufgrund Ihres Bestandes schreiben wir Ihnen gut") //)
-                                                        .match("^[\s]*[\\.,'\\d]+ (?<name>.*) Depotstelle.*$") //
-                                                        .match("^Valor: (?<wkn>[A-Z0-9]{5,9}) \\/ (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$")
+                                                        .find("Aufgrund Ihres Bestandes schreiben wir Ihnen gut") //
+                                                        .match("^[\\s]*[\\.,'\\d]+ (?<name>.*) Depotstelle.*$") //
+                                                        .match("^Valor: (?<wkn>[A-Z0-9]{5,9}) \\/ (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
                                                         .match("^Brutto zu (?<currency>[A-Z]{3})[\\s]{1,}[\\.'\\d]+[\\s]{1,}[A-Z]{3}[\\s]{1,}[\\.,'\\d]+$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
                                         // @formatter:off
@@ -106,9 +106,9 @@ public class HypothekarbankLenzburgAGPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("name", "wkn", "isin", "currency") //
-                                                        .find("Wir haben am .* f.r Sie (gekauft|verkauft)") //)
+                                                        .find("Wir haben am .* f.r Sie (gekauft|verkauft)") //
                                                         .match("^[\\s]*[\\.,'\\d]+ (?<name>.*) Depotstelle.*$") //
-                                                        .match("^Valor: (?<wkn>[A-Z0-9]{5,9}) \\/ (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$")
+                                                        .match("^Valor: (?<wkn>[A-Z0-9]{5,9}) \\/ (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
                                                         .match("^Menge[\\s]{1,}[\\.,'\\d]+ Kurs (?<currency>[A-Z]{3})[\\s]{1,}[\\.,'\\d]+[\\s]{1,}[A-Z]{3}[\\s]{1,}[\\.,'\\d]+$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
                                         // @formatter:off
@@ -124,9 +124,9 @@ public class HypothekarbankLenzburgAGPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("name", "wkn", "isin", "currency") //
-                                                        .find("Wir haben am .* f.r Sie (gekauft|verkauft)") //)
+                                                        .find("Wir haben am .* f.r Sie (gekauft|verkauft)") //
                                                         .match("^[\\s]*[\\.,'\\d]+ (?<name>.*) Depotstelle.*$") //
-                                                        .match("^Valor: (?<wkn>[A-Z0-9]{5,9}) \\/ (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$")
+                                                        .match("^Valor: (?<wkn>[A-Z0-9]{5,9}) \\/ (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
                                                         .match("^Menge[\\s]{1,}[\\.,'\\d]+ Kurs (?<currency>[A-Z]{3})[\\s]{1,}[\\.,'\\d]+[\\s]{1,}[A-Z]{3}[\\s]{1,}[\\.,'\\d]+$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
                                         // @formatter:off
@@ -148,9 +148,9 @@ public class HypothekarbankLenzburgAGPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("name", "wkn", "isin", "currency") //
-                                                        .find("Wir haben am .* f.r Sie (gekauft|verkauft)") //)
+                                                        .find("Wir haben am .* f.r Sie (gekauft|verkauft)") //
                                                         .match("^[\\s]*[\\.,'\\d]+ ([A-Za-z]{3}\\.)?[A-Za-z]{3} (?<name>.*) Depotstelle.*$") //
-                                                        .match("^Valor: (?<wkn>[A-Z0-9]{5,9}) \\/ (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$")
+                                                        .match("^Valor: (?<wkn>[A-Z0-9]{5,9}) \\/ (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
                                                         .match("^Menge[\\s]{1,}[\\.,'\\d]+ Kurs (?<currency>[A-Z]{3})[\\s]{1,}[\\.,'\\d]+[\\s]{1,}[A-Z]{3}[\\s]{1,}[\\.,'\\d]+$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
                                         // @formatter:off
@@ -161,9 +161,9 @@ public class HypothekarbankLenzburgAGPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("name", "wkn", "isin", "currency") //
-                                                        .find("Wir haben am .* f.r Sie (gekauft|verkauft)") //)
+                                                        .find("Wir haben am .* f.r Sie (gekauft|verkauft)") //
                                                         .match("^[\\s]*[\\.,'\\d]+ (?<name>.*) Depotstelle.*$") //
-                                                        .match("^Valor: (?<wkn>[A-Z0-9]{5,9}) \\/ (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$")
+                                                        .match("^Valor: (?<wkn>[A-Z0-9]{5,9}) \\/ (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
                                                         .match("^Menge[\\s]{1,}[\\.,'\\d]+ Kurs (?<currency>[A-Z]{3})[\\s]{1,}[\\.,'\\d]+[\\s]{1,}[A-Z]{3}[\\s]{1,}[\\.,'\\d]+$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))))
 
@@ -297,7 +297,7 @@ public class HypothekarbankLenzburgAGPDFExtractor extends AbstractPDFExtractor
                                                         .find("Aufgrund Ihres Bestandes.*") //
                                                         .match("^[\\s]*[\\.,'\\d]+ (?<name>.*) Depotstelle.*$") //
                                                         .match("^(?<currency>[A-Z]{3}) [\\.,'\\d]+ Zahlbar Datum.*$") //
-                                                        .match("^Valor: (?<wkn>[A-Z0-9]{5,9}) \\/ (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]).*$")
+                                                        .match("^Valor: (?<wkn>[A-Z0-9]{5,9}) \\/ (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]).*$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
                                         // @formatter:off
                                         // Aufgrund Ihres Bestandes schreiben wir Ihnen gut
@@ -310,7 +310,7 @@ public class HypothekarbankLenzburgAGPDFExtractor extends AbstractPDFExtractor
                                                         .find("Aufgrund Ihres Bestandes.*") //
                                                         .match("^[\\s]*[\\.,'\\d]+ ([A-Za-z]{3}\\.)?[A-Za-z]{3} (?<name>.*) Depotstelle.*$") //
                                                         .match("^(?<currency>[A-Z]{3}) Zahlbar Datum.*$") //
-                                                        .match("^Valor: (?<wkn>[A-Z0-9]{5,9}) \\/ (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]).*$")
+                                                        .match("^Valor: (?<wkn>[A-Z0-9]{5,9}) \\/ (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]).*$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
                                         // @formatter:off
                                         // Aufgrund Ihres Bestandes schreiben wir Ihnen gut
@@ -323,7 +323,7 @@ public class HypothekarbankLenzburgAGPDFExtractor extends AbstractPDFExtractor
                                                         .find("Aufgrund Ihres Bestandes.*") //
                                                         .match("^[\\s]*[\\.,'\\d]+ (?<name>.*) (?<currency>[A-Z]{3}) Depotstelle.*$") //
                                                         .match("^[\\.'\\d]+ Zahlbar Datum.*$") //
-                                                        .match("^Valor: (?<wkn>[A-Z0-9]{5,9}) \\/ (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]).*$")
+                                                        .match("^Valor: (?<wkn>[A-Z0-9]{5,9}) \\/ (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]).*$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
                                         // @formatter:off
                                         // Aufgrund Ihres Bestandes schreiben wir Ihnen gut
@@ -334,7 +334,7 @@ public class HypothekarbankLenzburgAGPDFExtractor extends AbstractPDFExtractor
                                                         .attributes("name", "currency", "wkn", "isin") //
                                                         .find("Aufgrund Ihres Bestandes.*") //
                                                         .match("^[\\s]*[\\.,'\\d]+ (?<name>.*) (?<currency>[A-Z]{3}) [\\.'\\d]+ Depotstelle.*$") //
-                                                        .match("^Valor: (?<wkn>[A-Z0-9]{5,9}) \\/ (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]).*$")
+                                                        .match("^Valor: (?<wkn>[A-Z0-9]{5,9}) \\/ (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]).*$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
                                         // @formatter:off
                                         // Aufgrund Ihres Bestandes schreiben wir Ihnen gut
@@ -346,7 +346,7 @@ public class HypothekarbankLenzburgAGPDFExtractor extends AbstractPDFExtractor
                                                         .attributes("name", "currency", "wkn", "isin") //
                                                         .find("Aufgrund Ihres Bestandes.*") //
                                                         .match("^[\\s]*[\\.,'\\d]+ (?<name>.*) Depotstelle.*$") //
-                                                        .match("^Valor: (?<wkn>[A-Z0-9]{5,9}) \\/ (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]).*$")
+                                                        .match("^Valor: (?<wkn>[A-Z0-9]{5,9}) \\/ (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]).*$") //
                                                         .match("^Brutto zu (?<currency>[A-Z]{3}) [\\.,'\\d]+.*$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))))
 
@@ -365,6 +365,14 @@ public class HypothekarbankLenzburgAGPDFExtractor extends AbstractPDFExtractor
                         .section("date") //
                         .match("^.* Zahlbar Datum: (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$") //
                         .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
+
+                        // @formatter:off
+                        // Valor: 18575459 / IE00B3RBWM25 Ex Datum: 13.06.2024
+                        // Ex Datum: 02.04.2024
+                        // @formatter:on
+                        .section("exDate").optional() //
+                        .match("^.*Ex Datum: (?<exDate>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
+                        .assign((t, v) -> t.setExDate(asDate(v.get("exDate"))))
 
                         // @formatter:off
                         // Gutschrift 351.413.308 Valuta 26.06.2024 CHF  116.96

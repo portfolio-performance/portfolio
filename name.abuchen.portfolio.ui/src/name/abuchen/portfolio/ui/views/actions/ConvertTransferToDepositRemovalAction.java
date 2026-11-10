@@ -49,6 +49,7 @@ public class ConvertTransferToDepositRemovalAction extends Action
                 tx.setNote(transaction.getNote());
                 tx.setSecurity(transaction.getSecurity());
                 tx.setShares(transaction.getShares());
+                tx.setSource(transaction.getSource());
             }
 
             // add deposit and withdrawal transactions to accounts

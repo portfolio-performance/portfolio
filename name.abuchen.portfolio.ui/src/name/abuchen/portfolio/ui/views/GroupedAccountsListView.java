@@ -70,6 +70,7 @@ import name.abuchen.portfolio.ui.util.ClientFilterMenu;
 import name.abuchen.portfolio.ui.util.DropDown;
 import name.abuchen.portfolio.ui.util.LogoManager;
 import name.abuchen.portfolio.ui.util.SimpleAction;
+import name.abuchen.portfolio.ui.util.TreeViewerCSVExporter;
 import name.abuchen.portfolio.ui.util.swt.StyledLabel;
 import name.abuchen.portfolio.ui.util.viewers.Column;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport;
@@ -77,6 +78,7 @@ import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport.ModificationL
 import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
 import name.abuchen.portfolio.ui.util.viewers.CopyPasteSupport;
 import name.abuchen.portfolio.ui.util.viewers.LocaleSenstiveViewerComparator;
+import name.abuchen.portfolio.ui.util.viewers.SafeTreeColumnLayout;
 import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
 import name.abuchen.portfolio.ui.util.viewers.StringEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.ValueEditingSupport;
@@ -225,6 +227,7 @@ public class GroupedAccountsListView extends AbstractFinanceView implements Modi
     protected void addButtons(ToolBarManager toolBar)
     {
         addNewButton(toolBar);
+        addExportButton(toolBar);
         addConfigButton(toolBar);
     }
 
@@ -239,6 +242,12 @@ public class GroupedAccountsListView extends AbstractFinanceView implements Modi
                                             // select the newly created account
                                             groupedAccounts.setSelection(new StructuredSelection(newItem));
                                         })))));
+    }
+
+    private void addExportButton(ToolBarManager toolBar)
+    {
+        toolBar.add(new SimpleAction(Messages.MenuExportData, Images.EXPORT,
+                        a -> new TreeViewerCSVExporter(groupedAccounts).export(getTitle() + ".csv"))); //$NON-NLS-1$
     }
 
     private void addConfigButton(final ToolBarManager toolBar)
@@ -267,7 +276,7 @@ public class GroupedAccountsListView extends AbstractFinanceView implements Modi
 
         Composite container = new Composite(parentComposite, SWT.NONE);
         GridDataFactory.fillDefaults().grab(true, true).applyTo(container);
-        TreeColumnLayout layout = new TreeColumnLayout();
+        TreeColumnLayout layout = new SafeTreeColumnLayout();
         container.setLayout(layout);
 
         groupedAccounts = new TreeViewer(container, SWT.FULL_SELECTION);

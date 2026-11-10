@@ -15,7 +15,6 @@ import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.action.ToolBarManager;
-import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
@@ -44,11 +43,13 @@ import name.abuchen.portfolio.ui.util.ConfirmAction;
 import name.abuchen.portfolio.ui.util.DropDown;
 import name.abuchen.portfolio.ui.util.LogoManager;
 import name.abuchen.portfolio.ui.util.SimpleAction;
+import name.abuchen.portfolio.ui.util.TableViewerCSVExporter;
 import name.abuchen.portfolio.ui.util.viewers.Column;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport.ModificationListener;
 import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
 import name.abuchen.portfolio.ui.util.viewers.CopyPasteSupport;
+import name.abuchen.portfolio.ui.util.viewers.SafeTableColumnLayout;
 import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
 import name.abuchen.portfolio.ui.views.columns.AttributeColumn;
 import name.abuchen.portfolio.ui.views.columns.CurrencyColumn;
@@ -103,6 +104,7 @@ public class AccountListView extends AbstractFinanceView implements Modification
     {
         addNewButton(manager);
         addFilterButton(manager);
+        addExportButton(manager);
         addConfigButton(manager);
     }
 
@@ -146,6 +148,12 @@ public class AccountListView extends AbstractFinanceView implements Modification
         filter.setImageDescriptor(isFiltered ? Images.FILTER_ON.descriptor() : Images.FILTER_OFF.descriptor());
         filter.setToolTipText(Messages.AccountFilterRetiredAccounts);
         manager.add(filter);
+    }
+
+    private void addExportButton(ToolBarManager manager)
+    {
+        manager.add(new SimpleAction(Messages.MenuExportData, Images.EXPORT,
+                        a -> new TableViewerCSVExporter(accounts).export(getTitle() + ".csv"))); //$NON-NLS-1$
     }
 
     private void addConfigButton(final ToolBarManager toolBar)
@@ -197,7 +205,7 @@ public class AccountListView extends AbstractFinanceView implements Modification
     protected Control createBody(Composite parent)
     {
         var container = new Composite(parent, SWT.NONE);
-        var layout = new TableColumnLayout();
+        var layout = new SafeTableColumnLayout();
         container.setLayout(layout);
 
         accounts = new TableViewer(container, SWT.FULL_SELECTION);

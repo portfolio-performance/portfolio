@@ -1063,7 +1063,7 @@ public final class CSVImporter
         Map<String, Column> field2column = new HashMap<>();
         for (Column column : getColumns())
             if (column.getField() != null)
-                field2column.put(column.getField().getName(), column);
+                field2column.put(column.getField().getCode(), column);
 
         int startingLineNo = skipLines + (isFirstLineHeader ? 1 : 0);
         return currentExtractor.extract(startingLineNo, values, field2column, errors);

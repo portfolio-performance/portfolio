@@ -3,6 +3,7 @@ package name.abuchen.portfolio.snapshot.trades;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.closeTo;
+import static org.hamcrest.Matchers.nullValue;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -357,5 +358,67 @@ public class TradeCategoryTest
         double expectedIrr = IRR.calculate(dates, values);
 
         assertThat(category.getAverageIRR(), is(closeTo(expectedIrr, 1e-10)));
+    }
+
+    @Test
+    public void testShortTradeContributesZeroToTheMovingAverageTotals() throws Exception
+    {
+        // a short trade has no moving average acquisition cost, so it has no
+        // moving average profit either. The totals of a category holding one
+        // must stay readable: the trade contributes zero rather than voiding
+        // the sum for the trades next to it, which is also what keeps the
+        // sums additive across categories.
+
+        Client client = new Client();
+
+        Security longSecurity = new SecurityBuilder() //
+                        .addPrice("2020-01-01", Values.Quote.factorize(100)) //
+                        .addPrice("2020-02-01", Values.Quote.factorize(110)) //
+                        .addTo(client);
+
+        Security shortSecurity = new SecurityBuilder() //
+                        .addPrice("2020-01-01", Values.Quote.factorize(100)) //
+                        .addPrice("2020-02-01", Values.Quote.factorize(90)) //
+                        .addTo(client);
+
+        Account account = new AccountBuilder() //
+                        .deposit_("2020-01-01", Values.Amount.factorize(20000)) //
+                        .addTo(client);
+
+        new PortfolioBuilder(account) //
+                        .buy(longSecurity, "2020-01-01", Values.Share.factorize(100), Values.Amount.factorize(10000)) //
+                        .sell(longSecurity, "2020-02-01", Values.Share.factorize(100), Values.Amount.factorize(11000)) //
+                        .sell(shortSecurity, "2020-01-01", Values.Share.factorize(100),
+                                        Values.Amount.factorize(10000)) //
+                        .buy(shortSecurity, "2020-02-01", Values.Share.factorize(100), Values.Amount.factorize(9000)) //
+                        .addTo(client);
+
+        Taxonomy taxonomy = new TaxonomyBuilder() //
+                        .addClassification("stocks") //
+                        .addTo(client);
+
+        Classification stocks = taxonomy.getClassificationById("stocks");
+        stocks.addAssignment(new Classification.Assignment(longSecurity));
+        stocks.addAssignment(new Classification.Assignment(shortSecurity));
+
+        TradeCollector collector = new TradeCollector(client, new TestCurrencyConverter());
+
+        Trade longTrade = collector.collect(longSecurity).get(0);
+        Trade shortTrade = collector.collect(shortSecurity).get(0);
+        assertThat(shortTrade.isLong(), is(false));
+        assertThat(shortTrade.getProfitLossMovingAverage(), is(nullValue()));
+
+        TradeCategory category = new TradeCategory(stocks, new TestCurrencyConverter());
+        category.addTrade(longTrade, 1.0);
+        category.addTrade(shortTrade, 1.0);
+
+        // both trades made 1000, but only the long one has a moving average
+        assertThat(category.getTotalProfitLoss(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2000))));
+        assertThat(category.getTotalProfitLossMovingAverage(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1000))));
+        assertThat(category.getTotalProfitLossMovingAverageWithoutTaxesAndFees(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1000))));
+        assertThat(category.getTotalEntryValueMovingAverage(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(10000))));
     }
 }

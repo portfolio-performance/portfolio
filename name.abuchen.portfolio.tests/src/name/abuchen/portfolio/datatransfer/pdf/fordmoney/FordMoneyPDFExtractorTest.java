@@ -54,7 +54,7 @@ public class FordMoneyPDFExtractorTest
         new AssertImportActions().check(results, "EUR");
 
         // assert transaction
-        assertThat(results, hasItem(deposit(hasDate("2024-10-04"), hasAmount("EUR", 1000.00),
+        assertThat(results, hasItem(deposit(hasDate("2024-10-04"), hasAmount("EUR", 1000.00), //
                         hasSource("Kontoauszug01.txt"), hasNote("Gutschrift"))));
 
         // assert transaction

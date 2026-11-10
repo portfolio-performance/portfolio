@@ -3,8 +3,11 @@ package name.abuchen.portfolio.datatransfer.pdf.bank11;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.deposit;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasAmount;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasDate;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasFees;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasGrossValue;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasNote;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasSource;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTaxes;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.interest;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.removal;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransactions;
@@ -67,6 +70,10 @@ public class Bank11PDFExtractorTest
                         hasSource("Kontoauszug01.txt"), hasNote("Überweisungsgutschrift"))));
 
         // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2022-12-15"), hasAmount("EUR", 6000.00), //
+                        hasSource("Kontoauszug01.txt"), hasNote("Überweisungsgutschrift"))));
+
+        // assert transaction
         assertThat(results, hasItem(removal(hasDate("2022-10-31"), hasAmount("EUR", 3000.00), //
                         hasSource("Kontoauszug01.txt"), hasNote("Überweisungsauftrag"))));
 
@@ -99,8 +106,12 @@ public class Bank11PDFExtractorTest
                         hasSource("Kontoauszug01.txt"), hasNote("Überweisungsauftrag"))));
 
         // assert transaction
-        assertThat(results, hasItem(interest(hasDate("2022-12-30"), hasAmount("EUR", 52.66), //
-                        hasSource("Kontoauszug01.txt"), hasNote(null))));
+        assertThat(results, hasItem(interest( //
+                        hasDate("2022-12-30"), //
+                        hasSource("Kontoauszug01.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 52.66), hasGrossValue("EUR", 52.66), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -191,16 +202,28 @@ public class Bank11PDFExtractorTest
                         hasSource("Kontoauszug02.txt"), hasNote("Überweisungsauftrag"))));
 
         // assert transaction
-        assertThat(results, hasItem(interest(hasDate("2023-03-31"), hasAmount("EUR", 56.88), //
-                        hasSource("Kontoauszug02.txt"), hasNote(null))));
+        assertThat(results, hasItem(interest( //
+                        hasDate("2023-03-31"), //
+                        hasSource("Kontoauszug02.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 56.88), hasGrossValue("EUR", 56.88), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // assert transaction
-        assertThat(results, hasItem(interest(hasDate("2023-04-27"), hasAmount("EUR", 24.50), //
-                        hasSource("Kontoauszug02.txt"), hasNote(null))));
+        assertThat(results, hasItem(interest( //
+                        hasDate("2023-04-27"), //
+                        hasSource("Kontoauszug02.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 24.50), hasGrossValue("EUR", 24.50), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // assert transaction
-        assertThat(results, hasItem(interest(hasDate("2023-12-29"), hasAmount("EUR", 29.52), //
-                        hasSource("Kontoauszug02.txt"), hasNote(null))));
+        assertThat(results, hasItem(interest( //
+                        hasDate("2023-12-29"), //
+                        hasSource("Kontoauszug02.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 29.52), hasGrossValue("EUR", 29.52), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
 }

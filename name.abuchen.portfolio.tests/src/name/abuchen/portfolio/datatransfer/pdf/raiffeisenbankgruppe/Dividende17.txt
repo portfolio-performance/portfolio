@@ -1,0 +1,75 @@
+PDFBox Version: 3.0.7
+Portfolio Performance Version: 0.86.1
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+d a 
+Raiffeisenbank Murau eGen (mbH) 
+Bundesstraße 5, 8850 Murau 
+b 
+BLZ: 38402     DVR: 0039063     UID: ATU28570409 
+a 
+a 
+Abrechnung Ereignis a 
+84111000 - 13.01.2026 a 
+Depot-Nr.: 60.026.259 
+FSVVa qGpjkhx kGCos pKURoIx 
+aZ AoubFebu 6 
+8877 MMmYr JTBUNV 002/138 
+ZFDfCOzv 
+Wir haben für Sie am 13.01.2026 unten angeführtes Geschäft abgerechnet: 
+Geschäftsart: Ertrag 
+50 Stk    
+Titel: IE00B53SZB19 iShsVII-NASDAQ 100 UCITS ETF 
+Reg. Shares USD (Acc) o.N. 
+Fondsgesellschaft: iShares VII PLC 
+Ertrag: 0 USD 
+Verwahrart: WR 
+Positionsdaten: Loco: DE Frankfurt 
+KESt: -575,68 USD  
+Auslands-KESt: -56,61 USD  
+-632,29 USD  
+Devisenkurs: 1,1705 (09.01.2026)  -540,18 EUR  
+Zu Lasten IBAN AT28 3840 2000 0006 8643 -540,18 EUR  
+Valuta 12.01.2026 
+KESt wurde an das Finanzamt für Großbetriebe abgeführt. 
+Belastung KESt bei ausschüttungsgleichen Erträgen ausländischer Investmentfonds 
+KESt pro Fondsanteil 9,836395 EUR  für Neubestand 
+Auslands-KESt pro Fondsanteil 0,967279 EUR  für Neubestand 
+Extag: 12.01.2026 
+13.01.2026 1 / 2 
+Irrtum vorbehalten 
+Dieser Beleg trägt keine Unterschrift. 
+Raiffeisenbank Murau eGen (mbH) 
+Bundesstraße 5, 8850 Murau 
+b 
+BLZ: 38402     DVR: 0039063     UID: ATU28570409 
+a 
+a 
+Abrechnung Ereignis a 
+84111000 - 13.01.2026 a 
+Depot-Nr.: 60.026.259 
+FvtBB FEOYaiE 
+002/138 
+myMSnIIt 
+Ausgangssituation: 
+KESt-Neubestand mit Anschaffungskosten nach dem gleitenden  
+Durchschnittsverfahren § 27a Abs. 4 Zi 3 EStG 50 Stk 
+steuerlicher Anschaffungswert: 48.917,61 EUR 
+KESt-Neubestand mit Anschaffungskosten nach dem gleitenden  
+Durchschnittsverfahren § 27a Abs. 4 Zi 3 EStG 50 Stk 
+ausschüttungsgleicher Ertrag: 2.111,93 EUR 
+Anschaffungswertreduzierender Betrag: 0,00 EUR 
+steuerlicher Anschaffungswert: 48.917,61 EUR 
+Bestand nach Buchung: 
+KESt-Neubestand mit Anschaffungskosten nach dem gleitenden  
+Durchschnittsverfahren § 27a Abs. 4 Zi 3 EStG 50 Stk 
+steuerlicher Anschaffungswert: 51.029,54 EUR 
+Steuerrelevante Daten (alle Beträge in EUR): 
+Bemessungsgrundlage KESt 
+Einkünfte/Verlustüberhang bisher 
+Bruttoeinkünfte/Verlust 2.165,41 540,18 
+Verlustausgleich (KESt-Gutschrift) 
+Einkünfte/Verlustüberhang aktuell 2.165,41 540,18 
+13.01.2026 2 / 2 
+Irrtum vorbehalten 
+Dieser Beleg trägt keine Unterschrift.

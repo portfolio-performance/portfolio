@@ -544,6 +544,7 @@ public class Classification implements Named
     public Classification copy()
     {
         Classification copy = new Classification(null, UUID.randomUUID().toString(), this.name, this.color);
+        copy.description = this.description;
         copy.rank = this.rank;
         copy.weight = this.weight;
 

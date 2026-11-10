@@ -1,0 +1,30 @@
+PDFBox Version: 3.0.6
+Portfolio Performance Version: 0.83.2
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+Findependent AG
+Kasernenstrasse 26
+5000 Aarau
+www.findependent.ch
+service@findependent.ch
+Max Muster Kundennr. 123456
+Strasse 1 Portfolio-Nr. 123456789
+1234 Stadt Zielname Vermögensaufbau
+Aarau, 02.04.2026
+ETF-Verkauf
+Für deine Anlagelösung wurde folgende ETF-Transaktion getätigt:
+ETF-Name iShares MSCI Europe Screened ETF
+ISIN IE00BFNM3D14
+Valuta 02.04.2026
+Anzahl Anteile 2
+Preis pro Anteil EUR 9.8640
+Verkaufspreis total EUR 19.73
+Wechselkurs CHF/EUR 0.922180
+Verkaufspreis CHF CHF 18.19
+Wechselkursaufschlag CHF -0.08
+Börsenabgaben CHF -0.00
+Stempelabgaben CHF -0.03
+Gutgeschriebener Betrag CHF 18.08
+Dein findependent Team
+Anzeige ohne Unterschrift.
+Erstellt am: 1. Mai 2026 1 von 6

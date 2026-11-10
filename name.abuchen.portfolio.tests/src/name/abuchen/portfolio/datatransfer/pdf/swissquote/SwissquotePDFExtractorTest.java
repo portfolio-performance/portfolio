@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.datatransfer.pdf.swissquote;
 
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.check;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.deposit;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.dividend;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.fee;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasAmount;
@@ -19,6 +20,7 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasSource;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTaxes;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTicker;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasWkn;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.inboundDelivery;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.interestCharge;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.outboundDelivery;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.purchase;
@@ -529,6 +531,40 @@ public class SwissquotePDFExtractorTest
     }
 
     @Test
+    public void testWertpapierKauf10()
+    {
+        var extractor = new SwissquotePDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf10.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00BM8R0J59"), hasWkn(null), hasTicker(null), //
+                        hasName("GLOBAL X NASDAQ 100 COVERED CALL ETF"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2025-12-05T16:38:31"), hasShares(700.00), //
+                        hasSource("Kauf10.txt"), //
+                        hasNote("Referenz: 987654321"), //
+                        hasAmount("EUR", 9926.95), hasGrossValue("EUR", 9912.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 14.95))));
+    }
+
+    @Test
     public void testSecurityBuy01()
     {
         var client = new Client();
@@ -931,6 +967,57 @@ public class SwissquotePDFExtractorTest
                                         hasNote("Referenz: 549183576"), //
                                         hasAmount("USD", 0.00), hasGrossValue("USD", 0.00), //
                                         hasTaxes("USD", 0.00), hasFees("USD", 0.00)))));
+    }
+
+    @Test
+    public void testTitelumbuchung01()
+    {
+        var extractor = new SwissquotePDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Titelumbuchung01.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(2L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(2L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(2L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(4));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("CH0012032048"), hasWkn("1203204"), hasTicker(null), //
+                        hasName("ROCHE GS"), //
+                        hasCurrencyCode("EUR"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("CH1499059983"), hasWkn(null), hasTicker(null), //
+                        hasName("ROCHE PS"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check unsupported transaction
+        assertThat(results, hasItem(withFailureMessage( //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
+                        outboundDelivery( //
+                                        hasDate("2026-03-17T00:00"), hasShares(8.493), //
+                                        hasSource("Titelumbuchung01.txt"), //
+                                        hasNote("Referenz: 9876543210"), //
+                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
+                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
+
+        // check unsupported transaction
+        assertThat(results, hasItem(withFailureMessage( //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
+                        inboundDelivery( //
+                                        hasDate("2026-03-17T00:00"), hasShares(8.493), //
+                                        hasSource("Titelumbuchung01.txt"), //
+                                        hasNote("Referenz: 9876543210"), //
+                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
+                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
     }
 
     @Test
@@ -2317,5 +2404,29 @@ public class SwissquotePDFExtractorTest
         // assert transaction
         assertThat(results, hasItem(interestCharge(hasDate("2023-12-31"), hasAmount("USD", 41.39), //
                         hasSource("Kontoauszug01.txt"), hasNote("Sollzinsen"))));
+    }
+
+    @Test
+    public void testKontoauszug02()
+    {
+        var extractor = new SwissquotePDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug02.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, "CHF");
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2026-04-08"), hasAmount("CHF", 40000.00), //
+                        hasSource("Kontoauszug02.txt"), hasNote(null))));
     }
 }

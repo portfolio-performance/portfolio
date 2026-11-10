@@ -1,0 +1,85 @@
+PDFBox Version: 3.0.5
+Portfolio Performance Version: 0.78.1
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+$FORM=D5012,01,700000004104276791,0,0001,FD501200.PUBXL,01591,26.06.2025,STDDEP,LU0060230025,5050,5050000000094197,J,100001,
+Es betreut Sie:
+VPOquo bSd
+Am fjxsZqEwcI 58
+56101 mwVQW
+Telefon: +49 2894 730903
+ServiceCenter:
+Telefon: +49 9281 7258-3000
+Telefax: +49 9281 7258-46118
+E-Mail: info@fondsdepotbank.de
+Frau Servicezeiten:
+ZqVLf mvsMn Mo. - Fr.: 8 Uhr bis 20 Uhr
+Alleestr. 394k
+27155 DDZaF Datum: Hof, 26. Juni 2025
+Depotabrechnung Auszug Nr. 2 Seite 1/2
+Fondsdepot Nr. 0697405832
+Depotinhaber/-in: pxaQC sczmt
+Fondsbezeichnung: AB - InternaTechnologyPfAU
+ISIN/WKN: LU0060230025/986514 Ertragsverwendung: thesaurierend
+Verwahrart/Lagerort: Wertpapierrechnung/Luxemburg
+Fondsklasse/Teilfreistellung: Aktienfonds/30%
+Transaktion Anlagebetrag Wertermittlungstag Preis je Anteil 2) Abgerechnete Anteile
+Entgelt Währungsbetrag Ausgabeaufschlag Bestand alt
+Einzahlbetrag Devisenkurs 1) Bestand neu
+Kauf 50,00 EUR 18.02.2025 1.031,1630 USD +0,050
+0,00 EUR 51,78 USD 2,59 EUR 7,952
+50,00 EUR 1,035637 USD 8,002
+Lastschrifteinzug 3): IBAN: Gh10 6967 9008 6562 5226 30 BIC: INGDDEFFXXX Mandatsreferenz: 10772106D4104276791
+Kauf 50,00 EUR 17.03.2025 874,6080 USD +0,062
+0,00 EUR 53,99 USD 2,18 EUR 8,002
+50,00 EUR 1,079875 USD 8,064
+Lastschrifteinzug 3): IBAN: qs62 8628 0098 7071 3473 30 BIC: INGDDEFFXXX Mandatsreferenz: 10772106D4104276791
+Kauf 50,00 EUR 15.04.2025 787,2585 USD +0,072
+0,00 EUR 56,38 USD 2,13 EUR 8,064
+50,00 EUR 1,127588 USD 8,136
+Lastschrifteinzug 3): IBAN: pu58 5591 0760 0803 7416 30 BIC: INGDDEFFXXX Mandatsreferenz: 10772106D4104276791
+1) enthält Konvertierungsmarge in Höhe von 0,50% des Devisenkurses
+2) Rücknahmepreis zzgl. Ausgabeaufschlag des Fonds; Berücksichtigung der vertragsgemäßen Konditionen
+3) Wir ziehen/zogen den Einzahlbetrag frühestens 2 Tage nach dem Ausführungstermin mit der Gläubiger-ID DE68ZZZ00000025032 von o.g.
+Bankverbindung ein. Bei abweichendem Kontoinhaber bitten wir um Weiterleitung der Information an den Zahlungspflichtigen.
+Konto- und Depotabrechnungen, Depot- und Erträgnisaufstellungen, sonstige Auszüge und Anzeigen über die Ausführung von Aufträgen sind
+auf ihre Richtigkeit und Vollständigkeit unverzüglich zu überprüfen. Etwaige Einwendungen sind unverzüglich geltend zu machen. Die Unter-
+lassung rechtzeitiger Einwendungen gilt als Genehmigung. Die vorstehenden girosammelverwahrten/gegen Wertpapierrechnung verwahrten
+Anteile oder Aktien an Investmentvermögen haben wir Ihrem Depot bei Kauf gutgeschrieben/bei Verkauf belastet.
+Dieses Schreiben wurde maschinell erstellt und ist ohne Unterschrift gültig.
+Fondsdepot Bank – Amtsgericht München Kontakt: Vorstand:
+eine Marke der FNZ Bank SE HRB 289 271 Tel.: +49 9281 7258-3000 Peter Karst (Vorsitzender),
+Postanschrift: 95025 Hof USt-IdNr.: Fax: +49 9281 7258-46118 Philip Laucks,
+Hausanschrift: DE 813330104 E-Mail: info@fondsdepotbank.de Pamela Schmidt-Fischbach
+Windmühlenweg 12 Gläubiger-ID Web: www.fondsdepotbank.de Aufsichtsratsvorsitzende:
+95030 Hof DE68ZZZ00000025032 Zvezdana Seeger
+$FORM=D5012,01,700000004104276791,0,0002,FD501200.PUBXL,01591,26.06.2025,STDDEP,LU0060230025,5050,5050000000094197,J,100001,
+Hof, 26. Juni 2025
+Depotabrechnung Auszug Nr. 2 Seite 2/2
+Fondsdepot Nr. 2751114241
+Depotinhaber/-in: Uedjv RSZev
+Fondsbezeichnung: AB - InternaTechnologyPfAU
+ISIN/WKN: LU0060230025/986514 Ertragsverwendung: thesaurierend
+Verwahrart/Lagerort: Wertpapierrechnung/Luxemburg
+Fondsklasse/Teilfreistellung: Aktienfonds/30%
+Transaktion Anlagebetrag Wertermittlungstag Preis je Anteil 2) Abgerechnete Anteile
+Entgelt Währungsbetrag Ausgabeaufschlag Bestand alt
+Einzahlbetrag Devisenkurs 1) Bestand neu
+Kauf 50,00 EUR 15.05.2025 936,9780 USD +0,059
+0,00 EUR 55,54 USD 2,60 EUR 8,136
+50,00 EUR 1,110770 USD 8,195
+Lastschrifteinzug 3): IBAN: Qq29 2798 4856 9554 6608 30 BIC: INGDDEFFXXX Mandatsreferenz: 10772106D4104276791
+Kauf 50,00 EUR 16.06.2025 983,1255 USD +0,058
+0,00 EUR 57,37 USD 2,67 EUR 8,195
+50,00 EUR 1,147370 USD 8,253
+Lastschrifteinzug 3): IBAN: Gt51 7359 3110 6213 4633 30 BIC: INGDDEFFXXX Mandatsreferenz: 10772106D4104276791
+1) enthält Konvertierungsmarge in Höhe von 0,50% des Devisenkurses
+2) Rücknahmepreis zzgl. Ausgabeaufschlag des Fonds; Berücksichtigung der vertragsgemäßen Konditionen
+3) Wir ziehen/zogen den Einzahlbetrag frühestens 2 Tage nach dem Ausführungstermin mit der Gläubiger-ID DE68ZZZ00000025032 von o.g.
+Bankverbindung ein. Bei abweichendem Kontoinhaber bitten wir um Weiterleitung der Information an den Zahlungspflichtigen.
+Hinterlegter Freistellungsauftrag 625,00 EUR Verfügbarer Freistellungsauftrag 418,71 EUR
+Konto- und Depotabrechnungen, Depot- und Erträgnisaufstellungen, sonstige Auszüge und Anzeigen über die Ausführung von Aufträgen sind
+auf ihre Richtigkeit und Vollständigkeit unverzüglich zu überprüfen. Etwaige Einwendungen sind unverzüglich geltend zu machen. Die Unter-
+lassung rechtzeitiger Einwendungen gilt als Genehmigung. Die vorstehenden girosammelverwahrten/gegen Wertpapierrechnung verwahrten
+Anteile oder Aktien an Investmentvermögen haben wir Ihrem Depot bei Kauf gutgeschrieben/bei Verkauf belastet.
+Dieses Schreiben wurde maschinell erstellt und ist ohne Unterschrift gültig.

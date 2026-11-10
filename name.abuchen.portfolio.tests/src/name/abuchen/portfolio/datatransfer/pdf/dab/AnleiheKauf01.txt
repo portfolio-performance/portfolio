@@ -1,0 +1,89 @@
+PDFBox Version: 3.0.7
+Portfolio Performance Version: 0.86.1
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+BELEGDRUCK=J
+ORIGINAL=1
+FAXVERSAND=N
+ EMAILVERSAND=N
+DEPOTNUMMER=1234567890
+          DEPOTUNTERBEZEICHNUNG=
+Wertpapierabrechnung VERSANDARTENSCHLUESSEL=DRUCK
+ADRESSZEILE1=Herr
+ADRESSZEILE2=Vorname Nachname
+Kauf Limitauftrag ADRESSZEILE3=Adresse Str. 1
+ADRESSZEILE4=01234 Stadt
+Kommissionsgeschäft ADRESSZEILE5=
+Herr ADRESSZEILE6=
+Vorname Nachname Depot-Nr. Abrechnungs-Nr. BELEGNUMMER=1984
+Adresse Str. 1 1234567890 67009861 / 28.06.2011 SEITENNUMMER=1
+01234 Stadt STEUERERSTATTUNG=N
+Depotinhaber
+Vorname Nachname
+  
+Wir haben für Sie gekauft Stadt, 28.06.2011
+  
+Gattungsbezeichnung Fälligkeit näch. Zinstermin ISIN
+4,1% Griechenland EO-Bonds 2007(12) 20.08.2012 20.08.2011 GR0114020457
+Nominal Kurs
+EUR 2.000,000 73,5000 %
+  
+Handelstag 28.06.2011  Kurswert                    EUR 1.470,00-
+Handelszeit 08:09* Stückzinsen                 EUR 70,77-
+Zinstage 315 Provision                   EUR 8,63-
+Börse Stuttgart/EDS Fremde Spesen Xontro        EUR 2,90-
+Verwahrart Wertpapierrechnung Variabl. Transaktionsentgelt EUR 1,50-
+Lagerland Griechenland
+ 
+Wert  Konto-Nr. Betrag zu Ihren Lasten  
+01.07.2011 1234567890 EUR 1.553,80
+  
+Hinweise zur steuerlichen Verrechnung: vorher aktuell
+Stückzinsaufwand EUR             70,77     
+Aktienverlusttopf EUR              0,00                  0,00     
+allgemeiner Verlusttopf EUR              0,00                  0,00     
+Quellensteuertopf EUR              0,00                  0,00     
+zu versteuern (negativ) EUR             70,77     
+Steuerausgleich nach § 43a Abs. 3 Satz 2 EStG:  
+Kapitalertragsteuer EUR             17,70     
+Solidaritätszuschlag EUR              0,98     
+ 
+Wert Konto-Nr. Abrechnungs-Nr. Betrag zu Ihren Gunsten  
+28.06.2011 1234567890 85552617 EUR             18,68     
+ 
+Es folgt Seite 2
+DAB bank AG > Landsberger Straße 300 > 80687 Stadt > BLZ 701 204 00 > BIC (SWIFT-Code): DABBDEMMXXX > Tel. 0 89 / 88 95 - 60 00 > Sitz: Stadt > AG Stadt, HRB 118190 
+USt.-Ident.-Nr.: DE 161864563 > Aufsichtsratsvorsitzender: Dr. Theodor Weimer > Vorstand: Markus Gunter, Dr. Markus Walch
+ 
+3.31/ABREABHNHANDKFDI/GAAASAFG/001984/280611/111642
+BELEGDRUCK=J
+ORIGINAL=1
+FAXVERSAND=N
+EMAILVERSAND=N
+Depot-Nr. Abrechnungs-Nr. Seite-Nr. DEPOTNUMMER=1234567890
+DEPOTUNTERBEZEICHNUNG=
+1234567890 67009861 2 VERSANDARTENSCHLUESSEL=DRUCK
+ADRESSZEILE1=Herr
+ADRESSZEILE2=Vorname Nachname
+ADRESSZEILE3=Adresse Str. 1
+ADRESSZEILE4=01234 Stadt
+im laufenden Jahr einbehaltene Kapitalertragsteuer EUR             22,68     ADRESSZEILE5=
+im laufenden Jahr einbehaltener Solidaritätszuschlag EUR              1,24     ADRESSZEILE6=
+ BELEGNUMMER=1984
+Kapitalertragsteuer, Solidaritätszuschlag und ggf. Kirchensteuer nach gemeldetem Kirchensteuersatz verrechnet mit dem SEITENNUMMER=2
+Finanzamt Stadt für Körperschaften, Steuernummer 143/800/13803. STEUERERSTATTUNG=N
+ 
+Jahressteuerbescheinigung folgt
+ 
+Wichtiger Hinweis: Das gewählte Finanzinstrument entspricht nicht Ihren uns bekannten Kenntnissen und Erfahrungen
+und ist daher nicht angemessen für Sie. Bitte informieren Sie sich anhand der Ihnen bei der Depoteröffnung überlassenen
+Broschüre / CD-Rom  Basisinformation über die Vermögensanlage in Wertpapieren  über das Finanzinstrument. Diese
+Broschüre kann auf unseren Webseiten kostenfrei abgerufen werden und wird auf Wunsch kostenfrei zugesendet.
+ 
+* Die angegebene Zeit entspricht den Angaben der Handelspartner gemäß der lokalen Zeit in Deutschland
+  (Mitteleuropäische Zeit bzw. Mitteleuropäische Sommerzeit).
+Dieser Beleg wird maschinell erstellt und daher nicht unterschrieben.
+DAB bank AG > Landsberger Straße 300 > 80687 Stadt > BLZ 701 204 00 > BIC (SWIFT-Code): DABBDEMMXXX > Tel. 0 89 / 88 95 - 60 00 > Sitz: Stadt > AG Stadt, HRB 118190 
+USt.-Ident.-Nr.: DE 161864563 > Aufsichtsratsvorsitzender: Dr. Theodor Weimer > Vorstand: Markus Gunter, Dr. Markus Walch
+ 
+3.31/ABREABHNHANDKFDI/GAAASAFG/001984/280611/111642

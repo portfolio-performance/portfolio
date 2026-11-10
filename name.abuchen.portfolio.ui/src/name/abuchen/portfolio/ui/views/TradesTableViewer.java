@@ -48,6 +48,7 @@ import name.abuchen.portfolio.ui.util.viewers.CopyPasteSupport;
 import name.abuchen.portfolio.ui.util.viewers.DateTimeLabelProvider;
 import name.abuchen.portfolio.ui.util.viewers.MoneyColorLabelProvider;
 import name.abuchen.portfolio.ui.util.viewers.NumberColorLabelProvider;
+import name.abuchen.portfolio.ui.util.viewers.SafeTableColumnLayout;
 import name.abuchen.portfolio.ui.util.viewers.SharesLabelProvider;
 import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
 import name.abuchen.portfolio.ui.util.viewers.ToolTipCustomProviderSupport;
@@ -198,7 +199,12 @@ public class TradesTableViewer
     {
         Trade trade = asTrade(element);
         if (trade != null)
-            return trade.getReturnMovingAverage();
+        {
+            // NaN when the trade has no moving average cost (a short): show an
+            // empty cell rather than a number that reads as a return
+            var value = trade.getReturnMovingAverage();
+            return Double.isFinite(value) ? value : null;
+        }
 
         TradeTotals totals = asTotals(element);
         if (totals != null)
@@ -232,7 +238,7 @@ public class TradesTableViewer
     public Control createViewControl(Composite parent, ViewMode viewMode)
     {
         Composite container = new Composite(parent, SWT.NONE);
-        TableColumnLayout layout = new TableColumnLayout();
+        TableColumnLayout layout = new SafeTableColumnLayout();
         container.setLayout(layout);
 
         trades = new TableViewer(container, SWT.FULL_SELECTION);

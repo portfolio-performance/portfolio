@@ -4,8 +4,10 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
+import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -99,9 +101,14 @@ public class ManualTransactionEntryPage extends AbstractWizardPage
 
     private final List<ExtractedEntry> entries = new ArrayList<>();
 
+    // widgets are created lazily and disposed again whenever the user leaves
+    // the page (see #disposeControl), i.e. they are null while the page is not
+    // being displayed. Everything that must survive lives in #entries and in
+    // the plain fields below.
     private PDFViewer pdfViewer;
     private ExtractedItemsTable itemsTable;
     private Composite buttonRow;
+    private int[] sashWeights = new int[] { 50, 50 };
     private boolean editorOpen;
     private boolean capturedForDebug;
 
@@ -129,24 +136,90 @@ public class ManualTransactionEntryPage extends AbstractWizardPage
         var sash = new SashForm(parent, SWT.HORIZONTAL);
         setControl(sash);
 
-        pdfViewer = new PDFViewer(sash, SWT.NONE, inputFile);
+        // text files (extracted from a PDF document earlier) have no document
+        // to render, hence show the text instead
+        if (inputFile.isTextFile())
+            createTextPane(sash);
+        else
+            pdfViewer = new PDFViewer(sash, SWT.NONE, inputFile);
         createRightPane(sash);
 
-        sash.setWeights(50, 50);
+        sash.setWeights(sashWeights);
     }
 
     @Override
     public void beforePage()
     {
-        pdfViewer.initialize();
+        // the wizard dialog (re)creates the control before the page becomes
+        // visible; guard anyway because the page may be disposed (see
+        // #disposeControl)
+        if (pdfViewer != null)
+            pdfViewer.initialize();
     }
 
     @Override
     public void afterPage()
     {
-        // free the document and cached page images so that only the currently
-        // viewed document stays in memory
-        pdfViewer.release();
+        disposeControl();
+    }
+
+    @Override
+    public void setVisible(boolean visible)
+    {
+        // the base implementation dereferences the control unconditionally; the
+        // control does not exist while the user is on another page
+        if (getControl() != null && !getControl().isDisposed())
+            super.setVisible(visible);
+    }
+
+    /**
+     * Disposes the page's widgets when the user navigates away, so that only
+     * the pages actually being looked at hold operating system widget handles.
+     * <p>
+     * An import creates one manual entry page per unrecognized PDF document,
+     * and each page holds a PDF viewer plus a table, i.e. dozens of handles.
+     * Keeping all of them alive exhausts the handle limit of the operating
+     * system on larger imports ({@code SWTError: No more handles}).
+     * <p>
+     * No user data is lost: the transactions created on this page are kept in
+     * {@link #entries} and the remaining page state lives in plain fields, none
+     * of which are touched here. The table is repopulated from
+     * {@link #entries} when the wizard dialog recreates the control on the next
+     * visit, and {@link #getItems()} keeps returning the transactions when the
+     * wizard is finished, whether or not the page is currently displayed.
+     */
+    private void disposeControl()
+    {
+        // never pull the widgets out from underneath an open transaction editor
+        // (the wizard is frozen while one is open, but be defensive because the
+        // editor's dispose listener still refers to the widgets)
+        if (editorOpen)
+            return;
+
+        var control = getControl();
+        if (control != null && !control.isDisposed())
+        {
+            // keep the splitter position across the recreation
+            var weights = ((SashForm) control).getWeights();
+            if (weights.length == 2)
+                sashWeights = weights;
+
+            control.dispose();
+        }
+
+        // signals the wizard dialog to recreate the control on the next visit
+        setControl(null);
+
+        pdfViewer = null;
+        itemsTable = null;
+        buttonRow = null;
+    }
+
+    private void createTextPane(Composite parent)
+    {
+        var text = new StyledText(parent, SWT.READ_ONLY | SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL);
+        text.setFont(JFaceResources.getFont(JFaceResources.TEXT_FONT));
+        text.setText(inputFile.getText());
     }
 
     private void createRightPane(Composite parent)
@@ -344,7 +417,7 @@ public class ManualTransactionEntryPage extends AbstractWizardPage
                         debugCache.add(inputFile.getName(), inputFile.getText(), inputFile.getPDFBoxVersion());
                         capturedForDebug = true;
                     }
-                    if (!itemsTable.getTableViewer().getControl().isDisposed())
+                    if (itemsTable != null && !itemsTable.getTableViewer().getControl().isDisposed())
                         itemsTable.refresh();
                 }
             }
@@ -356,7 +429,7 @@ public class ManualTransactionEntryPage extends AbstractWizardPage
                     importDialog.setEditing(false);
                     getContainer().updateButtons();
                 }
-                if (!buttonRow.isDisposed())
+                if (buttonRow != null && !buttonRow.isDisposed())
                     setButtonRowEnabled(true);
                 editorOpen = false;
             }

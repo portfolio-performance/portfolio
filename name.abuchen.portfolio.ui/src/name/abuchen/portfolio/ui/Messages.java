@@ -18,6 +18,12 @@ public class Messages extends NLS
     public static String AccountMenuImportPDF;
     public static String AccountMenuTransfer;
     public static String AccountMenuTroubleshootBalanceDiscrepancy;
+    public static String ApiAccessBtnAllowAlways;
+    public static String ApiAccessBtnAllowSession;
+    public static String ApiAccessBtnDecline;
+    public static String ApiAccessDialogMsg;
+    public static String ApiAccessDialogTitle;
+    public static String ApiAccessMsgNoFilesEnabled;
     public static String AttributeSettings;
     public static String AttributeSettings_LimitPrice_ColorSettings;
     public static String AttributeSettings_LimitPrice_ColorSettings_LimitExceededNegatively;
@@ -110,6 +116,7 @@ public class Messages extends NLS
     public static String ColumnActualValue;
     public static String ColumnActualValueBaseCurrency;
     public static String ColumnAmount;
+    public static String ColumnAttributeDefinedFor;
     public static String ColumnAverage;
     public static String ColumnAutoGenerate;
     public static String ColumnBalance;
@@ -281,6 +288,9 @@ public class Messages extends NLS
     public static String ColumnPreviousPrice;
     public static String ColumnProfitLoss;
     public static String ColumnProfitLossBaseCurrency;
+    public static String ColumnProfitLossFIFO_Description;
+    public static String ColumnProfitLossGeneric_Description;
+    public static String ColumnProfitLossMovingAverage_Description;
     public static String ColumnPurchasePrice;
     public static String ColumnPurchasePrice_Description;
     public static String ColumnPurchasePrice_MenuLabel;
@@ -428,6 +438,7 @@ public class Messages extends NLS
     public static String EditWizardMasterDataMsgDuplicateClassification;
     public static String EditWizardMasterDataMsgWeightEqualsZero;
     public static String EditWizardMasterDataMsgWeightNot100Percent;
+    public static String EditWizardMasterDataSelectClassification;
     public static String EditWizardMasterDataTitle;
     public static String EditWizardMasterDataUnlink;
     public static String EditWizardMasterDataUnlink_ToolTip;
@@ -660,6 +671,7 @@ public class Messages extends NLS
     public static String LabelConsumerPriceIndex;
     public static String LabelConvertBuySellIntoDeliveryTransactions;
     public static String LabelCopyToClipboard;
+    public static String LabelCostMethod;
     public static String LabelCountry;
     public static String LabelCreateAccountFirst;
     public static String LabelCrosshair;
@@ -864,6 +876,7 @@ public class Messages extends NLS
     public static String LabelQuoteFeedConfiguration;
     public static String LabelQuoteFeedProvider;
     public static String LabelRatio;
+    public static String LabelRebalancingAmountToInvest;
     public static String LabelRefresh;
     public static String LabelRemoveDividends;
     public static String LabelRemoveLogo;
@@ -916,6 +929,7 @@ public class Messages extends NLS
     public static String LabelShowHeadline;
     public static String LabelShowOnlyOneYear;
     public static String LabelShowRawResponse;
+    public static String LabelSiftingAssetClass;
     public static String LabelSmallerSize;
     public static String LabelStartTyping;
     public static String LabelStatementOfAssets;
@@ -943,6 +957,7 @@ public class Messages extends NLS
     public static String LabelTopContributorsReturn;
     public static String LabelTopContributorsValue;
     public static String LabelTotalValuePercent;
+    public static String LabelTradeGrouping;
     public static String LabelTrades;
     public static String LabelTradesBasicStatistics;
     public static String LabelTradesProfitLoss;
@@ -964,6 +979,7 @@ public class Messages extends NLS
     public static String LabelUnknown;
     public static String LabelUnnamedFile;
     public static String LabelUnnamedXml;
+    public static String LabelUpdateAvailableShort;
     public static String LabelUpdatedConfiguration;
     public static String LabelUpdatesAvailable;
     public static String LabelUseExistingSecurity;
@@ -983,6 +999,7 @@ public class Messages extends NLS
     public static String LabelViewTaxonomyDefinition;
     public static String LabelViewTreeMap;
     public static String LabelVolatility;
+    public static String LabelVolatilityAnnualized;
     public static String LabelWatchlist;
     public static String LabelWeeksAgo;
     public static String LabelWithoutClassification;
@@ -1084,6 +1101,7 @@ public class Messages extends NLS
     public static String MenuSetCurrentViewAsInitialView;
     public static String MenuSettingsNew;
     public static String MenuShow;
+    public static String MenuShowAmountToInvest;
     public static String MenuShowHideColumns;
     public static String MenuShowInformationPane;
     public static String MenuShowSidebar;
@@ -1163,7 +1181,6 @@ public class Messages extends NLS
     public static String MsgInstrumentWithConfigurationIssue;
     public static String MsgInvalidImage;
     public static String MsgInvalidImageDetail;
-    public static String MsgJavaVersionTooOldForLetsEncrypt;
     public static String MsgLoadingFile;
     public static String MsgMissingAccount;
     public static String MsgMissingPortfolio;
@@ -1184,6 +1201,7 @@ public class Messages extends NLS
     public static String MsgPreviousStockSplit;
     public static String MsgRateLimitExceeded;
     public static String MsgRateLimitExceededAndRetrying;
+    public static String MsgRestApiServerStarted;
     public static String MsgRestartRequiredAfterGUIReset;
     public static String MsgRestartRequiredAfterUpdate;
     public static String MsgSecurityHasNoQuotes;
@@ -1193,7 +1211,6 @@ public class Messages extends NLS
     public static String MsgUpdateNewInVersionX;
     public static String MsgUpdateNoWritePermissions;
     public static String MsgUpdateRequiresLatestJavaVersion;
-    public static String MsgUpdateRunning32BitOn64BitOS;
     public static String MsgUpdatingDashboardData;
     public static String MsgUpdatingExchangeRates;
     public static String MsgWarningPieChartNoValues;
@@ -1266,7 +1283,6 @@ public class Messages extends NLS
     public static String PortfolioMenuDeleteConfirm;
     public static String PortfolioReportMissingAPIKey;
     public static String PortfolioReportMissingAPIURL;
-    public static String PortfolioReportNotificationMessage;
     public static String PrefAlphaVantageAPIKey;
     public static String PrefAlphaVantageCallFrequencyLimit;
     public static String PrefDoubleClickCellToEdit;
@@ -1287,6 +1303,7 @@ public class Messages extends NLS
     public static String PrefDescriptionPortfolioReport;
     public static String PrefDescriptionProxy;
     public static String PrefDescriptionQuandl;
+    public static String PrefDescriptionSifting;
     public static String PrefDescriptionTwelveData;
     public static String PrefDivvyDiaryAPIKey;
     public static String PrefEODHistoricalDataAPIKey;
@@ -1299,6 +1316,8 @@ public class Messages extends NLS
     public static String PrefLabelProxyHost;
     public static String PrefLabelProxyPort;
     public static String PrefLabelQuoteDigits;
+    public static String PrefLabelRestApiEnable;
+    public static String PrefLabelRestApiPort;
     public static String PrefLabelSharesDigits;
     public static String PrefLabelUseIndirectQuotation;
     public static String PrefLabelUseSWTChartLibrary;
@@ -1307,6 +1326,13 @@ public class Messages extends NLS
     public static String PrefMsgCalendar;
     public static String PrefMsgConfigureUpdates;
     public static String PrefMsgLanguageConfig;
+    public static String PrefMsgRestApiConnectorSettings;
+    public static String PrefMsgRestApiEnterClientName;
+    public static String PrefMsgRestApiInvalidPort;
+    public static String PrefMsgRestApiRejectedInvalidToken;
+    public static String PrefMsgRestApiRejectedNoToken;
+    public static String PrefMsgRestApiTokenShownOnce;
+    public static String PrefMsgRestApiUnsavedFiles;
     public static String PrefMyDividends24APIKey;
     public static String PrefNoteIndirectQuotation;
     public static String PrefNoteStoreSettingsNextToFile;
@@ -1315,6 +1341,20 @@ public class Messages extends NLS
     public static String PrefPrefixSecurityName;
     public static String PrefQuandlAPIKey;
     public static String PrefRelativeBackupDirectoryName;
+    public static String PrefRestApiBtnAddClient;
+    public static String PrefRestApiBtnRevoke;
+    public static String PrefRestApiColumnAlias;
+    public static String PrefRestApiColumnClient;
+    public static String PrefRestApiColumnCreated;
+    public static String PrefRestApiColumnFile;
+    public static String PrefRestApiColumnLastUsed;
+    public static String PrefRestApiLabelAuthorizationHeader;
+    public static String PrefRestApiLabelClients;
+    public static String PrefRestApiLabelMcpUrl;
+    public static String PrefRestApiLabelSession;
+    public static String PrefRestApiLabelToken;
+    public static String PrefRestApiLabelUnidentifiedClient;
+    public static String PrefRestApiTitleNewToken;
     public static String PrefStoreSettingsNextToFile;
     public static String PrefTitle;
     public static String PrefTitleAlphaVantage;
@@ -1326,6 +1366,7 @@ public class Messages extends NLS
     public static String PrefTitleDivvyDiary;
     public static String PrefTitleEODHistoricalData;
     public static String PrefTitleExperimentalFeatures;
+    public static String PrefSiftingAPIKey;
     public static String PrefTitleFinnhub;
     public static String PrefTitleFormatting;
     public static String PrefTitleGeneral;
@@ -1336,6 +1377,8 @@ public class Messages extends NLS
     public static String PrefTitlePresentation;
     public static String PrefTitleProxy;
     public static String PrefTitleQuandl;
+    public static String PrefTitleRestApi;
+    public static String PrefTitleSifting;
     public static String PrefTitleTwelveData;
     public static String PrefTwelveDataAPIKey;
     public static String PrefUpdateQuotesAfterFileOpen;
@@ -1446,7 +1489,6 @@ public class Messages extends NLS
     public static String SiteAppLandingpage;
     public static String SiteForum;
     public static String SiteHowTo;
-    public static String SiteInfoPortfolioReportMigration;
     public static String SiteManual;
     public static String SiteNewAndNoteworthy;
     public static String SplitWizardDefinitionDescription;
@@ -1493,6 +1535,7 @@ public class Messages extends NLS
     public static String TooltipSharpeRatio;
     public static String TooltipTurnoverRate;
     public static String TooltipVolatility;
+    public static String TooltipVolatilityAnnualized;
     public static String TransactionFilter;
     public static String TransactionFilterBuy;
     public static String TransactionFilterBuyAndSell;

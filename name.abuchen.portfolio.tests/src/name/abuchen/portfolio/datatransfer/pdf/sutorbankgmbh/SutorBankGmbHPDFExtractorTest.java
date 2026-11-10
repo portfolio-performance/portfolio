@@ -3,9 +3,11 @@ package name.abuchen.portfolio.datatransfer.pdf.sutorbankgmbh;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.deposit;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.dividend;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.fee;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.feeRefund;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasAmount;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasCurrencyCode;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasDate;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasExDate;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasFeed;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasFeedProperty;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasFees;
@@ -23,6 +25,7 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.purchase;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.removal;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.sale;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.security;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.taxRefund;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.taxes;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.withFailureMessage;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransactions;
@@ -35,29 +38,18 @@ import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.collection.IsEmptyCollection.empty;
-import static org.junit.Assert.assertNull;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Test;
 
 import name.abuchen.portfolio.Messages;
-import name.abuchen.portfolio.datatransfer.Extractor.BuySellEntryItem;
-import name.abuchen.portfolio.datatransfer.Extractor.SecurityItem;
-import name.abuchen.portfolio.datatransfer.Extractor.TransactionItem;
 import name.abuchen.portfolio.datatransfer.actions.AssertImportActions;
 import name.abuchen.portfolio.datatransfer.pdf.PDFInputFile;
 import name.abuchen.portfolio.datatransfer.pdf.SutorBankGmbHPDFExtractor;
 import name.abuchen.portfolio.datatransfer.pdf.TestCoinSearchProvider;
-import name.abuchen.portfolio.model.AccountTransaction;
-import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
-import name.abuchen.portfolio.model.PortfolioTransaction;
-import name.abuchen.portfolio.model.Transaction.Unit;
-import name.abuchen.portfolio.money.Money;
-import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.online.SecuritySearchProvider;
 import name.abuchen.portfolio.online.impl.CoinGeckoQuoteFeed;
 
@@ -93,34 +85,17 @@ public class SutorBankGmbHPDFExtractorTest
         new AssertImportActions().check(results, "EUR");
 
         // check security
-        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security.getIsin(), is("IE00B1FZS350"));
-        assertThat(security.getWkn(), is("A0LEW8"));
-        assertNull(security.getTickerSymbol());
-        assertThat(security.getName(), is("ISHSII-DEV.MKTS PROP.YLD U.ETF REGISTERED SHS USD (DIST) O.N."));
-        assertThat(security.getCurrencyCode(), is("EUR"));
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00B1FZS350"), hasWkn("A0LEW8"), hasTicker(null), //
+                        hasName("ISHSII-DEV.MKTS PROP.YLD U.ETF REGISTERED SHS USD (DIST) O.N."), //
+                        hasCurrencyCode("EUR"))));
 
         // check buy sell transaction
-        var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-01-02T10:49:34")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(53.00)));
-        assertThat(entry.getSource(), is("Kauf01.txt"));
-        assertNull(entry.getNote());
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(1340.64))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(1340.64))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2020-01-02T10:49:34"), hasShares(53.00), //
+                        hasSource("Kauf01.txt"), hasNote(null), //
+                        hasAmount("EUR", 1340.64), hasGrossValue("EUR", 1340.64), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -143,34 +118,17 @@ public class SutorBankGmbHPDFExtractorTest
         new AssertImportActions().check(results, "EUR");
 
         // check security
-        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security.getIsin(), is("IE00BK5BQT80"));
-        assertNull(security.getWkn());
-        assertNull(security.getTickerSymbol());
-        assertThat(security.getName(), is("Vanguard FTSE All-World U.ETF Re"));
-        assertThat(security.getCurrencyCode(), is("EUR"));
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00BK5BQT80"), hasWkn(null), hasTicker(null), //
+                        hasName("Vanguard FTSE All-World U.ETF Re"), //
+                        hasCurrencyCode("EUR"))));
 
         // check buy sell transaction
-        var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-06-03T09:27:01")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(29.00)));
-        assertThat(entry.getSource(), is("Kauf02.txt"));
-        assertThat(entry.getNote(), is("Handelsreferenz: [0123456789abcdef01234567]"));
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(2083.94))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(2083.94))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2020-06-03T09:27:01"), hasShares(29.00), //
+                        hasSource("Kauf02.txt"), hasNote("Handelsreferenz: [0123456789abcdef01234567]"), //
+                        hasAmount("EUR", 2083.94), hasGrossValue("EUR", 2083.94), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -193,34 +151,17 @@ public class SutorBankGmbHPDFExtractorTest
         new AssertImportActions().check(results, "EUR");
 
         // check security
-        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security.getIsin(), is("DE0006069008"));
-        assertNull(security.getWkn());
-        assertNull(security.getTickerSymbol());
-        assertThat(security.getName(), is("FROSTA AG"));
-        assertThat(security.getCurrencyCode(), is("EUR"));
+        assertThat(results, hasItem(security( //
+                        hasIsin("DE0006069008"), hasWkn(null), hasTicker(null), //
+                        hasName("FROSTA AG"), //
+                        hasCurrencyCode("EUR"))));
 
         // check buy sell transaction
-        var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-03-01T18:23:36")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(30.00)));
-        assertThat(entry.getSource(), is("Kauf03.txt"));
-        assertThat(entry.getNote(), is("Handelsreferenz: 603d2318e971a90019a6053b"));
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(2292.00))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(2292.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2021-03-01T18:23:36"), hasShares(30.00), //
+                        hasSource("Kauf03.txt"), hasNote("Handelsreferenz: 603d2318e971a90019a6053b"), //
+                        hasAmount("EUR", 2292.00), hasGrossValue("EUR", 2292.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -311,34 +252,17 @@ public class SutorBankGmbHPDFExtractorTest
         new AssertImportActions().check(results, "EUR");
 
         // check security
-        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security.getIsin(), is("DE000CL9E825"));
-        assertNull(security.getWkn());
-        assertNull(security.getTickerSymbol());
-        assertThat(security.getName(), is("Leveraged Certificate auf DAX"));
-        assertThat(security.getCurrencyCode(), is("EUR"));
+        assertThat(results, hasItem(security( //
+                        hasIsin("DE000CL9E825"), hasWkn(null), hasTicker(null), //
+                        hasName("Leveraged Certificate auf DAX"), //
+                        hasCurrencyCode("EUR"))));
 
         // check buy sell transaction
-        var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-07-31T21:00:15")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(58)));
-        assertThat(entry.getSource(), is("Verkauf01.txt"));
-        assertThat(entry.getNote(), is("Handelsreferenz: 5f245de9567c6400199b6ba9"));
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(2232.23))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(2233.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.77))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(sale( //
+                        hasDate("2020-07-31T21:00:15"), hasShares(58), //
+                        hasSource("Verkauf01.txt"), hasNote("Handelsreferenz: 5f245de9567c6400199b6ba9"), //
+                        hasAmount("EUR", 2232.23), hasGrossValue("EUR", 2233.00), //
+                        hasTaxes("EUR", 0.77), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -361,34 +285,17 @@ public class SutorBankGmbHPDFExtractorTest
         new AssertImportActions().check(results, "EUR");
 
         // check security
-        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security.getIsin(), is("DE000VP63TQ3"));
-        assertNull(security.getWkn());
-        assertNull(security.getTickerSymbol());
-        assertThat(security.getName(), is("Discount Zertifikat auf Münchener Rückversicherungs AG"));
-        assertThat(security.getCurrencyCode(), is("EUR"));
+        assertThat(results, hasItem(security( //
+                        hasIsin("DE000VP63TQ3"), hasWkn(null), hasTicker(null), //
+                        hasName("Discount Zertifikat auf Münchener Rückversicherungs AG"), //
+                        hasCurrencyCode("EUR"))));
 
         // check buy sell transaction
-        var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-06-25T00:00")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(9)));
-        assertThat(entry.getSource(), is("Verkauf02.txt"));
-        assertThat(entry.getNote(), is("Referenz 6709"));
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(2070.00))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(2070.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(sale( //
+                        hasDate("2021-06-25"), hasShares(9), //
+                        hasSource("Verkauf02.txt"), hasNote("Referenz 6709"), //
+                        hasAmount("EUR", 2070.00), hasGrossValue("EUR", 2070.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -478,181 +385,66 @@ public class SutorBankGmbHPDFExtractorTest
         new AssertImportActions().check(results, "EUR");
 
         // check security
-        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security.getIsin(), is("DE000SR8YZ53"));
-        assertNull(security.getWkn());
-        assertNull(security.getTickerSymbol());
-        assertThat(security.getName(), is("Leveraged Certificate auf DAX / XDAX COMBI INDEX"));
-        assertThat(security.getCurrencyCode(), is("EUR"));
+        assertThat(results, hasItem(security( //
+                        hasIsin("DE000SR8YZ53"), hasWkn(null), hasTicker(null), //
+                        hasName("Leveraged Certificate auf DAX / XDAX COMBI INDEX"), //
+                        hasCurrencyCode("EUR"))));
 
         // check 1st buy sell transaction
-        var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-08-10T14:31:04")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(100)));
-        assertThat(entry.getSource(), is("Sammelabrechnung01.txt"));
-        assertThat(entry.getNote(), is("Handelsreferenz: 5f313e083e83d00019d6835e"));
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(1228.00))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(1228.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2020-08-10T14:31:04"), hasShares(100), //
+                        hasSource("Sammelabrechnung01.txt"), hasNote("Handelsreferenz: 5f313e083e83d00019d6835e"), //
+                        hasAmount("EUR", 1228.00), hasGrossValue("EUR", 1228.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check 2nd buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(1).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-08-10T15:48:16")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(125)));
-        assertThat(entry.getSource(), is("Sammelabrechnung01.txt"));
-        assertThat(entry.getNote(), is("Handelsreferenz: 5f315020567c6400199c4044"));
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(1575.00))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(1575.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2020-08-10T15:48:16"), hasShares(125), //
+                        hasSource("Sammelabrechnung01.txt"), hasNote("Handelsreferenz: 5f315020567c6400199c4044"), //
+                        hasAmount("EUR", 1575.00), hasGrossValue("EUR", 1575.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check 3rd buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(2).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-08-10T15:51:21")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(125)));
-        assertThat(entry.getSource(), is("Sammelabrechnung01.txt"));
-        assertThat(entry.getNote(), is("Handelsreferenz: 5f3150d93e83d00019d68628"));
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(1573.75))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(1573.75))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2020-08-10T15:51:21"), hasShares(125), //
+                        hasSource("Sammelabrechnung01.txt"), hasNote("Handelsreferenz: 5f3150d93e83d00019d68628"), //
+                        hasAmount("EUR", 1573.75), hasGrossValue("EUR", 1573.75), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check 4th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(3).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-08-10T16:51:20")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(150)));
-        assertThat(entry.getSource(), is("Sammelabrechnung01.txt"));
-        assertThat(entry.getNote(), is("Handelsreferenz: 5f315ee83e83d00019d6885a"));
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(1830.00))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(1830.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2020-08-10T16:51:20"), hasShares(150), //
+                        hasSource("Sammelabrechnung01.txt"), hasNote("Handelsreferenz: 5f315ee83e83d00019d6885a"), //
+                        hasAmount("EUR", 1830.00), hasGrossValue("EUR", 1830.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check 5th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(4).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-08-10T15:33:52")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(100)));
-        assertThat(entry.getSource(), is("Sammelabrechnung01.txt"));
-        assertThat(entry.getNote(), is("Handelsreferenz: 5f314b9f567c6400199c3fb1"));
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(1262.00))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(1262.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(sale( //
+                        hasDate("2020-08-10T15:33:52"), hasShares(100), //
+                        hasSource("Sammelabrechnung01.txt"), hasNote("Handelsreferenz: 5f314b9f567c6400199c3fb1"), //
+                        hasAmount("EUR", 1262.00), hasGrossValue("EUR", 1262.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check 6th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(5).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-08-10T15:50:52")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(125)));
-        assertThat(entry.getSource(), is("Sammelabrechnung01.txt"));
-        assertThat(entry.getNote(), is("Handelsreferenz: 5f31509a3e83d00019d6861b"));
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(1576.25))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(1576.25))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(sale( //
+                        hasDate("2020-08-10T15:50:52"), hasShares(125), //
+                        hasSource("Sammelabrechnung01.txt"), hasNote("Handelsreferenz: 5f31509a3e83d00019d6861b"), //
+                        hasAmount("EUR", 1576.25), hasGrossValue("EUR", 1576.25), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check 7th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(6).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-08-10T16:19:50")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(125)));
-        assertThat(entry.getSource(), is("Sammelabrechnung01.txt"));
-        assertThat(entry.getNote(), is("Handelsreferenz: 5f3156b43e83d00019d686fa"));
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(1575.00))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(1575.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(sale( //
+                        hasDate("2020-08-10T16:19:50"), hasShares(125), //
+                        hasSource("Sammelabrechnung01.txt"), hasNote("Handelsreferenz: 5f3156b43e83d00019d686fa"), //
+                        hasAmount("EUR", 1575.00), hasGrossValue("EUR", 1575.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check 8th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(7).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-08-10T17:07:12")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(150)));
-        assertThat(entry.getSource(), is("Sammelabrechnung01.txt"));
-        assertThat(entry.getNote(), is("Handelsreferenz: 5f3162a03e83d00019d68929"));
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(1833.00))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(1833.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(sale( //
+                        hasDate("2020-08-10T17:07:12"), hasShares(150), //
+                        hasSource("Sammelabrechnung01.txt"), hasNote("Handelsreferenz: 5f3162a03e83d00019d68929"), //
+                        hasAmount("EUR", 1833.00), hasGrossValue("EUR", 1833.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -675,29 +467,19 @@ public class SutorBankGmbHPDFExtractorTest
         new AssertImportActions().check(results, "EUR");
 
         // check security
-        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security.getIsin(), is("US4878361082"));
-        assertNull(security.getWkn());
-        assertNull(security.getTickerSymbol());
-        assertThat(security.getName(), is("Kellogg Co."));
-        assertThat(security.getCurrencyCode(), is("EUR"));
+        assertThat(results, hasItem(security( //
+                        hasIsin("US4878361082"), hasWkn(null), hasTicker(null), //
+                        hasName("Kellogg Co."), //
+                        hasCurrencyCode("EUR"))));
 
         // check dividends transaction
-        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
-
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-03-15T00:00")));
-        assertThat(transaction.getShares(), is(Values.Share.factorize(30)));
-        assertThat(transaction.getSource(), is("Dividende01.txt"));
-        assertThat(transaction.getNote(), is("Vierteljährlich"));
-
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(12.15))));
-        assertThat(transaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(14.29))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(2.14))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2021-03-15T00:00"), hasExDate("2021-03-01T00:00"), //
+                        hasShares(30.00), //
+                        hasSource("Dividende01.txt"), //
+                        hasNote("Vierteljährlich"), //
+                        hasAmount("EUR", 12.15), hasGrossValue("EUR", 14.29), //
+                        hasTaxes("EUR", 2.14), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -720,29 +502,19 @@ public class SutorBankGmbHPDFExtractorTest
         new AssertImportActions().check(results, "EUR");
 
         // check security
-        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security.getIsin(), is("US92936U1097"));
-        assertNull(security.getWkn());
-        assertNull(security.getTickerSymbol());
-        assertThat(security.getName(), is("W.P. Carey Inc."));
-        assertThat(security.getCurrencyCode(), is("EUR"));
+        assertThat(results, hasItem(security( //
+                        hasIsin("US92936U1097"), hasWkn(null), hasTicker(null), //
+                        hasName("W.P. Carey Inc."), //
+                        hasCurrencyCode("EUR"))));
 
         // check dividends transaction
-        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
-
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-04-15T00:00")));
-        assertThat(transaction.getShares(), is(Values.Share.factorize(20)));
-        assertThat(transaction.getSource(), is("Dividende02.txt"));
-        assertThat(transaction.getNote(), is("Vierteljährlich"));
-
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(13.00))));
-        assertThat(transaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(17.46))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(4.46))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2021-04-15T00:00"), hasExDate("2021-03-30T00:00"), //
+                        hasShares(20.00), //
+                        hasSource("Dividende02.txt"), //
+                        hasNote("Vierteljährlich"), //
+                        hasAmount("EUR", 13.00), hasGrossValue("EUR", 17.46), //
+                        hasTaxes("EUR", 4.46), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -765,29 +537,19 @@ public class SutorBankGmbHPDFExtractorTest
         new AssertImportActions().check(results, "EUR");
 
         // check security
-        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security.getIsin(), is("GB0007188757"));
-        assertNull(security.getWkn());
-        assertNull(security.getTickerSymbol());
-        assertThat(security.getName(), is("Rio Tinto PLC"));
-        assertThat(security.getCurrencyCode(), is("EUR"));
+        assertThat(results, hasItem(security( //
+                        hasIsin("GB0007188757"), hasWkn(null), hasTicker(null), //
+                        hasName("Rio Tinto PLC"), //
+                        hasCurrencyCode("EUR"))));
 
         // check dividends transaction
-        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
-
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-09-23T00:00")));
-        assertThat(transaction.getShares(), is(Values.Share.factorize(30)));
-        assertThat(transaction.getSource(), is("Dividende03.txt"));
-        assertThat(transaction.getNote(), is("Interim"));
-
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(141.33))));
-        assertThat(transaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(141.33))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2021-09-23T00:00"), hasExDate("2021-08-12T00:00"), //
+                        hasShares(30.00), //
+                        hasSource("Dividende03.txt"), //
+                        hasNote("Interim"), //
+                        hasAmount("EUR", 141.33), hasGrossValue("EUR", 141.33), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -810,29 +572,19 @@ public class SutorBankGmbHPDFExtractorTest
         new AssertImportActions().check(results, "EUR");
 
         // check security
-        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security.getIsin(), is("US6516391066"));
-        assertNull(security.getWkn());
-        assertNull(security.getTickerSymbol());
-        assertThat(security.getName(), is("Newmont Corp."));
-        assertThat(security.getCurrencyCode(), is("EUR"));
+        assertThat(results, hasItem(security( //
+                        hasIsin("US6516391066"), hasWkn(null), hasTicker(null), //
+                        hasName("Newmont Corp."), //
+                        hasCurrencyCode("EUR"))));
 
         // check dividends transaction
-        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
-
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-09-23T00:00")));
-        assertThat(transaction.getShares(), is(Values.Share.factorize(40)));
-        assertThat(transaction.getSource(), is("Dividende04.txt"));
-        assertThat(transaction.getNote(), is("Vierteljährlich"));
-
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(15.90))));
-        assertThat(transaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(18.71))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(2.81))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2021-09-23T00:00"), hasExDate("2021-09-08T00:00"), //
+                        hasShares(40.00), //
+                        hasSource("Dividende04.txt"), //
+                        hasNote("Vierteljährlich"), //
+                        hasAmount("EUR", 15.90), hasGrossValue("EUR", 18.71), //
+                        hasTaxes("EUR", 2.81), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -855,30 +607,19 @@ public class SutorBankGmbHPDFExtractorTest
         new AssertImportActions().check(results, "EUR");
 
         // check security
-        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security.getIsin(), is("US00206R1023"));
-        assertNull(security.getWkn());
-        assertNull(security.getTickerSymbol());
-        assertThat(security.getName(), is("AT & T Inc."));
-        assertThat(security.getCurrencyCode(), is("EUR"));
+        assertThat(results, hasItem(security( //
+                        hasIsin("US00206R1023"), hasWkn(null), hasTicker(null), //
+                        hasName("AT & T Inc."), //
+                        hasCurrencyCode("EUR"))));
 
         // check dividends transaction
-        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
-
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-11-01T00:00")));
-        assertThat(transaction.getShares(), is(Values.Share.factorize(31)));
-        assertThat(transaction.getSource(), is("Dividende05.txt"));
-        assertThat(transaction.getNote(), is("Vierteljährlich"));
-
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(10.34))));
-        assertThat(transaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(13.88))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(2.08 + 1.39 + 0.07))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2021-11-01T00:00"), hasExDate("2021-10-07T00:00"), //
+                        hasShares(31.00), //
+                        hasSource("Dividende05.txt"), //
+                        hasNote("Vierteljährlich"), //
+                        hasAmount("EUR", 10.34), hasGrossValue("EUR", 13.88), //
+                        hasTaxes("EUR", (2.08 + 1.39 + 0.07)), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -912,6 +653,68 @@ public class SutorBankGmbHPDFExtractorTest
                         hasSource("Vorabpauschale01.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 34.25), hasGrossValue("EUR", 34.25), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testVorabpauschale02()
+    {
+        var extractor = new SutorBankGmbHPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Vorabpauschale02.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE000BI8OT95"), hasWkn(null), hasTicker(null), //
+                        hasName("Amundi MSCI World UCITS ETF acc"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check taxes transaction
+        assertThat(results, hasItem(taxes( //
+                        hasDate("2026-01-02T00:00"), hasShares(22.00), //
+                        hasSource("Vorabpauschale02.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 8.65), hasGrossValue("EUR", 8.65), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testSteuerausgleich01()
+    {
+        var extractor = new SutorBankGmbHPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Steuerausgleich01.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, "EUR");
+
+        // check tax refund transaction
+        assertThat(results, hasItem(taxRefund( //
+                        hasDate("2026-01-19T00:00"), hasShares(0.00), //
+                        hasSource("Steuerausgleich01.txt"), //
+                        hasNote("Steuerausgleich nach §43a EstG"), //
+                        hasAmount("EUR", 8.65), hasGrossValue("EUR", 8.65), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
@@ -1007,211 +810,89 @@ public class SutorBankGmbHPDFExtractorTest
         new AssertImportActions().check(results, "EUR");
 
         // check security
-        var security1 = results.stream().filter(SecurityItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertNull(security1.getIsin());
-        assertNull(security1.getWkn());
-        assertNull(security1.getTickerSymbol());
-        assertThat(security1.getName(), is("iShares Core MSCI Emerging Markets"));
-        assertThat(security1.getCurrencyCode(), is("EUR"));
+        assertThat(results, hasItem(security( //
+                        hasIsin(null), hasWkn(null), hasTicker(null), //
+                        hasName("iShares Core MSCI Emerging Markets"), //
+                        hasCurrencyCode("EUR"))));
 
-        var security2 = results.stream().filter(SecurityItem.class::isInstance).skip(1).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertNull(security2.getIsin());
-        assertNull(security2.getWkn());
-        assertNull(security2.getTickerSymbol());
-        assertThat(security2.getName(), is("Lyxor Core Stoxx Europe 600 acc"));
-        assertThat(security2.getCurrencyCode(), is("EUR"));
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin(null), hasWkn(null), hasTicker(null), //
+                        hasName("Lyxor Core Stoxx Europe 600 acc"), //
+                        hasCurrencyCode("EUR"))));
 
-        var security3 = results.stream().filter(SecurityItem.class::isInstance).skip(2).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertNull(security3.getIsin());
-        assertNull(security3.getWkn());
-        assertNull(security3.getTickerSymbol());
-        assertThat(security3.getName(), is("Dimensional European Value Fund"));
-        assertThat(security3.getCurrencyCode(), is("EUR"));
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin(null), hasWkn(null), hasTicker(null), //
+                        hasName("Dimensional European Value Fund"), //
+                        hasCurrencyCode("EUR"))));
 
         // check 1st buy sell transaction
-        var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2019-07-04T00:00")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.3308)));
-        assertThat(entry.getSource(), is("Depotauszug01.txt"));
-        assertNull(entry.getNote());
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(8.35))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(8.35))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2019-07-04"), hasShares(0.3308), //
+                        hasSource("Depotauszug01.txt"), hasNote(null), //
+                        hasAmount("EUR", 8.35), hasGrossValue("EUR", 8.35), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check 2nd buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(1).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2019-07-03T00:00")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1.5264)));
-        assertThat(entry.getSource(), is("Depotauszug01.txt"));
-        assertNull(entry.getNote());
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(242.09))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(242.09))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2019-07-03"), hasShares(1.5264), //
+                        hasSource("Depotauszug01.txt"), hasNote(null), //
+                        hasAmount("EUR", 242.09), hasGrossValue("EUR", 242.09), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check 3rd buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(2).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2019-07-05T00:00")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.0387)));
-        assertThat(entry.getSource(), is("Depotauszug01.txt"));
-        assertThat(entry.getNote(), is("Gebührentilgung"));
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.98))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(0.98))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(sale( //
+                        hasDate("2019-07-05"), hasShares(0.0387), //
+                        hasSource("Depotauszug01.txt"), hasNote("Gebührentilgung"), //
+                        hasAmount("EUR", 0.98), hasGrossValue("EUR", 0.98), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check 4th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(3).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2019-07-06T00:00")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.0299)));
-        assertThat(entry.getSource(), is("Depotauszug01.txt"));
-        assertThat(entry.getNote(), is("Gebührentilgung"));
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(4.78))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(4.78))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(sale( //
+                        hasDate("2019-07-06"), hasShares(0.0299), //
+                        hasSource("Depotauszug01.txt"), hasNote("Gebührentilgung"), //
+                        hasAmount("EUR", 4.78), hasGrossValue("EUR", 4.78), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check 5th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(4).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2019-07-02T00:00")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(6.2631)));
-        assertThat(entry.getSource(), is("Depotauszug01.txt"));
-        assertNull(entry.getNote());
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(75.22))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(75.22))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2019-07-02"), hasShares(6.2631), //
+                        hasSource("Depotauszug01.txt"), hasNote(null), //
+                        hasAmount("EUR", 75.22), hasGrossValue("EUR", 75.22), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check 1st deposit transaction
-        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
-
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-02-01T00:00")));
-        assertThat(transaction.getShares(), is(Values.Share.factorize(0)));
-        assertThat(transaction.getSource(), is("Depotauszug01.txt"));
-        assertThat(transaction.getNote(), is("automatischer Lastschrifteinzug"));
-
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(160.42))));
-        assertThat(transaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(160.42))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(deposit(hasDate("2019-02-01"), hasAmount("EUR", 160.42), //
+                        hasSource("Depotauszug01.txt"), hasNote("automatischer Lastschrifteinzug"))));
 
         // check 2nd deposit transaction
-        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(1)
-                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
-
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-02-01T00:00")));
-        assertThat(transaction.getShares(), is(Values.Share.factorize(0)));
-        assertThat(transaction.getSource(), is("Depotauszug01.txt"));
-        assertThat(transaction.getNote(), is("Zulage 2018"));
-
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(222.00))));
-        assertThat(transaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(222.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(deposit(hasDate("2019-02-01"), hasAmount("EUR", 222.00), //
+                        hasSource("Depotauszug01.txt"), hasNote("Zulage 2018"))));
 
         // check 1st fee transaction
-        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(2)
-                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
-
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-07-10T00:00")));
-        assertThat(transaction.getShares(), is(Values.Share.factorize(0)));
-        assertThat(transaction.getSource(), is("Depotauszug01.txt"));
-        assertThat(transaction.getNote(), is("Verwaltungsgebühr/Vertriebskosten"));
-
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(19.83))));
-        assertThat(transaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(19.83))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(fee( //
+                        hasDate("2019-07-10"), //
+                        hasSource("Depotauszug01.txt"), //
+                        hasNote("Verwaltungsgebühr/Vertriebskosten"), //
+                        hasAmount("EUR", 19.83), hasGrossValue("EUR", 19.83), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check 2nd fee transaction
-        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(3)
-                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
-
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-01-10T00:00")));
-        assertThat(transaction.getShares(), is(Values.Share.factorize(0)));
-        assertThat(transaction.getSource(), is("Depotauszug01.txt"));
-        assertThat(transaction.getNote(), is("Verwaltgebühr/Vertriebskosten"));
-
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(2.12))));
-        assertThat(transaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(2.12))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(fee( //
+                        hasDate("2019-01-10"), //
+                        hasSource("Depotauszug01.txt"), //
+                        hasNote("Verwaltgebühr/Vertriebskosten"), //
+                        hasAmount("EUR", 2.12), hasGrossValue("EUR", 2.12), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check 3rd fee transaction
-        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(4)
-                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
-
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-01-10T00:00")));
-        assertThat(transaction.getShares(), is(Values.Share.factorize(0)));
-        assertThat(transaction.getSource(), is("Depotauszug01.txt"));
-        assertThat(transaction.getNote(), is("Kontoführungs-u.Depotgebühren"));
-
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(13.50))));
-        assertThat(transaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(13.50))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(fee( //
+                        hasDate("2019-01-10"), //
+                        hasSource("Depotauszug01.txt"), //
+                        hasNote("Kontoführungs-u.Depotgebühren"), //
+                        hasAmount("EUR", 13.50), hasGrossValue("EUR", 13.50), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -1234,190 +915,83 @@ public class SutorBankGmbHPDFExtractorTest
         new AssertImportActions().check(results, "EUR");
 
         // check security
-        var security1 = results.stream().filter(SecurityItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security1.getIsin(), is("IE00BH04GL39"));
-        assertNull(security1.getWkn());
-        assertNull(security1.getTickerSymbol());
-        assertThat(security1.getName(), is("Vanguard EUR Eurozone Gov Bond ETF"));
-        assertThat(security1.getCurrencyCode(), is("EUR"));
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00BH04GL39"), hasWkn(null), hasTicker(null), //
+                        hasName("Vanguard EUR Eurozone Gov Bond ETF"), //
+                        hasCurrencyCode("EUR"))));
 
-        var security2 = results.stream().filter(SecurityItem.class::isInstance).skip(1).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security2.getIsin(), is("LU1681041627"));
-        assertNull(security2.getWkn());
-        assertNull(security2.getTickerSymbol());
-        assertThat(security2.getName(), is("Amundi Solution MSCI Europe Min Vol"));
-        assertThat(security2.getCurrencyCode(), is("EUR"));
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("LU1681041627"), hasWkn(null), hasTicker(null), //
+                        hasName("Amundi Solution MSCI Europe Min Vol"), //
+                        hasCurrencyCode("EUR"))));
 
-        var security3 = results.stream().filter(SecurityItem.class::isInstance).skip(2).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security3.getIsin(), is("IE00B8KGV557"));
-        assertNull(security3.getWkn());
-        assertNull(security3.getTickerSymbol());
-        assertThat(security3.getName(), is("iShares Edge MSCI EM Min Vol ETF"));
-        assertThat(security3.getCurrencyCode(), is("EUR"));
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00B8KGV557"), hasWkn(null), hasTicker(null), //
+                        hasName("iShares Edge MSCI EM Min Vol ETF"), //
+                        hasCurrencyCode("EUR"))));
 
-        var security4 = results.stream().filter(SecurityItem.class::isInstance).skip(3).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security4.getIsin(), is("IE00BL25JN58"));
-        assertNull(security4.getWkn());
-        assertNull(security4.getTickerSymbol());
-        assertThat(security4.getName(), is("Xtrackers MSCI World Min Vol ETF"));
-        assertThat(security4.getCurrencyCode(), is("EUR"));
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00BL25JN58"), hasWkn(null), hasTicker(null), //
+                        hasName("Xtrackers MSCI World Min Vol ETF"), //
+                        hasCurrencyCode("EUR"))));
 
         // check 1st buy sell transaction
-        var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-07-01T12:46")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(26.7524)));
-        assertThat(entry.getSource(), is("Depotauszug02.txt"));
-        assertNull(entry.getNote());
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(719.05))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(719.05))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2020-07-01T12:46"), hasShares(26.7524), //
+                        hasSource("Depotauszug02.txt"), hasNote(null), //
+                        hasAmount("EUR", 719.05), hasGrossValue("EUR", 719.05), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check 2nd buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(1).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-07-01T12:53")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1.4517)));
-        assertThat(entry.getSource(), is("Depotauszug02.txt"));
-        assertNull(entry.getNote());
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(145.32))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(145.32))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2020-07-01T12:53"), hasShares(1.4517), //
+                        hasSource("Depotauszug02.txt"), hasNote(null), //
+                        hasAmount("EUR", 145.32), hasGrossValue("EUR", 145.32), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check 3rd buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(2).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-07-01T12:56")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1.9784)));
-        assertThat(entry.getSource(), is("Depotauszug02.txt"));
-        assertNull(entry.getNote());
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(48.44))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(48.44))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2020-07-01T12:56"), hasShares(1.9784), //
+                        hasSource("Depotauszug02.txt"), hasNote(null), //
+                        hasAmount("EUR", 48.44), hasGrossValue("EUR", 48.44), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check 4th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(3).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-07-01T13:20")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(34.7017)));
-        assertThat(entry.getSource(), is("Depotauszug02.txt"));
-        assertNull(entry.getNote());
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(1000.97))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(1000.97))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(sale( //
+                        hasDate("2020-07-01T13:20"), hasShares(34.7017), //
+                        hasSource("Depotauszug02.txt"), hasNote(null), //
+                        hasAmount("EUR", 1000.97), hasGrossValue("EUR", 1000.97), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check 5th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(4).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-07-02T15:20")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(25.3618)));
-        assertThat(entry.getSource(), is("Depotauszug02.txt"));
-        assertNull(entry.getNote());
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(683.50))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(683.50))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2020-07-02T15:20"), hasShares(25.3618), //
+                        hasSource("Depotauszug02.txt"), hasNote(null), //
+                        hasAmount("EUR", 683.50), hasGrossValue("EUR", 683.50), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check 1st deposit transaction
-        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
-
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-03-02T00:00")));
-        assertThat(transaction.getShares(), is(Values.Share.factorize(0)));
-        assertThat(transaction.getSource(), is("Depotauszug02.txt"));
-        assertThat(transaction.getNote(), is("automatischer Lastschrifteinzug"));
-
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(175.00))));
-        assertThat(transaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(175.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(deposit(hasDate("2020-03-02"), hasAmount("EUR", 175.00), //
+                        hasSource("Depotauszug02.txt"), hasNote("automatischer Lastschrifteinzug"))));
 
         // check 1st fee transaction
-        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(1)
-                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
-
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-06-11T00:00")));
-        assertThat(transaction.getShares(), is(Values.Share.factorize(0)));
-        assertThat(transaction.getSource(), is("Depotauszug02.txt"));
-        assertThat(transaction.getNote(), is("Kontoführungs-u.Depotgebühren"));
-
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(18.00))));
-        assertThat(transaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(18.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(fee( //
+                        hasDate("2020-06-11"), //
+                        hasSource("Depotauszug02.txt"), //
+                        hasNote("Kontoführungs-u.Depotgebühren"), //
+                        hasAmount("EUR", 18.00), hasGrossValue("EUR", 18.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check 2nd fee transaction
-        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(2)
-                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
-
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-01-08T00:00")));
-        assertThat(transaction.getShares(), is(Values.Share.factorize(0)));
-        assertThat(transaction.getSource(), is("Depotauszug02.txt"));
-        assertThat(transaction.getNote(), is("Verwaltgebühr/Vertriebskosten"));
-
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(0.92))));
-        assertThat(transaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(0.92))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(fee( //
+                        hasDate("2020-01-08"), //
+                        hasSource("Depotauszug02.txt"), //
+                        hasNote("Verwaltgebühr/Vertriebskosten"), //
+                        hasAmount("EUR", 0.92), hasGrossValue("EUR", 0.92), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -1440,1331 +1014,484 @@ public class SutorBankGmbHPDFExtractorTest
         new AssertImportActions().check(results, "EUR");
 
         // check security
-        var security1 = results.stream().filter(SecurityItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security1.getIsin(), is("LU0925589839"));
-        assertNull(security1.getWkn());
-        assertNull(security1.getTickerSymbol());
-        assertThat(security1.getName(), is("Xtr II iBoxx Euroz Gov Bd 1-3 ETF"));
-        assertThat(security1.getCurrencyCode(), is("EUR"));
+        assertThat(results, hasItem(security( //
+                        hasIsin("LU0925589839"), hasWkn(null), hasTicker(null), //
+                        hasName("Xtr II iBoxx Euroz Gov Bd 1-3 ETF"), //
+                        hasCurrencyCode("EUR"))));
 
-        var security2 = results.stream().filter(SecurityItem.class::isInstance).skip(1).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security2.getIsin(), is("LU1681041627"));
-        assertNull(security2.getWkn());
-        assertNull(security2.getTickerSymbol());
-        assertThat(security2.getName(), is("Amundi Solution MSCI Europe Min Vol"));
-        assertThat(security2.getCurrencyCode(), is("EUR"));
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("LU1681041627"), hasWkn(null), hasTicker(null), //
+                        hasName("Amundi Solution MSCI Europe Min Vol"), //
+                        hasCurrencyCode("EUR"))));
 
-        var security3 = results.stream().filter(SecurityItem.class::isInstance).skip(2).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security3.getIsin(), is("IE00B8KGV557"));
-        assertNull(security3.getWkn());
-        assertNull(security3.getTickerSymbol());
-        assertThat(security3.getName(), is("iShares Edge MSCI EM Min Vol ETF"));
-        assertThat(security3.getCurrencyCode(), is("EUR"));
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00B8KGV557"), hasWkn(null), hasTicker(null), //
+                        hasName("iShares Edge MSCI EM Min Vol ETF"), //
+                        hasCurrencyCode("EUR"))));
 
-        var security4 = results.stream().filter(SecurityItem.class::isInstance).skip(3).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security4.getIsin(), is("IE00BL25JN58"));
-        assertNull(security4.getWkn());
-        assertNull(security4.getTickerSymbol());
-        assertThat(security4.getName(), is("Xtrackers MSCI World Min Vol ETF"));
-        assertThat(security4.getCurrencyCode(), is("EUR"));
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00BL25JN58"), hasWkn(null), hasTicker(null), //
+                        hasName("Xtrackers MSCI World Min Vol ETF"), //
+                        hasCurrencyCode("EUR"))));
 
-        var security5 = results.stream().filter(SecurityItem.class::isInstance).skip(4).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security5.getIsin(), is("LU0290357846"));
-        assertNull(security5.getWkn());
-        assertNull(security5.getTickerSymbol());
-        assertThat(security5.getName(), is("Xtr II iBoxx Euroz Gov Bd 25+ ETF"));
-        assertThat(security5.getCurrencyCode(), is("EUR"));
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("LU0290357846"), hasWkn(null), hasTicker(null), //
+                        hasName("Xtr II iBoxx Euroz Gov Bd 25+ ETF"), //
+                        hasCurrencyCode("EUR"))));
 
         // check 1st buy sell transaction
-        var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-10-01T14:14")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.0405)));
-        assertThat(entry.getSource(), is("Depotauszug03.txt"));
-        assertNull(entry.getNote());
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(5.83))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(5.83))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2020-10-01T14:14"), hasShares(0.0405), //
+                        hasSource("Depotauszug03.txt"), hasNote(null), //
+                        hasAmount("EUR", 5.83), hasGrossValue("EUR", 5.83), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check 2nd buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(1).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-10-01T14:19")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.0014)));
-        assertThat(entry.getSource(), is("Depotauszug03.txt"));
-        assertNull(entry.getNote());
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.14))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(0.14))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2020-10-01T14:19"), hasShares(0.0014), //
+                        hasSource("Depotauszug03.txt"), hasNote(null), //
+                        hasAmount("EUR", 0.14), hasGrossValue("EUR", 0.14), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check 3rd buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(2).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-10-01T14:24")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.0012)));
-        assertThat(entry.getSource(), is("Depotauszug03.txt"));
-        assertNull(entry.getNote());
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.03))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(0.03))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2020-10-01T14:24"), hasShares(0.0012), //
+                        hasSource("Depotauszug03.txt"), hasNote(null), //
+                        hasAmount("EUR", 0.03), hasGrossValue("EUR", 0.03), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check 4th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(3).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-10-01T14:29")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.0347)));
-        assertThat(entry.getSource(), is("Depotauszug03.txt"));
-        assertNull(entry.getNote());
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(1.01))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(1.01))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(sale( //
+                        hasDate("2020-10-01T14:29"), hasShares(0.0347), //
+                        hasSource("Depotauszug03.txt"), hasNote(null), //
+                        hasAmount("EUR", 1.01), hasGrossValue("EUR", 1.01), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check 5th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(4).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-11-02T15:50")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.0272)));
-        assertThat(entry.getSource(), is("Depotauszug03.txt"));
-        assertNull(entry.getNote());
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(3.92))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(3.92))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(sale( //
+                        hasDate("2020-11-02T15:50"), hasShares(0.0272), //
+                        hasSource("Depotauszug03.txt"), hasNote(null), //
+                        hasAmount("EUR", 3.92), hasGrossValue("EUR", 3.92), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check 6th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(5).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-11-02T15:53")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.0490)));
-        assertThat(entry.getSource(), is("Depotauszug03.txt"));
-        assertNull(entry.getNote());
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(4.82))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(4.82))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2020-11-02T15:53"), hasShares(0.0490), //
+                        hasSource("Depotauszug03.txt"), hasNote(null), //
+                        hasAmount("EUR", 4.82), hasGrossValue("EUR", 4.82), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check 7th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(6).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-11-02T15:56")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.0076)));
-        assertThat(entry.getSource(), is("Depotauszug03.txt"));
-        assertNull(entry.getNote());
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.19))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(0.19))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(sale( //
+                        hasDate("2020-11-02T15:56"), hasShares(0.0076), //
+                        hasSource("Depotauszug03.txt"), hasNote(null), //
+                        hasAmount("EUR", 0.19), hasGrossValue("EUR", 0.19), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check 8th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(7).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-11-02T15:58")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.1492)));
-        assertThat(entry.getSource(), is("Depotauszug03.txt"));
-        assertNull(entry.getNote());
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(4.29))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(4.29))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2020-11-02T15:58"), hasShares(0.1492), //
+                        hasSource("Depotauszug03.txt"), hasNote(null), //
+                        hasAmount("EUR", 4.29), hasGrossValue("EUR", 4.29), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check 9th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(8).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-11-04T13:30")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.1962)));
-        assertThat(entry.getSource(), is("Depotauszug03.txt"));
-        assertNull(entry.getNote());
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(28.33))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(28.33))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(sale( //
+                        hasDate("2020-11-04T13:30"), hasShares(0.1962), //
+                        hasSource("Depotauszug03.txt"), hasNote(null), //
+                        hasAmount("EUR", 28.33), hasGrossValue("EUR", 28.33), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check 10th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(9).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-11-04T13:34")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.0281)));
-        assertThat(entry.getSource(), is("Depotauszug03.txt"));
-        assertNull(entry.getNote());
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(2.84))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(2.84))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(sale( //
+                        hasDate("2020-11-04T13:34"), hasShares(0.0281), //
+                        hasSource("Depotauszug03.txt"), hasNote(null), //
+                        hasAmount("EUR", 2.84), hasGrossValue("EUR", 2.84), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check 11th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(10).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-11-04T13:36")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.0122)));
-        assertThat(entry.getSource(), is("Depotauszug03.txt"));
-        assertNull(entry.getNote());
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.31))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(0.31))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(sale( //
+                        hasDate("2020-11-04T13:36"), hasShares(0.0122), //
+                        hasSource("Depotauszug03.txt"), hasNote(null), //
+                        hasAmount("EUR", 0.31), hasGrossValue("EUR", 0.31), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check 12th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(11).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-11-04T13:42")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.1058)));
-        assertThat(entry.getSource(), is("Depotauszug03.txt"));
-        assertNull(entry.getNote());
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(3.09))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(3.09))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(sale( //
+                        hasDate("2020-11-04T13:42"), hasShares(0.1058), //
+                        hasSource("Depotauszug03.txt"), hasNote(null), //
+                        hasAmount("EUR", 3.09), hasGrossValue("EUR", 3.09), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check 13th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(12).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-11-10T16:54")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(29.2219)));
-        assertThat(entry.getSource(), is("Depotauszug03.txt"));
-        assertNull(entry.getNote());
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(4217.89))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(4217.89))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(sale( //
+                        hasDate("2020-11-10T16:54"), hasShares(29.2219), //
+                        hasSource("Depotauszug03.txt"), hasNote(null), //
+                        hasAmount("EUR", 4217.89), hasGrossValue("EUR", 4217.89), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check 14th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(13).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-11-10T17:05")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(2.7701)));
-        assertThat(entry.getSource(), is("Depotauszug03.txt"));
-        assertNull(entry.getNote());
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(1308.16))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(1308.16))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2020-11-10T17:05"), hasShares(2.7701), //
+                        hasSource("Depotauszug03.txt"), hasNote(null), //
+                        hasAmount("EUR", 1308.16), hasGrossValue("EUR", 1308.16), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check 15th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(14).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-11-10T17:10")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.0437)));
-        assertThat(entry.getSource(), is("Depotauszug03.txt"));
-        assertNull(entry.getNote());
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(4.58))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(4.58))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(sale( //
+                        hasDate("2020-11-10T17:10"), hasShares(0.0437), //
+                        hasSource("Depotauszug03.txt"), hasNote(null), //
+                        hasAmount("EUR", 4.58), hasGrossValue("EUR", 4.58), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check 16th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(15).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-11-10T17:16")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.0470)));
-        assertThat(entry.getSource(), is("Depotauszug03.txt"));
-        assertNull(entry.getNote());
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(1.22))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(1.22))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(sale( //
+                        hasDate("2020-11-10T17:16"), hasShares(0.0470), //
+                        hasSource("Depotauszug03.txt"), hasNote(null), //
+                        hasAmount("EUR", 1.22), hasGrossValue("EUR", 1.22), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check 17th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(16).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-11-10T17:20")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.1881)));
-        assertThat(entry.getSource(), is("Depotauszug03.txt"));
-        assertNull(entry.getNote());
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(5.61))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(5.61))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(sale( //
+                        hasDate("2020-11-10T17:20"), hasShares(0.1881), //
+                        hasSource("Depotauszug03.txt"), hasNote(null), //
+                        hasAmount("EUR", 5.61), hasGrossValue("EUR", 5.61), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check 18th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(17).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-11-11T12:50")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(29.2750)));
-        assertThat(entry.getSource(), is("Depotauszug03.txt"));
-        assertNull(entry.getNote());
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(4227.89))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(4227.89))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(sale( //
+                        hasDate("2020-11-11T12:50"), hasShares(29.2750), //
+                        hasSource("Depotauszug03.txt"), hasNote(null), //
+                        hasAmount("EUR", 4227.89), hasGrossValue("EUR", 4227.89), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check 19th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(18).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-11-11T13:01")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(2.7541)));
-        assertThat(entry.getSource(), is("Depotauszug03.txt"));
-        assertNull(entry.getNote());
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(1308.59))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(1308.59))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2020-11-11T13:01"), hasShares(2.7541), //
+                        hasSource("Depotauszug03.txt"), hasNote(null), //
+                        hasAmount("EUR", 1308.59), hasGrossValue("EUR", 1308.59), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check 20th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(19).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-11-11T13:08")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.0133)));
-        assertThat(entry.getSource(), is("Depotauszug03.txt"));
-        assertNull(entry.getNote());
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(1.41))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(1.41))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(sale( //
+                        hasDate("2020-11-11T13:08"), hasShares(0.0133), //
+                        hasSource("Depotauszug03.txt"), hasNote(null), //
+                        hasAmount("EUR", 1.41), hasGrossValue("EUR", 1.41), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check 21th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(20).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-11-11T13:12")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.0076)));
-        assertThat(entry.getSource(), is("Depotauszug03.txt"));
-        assertNull(entry.getNote());
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.20))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(0.20))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(sale( //
+                        hasDate("2020-11-11T13:12"), hasShares(0.0076), //
+                        hasSource("Depotauszug03.txt"), hasNote(null), //
+                        hasAmount("EUR", 0.20), hasGrossValue("EUR", 0.20), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check 22th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(21).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-11-11T13:17")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.0999)));
-        assertThat(entry.getSource(), is("Depotauszug03.txt"));
-        assertNull(entry.getNote());
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(3.02))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(3.02))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(sale( //
+                        hasDate("2020-11-11T13:17"), hasShares(0.0999), //
+                        hasSource("Depotauszug03.txt"), hasNote(null), //
+                        hasAmount("EUR", 3.02), hasGrossValue("EUR", 3.02), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check 23th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(22).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-11-12T16:43")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(29.2993)));
-        assertThat(entry.getSource(), is("Depotauszug03.txt"));
-        assertNull(entry.getNote());
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(4231.40))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(4231.40))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(sale( //
+                        hasDate("2020-11-12T16:43"), hasShares(29.2993), //
+                        hasSource("Depotauszug03.txt"), hasNote(null), //
+                        hasAmount("EUR", 4231.40), hasGrossValue("EUR", 4231.40), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check 24th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(23).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-11-12T16:53")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(4.9197)));
-        assertThat(entry.getSource(), is("Depotauszug03.txt"));
-        assertNull(entry.getNote());
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(2360.50))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(2360.50))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2020-11-12T16:53"), hasShares(4.9197), //
+                        hasSource("Depotauszug03.txt"), hasNote(null), //
+                        hasAmount("EUR", 2360.50), hasGrossValue("EUR", 2360.50), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check 25th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(24).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-11-12T16:56")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.0001)));
-        assertThat(entry.getSource(), is("Depotauszug03.txt"));
-        assertNull(entry.getNote());
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.01))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(0.01))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2020-11-12T16:56"), hasShares(0.0001), //
+                        hasSource("Depotauszug03.txt"), hasNote(null), //
+                        hasAmount("EUR", 0.01), hasGrossValue("EUR", 0.01), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check 26th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(25).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-11-12T16:59")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.0023)));
-        assertThat(entry.getSource(), is("Depotauszug03.txt"));
-        assertNull(entry.getNote());
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.06))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(0.06))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(sale( //
+                        hasDate("2020-11-12T16:59"), hasShares(0.0023), //
+                        hasSource("Depotauszug03.txt"), hasNote(null), //
+                        hasAmount("EUR", 0.06), hasGrossValue("EUR", 0.06), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check 27th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(26).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-11-12T17:01")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.0090)));
-        assertThat(entry.getSource(), is("Depotauszug03.txt"));
-        assertNull(entry.getNote());
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.27))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(0.27))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2020-11-12T17:01"), hasShares(0.0090), //
+                        hasSource("Depotauszug03.txt"), hasNote(null), //
+                        hasAmount("EUR", 0.27), hasGrossValue("EUR", 0.27), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check 28th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(27).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-11-13T13:35")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(4.8888)));
-        assertThat(entry.getSource(), is("Depotauszug03.txt"));
-        assertNull(entry.getNote());
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(2363.26))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(2363.26))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2020-11-13T13:35"), hasShares(4.8888), //
+                        hasSource("Depotauszug03.txt"), hasNote(null), //
+                        hasAmount("EUR", 2363.26), hasGrossValue("EUR", 2363.26), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check 29th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(28).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-11-13T13:44")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.0021)));
-        assertThat(entry.getSource(), is("Depotauszug03.txt"));
-        assertNull(entry.getNote());
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.22))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(0.22))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2020-11-13T13:44"), hasShares(0.0021), //
+                        hasSource("Depotauszug03.txt"), hasNote(null), //
+                        hasAmount("EUR", 0.22), hasGrossValue("EUR", 0.22), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check 30th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(29).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-11-13T13:46")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.0023)));
-        assertThat(entry.getSource(), is("Depotauszug03.txt"));
-        assertNull(entry.getNote());
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.06))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(0.06))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2020-11-13T13:46"), hasShares(0.0023), //
+                        hasSource("Depotauszug03.txt"), hasNote(null), //
+                        hasAmount("EUR", 0.06), hasGrossValue("EUR", 0.06), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check 31th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(30).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-11-13T13:54")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.0184)));
-        assertThat(entry.getSource(), is("Depotauszug03.txt"));
-        assertNull(entry.getNote());
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.55))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(0.55))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2020-11-13T13:54"), hasShares(0.0184), //
+                        hasSource("Depotauszug03.txt"), hasNote(null), //
+                        hasAmount("EUR", 0.55), hasGrossValue("EUR", 0.55), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check 32th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(31).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-11-16T13:43")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(4.9354)));
-        assertThat(entry.getSource(), is("Depotauszug03.txt"));
-        assertNull(entry.getNote());
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(2372.02))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(2372.02))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2020-11-16T13:43"), hasShares(4.9354), //
+                        hasSource("Depotauszug03.txt"), hasNote(null), //
+                        hasAmount("EUR", 2372.02), hasGrossValue("EUR", 2372.02), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check 33th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(32).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-11-16T13:50")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.0023)));
-        assertThat(entry.getSource(), is("Depotauszug03.txt"));
-        assertNull(entry.getNote());
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.24))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(0.24))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2020-11-16T13:50"), hasShares(0.0023), //
+                        hasSource("Depotauszug03.txt"), hasNote(null), //
+                        hasAmount("EUR", 0.24), hasGrossValue("EUR", 0.24), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check 34th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(33).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-11-16T13:56")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.0026)));
-        assertThat(entry.getSource(), is("Depotauszug03.txt"));
-        assertNull(entry.getNote());
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.07))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(0.07))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(sale( //
+                        hasDate("2020-11-16T13:56"), hasShares(0.0026), //
+                        hasSource("Depotauszug03.txt"), hasNote(null), //
+                        hasAmount("EUR", 0.07), hasGrossValue("EUR", 0.07), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check 35th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(34).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-11-16T14:08")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.0007)));
-        assertThat(entry.getSource(), is("Depotauszug03.txt"));
-        assertNull(entry.getNote());
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.02))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(0.02))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(sale( //
+                        hasDate("2020-11-16T14:08"), hasShares(0.0007), //
+                        hasSource("Depotauszug03.txt"), hasNote(null), //
+                        hasAmount("EUR", 0.02), hasGrossValue("EUR", 0.02), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check 36th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(35).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-11-17T14:47")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(4.8809)));
-        assertThat(entry.getSource(), is("Depotauszug03.txt"));
-        assertNull(entry.getNote());
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(2372.62))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(2372.62))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2020-11-17T14:47"), hasShares(4.8809), //
+                        hasSource("Depotauszug03.txt"), hasNote(null), //
+                        hasAmount("EUR", 2372.62), hasGrossValue("EUR", 2372.62), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check 37th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(36).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-11-17T14:53")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.0054)));
-        assertThat(entry.getSource(), is("Depotauszug03.txt"));
-        assertNull(entry.getNote());
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.57))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(0.57))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2020-11-17T14:53"), hasShares(0.0054), //
+                        hasSource("Depotauszug03.txt"), hasNote(null), //
+                        hasAmount("EUR", 0.57), hasGrossValue("EUR", 0.57), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check 38th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(37).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-11-17T14:55")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.0088)));
-        assertThat(entry.getSource(), is("Depotauszug03.txt"));
-        assertNull(entry.getNote());
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.23))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(0.23))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2020-11-17T14:55"), hasShares(0.0088), //
+                        hasSource("Depotauszug03.txt"), hasNote(null), //
+                        hasAmount("EUR", 0.23), hasGrossValue("EUR", 0.23), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check 39th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(38).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-11-17T14:59")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.0420)));
-        assertThat(entry.getSource(), is("Depotauszug03.txt"));
-        assertNull(entry.getNote());
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(1.26))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(1.26))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2020-11-17T14:59"), hasShares(0.0420), //
+                        hasSource("Depotauszug03.txt"), hasNote(null), //
+                        hasAmount("EUR", 1.26), hasGrossValue("EUR", 1.26), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check 40th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(39).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-11-18T12:55")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1.2364)));
-        assertThat(entry.getSource(), is("Depotauszug03.txt"));
-        assertNull(entry.getNote());
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(602.49))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(602.49))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2020-11-18T12:55"), hasShares(1.2364), //
+                        hasSource("Depotauszug03.txt"), hasNote(null), //
+                        hasAmount("EUR", 602.49), hasGrossValue("EUR", 602.49), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check 41th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(40).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-11-18T12:58")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.0015)));
-        assertThat(entry.getSource(), is("Depotauszug03.txt"));
-        assertNull(entry.getNote());
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.04))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(0.04))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2020-11-18T12:58"), hasShares(0.0015), //
+                        hasSource("Depotauszug03.txt"), hasNote(null), //
+                        hasAmount("EUR", 0.04), hasGrossValue("EUR", 0.04), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check 42th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(41).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-11-18T13:06")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.0044)));
-        assertThat(entry.getSource(), is("Depotauszug03.txt"));
-        assertNull(entry.getNote());
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.47))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(0.47))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2020-11-18T13:06"), hasShares(0.0044), //
+                        hasSource("Depotauszug03.txt"), hasNote(null), //
+                        hasAmount("EUR", 0.47), hasGrossValue("EUR", 0.47), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check 43th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(42).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-11-18T13:11")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.0601)));
-        assertThat(entry.getSource(), is("Depotauszug03.txt"));
-        assertNull(entry.getNote());
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(1.81))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(1.81))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2020-11-18T13:11"), hasShares(0.0601), //
+                        hasSource("Depotauszug03.txt"), hasNote(null), //
+                        hasAmount("EUR", 1.81), hasGrossValue("EUR", 1.81), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check 44th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(43).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-11-26T13:34")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.0633)));
-        assertThat(entry.getSource(), is("Depotauszug03.txt"));
-        assertNull(entry.getNote());
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(30.87))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(30.87))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2020-11-26T13:34"), hasShares(0.0633), //
+                        hasSource("Depotauszug03.txt"), hasNote(null), //
+                        hasAmount("EUR", 30.87), hasGrossValue("EUR", 30.87), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check 45th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(44).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-11-26T13:44")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.0092)));
-        assertThat(entry.getSource(), is("Depotauszug03.txt"));
-        assertNull(entry.getNote());
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.96))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(0.96))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2020-11-26T13:44"), hasShares(0.0092), //
+                        hasSource("Depotauszug03.txt"), hasNote(null), //
+                        hasAmount("EUR", 0.96), hasGrossValue("EUR", 0.96), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check 46th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(45).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-11-26T13:53")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.0922)));
-        assertThat(entry.getSource(), is("Depotauszug03.txt"));
-        assertNull(entry.getNote());
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(2.74))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(2.74))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2020-11-26T13:53"), hasShares(0.0922), //
+                        hasSource("Depotauszug03.txt"), hasNote(null), //
+                        hasAmount("EUR", 2.74), hasGrossValue("EUR", 2.74), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check 47th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(46).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-12-01T15:07")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.0137)));
-        assertThat(entry.getSource(), is("Depotauszug03.txt"));
-        assertNull(entry.getNote());
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(6.62))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(6.62))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2020-12-01T15:07"), hasShares(0.0137), //
+                        hasSource("Depotauszug03.txt"), hasNote(null), //
+                        hasAmount("EUR", 6.62), hasGrossValue("EUR", 6.62), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check 48th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(47).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-12-01T15:20")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.0087)));
-        assertThat(entry.getSource(), is("Depotauszug03.txt"));
-        assertNull(entry.getNote());
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.91))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(0.91))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(sale( //
+                        hasDate("2020-12-01T15:20"), hasShares(0.0087), //
+                        hasSource("Depotauszug03.txt"), hasNote(null), //
+                        hasAmount("EUR", 0.91), hasGrossValue("EUR", 0.91), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check 49th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(48).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-12-01T15:24")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.0027)));
-        assertThat(entry.getSource(), is("Depotauszug03.txt"));
-        assertNull(entry.getNote());
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.07))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(0.07))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2020-12-01T15:24"), hasShares(0.0027), //
+                        hasSource("Depotauszug03.txt"), hasNote(null), //
+                        hasAmount("EUR", 0.07), hasGrossValue("EUR", 0.07), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check 50th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(49).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-12-01T15:30")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.0264)));
-        assertThat(entry.getSource(), is("Depotauszug03.txt"));
-        assertNull(entry.getNote());
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.78))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(0.78))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(sale( //
+                        hasDate("2020-12-01T15:30"), hasShares(0.0264), //
+                        hasSource("Depotauszug03.txt"), hasNote(null), //
+                        hasAmount("EUR", 0.78), hasGrossValue("EUR", 0.78), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check 51th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(50).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-12-04T13:41")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.0132)));
-        assertThat(entry.getSource(), is("Depotauszug03.txt"));
-        assertNull(entry.getNote());
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(1.37))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(1.37))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2020-12-04T13:41"), hasShares(0.0132), //
+                        hasSource("Depotauszug03.txt"), hasNote(null), //
+                        hasAmount("EUR", 1.37), hasGrossValue("EUR", 1.37), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check 52th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(51).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-12-04T13:49")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.0004)));
-        assertThat(entry.getSource(), is("Depotauszug03.txt"));
-        assertNull(entry.getNote());
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.01))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(0.01))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(sale( //
+                        hasDate("2020-12-04T13:49"), hasShares(0.0004), //
+                        hasSource("Depotauszug03.txt"), hasNote(null), //
+                        hasAmount("EUR", 0.01), hasGrossValue("EUR", 0.01), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check 53th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(52).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-12-04T13:55")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.1367)));
-        assertThat(entry.getSource(), is("Depotauszug03.txt"));
-        assertNull(entry.getNote());
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(3.99))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(3.99))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2020-12-04T13:55"), hasShares(0.1367), //
+                        hasSource("Depotauszug03.txt"), hasNote(null), //
+                        hasAmount("EUR", 3.99), hasGrossValue("EUR", 3.99), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check 54th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(53).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-12-04T14:04")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.0819)));
-        assertThat(entry.getSource(), is("Depotauszug03.txt"));
-        assertNull(entry.getNote());
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(39.74))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(39.74))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(sale( //
+                        hasDate("2020-12-04T14:04"), hasShares(0.0819), //
+                        hasSource("Depotauszug03.txt"), hasNote(null), //
+                        hasAmount("EUR", 39.74), hasGrossValue("EUR", 39.74), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check 55th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(54).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-12-16T13:21")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.0061)));
-        assertThat(entry.getSource(), is("Depotauszug03.txt"));
-        assertNull(entry.getNote());
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.16))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(0.16))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2020-12-16T13:21"), hasShares(0.0061), //
+                        hasSource("Depotauszug03.txt"), hasNote(null), //
+                        hasAmount("EUR", 0.16), hasGrossValue("EUR", 0.16), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check 56th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(55).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-12-16T13:29")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.0375)));
-        assertThat(entry.getSource(), is("Depotauszug03.txt"));
-        assertNull(entry.getNote());
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(18.25))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(18.25))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(sale( //
+                        hasDate("2020-12-16T13:29"), hasShares(0.0375), //
+                        hasSource("Depotauszug03.txt"), hasNote(null), //
+                        hasAmount("EUR", 18.25), hasGrossValue("EUR", 18.25), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check 57th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(56).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-12-16T13:33")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.0030)));
-        assertThat(entry.getSource(), is("Depotauszug03.txt"));
-        assertNull(entry.getNote());
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.31))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(0.31))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(sale( //
+                        hasDate("2020-12-16T13:33"), hasShares(0.0030), //
+                        hasSource("Depotauszug03.txt"), hasNote(null), //
+                        hasAmount("EUR", 0.31), hasGrossValue("EUR", 0.31), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check 58th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(57).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-12-16T13:36")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.0136)));
-        assertThat(entry.getSource(), is("Depotauszug03.txt"));
-        assertNull(entry.getNote());
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(0.40))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(0.40))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2020-12-16T13:36"), hasShares(0.0136), //
+                        hasSource("Depotauszug03.txt"), hasNote(null), //
+                        hasAmount("EUR", 0.40), hasGrossValue("EUR", 0.40), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check 1st deposit transaction
-        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
-
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-10-01T00:00")));
-        assertThat(transaction.getShares(), is(Values.Share.factorize(0)));
-        assertThat(transaction.getSource(), is("Depotauszug03.txt"));
-        assertThat(transaction.getNote(), is("automatischer Lastschrifteinzug"));
-
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(5.00))));
-        assertThat(transaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(5.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(deposit(hasDate("2020-10-01"), hasAmount("EUR", 5.00), //
+                        hasSource("Depotauszug03.txt"), hasNote("automatischer Lastschrifteinzug"))));
 
         // check 2nd deposit transaction
-        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(1)
-                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
-
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-11-02T00:00")));
-        assertThat(transaction.getShares(), is(Values.Share.factorize(0)));
-        assertThat(transaction.getSource(), is("Depotauszug03.txt"));
-        assertThat(transaction.getNote(), is("automatischer Lastschrifteinzug"));
-
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(5.00))));
-        assertThat(transaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(5.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(deposit(hasDate("2020-11-02"), hasAmount("EUR", 5.00), //
+                        hasSource("Depotauszug03.txt"), hasNote("automatischer Lastschrifteinzug"))));
 
         // check 3rd deposit transaction
-        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(2)
-                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
-
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-12-01T00:00")));
-        assertThat(transaction.getShares(), is(Values.Share.factorize(0)));
-        assertThat(transaction.getSource(), is("Depotauszug03.txt"));
-        assertThat(transaction.getNote(), is("automatischer Lastschrifteinzug"));
-
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(5.00))));
-        assertThat(transaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(5.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(deposit(hasDate("2020-12-01"), hasAmount("EUR", 5.00), //
+                        hasSource("Depotauszug03.txt"), hasNote("automatischer Lastschrifteinzug"))));
 
         // check 1th fee transaction
-        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(3)
-                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
-
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-11-04T00:00")));
-        assertThat(transaction.getShares(), is(Values.Share.factorize(0)));
-        assertThat(transaction.getSource(), is("Depotauszug03.txt"));
-        assertThat(transaction.getNote(), is("Verwaltungsgebühr/Vertriebskosten"));
-
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(34.57))));
-        assertThat(transaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(34.57))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(fee( //
+                        hasDate("2020-11-04"), //
+                        hasSource("Depotauszug03.txt"), //
+                        hasNote("Verwaltungsgebühr/Vertriebskosten"), //
+                        hasAmount("EUR", 34.57), hasGrossValue("EUR", 34.57), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check 1st fee refund (Storno) transaction
-        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(4)
-                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(transaction.getType(), is(AccountTransaction.Type.FEES_REFUND));
-
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-11-25T00:00")));
-        assertThat(transaction.getShares(), is(Values.Share.factorize(0)));
-        assertThat(transaction.getSource(), is("Depotauszug03.txt"));
-        assertThat(transaction.getNote(), is("Storno Verwaltungsgebühr/Vertriebskosten vom 04.11.2020"));
-
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(34.57))));
-        assertThat(transaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(34.57))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(feeRefund( //
+                        hasDate("2020-11-25"), //
+                        hasSource("Depotauszug03.txt"), //
+                        hasNote("Storno Verwaltungsgebühr/Vertriebskosten vom 04.11.2020"), //
+                        hasAmount("EUR", 34.57), hasGrossValue("EUR", 34.57), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check 2nd fee transaction
-        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(5)
-                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
-
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-12-03T00:00")));
-        assertThat(transaction.getShares(), is(Values.Share.factorize(0)));
-        assertThat(transaction.getSource(), is("Depotauszug03.txt"));
-        assertThat(transaction.getNote(), is("Verwaltungsgebühr/Vertriebskosten"));
-
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(34.39))));
-        assertThat(transaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(34.39))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(fee( //
+                        hasDate("2020-12-03"), //
+                        hasSource("Depotauszug03.txt"), //
+                        hasNote("Verwaltungsgebühr/Vertriebskosten"), //
+                        hasAmount("EUR", 34.39), hasGrossValue("EUR", 34.39), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check 3nd fee transaction
-        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(6)
-                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
-
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-12-16T00:00")));
-        assertThat(transaction.getShares(), is(Values.Share.factorize(0)));
-        assertThat(transaction.getSource(), is("Depotauszug03.txt"));
-        assertThat(transaction.getNote(), is("Kontoführungs-u.Depotgebühren"));
-
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(18.00))));
-        assertThat(transaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(18.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(fee( //
+                        hasDate("2020-12-16"), //
+                        hasSource("Depotauszug03.txt"), //
+                        hasNote("Kontoführungs-u.Depotgebühren"), //
+                        hasAmount("EUR", 18.00), hasGrossValue("EUR", 18.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -2787,343 +1514,134 @@ public class SutorBankGmbHPDFExtractorTest
         new AssertImportActions().check(results, "EUR");
 
         // check security
-        var security1 = results.stream().filter(SecurityItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security1.getIsin(), is("IE00BZ02LR44"));
-        assertNull(security1.getWkn());
-        assertNull(security1.getTickerSymbol());
-        assertThat(security1.getName(), is("Xtr. (IE)-MSCI World ESG 1C"));
-        assertThat(security1.getCurrencyCode(), is("EUR"));
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00BZ02LR44"), hasWkn(null), hasTicker(null), //
+                        hasName("Xtr. (IE)-MSCI World ESG 1C"), //
+                        hasCurrencyCode("EUR"))));
 
-        var security2 = results.stream().filter(SecurityItem.class::isInstance).skip(1).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security2.getIsin(), is("IE00B52VJ196"));
-        assertNull(security2.getWkn());
-        assertNull(security2.getTickerSymbol());
-        assertThat(security2.getName(), is("iShares MSCI Europe SRI UCITS acc"));
-        assertThat(security2.getCurrencyCode(), is("EUR"));
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00B52VJ196"), hasWkn(null), hasTicker(null), //
+                        hasName("iShares MSCI Europe SRI UCITS acc"), //
+                        hasCurrencyCode("EUR"))));
 
-        var security3 = results.stream().filter(SecurityItem.class::isInstance).skip(2).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security3.getIsin(), is("IE00BYVJRP78"));
-        assertNull(security3.getWkn());
-        assertNull(security3.getTickerSymbol());
-        assertThat(security3.getName(), is("iShares Sustainable MSCI EM SRI acc"));
-        assertThat(security3.getCurrencyCode(), is("EUR"));
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00BYVJRP78"), hasWkn(null), hasTicker(null), //
+                        hasName("iShares Sustainable MSCI EM SRI acc"), //
+                        hasCurrencyCode("EUR"))));
 
         // check 1st buy sell transaction
-        var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-04-01T12:05")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(6.0208)));
-        assertThat(entry.getSource(), is("Depotauszug04.txt"));
-        assertNull(entry.getNote());
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(156.00))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(156.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2021-04-01T12:05"), hasShares(6.0208), //
+                        hasSource("Depotauszug04.txt"), hasNote(null), //
+                        hasAmount("EUR", 156.00), hasGrossValue("EUR", 156.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check 2nd buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(1).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-04-01T12:16")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.9470)));
-        assertThat(entry.getSource(), is("Depotauszug04.txt"));
-        assertNull(entry.getNote());
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(52.00))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(52.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2021-04-01T12:16"), hasShares(0.9470), //
+                        hasSource("Depotauszug04.txt"), hasNote(null), //
+                        hasAmount("EUR", 52.00), hasGrossValue("EUR", 52.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check 3rd buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(2).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-04-01T12:45")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(7.1448)));
-        assertThat(entry.getSource(), is("Depotauszug04.txt"));
-        assertNull(entry.getNote());
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(52.00))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(52.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2021-04-01T12:45"), hasShares(7.1448), //
+                        hasSource("Depotauszug04.txt"), hasNote(null), //
+                        hasAmount("EUR", 52.00), hasGrossValue("EUR", 52.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check 4rd buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(3).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-04-12T12:08")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.0994)));
-        assertThat(entry.getSource(), is("Depotauszug04.txt"));
-        assertNull(entry.getNote());
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(5.54))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(5.54))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2021-04-12T12:08"), hasShares(0.0994), //
+                        hasSource("Depotauszug04.txt"), hasNote(null), //
+                        hasAmount("EUR", 5.54), hasGrossValue("EUR", 5.54), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check 5th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(4).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-04-12T12:59")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(5.8650)));
-        assertThat(entry.getSource(), is("Depotauszug04.txt"));
-        assertNull(entry.getNote());
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(41.46))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(41.46))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2021-04-12T12:59"), hasShares(5.8650), //
+                        hasSource("Depotauszug04.txt"), hasNote(null), //
+                        hasAmount("EUR", 41.46), hasGrossValue("EUR", 41.46), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check 6th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(5).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-04-12T13:18")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1.7870)));
-        assertThat(entry.getSource(), is("Depotauszug04.txt"));
-        assertNull(entry.getNote());
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(47.00))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(47.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(sale( //
+                        hasDate("2021-04-12T13:18"), hasShares(1.7870), //
+                        hasSource("Depotauszug04.txt"), hasNote(null), //
+                        hasAmount("EUR", 47.00), hasGrossValue("EUR", 47.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check 7th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(6).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-05-10T10:50")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.7947)));
-        assertThat(entry.getSource(), is("Depotauszug04.txt"));
-        assertNull(entry.getNote());
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(21.04))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(21.04))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2021-05-10T10:50"), hasShares(0.7947), //
+                        hasSource("Depotauszug04.txt"), hasNote(null), //
+                        hasAmount("EUR", 21.04), hasGrossValue("EUR", 21.04), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check 8th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(7).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-05-10T11:31")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1.0382)));
-        assertThat(entry.getSource(), is("Depotauszug04.txt"));
-        assertNull(entry.getNote());
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(7.48))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(7.48))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2021-05-10T11:31"), hasShares(1.0382), //
+                        hasSource("Depotauszug04.txt"), hasNote(null), //
+                        hasAmount("EUR", 7.48), hasGrossValue("EUR", 7.48), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check 9th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(8).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-05-10T11:42")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.5025)));
-        assertThat(entry.getSource(), is("Depotauszug04.txt"));
-        assertNull(entry.getNote());
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(28.52))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(28.52))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(sale( //
+                        hasDate("2021-05-10T11:42"), hasShares(0.5025), //
+                        hasSource("Depotauszug04.txt"), hasNote(null), //
+                        hasAmount("EUR", 28.52), hasGrossValue("EUR", 28.52), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check 10th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(9).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-05-13T08:00")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.4634)));
-        assertThat(entry.getSource(), is("Depotauszug04.txt"));
-        assertNull(entry.getNote());
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(11.82))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(11.82))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(sale( //
+                        hasDate("2021-05-13T08:00"), hasShares(0.4634), //
+                        hasSource("Depotauszug04.txt"), hasNote(null), //
+                        hasAmount("EUR", 11.82), hasGrossValue("EUR", 11.82), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check 11th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(10).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-05-13T08:00")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.3840)));
-        assertThat(entry.getSource(), is("Depotauszug04.txt"));
-        assertNull(entry.getNote());
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(21.39))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(21.39))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(sale( //
+                        hasDate("2021-05-13T08:00"), hasShares(0.3840), //
+                        hasSource("Depotauszug04.txt"), hasNote(null), //
+                        hasAmount("EUR", 21.39), hasGrossValue("EUR", 21.39), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check 12th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(11).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-05-13T08:26")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1.7624)));
-        assertThat(entry.getSource(), is("Depotauszug04.txt"));
-        assertNull(entry.getNote());
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(12.11))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(12.11))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(sale( //
+                        hasDate("2021-05-13T08:26"), hasShares(1.7624), //
+                        hasSource("Depotauszug04.txt"), hasNote(null), //
+                        hasAmount("EUR", 12.11), hasGrossValue("EUR", 12.11), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check 1st deposit transaction
-        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
-
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-04-01T00:00")));
-        assertThat(transaction.getShares(), is(Values.Share.factorize(0)));
-        assertThat(transaction.getSource(), is("Depotauszug04.txt"));
-        assertThat(transaction.getNote(), is("automatischer Lastschrifteinzug"));
-
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(260.00))));
-        assertThat(transaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(260.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(deposit(hasDate("2021-04-01"), hasAmount("EUR", 260.00), //
+                        hasSource("Depotauszug04.txt"), hasNote("automatischer Lastschrifteinzug"))));
 
         // check 1th fee transaction
-        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(1)
-                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
-
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-05-17T00:00")));
-        assertThat(transaction.getShares(), is(Values.Share.factorize(0)));
-        assertThat(transaction.getSource(), is("Depotauszug04.txt"));
-        assertThat(transaction.getNote(), is("Depot- u. Verwaltgebühr"));
-
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(6.55))));
-        assertThat(transaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(6.55))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(fee( //
+                        hasDate("2021-05-17"), //
+                        hasSource("Depotauszug04.txt"), //
+                        hasNote("Depot- u. Verwaltgebühr"), //
+                        hasAmount("EUR", 6.55), hasGrossValue("EUR", 6.55), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check 2nd fee transaction
-        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(2)
-                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
-
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-05-17T00:00")));
-        assertThat(transaction.getShares(), is(Values.Share.factorize(0)));
-        assertThat(transaction.getSource(), is("Depotauszug04.txt"));
-        assertThat(transaction.getNote(), is("Kontoführungsgebühr"));
-
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(15.00))));
-        assertThat(transaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(15.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(fee( //
+                        hasDate("2021-05-17"), //
+                        hasSource("Depotauszug04.txt"), //
+                        hasNote("Kontoführungsgebühr"), //
+                        hasAmount("EUR", 15.00), hasGrossValue("EUR", 15.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check 3rd fee transaction
-        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(3)
-                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
-
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-06-15T00:00")));
-        assertThat(transaction.getShares(), is(Values.Share.factorize(0)));
-        assertThat(transaction.getSource(), is("Depotauszug04.txt"));
-        assertThat(transaction.getNote(), is("Umbuchung Geld"));
-
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(23.77))));
-        assertThat(transaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(23.77))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(fee( //
+                        hasDate("2021-06-15"), //
+                        hasSource("Depotauszug04.txt"), //
+                        hasNote("Umbuchung Geld"), //
+                        hasAmount("EUR", 23.77), hasGrossValue("EUR", 23.77), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check unsupported transaction
         assertThat(results, hasItem(withFailureMessage( //
@@ -3176,1114 +1694,387 @@ public class SutorBankGmbHPDFExtractorTest
         new AssertImportActions().check(results, "EUR");
 
         // check security
-        var security1 = results.stream().filter(SecurityItem.class::isInstance).skip(1).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security1.getIsin(), is("IE00BH04GL39"));
-        assertNull(security1.getWkn());
-        assertNull(security1.getTickerSymbol());
-        assertThat(security1.getName(), is("Vanguard EUR Eurozone Gov Bond ETF"));
-        assertThat(security1.getCurrencyCode(), is("EUR"));
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00BH04GL39"), hasWkn(null), hasTicker(null), //
+                        hasName("Vanguard EUR Eurozone Gov Bond ETF"), //
+                        hasCurrencyCode("EUR"))));
 
-        var security2 = results.stream().filter(SecurityItem.class::isInstance).skip(2).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security2.getIsin(), is("LU1681041627"));
-        assertNull(security2.getWkn());
-        assertNull(security2.getTickerSymbol());
-        assertThat(security2.getName(), is("Amundi Solution MSCI Europe Min Vol"));
-        assertThat(security2.getCurrencyCode(), is("EUR"));
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("LU1681041627"), hasWkn(null), hasTicker(null), //
+                        hasName("Amundi Solution MSCI Europe Min Vol"), //
+                        hasCurrencyCode("EUR"))));
 
-        var security3 = results.stream().filter(SecurityItem.class::isInstance).skip(3).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security3.getIsin(), is("IE00B8KGV557"));
-        assertNull(security3.getWkn());
-        assertNull(security3.getTickerSymbol());
-        assertThat(security3.getName(), is("iShares Edge MSCI EM Min Vol ETF"));
-        assertThat(security3.getCurrencyCode(), is("EUR"));
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00B8KGV557"), hasWkn(null), hasTicker(null), //
+                        hasName("iShares Edge MSCI EM Min Vol ETF"), //
+                        hasCurrencyCode("EUR"))));
 
-        var security4 = results.stream().filter(SecurityItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security4.getIsin(), is("IE00BL25JN58"));
-        assertNull(security4.getWkn());
-        assertNull(security4.getTickerSymbol());
-        assertThat(security4.getName(), is("Xtrackers MSCI World Min Vol ETF"));
-        assertThat(security4.getCurrencyCode(), is("EUR"));
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00BL25JN58"), hasWkn(null), hasTicker(null), //
+                        hasName("Xtrackers MSCI World Min Vol ETF"), //
+                        hasCurrencyCode("EUR"))));
 
         // check 1st cancellation (Storno) transaction
-        var cancellation = (BuySellEntryItem) results.stream() //
-                        .filter(i -> i.isFailure()) //
-                        .filter(BuySellEntryItem.class::isInstance) //
-                        .findFirst().orElseThrow(IllegalArgumentException::new);
-
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getType(),
-                        is(PortfolioTransaction.Type.BUY));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getAccountTransaction().getType(),
-                        is(AccountTransaction.Type.BUY));
-        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionOrderCancellationUnsupported));
-
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getDateTime(),
-                        is(LocalDateTime.parse("2020-06-22T13:31")));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getShares(),
-                        is(Values.Share.factorize(3.9988)));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getSource(), is("Depotauszug05.txt"));
-        assertNull(((BuySellEntry) cancellation.getSubject()).getNote());
-
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(130.57))));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(130.57))));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(withFailureMessage( //
+                        Messages.MsgErrorTransactionOrderCancellationUnsupported, //
+                        purchase( //
+                                        hasDate("2020-06-22T13:31"), hasShares(3.9988), //
+                                        hasSource("Depotauszug05.txt"), hasNote(null), //
+                                        hasAmount("EUR", 130.57), hasGrossValue("EUR", 130.57), //
+                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
 
         // check 1st buy sell transaction
-        var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(1).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-07-01T12:46")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(26.7524)));
-        assertThat(entry.getSource(), is("Depotauszug05.txt"));
-        assertNull(entry.getNote());
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(719.05))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(719.05))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2020-07-01T12:46"), hasShares(26.7524), //
+                        hasSource("Depotauszug05.txt"), hasNote(null), //
+                        hasAmount("EUR", 719.05), hasGrossValue("EUR", 719.05), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check 2nd buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(2).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-07-01T12:53")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1.4517)));
-        assertThat(entry.getSource(), is("Depotauszug05.txt"));
-        assertNull(entry.getNote());
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(145.32))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(145.32))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2020-07-01T12:53"), hasShares(1.4517), //
+                        hasSource("Depotauszug05.txt"), hasNote(null), //
+                        hasAmount("EUR", 145.32), hasGrossValue("EUR", 145.32), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check 3rd buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(3).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-07-01T12:56")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1.9784)));
-        assertThat(entry.getSource(), is("Depotauszug05.txt"));
-        assertNull(entry.getNote());
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(48.44))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(48.44))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2020-07-01T12:56"), hasShares(1.9784), //
+                        hasSource("Depotauszug05.txt"), hasNote(null), //
+                        hasAmount("EUR", 48.44), hasGrossValue("EUR", 48.44), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check 4th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(4).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-07-01T13:20")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(34.7017)));
-        assertThat(entry.getSource(), is("Depotauszug05.txt"));
-        assertNull(entry.getNote());
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(1000.97))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(1000.97))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(sale( //
+                        hasDate("2020-07-01T13:20"), hasShares(34.7017), //
+                        hasSource("Depotauszug05.txt"), hasNote(null), //
+                        hasAmount("EUR", 1000.97), hasGrossValue("EUR", 1000.97), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check 5th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(5).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-07-02T15:20")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(25.3618)));
-        assertThat(entry.getSource(), is("Depotauszug05.txt"));
-        assertNull(entry.getNote());
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(683.50))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(683.50))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2020-07-02T15:20"), hasShares(25.3618), //
+                        hasSource("Depotauszug05.txt"), hasNote(null), //
+                        hasAmount("EUR", 683.50), hasGrossValue("EUR", 683.50), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check 6th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(6).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-07-02T15:24")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1.5282)));
-        assertThat(entry.getSource(), is("Depotauszug05.txt"));
-        assertNull(entry.getNote());
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(155.66))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(155.66))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2020-07-02T15:24"), hasShares(1.5282), //
+                        hasSource("Depotauszug05.txt"), hasNote(null), //
+                        hasAmount("EUR", 155.66), hasGrossValue("EUR", 155.66), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check 7th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(7).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-07-02T15:36")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(2.0802)));
-        assertThat(entry.getSource(), is("Depotauszug05.txt"));
-        assertNull(entry.getNote());
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(51.89))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(51.89))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2020-07-02T15:36"), hasShares(2.0802), //
+                        hasSource("Depotauszug05.txt"), hasNote(null), //
+                        hasAmount("EUR", 51.89), hasGrossValue("EUR", 51.89), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check 8th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(8).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-07-02T15:38")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.7334)));
-        assertThat(entry.getSource(), is("Depotauszug05.txt"));
-        assertNull(entry.getNote());
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(21.47))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(21.47))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2020-07-02T15:38"), hasShares(0.7334), //
+                        hasSource("Depotauszug05.txt"), hasNote(null), //
+                        hasAmount("EUR", 21.47), hasGrossValue("EUR", 21.47), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check 9th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(9).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-07-03T13:43")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(24.2090)));
-        assertThat(entry.getSource(), is("Depotauszug05.txt"));
-        assertNull(entry.getNote());
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(653.40))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(653.40))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2020-07-03T13:43"), hasShares(24.2090), //
+                        hasSource("Depotauszug05.txt"), hasNote(null), //
+                        hasAmount("EUR", 653.40), hasGrossValue("EUR", 653.40), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check 10th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(10).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-07-03T13:45")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1.6319)));
-        assertThat(entry.getSource(), is("Depotauszug05.txt"));
-        assertNull(entry.getNote());
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(165.93))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(165.93))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2020-07-03T13:45"), hasShares(1.6319), //
+                        hasSource("Depotauszug05.txt"), hasNote(null), //
+                        hasAmount("EUR", 165.93), hasGrossValue("EUR", 165.93), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check 11th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(11).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-07-03T13:48")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(2.2017)));
-        assertThat(entry.getSource(), is("Depotauszug05.txt"));
-        assertNull(entry.getNote());
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(55.24))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(55.24))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2020-07-03T13:48"), hasShares(2.2017), //
+                        hasSource("Depotauszug05.txt"), hasNote(null), //
+                        hasAmount("EUR", 55.24), hasGrossValue("EUR", 55.24), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check 12th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(12).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-07-03T13:50")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1.3694)));
-        assertThat(entry.getSource(), is("Depotauszug05.txt"));
-        assertNull(entry.getNote());
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(39.89))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(39.89))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2020-07-03T13:50"), hasShares(1.3694), //
+                        hasSource("Depotauszug05.txt"), hasNote(null), //
+                        hasAmount("EUR", 39.89), hasGrossValue("EUR", 39.89), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check 13th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(13).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-07-06T14:15")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(4.2697)));
-        assertThat(entry.getSource(), is("Depotauszug05.txt"));
-        assertNull(entry.getNote());
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(115.11))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(115.11))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2020-07-06T14:15"), hasShares(4.2697), //
+                        hasSource("Depotauszug05.txt"), hasNote(null), //
+                        hasAmount("EUR", 115.11), hasGrossValue("EUR", 115.11), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check 14th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(14).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-07-06T14:19")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(3.3863)));
-        assertThat(entry.getSource(), is("Depotauszug05.txt"));
-        assertNull(entry.getNote());
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(346.82))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(346.82))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2020-07-06T14:19"), hasShares(3.3863), //
+                        hasSource("Depotauszug05.txt"), hasNote(null), //
+                        hasAmount("EUR", 346.82), hasGrossValue("EUR", 346.82), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check 15th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(15).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-07-06T14:21")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(4.5074)));
-        assertThat(entry.getSource(), is("Depotauszug05.txt"));
-        assertNull(entry.getNote());
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(115.03))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(115.03))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2020-07-06T14:21"), hasShares(4.5074), //
+                        hasSource("Depotauszug05.txt"), hasNote(null), //
+                        hasAmount("EUR", 115.03), hasGrossValue("EUR", 115.03), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check 16th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(16).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-07-06T14:24")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(13.1368)));
-        assertThat(entry.getSource(), is("Depotauszug05.txt"));
-        assertNull(entry.getNote());
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(385.17))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(385.17))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2020-07-06T14:24"), hasShares(13.1368), //
+                        hasSource("Depotauszug05.txt"), hasNote(null), //
+                        hasAmount("EUR", 385.17), hasGrossValue("EUR", 385.17), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check 17th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(17).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-07-07T15:51")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(29.6770)));
-        assertThat(entry.getSource(), is("Depotauszug05.txt"));
-        assertNull(entry.getNote());
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(801.28))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(801.28))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2020-07-07T15:51"), hasShares(29.6770), //
+                        hasSource("Depotauszug05.txt"), hasNote(null), //
+                        hasAmount("EUR", 801.28), hasGrossValue("EUR", 801.28), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check 18th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(18).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-07-07T15:59")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.8213)));
-        assertThat(entry.getSource(), is("Depotauszug05.txt"));
-        assertNull(entry.getNote());
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(83.69))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(83.69))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2020-07-07T15:59"), hasShares(0.8213), //
+                        hasSource("Depotauszug05.txt"), hasNote(null), //
+                        hasAmount("EUR", 83.69), hasGrossValue("EUR", 83.69), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check 19th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(19).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-07-07T16:11")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1.0785)));
-        assertThat(entry.getSource(), is("Depotauszug05.txt"));
-        assertNull(entry.getNote());
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(27.49))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(27.49))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2020-07-07T16:11"), hasShares(1.0785), //
+                        hasSource("Depotauszug05.txt"), hasNote(null), //
+                        hasAmount("EUR", 27.49), hasGrossValue("EUR", 27.49), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check 20th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(20).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-07-07T18:47")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(12.0853)));
-        assertThat(entry.getSource(), is("Depotauszug05.txt"));
-        assertNull(entry.getNote());
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(351.56))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(351.56))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(sale( //
+                        hasDate("2020-07-07T18:47"), hasShares(12.0853), //
+                        hasSource("Depotauszug05.txt"), hasNote(null), //
+                        hasAmount("EUR", 351.56), hasGrossValue("EUR", 351.56), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check 21th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(21).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-07-08T14:37")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(29.0525)));
-        assertThat(entry.getSource(), is("Depotauszug05.txt"));
-        assertNull(entry.getNote());
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(786.16))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(786.16))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2020-07-08T14:37"), hasShares(29.0525), //
+                        hasSource("Depotauszug05.txt"), hasNote(null), //
+                        hasAmount("EUR", 786.16), hasGrossValue("EUR", 786.16), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check 22th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(22).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-07-08T14:44")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.8713)));
-        assertThat(entry.getSource(), is("Depotauszug05.txt"));
-        assertNull(entry.getNote());
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(88.84))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(88.84))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2020-07-08T14:44"), hasShares(0.8713), //
+                        hasSource("Depotauszug05.txt"), hasNote(null), //
+                        hasAmount("EUR", 88.84), hasGrossValue("EUR", 88.84), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check 23th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(23).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-07-08T14:49")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1.1278)));
-        assertThat(entry.getSource(), is("Depotauszug05.txt"));
-        assertNull(entry.getNote());
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(28.72))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(28.72))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2020-07-08T14:49"), hasShares(1.1278), //
+                        hasSource("Depotauszug05.txt"), hasNote(null), //
+                        hasAmount("EUR", 28.72), hasGrossValue("EUR", 28.72), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check 24th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(24).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-07-08T14:58")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.3485)));
-        assertThat(entry.getSource(), is("Depotauszug05.txt"));
-        assertNull(entry.getNote());
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(10.12))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(10.12))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2020-07-08T14:58"), hasShares(0.3485), //
+                        hasSource("Depotauszug05.txt"), hasNote(null), //
+                        hasAmount("EUR", 10.12), hasGrossValue("EUR", 10.12), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check 25th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(25).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-07-09T13:24")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(26.7793)));
-        assertThat(entry.getSource(), is("Depotauszug05.txt"));
-        assertNull(entry.getNote());
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(724.30))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(724.30))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2020-07-09T13:24"), hasShares(26.7793), //
+                        hasSource("Depotauszug05.txt"), hasNote(null), //
+                        hasAmount("EUR", 724.30), hasGrossValue("EUR", 724.30), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check 26th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(26).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-07-09T13:30")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1.0562)));
-        assertThat(entry.getSource(), is("Depotauszug05.txt"));
-        assertNull(entry.getNote());
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(107.58))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(107.58))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2020-07-09T13:30"), hasShares(1.0562), //
+                        hasSource("Depotauszug05.txt"), hasNote(null), //
+                        hasAmount("EUR", 107.58), hasGrossValue("EUR", 107.58), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check 27th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(27).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-07-09T13:34")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1.3355)));
-        assertThat(entry.getSource(), is("Depotauszug05.txt"));
-        assertNull(entry.getNote());
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(34.17))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(34.17))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2020-07-09T13:34"), hasShares(1.3355), //
+                        hasSource("Depotauszug05.txt"), hasNote(null), //
+                        hasAmount("EUR", 34.17), hasGrossValue("EUR", 34.17), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check 28th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(28).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-07-09T13:38")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1.6494)));
-        assertThat(entry.getSource(), is("Depotauszug05.txt"));
-        assertNull(entry.getNote());
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(47.85))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(47.85))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2020-07-09T13:38"), hasShares(1.6494), //
+                        hasSource("Depotauszug05.txt"), hasNote(null), //
+                        hasAmount("EUR", 47.85), hasGrossValue("EUR", 47.85), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check 29th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(29).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-07-10T14:28")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(31.6526)));
-        assertThat(entry.getSource(), is("Depotauszug05.txt"));
-        assertNull(entry.getNote());
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(858.07))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(858.07))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2020-07-10T14:28"), hasShares(31.6526), //
+                        hasSource("Depotauszug05.txt"), hasNote(null), //
+                        hasAmount("EUR", 858.07), hasGrossValue("EUR", 858.07), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check 30th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(30).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-07-10T15:01")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.1321)));
-        assertThat(entry.getSource(), is("Depotauszug05.txt"));
-        assertNull(entry.getNote());
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(13.45))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(13.45))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2020-07-10T15:01"), hasShares(0.1321), //
+                        hasSource("Depotauszug05.txt"), hasNote(null), //
+                        hasAmount("EUR", 13.45), hasGrossValue("EUR", 13.45), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check 31th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(31).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-07-10T15:06")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.2016)));
-        assertThat(entry.getSource(), is("Depotauszug05.txt"));
-        assertNull(entry.getNote());
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(5.13))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(5.13))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2020-07-10T15:06"), hasShares(0.2016), //
+                        hasSource("Depotauszug05.txt"), hasNote(null), //
+                        hasAmount("EUR", 5.13), hasGrossValue("EUR", 5.13), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check 32th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(32).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-07-10T15:13")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(3.7348)));
-        assertThat(entry.getSource(), is("Depotauszug05.txt"));
-        assertNull(entry.getNote());
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(108.14))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(108.14))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(sale( //
+                        hasDate("2020-07-10T15:13"), hasShares(3.7348), //
+                        hasSource("Depotauszug05.txt"), hasNote(null), //
+                        hasAmount("EUR", 108.14), hasGrossValue("EUR", 108.14), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check 33th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(33).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-07-13T15:19")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(10.2897)));
-        assertThat(entry.getSource(), is("Depotauszug05.txt"));
-        assertNull(entry.getNote());
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(277.41))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(277.41))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(sale( //
+                        hasDate("2020-07-13T15:19"), hasShares(10.2897), //
+                        hasSource("Depotauszug05.txt"), hasNote(null), //
+                        hasAmount("EUR", 277.41), hasGrossValue("EUR", 277.41), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check 34th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(34).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-07-13T15:34")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(5.5625)));
-        assertThat(entry.getSource(), is("Depotauszug05.txt"));
-        assertNull(entry.getNote());
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(162.12))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(162.12))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2020-07-13T15:34"), hasShares(5.5625), //
+                        hasSource("Depotauszug05.txt"), hasNote(null), //
+                        hasAmount("EUR", 162.12), hasGrossValue("EUR", 162.12), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check 35th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(35).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-07-13T15:43")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.8336)));
-        assertThat(entry.getSource(), is("Depotauszug05.txt"));
-        assertNull(entry.getNote());
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(85.23))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(85.23))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2020-07-13T15:43"), hasShares(0.8336), //
+                        hasSource("Depotauszug05.txt"), hasNote(null), //
+                        hasAmount("EUR", 85.23), hasGrossValue("EUR", 85.23), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check 36th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(36).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-07-13T15:49")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1.1798)));
-        assertThat(entry.getSource(), is("Depotauszug05.txt"));
-        assertNull(entry.getNote());
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(30.08))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(30.08))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2020-07-13T15:49"), hasShares(1.1798), //
+                        hasSource("Depotauszug05.txt"), hasNote(null), //
+                        hasAmount("EUR", 30.08), hasGrossValue("EUR", 30.08), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check 37th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(37).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-07-14T15:01")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(15.9700)));
-        assertThat(entry.getSource(), is("Depotauszug05.txt"));
-        assertNull(entry.getNote());
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(431.83))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(431.83))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2020-07-14T15:01"), hasShares(15.9700), //
+                        hasSource("Depotauszug05.txt"), hasNote(null), //
+                        hasAmount("EUR", 431.83), hasGrossValue("EUR", 431.83), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check 38th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(38).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-07-14T15:11")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1.3164)));
-        assertThat(entry.getSource(), is("Depotauszug05.txt"));
-        assertNull(entry.getNote());
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(133.75))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(133.75))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(sale( //
+                        hasDate("2020-07-14T15:11"), hasShares(1.3164), //
+                        hasSource("Depotauszug05.txt"), hasNote(null), //
+                        hasAmount("EUR", 133.75), hasGrossValue("EUR", 133.75), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check 39th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(39).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-07-14T15:23")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1.7908)));
-        assertThat(entry.getSource(), is("Depotauszug05.txt"));
-        assertNull(entry.getNote());
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(44.59))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(44.59))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(sale( //
+                        hasDate("2020-07-14T15:23"), hasShares(1.7908), //
+                        hasSource("Depotauszug05.txt"), hasNote(null), //
+                        hasAmount("EUR", 44.59), hasGrossValue("EUR", 44.59), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check 40th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(40).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-07-14T15:36")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(8.8113)));
-        assertThat(entry.getSource(), is("Depotauszug05.txt"));
-        assertNull(entry.getNote());
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(253.50))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(253.50))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(sale( //
+                        hasDate("2020-07-14T15:36"), hasShares(8.8113), //
+                        hasSource("Depotauszug05.txt"), hasNote(null), //
+                        hasAmount("EUR", 253.50), hasGrossValue("EUR", 253.50), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check 41th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(41).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-07-15T14:15")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(13.0631)));
-        assertThat(entry.getSource(), is("Depotauszug05.txt"));
-        assertNull(entry.getNote());
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(352.86))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(352.86))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(sale( //
+                        hasDate("2020-07-15T14:15"), hasShares(13.0631), //
+                        hasSource("Depotauszug05.txt"), hasNote(null), //
+                        hasAmount("EUR", 352.86), hasGrossValue("EUR", 352.86), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check 42th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(42).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-07-15T14:22")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.9939)));
-        assertThat(entry.getSource(), is("Depotauszug05.txt"));
-        assertNull(entry.getNote());
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(102.85))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(102.85))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2020-07-15T14:22"), hasShares(0.9939), //
+                        hasSource("Depotauszug05.txt"), hasNote(null), //
+                        hasAmount("EUR", 102.85), hasGrossValue("EUR", 102.85), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check 43th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(43).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-07-15T14:28")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1.6946)));
-        assertThat(entry.getSource(), is("Depotauszug05.txt"));
-        assertNull(entry.getNote());
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(42.61))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(42.61))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2020-07-15T14:28"), hasShares(1.6946), //
+                        hasSource("Depotauszug05.txt"), hasNote(null), //
+                        hasAmount("EUR", 42.61), hasGrossValue("EUR", 42.61), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check 44th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(44).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-07-15T14:35")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(7.0652)));
-        assertThat(entry.getSource(), is("Depotauszug05.txt"));
-        assertNull(entry.getNote());
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(207.40))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(207.40))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2020-07-15T14:35"), hasShares(7.0652), //
+                        hasSource("Depotauszug05.txt"), hasNote(null), //
+                        hasAmount("EUR", 207.40), hasGrossValue("EUR", 207.40), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check 45th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(45).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-07-17T13:46")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(9.7407)));
-        assertThat(entry.getSource(), is("Depotauszug05.txt"));
-        assertNull(entry.getNote());
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(263.68))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(263.68))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(sale( //
+                        hasDate("2020-07-17T13:46"), hasShares(9.7407), //
+                        hasSource("Depotauszug05.txt"), hasNote(null), //
+                        hasAmount("EUR", 263.68), hasGrossValue("EUR", 263.68), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check 46th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(46).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-07-17T13:53")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.7338)));
-        assertThat(entry.getSource(), is("Depotauszug05.txt"));
-        assertNull(entry.getNote());
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(75.92))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(75.92))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2020-07-17T13:53"), hasShares(0.7338), //
+                        hasSource("Depotauszug05.txt"), hasNote(null), //
+                        hasAmount("EUR", 75.92), hasGrossValue("EUR", 75.92), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check 47th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(47).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-07-17T14:00")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1.1513)));
-        assertThat(entry.getSource(), is("Depotauszug05.txt"));
-        assertNull(entry.getNote());
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(28.76))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(28.76))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2020-07-17T14:00"), hasShares(1.1513), //
+                        hasSource("Depotauszug05.txt"), hasNote(null), //
+                        hasAmount("EUR", 28.76), hasGrossValue("EUR", 28.76), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check 48th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(48).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-07-17T14:07")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(5.4242)));
-        assertThat(entry.getSource(), is("Depotauszug05.txt"));
-        assertNull(entry.getNote());
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(159.01))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(159.01))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2020-07-17T14:07"), hasShares(5.4242), //
+                        hasSource("Depotauszug05.txt"), hasNote(null), //
+                        hasAmount("EUR", 159.01), hasGrossValue("EUR", 159.01), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check 49th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(49).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-07-21T14:37")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(33.7619)));
-        assertThat(entry.getSource(), is("Depotauszug05.txt"));
-        assertNull(entry.getNote());
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(915.96))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(915.96))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(sale( //
+                        hasDate("2020-07-21T14:37"), hasShares(33.7619), //
+                        hasSource("Depotauszug05.txt"), hasNote(null), //
+                        hasAmount("EUR", 915.96), hasGrossValue("EUR", 915.96), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check 50th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(50).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-07-21T14:47")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(2.6196)));
-        assertThat(entry.getSource(), is("Depotauszug05.txt"));
-        assertNull(entry.getNote());
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(274.53))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(274.53))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2020-07-21T14:47"), hasShares(2.6196), //
+                        hasSource("Depotauszug05.txt"), hasNote(null), //
+                        hasAmount("EUR", 274.53), hasGrossValue("EUR", 274.53), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -4451,12 +2242,24 @@ public class SutorBankGmbHPDFExtractorTest
                         hasSource("Depotauszug06.txt"), hasNote("automatischer Lastschrifteinzug"))));
 
         // assert transaction
-        assertThat(results, hasItem(fee(hasDate("2024-02-01"), hasAmount("EUR", 1.54), //
-                        hasSource("Depotauszug06.txt"), hasNote("Servicegebühr"))));
+        assertThat(results, hasItem(deposit(hasDate("2024-02-01"), hasAmount("EUR", 50.00), //
+                        hasSource("Depotauszug06.txt"), hasNote("automatischer Lastschrifteinzug"))));
 
         // assert transaction
-        assertThat(results, hasItem(fee(hasDate("2024-02-01"), hasAmount("EUR", 1.45), //
-                        hasSource("Depotauszug06.txt"), hasNote("Vermögensverwaltungsgebühr"))));
+        assertThat(results, hasItem(fee( //
+                        hasDate("2024-02-01"), //
+                        hasSource("Depotauszug06.txt"), //
+                        hasNote("Servicegebühr"), //
+                        hasAmount("EUR", 1.54), hasGrossValue("EUR", 1.54), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // assert transaction
+        assertThat(results, hasItem(fee( //
+                        hasDate("2024-02-01"), //
+                        hasSource("Depotauszug06.txt"), //
+                        hasNote("Vermögensverwaltungsgebühr"), //
+                        hasAmount("EUR", 1.45), hasGrossValue("EUR", 1.45), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check buy sell transactions
         assertThat(results, hasItem(purchase( //
@@ -4568,7 +2371,8 @@ public class SutorBankGmbHPDFExtractorTest
 
         // check dividends transactions
         assertThat(results, hasItem(dividend( //
-                        hasDate("2024-03-07T00:00"), hasShares(0.00), //
+                        hasDate("2024-03-07T00:00"), hasExDate(null), //
+                        hasShares(0.00), //
                         hasSource("Depotauszug06.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 0.64), hasGrossValue("EUR", 0.79), //
@@ -4686,7 +2490,8 @@ public class SutorBankGmbHPDFExtractorTest
 
         // check dividends transactions
         assertThat(results, hasItem(dividend( //
-                        hasDate("2023-09-27T00:00"), hasShares(0.00), //
+                        hasDate("2023-09-27T00:00"), hasExDate(null), //
+                        hasShares(0.00), //
                         hasSource("Depotauszug07.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 0.50), hasGrossValue("EUR", 0.50), //
@@ -4697,8 +2502,12 @@ public class SutorBankGmbHPDFExtractorTest
                         hasSource("Depotauszug07.txt"), hasNote("Umbuchung Verrechnung Nachlasskapitale"))));
 
         // assert transaction
-        assertThat(results, hasItem(fee(hasDate("2023-12-19"), hasAmount("EUR", 19.93), //
-                        hasSource("Depotauszug07.txt"), hasNote("Kontoführungs-u.Depotgebühren"))));
+        assertThat(results, hasItem(fee( //
+                        hasDate("2023-12-19"), //
+                        hasSource("Depotauszug07.txt"), //
+                        hasNote("Kontoführungs-u.Depotgebühren"), //
+                        hasAmount("EUR", 19.93), hasGrossValue("EUR", 19.93), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // assert transaction
         assertThat(results, hasItem(removal(hasDate("2023-12-19"), hasAmount("EUR", 500.00), //
@@ -4893,6 +2702,643 @@ public class SutorBankGmbHPDFExtractorTest
                         hasSource("Depotauszug09.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 70.00), hasGrossValue("EUR", 70.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testDepotauszug10()
+    {
+        var extractor = new SutorBankGmbHPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Depotauszug10.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(8L));
+        assertThat(countBuySell(results), is(17L));
+        assertThat(countAccountTransactions(results), is(7L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(32));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00BQN1K786"), hasWkn(null), hasTicker(null), //
+                        hasName("iShares Edge MSCI Europe Momentum"), //
+                        hasCurrencyCode("EUR"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00B14X4T88"), hasWkn(null), hasTicker(null), //
+                        hasName("iShares Asia Pacific Dividend ETF"), //
+                        hasCurrencyCode("EUR"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00B1W6CW87"), hasWkn(null), hasTicker(null), //
+                        hasName("Dimensional European Value Fund"), //
+                        hasCurrencyCode("EUR"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("LU0397221945"), hasWkn(null), hasTicker(null), //
+                        hasName("x-tr. Portf.Total Ret. UCITS ETF"), //
+                        hasCurrencyCode("EUR"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("LU1829221024"), hasWkn(null), hasTicker(null), //
+                        hasName("Multi Amundi Nasdaq-100 II UCITS"), //
+                        hasCurrencyCode("EUR"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00BYVJRP78"), hasWkn(null), hasTicker(null), //
+                        hasName("iShares Sustainable MSCI EM SRI acc"), //
+                        hasCurrencyCode("EUR"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00BKM4GZ66"), hasWkn(null), hasTicker(null), //
+                        hasName("iShares Core MSCI Emerging Markets"), //
+                        hasCurrencyCode("EUR"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE0032769055"), hasWkn(null), hasTicker(null), //
+                        hasName("Dimensional Europ.Small Comp. F acc"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check dividends transactions
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2025-06-26T00:00"), hasExDate(null), //
+                        hasShares(0.00), //
+                        hasSource("Depotauszug10.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 353.38), hasGrossValue("EUR", 353.38), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2025-07-15"), hasAmount("EUR", 200.00), //
+                        hasSource("Depotauszug10.txt"), hasNote("automatischer Lastschrifteinzug"))));
+
+        // assert transaction
+        assertThat(results, hasItem(fee( //
+                        hasDate("2025-07-15"), //
+                        hasSource("Depotauszug10.txt"), //
+                        hasNote("Kontoführungs-u.Depotgeb.1.Hj. 2025"), //
+                        hasAmount("EUR", 43.12), hasGrossValue("EUR", 43.12), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy sell transactions
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2025-07-15T11:46"), hasShares(3.8356), //
+                        hasSource("Depotauszug10.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 50.99), hasGrossValue("EUR", 50.99), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy sell transactions
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2025-07-15T12:44"), hasShares(19.0518), //
+                        hasSource("Depotauszug10.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 408.28), hasGrossValue("EUR", 408.28), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy sell transactions
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2025-07-15T00:00"), hasShares(2.2622), //
+                        hasSource("Depotauszug10.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 50.99), hasGrossValue("EUR", 50.99), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy sell transactions
+        assertThat(results, hasItem(sale( //
+                        hasDate("2025-07-16T10:56"), hasShares(0.07), //
+                        hasSource("Depotauszug10.txt"), //
+                        hasNote("Gebührentilgung"), //
+                        hasAmount("EUR", 21.24), hasGrossValue("EUR", 21.24), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy sell transactions
+        assertThat(results, hasItem(sale( //
+                        hasDate("2025-07-16T11:49"), hasShares(2.2309), //
+                        hasSource("Depotauszug10.txt"), //
+                        hasNote("Gebührentilgung"), //
+                        hasAmount("EUR", 29.56), hasGrossValue("EUR", 29.56), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy sell transactions
+        assertThat(results, hasItem(sale( //
+                        hasDate("2025-07-16T12:44"), hasShares(0.3221), //
+                        hasSource("Depotauszug10.txt"), //
+                        hasNote("Gebührentilgung"), //
+                        hasAmount("EUR", 25.66), hasGrossValue("EUR", 25.66), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy sell transactions
+        assertThat(results, hasItem(sale( //
+                        hasDate("2025-07-16T13:17"), hasShares(0.0685), //
+                        hasSource("Depotauszug10.txt"), //
+                        hasNote("Gebührentilgung"), //
+                        hasAmount("EUR", 0.50), hasGrossValue("EUR", 0.50), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy sell transactions
+        assertThat(results, hasItem(sale( //
+                        hasDate("2025-07-16T13:19"), hasShares(1.259), //
+                        hasSource("Depotauszug10.txt"), //
+                        hasNote("Gebührentilgung"), //
+                        hasAmount("EUR", 27.00), hasGrossValue("EUR", 27.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy sell transactions
+        assertThat(results, hasItem(sale( //
+                        hasDate("2025-07-16T13:43"), hasShares(1.0364), //
+                        hasSource("Depotauszug10.txt"), //
+                        hasNote("Gebührentilgung"), //
+                        hasAmount("EUR", 35.50), hasGrossValue("EUR", 35.50), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy sell transactions
+        assertThat(results, hasItem(sale( //
+                        hasDate("2025-07-16T00:00"), hasShares(0.7039), //
+                        hasSource("Depotauszug10.txt"), //
+                        hasNote("Gebührentilgung"), //
+                        hasAmount("EUR", 40.75), hasGrossValue("EUR", 40.75), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy sell transactions
+        assertThat(results, hasItem(sale( //
+                        hasDate("2025-07-17T00:00"), hasShares(1.3326), //
+                        hasSource("Depotauszug10.txt"), //
+                        hasNote("Gebührentilgung"), //
+                        hasAmount("EUR", 30.21), hasGrossValue("EUR", 30.21), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // assert transaction
+        assertThat(results, hasItem(fee( //
+                        hasDate("2025-07-23"), //
+                        hasSource("Depotauszug10.txt"), //
+                        hasNote("Kontoführungs-u.Depotgebühren"), //
+                        hasAmount("EUR", 210.42), hasGrossValue("EUR", 210.42), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2025-08-15"), hasAmount("EUR", 200.00), //
+                        hasSource("Depotauszug10.txt"), hasNote("automatischer Lastschrifteinzug"))));
+
+        // check buy sell transactions
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2025-08-15T12:00"), hasShares(3.1306), //
+                        hasSource("Depotauszug10.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 70.00), hasGrossValue("EUR", 70.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy sell transactions
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2025-08-15T12:38"), hasShares(4.7095), //
+                        hasSource("Depotauszug10.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 65.00), hasGrossValue("EUR", 65.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy sell transactions
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2025-08-15T00:00"), hasShares(2.7554), //
+                        hasSource("Depotauszug10.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 65.00), hasGrossValue("EUR", 65.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2025-09-15"), hasAmount("EUR", 200.00), //
+                        hasSource("Depotauszug10.txt"), hasNote("automatischer Lastschrifteinzug"))));
+
+        // check buy sell transactions
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2025-09-15T11:05"), hasShares(4.6952), //
+                        hasSource("Depotauszug10.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 65.00), hasGrossValue("EUR", 65.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy sell transactions
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2025-09-15T11:51"), hasShares(3.0574), //
+                        hasSource("Depotauszug10.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 70.00), hasGrossValue("EUR", 70.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy sell transactions
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2025-09-15T00:00"), hasShares(2.7507), //
+                        hasSource("Depotauszug10.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 65.00), hasGrossValue("EUR", 65.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check dividends transactions
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2025-09-25T00:00"), hasExDate(null), //
+                        hasShares(0.00), //
+                        hasSource("Depotauszug10.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 124.85), hasGrossValue("EUR", 124.85), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testDepotauszug11()
+    {
+        var extractor = new SutorBankGmbHPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Depotauszug11.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(13L));
+        assertThat(countBuySell(results), is(37L));
+        assertThat(countAccountTransactions(results), is(3L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(53));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00B7T1D258"), hasWkn(null), hasTicker(null), //
+                        hasName("Dimensional Gl. Sust. Core Eq. Fd €"), //
+                        hasCurrencyCode("EUR"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00B18GC888"), hasWkn(null), hasTicker(null), //
+                        hasName("Vanguard Global Bond Index EUR acc"), //
+                        hasCurrencyCode("EUR"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("LU0950674332"), hasWkn(null), hasTicker(null), //
+                        hasName("UBS MSCI World Social Resp ETF acc"), //
+                        hasCurrencyCode("EUR"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("LU0290358224"), hasWkn(null), hasTicker(null), //
+                        hasName("x-tr.II-iBoxx Eur.Infl.-Link.UCI"), //
+                        hasCurrencyCode("EUR"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("LU0290355717"), hasWkn(null), hasTicker(null), //
+                        hasName("x-trackers II Eurozone Gov. Bond"), //
+                        hasCurrencyCode("EUR"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00BCBJG560"), hasWkn(null), hasTicker(null), //
+                        hasName("SPDR MSCI World Small Cap UCITS ETF"), //
+                        hasCurrencyCode("EUR"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("LU1829221024"), hasWkn(null), hasTicker(null), //
+                        hasName("M.U.L.-Lyxor Nasdaq-100 UCITS"), //
+                        hasCurrencyCode("EUR"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00B3F81409"), hasWkn(null), hasTicker(null), //
+                        hasName("iShares Core Gl. Aggr Bond EUR"), //
+                        hasCurrencyCode("EUR"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00BYVJRP78"), hasWkn(null), hasTicker(null), //
+                        hasName("iShares Sustainable MSCI EM SRI acc"), //
+                        hasCurrencyCode("EUR"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00BP3QZ825"), hasWkn(null), hasTicker(null), //
+                        hasName("iShares Edge MSCI World Momentum"), //
+                        hasCurrencyCode("EUR"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00BCRY6003"), hasWkn(null), hasTicker(null), //
+                        hasName("iShares $ Short Duration High Yield"), //
+                        hasCurrencyCode("EUR"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00B3F81R35"), hasWkn(null), hasTicker(null), //
+                        hasName("iShares Core Euro Corporate Bond"), //
+                        hasCurrencyCode("EUR"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00B3DKXQ41"), hasWkn(null), hasTicker(null), //
+                        hasName("iShares Euro Aggregate Bond UCITS"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check buy sell transactions
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2022-12-30T00:00"), hasShares(185.541), //
+                        hasSource("Depotauszug11.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 4757.27), hasGrossValue("EUR", 4757.27), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy sell transactions
+        assertThat(results, hasItem(sale( //
+                        hasDate("2022-12-30T00:00"), hasShares(99.5464), //
+                        hasSource("Depotauszug11.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 2552.37), hasGrossValue("EUR", 2552.37), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy sell transactions
+        assertThat(results, hasItem(sale( //
+                        hasDate("2022-12-30T00:00"), hasShares(32.6904), //
+                        hasSource("Depotauszug11.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 3015.38), hasGrossValue("EUR", 3015.38), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy sell transactions
+        assertThat(results, hasItem(sale( //
+                        hasDate("2022-12-30T11:32"), hasShares(202.5371), //
+                        hasSource("Depotauszug11.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 4221.88), hasGrossValue("EUR", 4221.88), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy sell transactions
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2022-12-30T11:37"), hasShares(19.8396), //
+                        hasSource("Depotauszug11.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 4470.66), hasGrossValue("EUR", 4470.66), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy sell transactions
+        assertThat(results, hasItem(sale( //
+                        hasDate("2022-12-30T11:57"), hasShares(14.4865), //
+                        hasSource("Depotauszug11.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 2946.12), hasGrossValue("EUR", 2946.12), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy sell transactions
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2022-12-30T12:10"), hasShares(116.1478), //
+                        hasSource("Depotauszug11.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 9344.10), hasGrossValue("EUR", 9344.10), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy sell transactions
+        assertThat(results, hasItem(sale( //
+                        hasDate("2022-12-30T12:11"), hasShares(120.3699), //
+                        hasSource("Depotauszug11.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 9670.52), hasGrossValue("EUR", 9670.52), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy sell transactions
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2022-12-30T12:26"), hasShares(45.2757), //
+                        hasSource("Depotauszug11.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 1846.57), hasGrossValue("EUR", 1846.57), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy sell transactions
+        assertThat(results, hasItem(sale( //
+                        hasDate("2022-12-30T12:27"), hasShares(76.3133), //
+                        hasSource("Depotauszug11.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 3110.91), hasGrossValue("EUR", 3110.91), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy sell transactions
+        assertThat(results, hasItem(sale( //
+                        hasDate("2022-12-30T12:34"), hasShares(517.5462), //
+                        hasSource("Depotauszug11.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 2090.95), hasGrossValue("EUR", 2090.95), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy sell transactions
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2022-12-30T12:35"), hasShares(2842.6072), //
+                        hasSource("Depotauszug11.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 18255.21), hasGrossValue("EUR", 18255.21), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy sell transactions
+        assertThat(results, hasItem(sale( //
+                        hasDate("2022-12-30T12:35"), hasShares(1028.385), //
+                        hasSource("Depotauszug11.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 6604.28), hasGrossValue("EUR", 6604.28), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy sell transactions
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2022-12-30T12:36"), hasShares(41.9621), //
+                        hasSource("Depotauszug11.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 2166.93), hasGrossValue("EUR", 2166.93), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy sell transactions
+        assertThat(results, hasItem(sale( //
+                        hasDate("2022-12-30T12:36"), hasShares(76.5027), //
+                        hasSource("Depotauszug11.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 3949.06), hasGrossValue("EUR", 3949.06), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy sell transactions
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2022-12-30T12:45"), hasShares(64.12), //
+                        hasSource("Depotauszug11.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 5029.61), hasGrossValue("EUR", 5029.61), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy sell transactions
+        assertThat(results, hasItem(sale( //
+                        hasDate("2022-12-30T12:46"), hasShares(54.2402), //
+                        hasSource("Depotauszug11.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 4245.55), hasGrossValue("EUR", 4245.55), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy sell transactions
+        assertThat(results, hasItem(sale( //
+                        hasDate("2022-12-30T13:03"), hasShares(12.1896), //
+                        hasSource("Depotauszug11.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 1402.78), hasGrossValue("EUR", 1402.78), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy sell transactions
+        assertThat(results, hasItem(sale( //
+                        hasDate("2022-12-30T13:11"), hasShares(19.8285), //
+                        hasSource("Depotauszug11.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 2060.55), hasGrossValue("EUR", 2060.55), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2023-01-16"), hasAmount("EUR", 200.00), //
+                        hasSource("Depotauszug11.txt"), hasNote("automatischer Lastschrifteinzug"))));
+
+        // check buy sell transactions
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2023-01-16T11:16"), hasShares(0.5331), //
+                        hasSource("Depotauszug11.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 45.00), hasGrossValue("EUR", 45.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy sell transactions
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2023-01-16T13:41"), hasShares(0.5532), //
+                        hasSource("Depotauszug11.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 44.00), hasGrossValue("EUR", 44.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy sell transactions
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2023-01-16T14:18"), hasShares(0.3875), //
+                        hasSource("Depotauszug11.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 20.00), hasGrossValue("EUR", 20.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy sell transactions
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2023-01-16T14:19"), hasShares(7.3779), //
+                        hasSource("Depotauszug11.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 50.00), hasGrossValue("EUR", 50.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy sell transactions
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2023-01-16T14:27"), hasShares(0.3524), //
+                        hasSource("Depotauszug11.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 15.00), hasGrossValue("EUR", 15.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy sell transactions
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2023-01-17T00:00"), hasShares(0.9687), //
+                        hasSource("Depotauszug11.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 26.00), hasGrossValue("EUR", 26.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2023-02-15"), hasAmount("EUR", 200.00), //
+                        hasSource("Depotauszug11.txt"), hasNote("automatischer Lastschrifteinzug"))));
+
+        // check buy sell transactions
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2023-02-15T10:52"), hasShares(0.515), //
+                        hasSource("Depotauszug11.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 45.00), hasGrossValue("EUR", 45.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy sell transactions
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2023-02-15T12:01"), hasShares(0.3206), //
+                        hasSource("Depotauszug11.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 15.00), hasGrossValue("EUR", 15.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy sell transactions
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2023-02-15T12:09"), hasShares(7.6266), //
+                        hasSource("Depotauszug11.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 50.00), hasGrossValue("EUR", 50.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy sell transactions
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2023-02-15T12:11"), hasShares(0.3853), //
+                        hasSource("Depotauszug11.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 20.00), hasGrossValue("EUR", 20.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy sell transactions
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2023-02-15T12:23"), hasShares(0.554), //
+                        hasSource("Depotauszug11.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 44.00), hasGrossValue("EUR", 44.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy sell transactions
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2023-02-15T00:00"), hasShares(0.9269), //
+                        hasSource("Depotauszug11.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 26.00), hasGrossValue("EUR", 26.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2023-03-15"), hasAmount("EUR", 200.00), //
+                        hasSource("Depotauszug11.txt"), hasNote("automatischer Lastschrifteinzug"))));
+
+        // check buy sell transactions
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2023-03-15T11:17"), hasShares(0.3311), //
+                        hasSource("Depotauszug11.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 15.00), hasGrossValue("EUR", 15.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy sell transactions
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2023-03-15T11:24"), hasShares(8.1726), //
+                        hasSource("Depotauszug11.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 50.00), hasGrossValue("EUR", 50.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy sell transactions
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2023-03-15T11:25"), hasShares(0.4077), //
+                        hasSource("Depotauszug11.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 20.00), hasGrossValue("EUR", 20.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy sell transactions
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2023-03-15T11:32"), hasShares(0.5545), //
+                        hasSource("Depotauszug11.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 44.00), hasGrossValue("EUR", 44.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy sell transactions
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2023-03-15T11:38"), hasShares(0.5578), //
+                        hasSource("Depotauszug11.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 45.00), hasGrossValue("EUR", 45.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy sell transactions
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2023-03-15T00:00"), hasShares(0.9912), //
+                        hasSource("Depotauszug11.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 26.00), hasGrossValue("EUR", 26.00), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 

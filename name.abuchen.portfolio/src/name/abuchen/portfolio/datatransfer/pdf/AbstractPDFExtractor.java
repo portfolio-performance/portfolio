@@ -5,6 +5,7 @@ import static name.abuchen.portfolio.util.TextUtil.trim;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.text.MessageFormat;
 import java.text.NumberFormat;
 import java.text.ParseException;
@@ -98,6 +99,24 @@ public abstract class AbstractPDFExtractor implements Extractor
     public List<String> getBankIdentifier()
     {
         return bankIdentifier;
+    }
+
+    /**
+     * Returns the label for the given document.
+     * <p>
+     * Some banks settle the transactions for several brokers (for example the
+     * Baader Bank). Such extractors can override this method and return a
+     * label per broker. The PDF import groups the extracted items by this
+     * label, so that the import wizard remembers the target portfolio and
+     * account per broker.
+     *
+     * @param inputFile
+     *            the document
+     * @return the label of the document, by default {@link #getLabel()}
+     */
+    public String getLabel(PDFInputFile inputFile)
+    {
+        return getLabel();
     }
 
     /* package */ NumberFormat getNumberFormat()
@@ -322,6 +341,26 @@ public abstract class AbstractPDFExtractor implements Extractor
     protected long asShares(String value, String language, String country)
     {
         return ExtractorUtils.asShares(value, language, country);
+    }
+
+    /**
+     * Converts the nominal of a bond quoted in percent into shares.
+     */
+    protected long asBondNominal(String value)
+    {
+        return asBondNominal(value, Locale.GERMANY);
+    }
+
+    /**
+     * Converts the nominal of a bond quoted in percent into shares.
+     */
+    protected long asBondNominal(String value, Locale locale)
+    {
+        return ExtractorUtils.convertToNumberBigDecimal(value, Values.Share, locale) //
+                        .movePointLeft(2) //
+                        .multiply(BigDecimal.valueOf(Values.Share.factor())) //
+                        .setScale(0, RoundingMode.HALF_UP) //
+                        .longValue();
     }
 
     protected String asCurrencyCode(String currency)

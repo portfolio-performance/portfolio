@@ -65,12 +65,6 @@ public final class PortfolioReportQuoteFeed implements QuoteFeed
     }
 
     @Override
-    public boolean mergeDownloadRequests()
-    {
-        return true;
-    }
-
-    @Override
     public Optional<LatestSecurityPrice> getLatestQuote(Security security) throws QuoteFeedException
     {
         checkCutoffDate();

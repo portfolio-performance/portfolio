@@ -1,0 +1,149 @@
+PDFBox Version: 3.0.7
+Portfolio Performance Version: 0.87.0
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+ING-DiBa AG · 60628 Frankfurt am Main Datum 16.01.2026
+Seite Seite 1 von 4
+Herrn Verrechnungstopfnr. 9123456789
+Vorname Nachname Verrechnungstopfnr. Zusatz 10001
+Adress Str. 1 Verrechnungstopfjahr 2025
+01234 Stadt
+Verlustverrechnung / nachträgliche Verlustverrechnung
+Verlustverrechnung vom: 16.01.2026 / 2
+Letzte Verlustverrechnung: 30.12.2025 / 1
+Gegenkonto DE99 5001 0517 1234 5678 90
+Valuta 16.01.2026
+Vor Verlustverrechnung:
+Nicht verrechnete Verluste Aktien 0,00
+Nicht verrechnete Gewinne Aktien 0,00
+Nicht verrechnete Verluste Allgemein 0,11
+Nicht verrechnete Gewinne Allgemein 1.362,06
+Nicht verrechnete ausländische Quellensteuer 0,00
+nachbelastete negative ausl. Quellensteuer 0,00
+Nicht verbrauchter Sparer-Pauschbetrag 0,00
+1. Verrechnung von allgemeinen Erträgen
+Summe Erträge Allgemein 1.900,41
+- Summe Verluste Allgemein 0,11
+- Sparer-Pauschbetrag 0,00
+- Nicht verrechnete ausl. Quellensteuer 538,35
+Allgemeine Erträge nach Verlustverrechnung 1.362,05
+2. Verrechnung von Aktiengewinnen
+Summe Gewinne Aktien 0,00
+- Summe Verluste Aktien 0,00
+- Summe Verluste Allgemein 0,00
+- Sparer-Pauschbetrag 0,00
+- Nicht verrechnete ausl. Quellensteuer 0,00
+Aktiengewinne nach Verlustverrechnung 0,00
+ING-DiBa AG · Theodor-Heuss-Allee 2 · 60486 Frankfurt am Main · Vorsitzende des Aufsichtsrates: Susanne Klöß-Braekler · Vorstand: Lars Stoy (Vorsitzender),
+Michael Clijdesdale, Eddy Henning, Nikolaus Maximilian Linaric, Dr. Ralph Müller, Nurten Spitzer-Erdogan · Sitz: Frankfurt am Main · AG Frankfurt am Main · HRB 7727
+Steuernummer: 014 220 2800 4 · USt-IdNr.: DE 114 103 475 · Internet: www.ing.de · BIC: INGDDEFFXXX · Mitglied im Einlagensicherungsfonds
+Verrechnungstopfnr. 9123456789
+Datum 16.01.2026
+Seite Seite 2 von 4
+3. Ermittlung Steuerschuld aus Verlustverrechnung
+Steuern auf allgemeine Erträge und Aktiengewinne nach Verrechnung QuSt
+Allgemeine Erträge nach Verlustverrechnung 1.362,05
+Aktiengewinne nach Verlustverrechnung 0,00
+Summe KapSt-pflichtiger Ertrag 1.362,05
+Anteil 100,000% 1.362,05
+Kapitalertragsteuer 25,000% 340,51
+Solidaritätszuschlag 5,500% 18,72
+Kirchensteuer 0,000% 0,00
+Summe Steuern nach Verrechnung ausl. Quellensteuer
+Anteil 100,000%
+KapSt Person 1 340,51
+SolZ Person 1 18,72
+KiSt Person 1 0,00
+plus Steuern wegen 0,00 neg. ausl. Quellensteuer
+KapSt Person 1 0,00
+SolZ Person 1 0,00
+KiSt Person 1 0,00
+Summe Steuern nach Verlustverrechnung ausl. Quellensteuer
+Anteil 100,000%
+KapSt Person 1 340,51
+SolZ Person 1 18,72
+KiSt Person 1 0,00
+Verrechnungstopfnr. 9123456789
+Datum 16.01.2026
+Seite Seite 3 von 4
+4. Ermittlung Steuererstattung/-belastung
+Bisher einbehaltene Steuern
+Anteil 100,000%
+KapSt Person 1 340,53
+SolZ Person 1 18,72
+KiSt Person 1 0,00
+Errechnete Steuerschuld aus Verlustverrechnung
+Anteil 100,000%
+KapSt Person 1 340,51
+SolZ Person 1 18,72
+KiSt Person 1 0,00
+Erstattung/Belastung (-) von Steuern
+Anteil 100,000%
+KapSt Person 1 0,02
+SolZ Person 1 0,00
+KiSt Person 1 0,00
+Erstattung/Belastung(-) 0,02
+Den Steuerausgleich buchen wir mit Valuta 16.01.2026 auf
+das Gegenkonto DE99 5001 0517 1234 5678 90.
+Nach Verlustverrechnung:
+Nicht verrechnete Verluste Aktien 0,00
+Nicht verrechnete Gewinne Aktien 0,00
+Nicht verrechnete Verluste Allgemein 0,00
+Nicht verrechnete Gewinne Allgemein 1.362,05
+Nicht verrechnete ausländische Quellensteuer 0,00
+nachbelastete negative ausl. Quellensteuer 0,00
+Nicht verbrauchter Sparer-Pauschbetrag 0,00
+Datum 16.01.2026
+Seite Seite 4 von 4
+Wissenswertes zur Verlustverrechnung
+Was ist die Verlustverrechnung?
+Die Verlustverrechnung aktualisiert die Steuerzahlungen auf Ihre Erträge. Es gibt Sachverhalte, die Ihre auf
+Erträge und Gewinne gezahlten Steuern nachträglich verringern oder erhöhen können:
+Aus Wertpapiergeschäften entstandene Verluste
+Anrechenbare Quellensteuer
+Während des Jahres eingereichte Freistellungsaufträge
+Während des Jahres eingereichte oder widerrufene Nichtveranlagungsbescheinigung
+Stornobuchungen
+In diesen Fällen führen wir eine tägliche Verlustverrechnung (nachträgliche Verlustverrechnung) durch - wir
+berichtigen so die Steuerzahlungen aus Ihren vergangenen Erträgen. Das hat für Sie den Vorteil, dass Sie Ihre
+Kapitalerträge und Veräußerungsgewinne nicht in Ihrer Einkommensteuererklärung angeben müssen.
+Wichtig für Sie: Wir buchen nur Kapitalertragsteuer-Beträge ab 50 Euro. Auch für Saldoumschichtungen von
+Verrechnungstöpfen gibt es eine Betragsgrenze. Hier buchen wir nur Beträge ab 200 Euro. Kleinere Beträge
+merken wir vor, damit wir sie bei der nächsten Verlustverrechnung berücksichtigen können, spätestens jedoch
+am Jahresende.
+Keine Betragsgrenzen gelten in folgenden Fällen: Bei jahresübergreifenden Stornos, wenn Sie während des
+Jahres eine Nichtveranlagungsbescheinigung einreichen und bei der Verlustverrechnung am Jahresende.
+Was sind Verrechnungstöpfe?
+Damit wir Ihre Gewinne und Verluste laufend im Überblick haben, merken wir sie in sogenannten
+Verlustverrechnungstöpfen vor. Es gibt mehrere Verrechnungstöpfe:
+Den "Verrechnungstopf Aktien" für Gewinne und Verluste aus Aktienverkäufen
+Den "Allgemeinen Verrechnungstopf" für sonstige Erträge und Verluste: Das können z.B. Zinsen
+und Dividenden oder Kursgewinne sein, die Sie erhalten haben, aber auch negative Kapitalerträge
+wie gezahlte Stückzinsen
+Den "Quellensteuertopf" - dort erfassen wir anrechenbare Quellensteuerbeträge, die Sie auf
+Dividenden von ausländischen Wertpapieren bezahlt haben
+Welche Besonderheiten gibt es bei der Verlustverrechnung?
+Verluste aus dem Verkauf von Aktien dürfen wir nur mit Aktiengewinnen verrechnen.
+Gewinne aus Aktienverkäufen können wir mit Aktien- und sonstigen Verlusten verrechnen.
+Wenn nach der Verrechnung mit Verlusten noch ein Gewinn übrig ist, rechnen wir darauf Ihren
+vorliegenden Sparer-Pauschbetrag an.
+Nicht verrechnete Quellensteuerbeträge kommen zum Schluss - auch sie mindern Ihre
+Steuerschuld. Wenn Sie eine Nichtveranlagungsbescheinigung eingereicht haben, spielt der
+Quellensteuertopf bei der Verlustverrechnung keine Rolle.
+Positive Erträge, die nach der Verrechnung noch übrig sind, belasten wir mit 25% Kapitalertragsteuer zzgl.
+5,5% Solidaritätszuschlag. Kirchensteuerabzüge verringern die Kapitalertragsteuer. Wenn Sie
+Kirchensteuerpflichtig sind, zahlen Sie deshalb 24,51% (bei einem Kirchensteuersatz von 8%) bzw. 24,45% (bei
+einem Kirchensteuersatz von 9%).
+Was ist auch noch wichtig für Sie?
+Wir runden bei unserer Berechnung nach den gesetzlich vorgegebenen Regeln. Die Kapitalertragsteuer
+runden wir kaufmännisch. Solidaritätszuschlag und Kirchensteuer runden wir immer ab.
+Bei der Verlustverrechnung am Jahresende berechnen wir die Steuern auf alle Erträge des Jahres zusammen.
+Dabei können Rundungsdifferenzen entstehen.
+Verluste in Ihren Verrechnungstöpfen, die bis zum Ende des Jahres nicht verrechnet werden konnten,
+übertragen wir automatisch in das Folgejahr.
+In folgenden Fällen übertragen wir Ihre Verlustverrechnungstöpfe nicht ins nächste Jahr: Wenn Sie eine
+Nichtveranlagungsbescheinigung eingereicht haben, Ihr Quellensteuertopf einen nicht verrechneten Betrag
+ausweist oder Sie bis zum 15.12. eine Verlustbescheinigung angefordert haben. Ihre nicht verrechneten
+Verluste und die nicht verrechnete ausländische Quellensteuer bescheinigen wir Ihnen dann in Ihrer
+Jahressteuerbescheinigung.
+

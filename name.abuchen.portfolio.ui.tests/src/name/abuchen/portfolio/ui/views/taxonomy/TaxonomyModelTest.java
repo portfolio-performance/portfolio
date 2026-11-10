@@ -2801,6 +2801,95 @@ public class TaxonomyModelTest
         assertEquals(Money.of(CURRENCY_UNIT, 5000), rebalancingResult.getMoney(B));
     }
 
+    @Test
+    public void testAmountToInvestKeepsRebalanceableSolutionExact()
+    {
+        // A is overweighted (10000 vs. B 0), target is 50/50. Investing 10000
+        // distributes 5000 to each classification by weight. The portfolio is
+        // fully rebalanceable, so investing must not mark any position inexact.
+        ExchangeRateProviderFactory exchangeRateProviderFactory = new ExchangeRateProviderFactory(ONLY_A_CLIENT);
+        TaxonomyModel model = new TaxonomyModel(exchangeRateProviderFactory, ONLY_A_CLIENT, SIMPLE_TAXONOMY);
+
+        model.setAmountToInvest(Money.of(CURRENCY_UNIT, 10000));
+        Rebalancer.RebalancingSolution rebalancingResult = model.getRebalancingSolution();
+
+        assertEquals(asSet(A, B), rebalancingResult.getInvestmentVehicles());
+        assertTrue(rebalancingResult.isExact(A));
+        assertFalse(rebalancingResult.isAmbigous(A));
+        assertEquals(AMOUNT_0, rebalancingResult.getMoney(A));
+        assertTrue(rebalancingResult.isExact(B));
+        assertFalse(rebalancingResult.isAmbigous(B));
+        assertEquals(Money.of(CURRENCY_UNIT, 10000), rebalancingResult.getMoney(B));
+    }
+
+    @Test
+    public void testNegativeAmountToInvestIsWithdrawal()
+    {
+        // Withdrawing 10000 from the same portfolio pulls the money out of the
+        // overweighted A, leaving B untouched. Still exact.
+        ExchangeRateProviderFactory exchangeRateProviderFactory = new ExchangeRateProviderFactory(ONLY_A_CLIENT);
+        TaxonomyModel model = new TaxonomyModel(exchangeRateProviderFactory, ONLY_A_CLIENT, SIMPLE_TAXONOMY);
+
+        model.setAmountToInvest(Money.of(CURRENCY_UNIT, -10000));
+        Rebalancer.RebalancingSolution rebalancingResult = model.getRebalancingSolution();
+
+        assertEquals(asSet(A, B), rebalancingResult.getInvestmentVehicles());
+        assertTrue(rebalancingResult.isExact(A));
+        assertFalse(rebalancingResult.isAmbigous(A));
+        assertEquals(Money.of(CURRENCY_UNIT, -10000), rebalancingResult.getMoney(A));
+        assertTrue(rebalancingResult.isExact(B));
+        assertFalse(rebalancingResult.isAmbigous(B));
+        assertEquals(AMOUNT_0, rebalancingResult.getMoney(B));
+    }
+
+    @Test
+    public void testAmountToInvestZeroReproducesNetZeroSolution()
+    {
+        // Explicitly setting the amount to zero must reproduce the default
+        // net-zero rebalancing (A -5000, B +5000).
+        ExchangeRateProviderFactory exchangeRateProviderFactory = new ExchangeRateProviderFactory(ONLY_A_CLIENT);
+        TaxonomyModel model = new TaxonomyModel(exchangeRateProviderFactory, ONLY_A_CLIENT, SIMPLE_TAXONOMY);
+
+        model.setAmountToInvest(Money.of(CURRENCY_UNIT, 0));
+        Rebalancer.RebalancingSolution rebalancingResult = model.getRebalancingSolution();
+
+        assertTrue(rebalancingResult.isExact(A));
+        assertEquals(Money.of(CURRENCY_UNIT, -5000), rebalancingResult.getMoney(A));
+        assertTrue(rebalancingResult.isExact(B));
+        assertEquals(Money.of(CURRENCY_UNIT, 5000), rebalancingResult.getMoney(B));
+    }
+
+    @Test
+    public void testAmountToInvestFollowsChangedCurrency()
+    {
+        // The amount to invest is denominated in the currency of the model. If
+        // the currency changes, the amount must follow, otherwise the
+        // rebalancing calculation mixes currencies and fails.
+        Client client = new Client();
+        client.addSecurity(A);
+        client.addSecurity(B);
+        Portfolio portfolio = new Portfolio();
+        client.addPortfolio(portfolio);
+        portfolio.addTransaction(new PortfolioTransaction(LocalDateTime.now().minusDays(1), CURRENCY_UNIT,
+                        10000L * Values.Quote.factorToMoney(), A, 100L * Values.Share.factor(), Type.DELIVERY_INBOUND,
+                        0, 0));
+
+        ExchangeRateProviderFactory exchangeRateProviderFactory = new ExchangeRateProviderFactory(client);
+        TaxonomyModel model = new TaxonomyModel(exchangeRateProviderFactory, client, SIMPLE_TAXONOMY);
+        model.setAmountToInvest(Money.of(CURRENCY_UNIT, 10000));
+
+        client.setBaseCurrency(CurrencyUnit.USD);
+        model.updateClientSnapshot(client);
+
+        assertEquals(CurrencyUnit.USD, model.getCurrencyCode());
+        assertEquals(CurrencyUnit.USD, model.getAmountToInvest().getCurrencyCode());
+
+        Rebalancer.RebalancingSolution rebalancingResult = model.getRebalancingSolution();
+        assertEquals(asSet(A, B), rebalancingResult.getInvestmentVehicles());
+        assertEquals(CurrencyUnit.USD, rebalancingResult.getMoney(A).getCurrencyCode());
+        assertEquals(CurrencyUnit.USD, rebalancingResult.getMoney(B).getCurrencyCode());
+    }
+
     @SafeVarargs
     private static <T> Set<T> asSet(T... objects)
     {

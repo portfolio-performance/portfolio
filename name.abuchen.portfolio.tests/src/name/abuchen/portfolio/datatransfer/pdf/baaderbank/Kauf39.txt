@@ -1,0 +1,64 @@
+PDFBox Version: 3.0.8
+Portfolio Performance Version: 0.88.0
+System: linux | x86_64 | 27 | Arch Linux
+-----------------------------------------
+Baader Bank AG   Weihenstephaner Straße 4   85716 Unterschleißheim Traders Place GmbH & Co. KGaA
+T  00800 00 586336*   F  +49 89 5150 2442    service@baaderbank.de E-Mail: kundenservice@tradersplace.de
+www.tradersplace.de
+Seite 1/2
+Freilassing
+Herrn 06.10.2026
+QGadB GfAxEYbh
+uPYVr mZVBNOwf
+jjTcaVmC. 02 n Stamm-Nr.: 8810125    Portfolio: 1
+50427 cPgVFMWTi Depot-Nr.: 9332105669
+Vorgangs-Nr.: 566532696
+Referenz-Nr.: 1461572000
+Wertpapierabrechnung: Kauf
+Auftragsdatum: 06.10.2026 Ausführungsplatz: GETTEX - MM Munich
+Auftragszeit: 15:27:56:00
+Nominale ISIN: LU0908500753 WKN: LYX0Q0 Kurs 
+STK 17 AIS-Amundi Core Stoxx Eur.600 EUR 314,10
+Act.Nom.UCITS ETF Acc oN
+Auftraggeber: Depotinhaber
+Art der Auftragserteilung: Orderroutingssystem
+Kurswert EUR 5.339,70
+Finanzkommission Baader EUR 0,50
+Handelsplatzabhängige Gutschrift Baader EUR 3,15 -
+Vermittlungsentgelt Tradersplace EUR 2,65
+Zu Lasten Konto 5322931006 Valuta: 08.10.2026 EUR 5.339,70
+Die Wertpapiere buchen wir zu Gunsten Ihres Depots.
+Details zur Ausführung: Handels- Handels- 
+Nominale Kurs Ausführungsplatz datum uhrzeit 
+STK   17 EUR 314,10 GETTEX - MM Munich 06.10.2026 15:29:38:332
+Verwahrart: Girosammelverwahrung Zeitzone der Handelsuhrzeit: MEZ/MESZ
+Lagerstelle: 100 MIC des Ausführungsplatzes: MUNC
+Lagerland: Deutschland
+Für die Ausführung dieses Auftrags gelten die Usancen des jeweiligen Ausführungsplatzes.
+Diese Auftragsbestätigung/Abrechnung wurde von der Baader Bank AG erstellt. Bitte prüfen Sie diese auf Richtigkeit und Vollständigkeit. Etwaige 
+Einwendungen gegen diese Auftragsbestätigung/Abrechnung müssen nach Zugang unverzüglich bei der Baader Bank AG erhoben werden. 
+Dieser Auftrag erfolgte ohne Empfehlung der Bank. Es wurde keine Anlageberatung und keine individuelle Aufklärung durch die Bank erbracht.
+Sofern keine Umsatzsteuer ausgewiesen ist, handelt es sich um eine umsatzsteuerbefreite Finanzdienstleistung.
+Traders Place GmbH & Co. KGaA, Sägewerkstraße 3, 83395 Freilassing, Deutschland • Impressum unter: www.tradersplace.de/impressum
+ 
+Herausgeberin und verantwortlich für den Inhalt ist die Baader Bank Aktiengesellschaft • Weihenstephaner Straße 4 • 85716 Unterschleißheim • Deutschland
+Vorstand: Oliver Riedel (Vorsitzender), Kai Göhring, Martin Zoller • Vorsitzender des Aufsichtsrates: Dr. Louis Hagen • Amtsgericht München HRB 121537 • Sitz der 
+Gesellschaft: Unterschleißheim • StNr. 143/107/04009 • USt-IdNr. DE114123893 • LEI: 529900JFOPPEDUR61H13 • T 00800 00 586336* • service@baaderbank.de
+ 
+* Kostenfreie Telefonnummer aus dem (inter-) nationalen Festnetz. Für Anrufe aus anderen Netzen können Gebühren anfallen.
+WPABRECHNUNG-063.115
+Wertpapierabrechnung: Kauf
+Fortsetzung: Seite 2/2
+Die Aushändigung des Fondsprospektes/Offering Memorandum sowie des aktuellen Rechenschaftsberichtes durch die Bank ist im Rahmen der 
+Kooperation der Bank mit Ihrem Finanzdienstleister nicht erforderlich bzw. wird von diesem übernommen. Sofern Sie einen Fondsprospekt 
+wünschen, wenden Sie sich daher bitte direkt an den Finanzdienstleister.
+Einkünfte aus Kapitalvermögen im Sinne von § 20 EStG sind einkommensteuerpflichtig.
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+Traders Place GmbH & Co. KGaA, Sägewerkstraße 3, 83395 Freilassing, Deutschland • Impressum unter: www.tradersplace.de/impressum
+ 
+Herausgeberin und verantwortlich für den Inhalt ist die Baader Bank Aktiengesellschaft • Weihenstephaner Straße 4 • 85716 Unterschleißheim • Deutschland
+Vorstand: Oliver Riedel (Vorsitzender), Kai Göhring, Martin Zoller • Vorsitzender des Aufsichtsrates: Dr. Louis Hagen • Amtsgericht München HRB 121537 • Sitz der 
+Gesellschaft: Unterschleißheim • StNr. 143/107/04009 • USt-IdNr. DE114123893 • LEI: 529900JFOPPEDUR61H13 • T 00800 00 586336* • service@baaderbank.de
+ 
+* Kostenfreie Telefonnummer aus dem (inter-) nationalen Festnetz. Für Anrufe aus anderen Netzen können Gebühren anfallen.
+WPABRECHNUNG-063.115

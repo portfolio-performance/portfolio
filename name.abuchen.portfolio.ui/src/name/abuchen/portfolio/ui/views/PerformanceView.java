@@ -74,6 +74,8 @@ import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport.MarkDirtyClie
 import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
 import name.abuchen.portfolio.ui.util.viewers.CopyPasteSupport;
 import name.abuchen.portfolio.ui.util.viewers.DateTimeLabelProvider;
+import name.abuchen.portfolio.ui.util.viewers.SafeTableColumnLayout;
+import name.abuchen.portfolio.ui.util.viewers.SafeTreeColumnLayout;
 import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
 import name.abuchen.portfolio.ui.util.viewers.ToolTipCustomProviderSupport;
 import name.abuchen.portfolio.ui.views.columns.NameColumn;
@@ -216,11 +218,11 @@ public class PerformanceView extends AbstractHistoricView
 
         createCalculationItem(folder, Messages.PerformanceTabCalculation);
 
-        snapshotStart = createStatementOfAssetsItem(folder, Messages.PerformanceTabAssetsAtStart);
+        snapshotStart = createStatementOfAssetsItem(folder, Messages.PerformanceTabAssetsAtStart, "start"); //$NON-NLS-1$
         snapshotStart.getTableViewer().addSelectionChangedListener(
                         e -> setInformationPaneInput(e.getStructuredSelection().getFirstElement()));
 
-        snapshotEnd = createStatementOfAssetsItem(folder, Messages.PerformanceTabAssetsAtEnd);
+        snapshotEnd = createStatementOfAssetsItem(folder, Messages.PerformanceTabAssetsAtEnd, "end"); //$NON-NLS-1$
         snapshotEnd.getTableViewer().addSelectionChangedListener(
                         e -> setInformationPaneInput(e.getStructuredSelection().getFirstElement()));
 
@@ -250,9 +252,10 @@ public class PerformanceView extends AbstractHistoricView
         return folder;
     }
 
-    private StatementOfAssetsViewer createStatementOfAssetsItem(CTabFolder folder, String title)
+    private StatementOfAssetsViewer createStatementOfAssetsItem(CTabFolder folder, String title, String instanceId)
     {
-        StatementOfAssetsViewer viewer = make(StatementOfAssetsViewer.class);
+        var viewer = make(StatementOfAssetsViewer.class);
+        viewer.setInstanceId(instanceId);
         Control control = viewer.createControl(folder, false);
 
         CTabItem item = new CTabItem(folder, SWT.NONE);
@@ -266,7 +269,7 @@ public class PerformanceView extends AbstractHistoricView
     private void createCalculationItem(CTabFolder folder, String title)
     {
         Composite container = new Composite(folder, SWT.NONE);
-        TreeColumnLayout layout = new TreeColumnLayout();
+        TreeColumnLayout layout = new SafeTreeColumnLayout();
         container.setLayout(layout);
 
         calculation = new TreeViewer(container, SWT.FULL_SELECTION);
@@ -475,7 +478,7 @@ public class PerformanceView extends AbstractHistoricView
     private TableViewer createTransactionViewer(CTabFolder folder, String title)
     {
         Composite container = new Composite(folder, SWT.NONE);
-        TableColumnLayout layout = new TableColumnLayout();
+        TableColumnLayout layout = new SafeTableColumnLayout();
         container.setLayout(layout);
 
         TableViewer transactionViewer = new TableViewer(container, SWT.FULL_SELECTION);
@@ -790,7 +793,7 @@ public class PerformanceView extends AbstractHistoricView
     private void createEarningsByAccountsItem(CTabFolder folder, String title)
     {
         Composite container = new Composite(folder, SWT.NONE);
-        TableColumnLayout layout = new TableColumnLayout();
+        TableColumnLayout layout = new SafeTableColumnLayout();
         container.setLayout(layout);
 
         earningsByAccount = new TableViewer(container, SWT.FULL_SELECTION);

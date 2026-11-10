@@ -1,0 +1,37 @@
+PDFBox Version: 3.0.6
+Portfolio Performance Version: 0.82.1
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+Kontomitteilung 
+Vorabpauschale 
+Depotinhaber 
+zAnqe hEqnzibK yfDxF xRrCtgqU 
+oicpgcGFoUxOvZbECQ 39 
+32929 IJzr jR hUhO Depotnummer 
+Deutschland 009898769 
+Es wurde eine Steuervorauszahlung geleistet Berlin, 16.02.2026 
+Wertpapierbezeichnung Vanguard FTSE N.America U.ETF Registered Shares USD Dis.oN 
+ISIN IE00BKX55R35 
+Tag des steuerpflichtigen Zuflusses 02.01.2026 
+Höhe der Vorabpauschale pro Anteil 1,06 EUR 
+Bestand 77.20617 Stück 
+Vorabpauschale gem. §18 InvStG (besitzanteilig) 59,87 EUR 
+abzgl. Teilfreistellung 30 % von 59,87 EUR -17,96 EUR 
+Steuerlicher Gesamtbetrag 41,91 EUR 
+Verrechnung mit Sparerpauschbetrag 0,00 EUR 
+Verrechnung mit Verlusttopf "Sonstige" 0,00 EUR 
+Verrechnung mit gezahlter Quellensteuer 0,00 EUR 
+Bemessungsgrundlage für Kapitalertragsteuer 41,91 EUR 
+Kapitalertragsteuer -10,27 EUR 
+Solidaritätszuschlag -0,56 EUR 
+Kirchensteuer -0,82 EUR 
+Betrag -11,65 EUR 
+Mit freundlichen Grüßen 
+Raisin Bank 
+Dokument ID: ca4ae61c-9c5c-4b5e-9893-5cvv488ds844
+© Raisin Bank AG
+Raisin Bank AG Niedenau 61-63 60325 Frankfurt am Main
+Registered Office: Frankfurt am Main
+Commercial Register: Amtsgericht Frankfurt am Main, HRB 13305
+Board of Directors: Marco Lindgens, Mirko Siepmann
+Chairman of the Supervisory Board: Dr Frank Freund

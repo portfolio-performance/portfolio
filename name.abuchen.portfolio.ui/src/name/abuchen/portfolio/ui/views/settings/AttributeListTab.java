@@ -22,6 +22,7 @@ import org.eclipse.swt.widgets.Composite;
 
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Attributable;
+import name.abuchen.portfolio.model.AttributeFieldType;
 import name.abuchen.portfolio.model.AttributeType;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.ClientSettings;
@@ -39,28 +40,29 @@ import name.abuchen.portfolio.ui.util.viewers.Column;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport.ModificationListener;
 import name.abuchen.portfolio.ui.util.viewers.CopyPasteSupport;
+import name.abuchen.portfolio.ui.util.viewers.SafeTableColumnLayout;
 import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
 import name.abuchen.portfolio.ui.util.viewers.StringEditingSupport;
 import name.abuchen.portfolio.ui.views.AbstractTabbedView;
+import name.abuchen.portfolio.ui.views.columns.AttributeColumn;
 
 public class AttributeListTab implements AbstractTabbedView.Tab, ModificationListener
 {
     /* package */ enum Mode
     {
-        SECURITY(Security.class, Messages.LabelSecurities, client -> client.getSecurities()), //
-        ACCOUNT(Account.class, Messages.LabelAccounts, client -> client.getAccounts()), //
-        PORTFOLIO(Portfolio.class, Messages.LabelPortfolios, client -> client.getPortfolios()), //
-        INVESTMENT_PLAN(InvestmentPlan.class, Messages.LabelInvestmentPlans, client -> client.getPlans());
+        SECURITY(Security.class, client -> client.getSecurities()), //
+        ACCOUNT(Account.class, client -> client.getAccounts()), //
+        PORTFOLIO(Portfolio.class, client -> client.getPortfolios()), //
+        INVESTMENT_PLAN(InvestmentPlan.class, client -> client.getPlans());
 
         private final Class<? extends Attributable> type;
         private final String label;
         private final Function<Client, List<? extends Attributable>> listFunction;
 
-        private Mode(Class<? extends Attributable> type, String label,
-                        Function<Client, List<? extends Attributable>> listFunction)
+        private Mode(Class<? extends Attributable> type, Function<Client, List<? extends Attributable>> listFunction)
         {
             this.type = type;
-            this.label = label;
+            this.label = AttributeColumn.getTargetLabel(type);
             this.listFunction = listFunction;
         }
 
@@ -111,7 +113,7 @@ public class AttributeListTab implements AbstractTabbedView.Tab, ModificationLis
                 if (!fieldType.supports(mode.getType()))
                     continue;
 
-                menuListener.add(new Action(fieldType.toString())
+                menuListener.add(new Action(AttributeFieldTypeLabels.label(fieldType))
                 {
                     @Override
                     public void run()
@@ -140,7 +142,7 @@ public class AttributeListTab implements AbstractTabbedView.Tab, ModificationLis
     {
 
         Composite container = new Composite(parent, SWT.NONE);
-        TableColumnLayout layout = new TableColumnLayout();
+        TableColumnLayout layout = new SafeTableColumnLayout();
         container.setLayout(layout);
 
         tableViewer = new TableViewer(container, SWT.FULL_SELECTION | SWT.MULTI);
@@ -218,7 +220,7 @@ public class AttributeListTab implements AbstractTabbedView.Tab, ModificationLis
             @Override
             public String getText(Object element)
             {
-                return AttributeFieldType.of((AttributeType) element).toString();
+                return AttributeFieldTypeLabels.label(AttributeFieldType.of((AttributeType) element));
             }
         });
         support.addColumn(column);

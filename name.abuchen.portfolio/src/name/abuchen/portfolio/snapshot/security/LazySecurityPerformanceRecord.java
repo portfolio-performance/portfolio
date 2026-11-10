@@ -132,6 +132,17 @@ public final class LazySecurityPerformanceRecord extends BaseSecurityPerformance
                     .with(converter.at(interval.getEnd())));
 
     /**
+     * market value of holdings at the beginning of the period
+     */
+    // as with the market value at the end, first sum up the individual values
+    // and convert only then into the term currency
+    private final LazyValue<Money> openingValue = new LazyValue<>(() -> this.lineItems.stream() //
+                    .filter(data -> data instanceof CalculationLineItem.ValuationAtStart)
+                    .map(CalculationLineItem::getValue) //
+                    .collect(MoneyCollectors.sum(security.getCurrencyCode())) //
+                    .with(converter.at(interval.getStart())));
+
+    /**
      * Latest quote
      */
     private final LazyValue<SecurityPrice> quote = new LazyValue<>(() -> security.getSecurityPrice(interval.getEnd()));
@@ -147,6 +158,10 @@ public final class LazySecurityPerformanceRecord extends BaseSecurityPerformance
 
     private final LazyValue<CostCalculationResult> costCalculation = new LazyValue<>(
                     () -> Calculation.perform(CostCalculation.class, converter, security, lineItems).getResult());
+
+    private final LazyValue<Long> sharesHeld = new LazyValue<>(
+                    () -> Calculation.perform(SharesHeldCalculation.class, converter, security, lineItems)
+                                    .getSharesHeld());
 
     /**
      * cost of shares held
@@ -171,11 +186,26 @@ public final class LazySecurityPerformanceRecord extends BaseSecurityPerformance
     });
 
     private final LazyValue<CapitalGainsCalculation> capitalGains = new LazyValue<>(
-                    () -> Calculation.perform(CapitalGainsCalculation.class, converter, security, lineItems));
+                    () -> Calculation.perform(new CapitalGainsCalculation(TaxesAndFees.NOT_INCLUDED), converter,
+                                    security, lineItems));
 
     private final LazyValue<CapitalGainsCalculationMovingAverage> capitalGainsMovingAvg = new LazyValue<>(
-                    () -> Calculation.perform(CapitalGainsCalculationMovingAverage.class, converter, security,
+                    () -> Calculation.perform(new CapitalGainsCalculationMovingAverage(TaxesAndFees.NOT_INCLUDED),
+                                    converter, security, lineItems));
+
+    /**
+     * The same two engines, but measuring against the cost basis that includes
+     * the taxes and fees embedded in a trade. Kept as separate lazy values
+     * because - unlike the cost variants, which one pass yields together - each
+     * basis drives its own pass.
+     */
+    private final LazyValue<CapitalGainsCalculation> capitalGainsWithCharges = new LazyValue<>(
+                    () -> Calculation.perform(new CapitalGainsCalculation(TaxesAndFees.INCLUDED), converter, security,
                                     lineItems));
+
+    private final LazyValue<CapitalGainsCalculationMovingAverage> capitalGainsMovingAvgWithCharges = new LazyValue<>(
+                    () -> Calculation.perform(new CapitalGainsCalculationMovingAverage(TaxesAndFees.INCLUDED),
+                                    converter, security, lineItems));
 
     /* package */ LazySecurityPerformanceRecord(Client client, Security security, CurrencyConverter converter,
                     Interval interval)
@@ -221,6 +251,16 @@ public final class LazySecurityPerformanceRecord extends BaseSecurityPerformance
     public Money getMarketValue()
     {
         return marketValue.get();
+    }
+
+    /**
+     * The value of the position held at the start of the interval, the
+     * counterpart to {@link #getMarketValue()}. Zero for a position that was
+     * first acquired during the interval.
+     */
+    public Money getOpeningValue()
+    {
+        return openingValue.get();
     }
 
     public Quote getQuote()
@@ -274,15 +314,15 @@ public final class LazySecurityPerformanceRecord extends BaseSecurityPerformance
 
     public Long getSharesHeld()
     {
-        return costCalculation.get().sharesHeld();
+        return sharesHeld.get();
     }
 
     public Quote getCostPerSharesHeld(CostMethod costMethod, TaxesAndFees taxesAndFees)
     {
-        var sharesHeld = getSharesHeld();
+        var sharesHeldForCostCalculation = costCalculation.get().sharesHeld();
         Money cost = getCostMoney(costMethod, taxesAndFees);
 
-        return Quote.of(cost.getCurrencyCode(), Math.round(cost.getAmount() / (double) sharesHeld
+        return Quote.of(cost.getCurrencyCode(), Math.round(cost.getAmount() / (double) sharesHeldForCostCalculation
                         * Values.Share.factor() * Values.Quote.factorToMoney()));
     }
 
@@ -328,19 +368,52 @@ public final class LazySecurityPerformanceRecord extends BaseSecurityPerformance
 
     public CapitalGainsRecord getRealizedCapitalGains(CostMethod costMethod)
     {
+        return getRealizedCapitalGains(costMethod, TaxesAndFees.NOT_INCLUDED);
+    }
+
+    /**
+     * The gains realized during the interval, measured against a cost basis
+     * that includes or excludes the taxes and fees embedded in a trade.
+     * <p>
+     * {@link TaxesAndFees#NOT_INCLUDED} is what
+     * {@link name.abuchen.portfolio.snapshot.ClientPerformanceSnapshot} needs:
+     * its breakdown carries fees and taxes as separate terms and would
+     * otherwise subtract them twice. {@link TaxesAndFees#INCLUDED} is the basis
+     * that lines up with {@link #getCost(CostMethod, TaxesAndFees)}.
+     */
+    public CapitalGainsRecord getRealizedCapitalGains(CostMethod costMethod, TaxesAndFees taxesAndFees)
+    {
         return switch (costMethod)
         {
-            case FIFO -> capitalGains.get().getRealizedCapitalGains();
-            case MOVING_AVERAGE -> capitalGainsMovingAvg.get().getRealizedCapitalGains();
+            case FIFO -> taxesAndFees.isIncluded() ? capitalGainsWithCharges.get().getRealizedCapitalGains()
+                            : capitalGains.get().getRealizedCapitalGains();
+
+            case MOVING_AVERAGE -> taxesAndFees.isIncluded()
+                            ? capitalGainsMovingAvgWithCharges.get().getRealizedCapitalGains()
+                            : capitalGainsMovingAvg.get().getRealizedCapitalGains();
         };
     }
 
     public CapitalGainsRecord getUnrealizedCapitalGains(CostMethod costMethod)
     {
+        return getUnrealizedCapitalGains(costMethod, TaxesAndFees.NOT_INCLUDED);
+    }
+
+    /**
+     * The gains on the positions still held at the end of the interval. See
+     * {@link #getRealizedCapitalGains(CostMethod, TaxesAndFees)} for the
+     * meaning of the cost basis.
+     */
+    public CapitalGainsRecord getUnrealizedCapitalGains(CostMethod costMethod, TaxesAndFees taxesAndFees)
+    {
         return switch (costMethod)
         {
-            case FIFO -> capitalGains.get().getUnrealizedCapitalGains();
-            case MOVING_AVERAGE -> capitalGainsMovingAvg.get().getUnrealizedCapitalGains();
+            case FIFO -> taxesAndFees.isIncluded() ? capitalGainsWithCharges.get().getUnrealizedCapitalGains()
+                            : capitalGains.get().getUnrealizedCapitalGains();
+
+            case MOVING_AVERAGE -> taxesAndFees.isIncluded()
+                            ? capitalGainsMovingAvgWithCharges.get().getUnrealizedCapitalGains()
+                            : capitalGainsMovingAvg.get().getUnrealizedCapitalGains();
         };
     }
 

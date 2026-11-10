@@ -444,8 +444,7 @@ public class DivvyDiarySearchProvider implements SecuritySearchProvider
                             .addHeader("X-API-KEY", apiKey) //
                             .get();
 
-            JSONObject responseData = (JSONObject) JSONValue.parse(html);
-            if (responseData != null)
+            if (JSONValue.parse(html) instanceof JSONObject responseData)
             {
                 Result.from(responseData).ifPresent(answer::add);
             }

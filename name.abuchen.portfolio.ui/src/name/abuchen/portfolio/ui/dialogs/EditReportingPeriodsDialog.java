@@ -38,6 +38,7 @@ import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.ContextMenu;
 import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.util.viewers.CopyPasteSupport;
+import name.abuchen.portfolio.ui.util.viewers.SafeTableColumnLayout;
 import name.abuchen.portfolio.util.TextUtil;
 
 public class EditReportingPeriodsDialog extends Dialog
@@ -74,7 +75,7 @@ public class EditReportingPeriodsDialog extends Dialog
 
         Composite tableArea = new Composite(container, SWT.NONE);
         GridDataFactory.fillDefaults().grab(true, true).hint(SWT.DEFAULT, 300).applyTo(tableArea);
-        TableColumnLayout layout = new TableColumnLayout();
+        TableColumnLayout layout = new SafeTableColumnLayout();
         tableArea.setLayout(layout);
 
         tableViewer = new TableViewer(tableArea, SWT.BORDER | SWT.MULTI);

@@ -37,6 +37,170 @@
 	    <keyword>investment</keyword>
   </keywords>
   <releases>
+    <release version="0.90.0" date="2026-11-01">
+      <description>
+        <ul>
+          <li>New: The dashboard has a new "Volatility (annualized)" widget. It always scales to one year, so you can compare the value across reporting periods and with published figures.</li>
+          <li>New: CSV importer for XTB (cash operations), including CFD results and spin-off payments.</li>
+          <li>New: PDF importer for Alpac Capital.</li>
+          <li>Improvement: Improved PDF importers for Arkéa Direct Bank, Bank11, Bison, Commerzbank, Debitum, DEGIRO, FKB, Findependent, Ford Money, GenoBroker, Hypothekarbank Lenzburg, Liberty Vorsorge, MeDirect, N26, NIBC, OLB, Orange Bank, Quirin Privatbank and Scalable Capital.</li>
+          <li>Improvement: The Edit Security dialog opens much faster with large taxonomies. Classifications are now picked from a searchable list, and ones already assigned are grayed out.</li>
+          <li>Improvement: Faster performance calculation, and faster taxonomy and price change columns in security lists.</li>
+          <li>Improvement: Views are recalculated less often while prices are updated, so the application stays responsive.</li>
+          <li>Improvement: Renaming or copying a taxonomy now also renames its top-level node, and copying keeps the notes of all categories.</li>
+          <li>Fix: The Sharpe ratio widget now uses annualized volatility. Before, the value depended on the length of the reporting period.</li>
+          <li>Fix: CSV import of dividends, taxes and fees now works when only the exchange rate column is mapped, and no longer aborts for securities without a currency.</li>
+          <li>Fix: An error ("ConcurrentModificationException") no longer occurs when investment plans run at startup. Transactions created before a missing price stops a plan are now reported and saved.</li>
+          <li>Fix: On Linux, table headers and toolbar labels stay readable when the window is not focused.</li>
+          <li>Fix: On Linux, the error "Unknown column layout data" no longer appears in the payments matrix.</li>
+          <li>Fix: Changing the currency no longer causes an error while "Show amount to invest" is turned on in rebalancing.</li>
+          <li>Fix: The donut chart now starts at the same angle as the pie chart.</li>
+          <li>Fix: The Trade Republic and XTB CSV imports now show the correct wizard title.</li>
+          <li>Fix: Closing the "Find quote provider" dialog no longer causes an error.</li>
+          <li xml:lang="de">Neu: Das Dashboard hat ein neues Widget "Volatilität (annualisiert)". Es rechnet immer auf ein Jahr hoch, sodass du den Wert über verschiedene Berichtszeiträume hinweg und mit veröffentlichten Kennzahlen vergleichen kannst.</li>
+          <li xml:lang="de">Neu: CSV-Importer für XTB (Cash Operations), einschließlich CFD-Ergebnissen und Spin-off-Zahlungen.</li>
+          <li xml:lang="de">Neu: PDF-Importer für Alpac Capital.</li>
+          <li xml:lang="de">Verbesserung: PDF-Importer für Arkéa Direct Bank, Bank11, Bison, Commerzbank, Debitum, DEGIRO, FKB, Findependent, Ford Money, GenoBroker, Hypothekarbank Lenzburg, Liberty Vorsorge, MeDirect, N26, NIBC, OLB, Orange Bank, Quirin Privatbank und Scalable Capital wurden verbessert.</li>
+          <li xml:lang="de">Verbesserung: Der Dialog zum Bearbeiten eines Wertpapiers öffnet sich bei großen Klassifizierungen deutlich schneller. Kategorien wählst du jetzt aus einer durchsuchbaren Liste aus, und bereits zugeordnete Kategorien werden ausgegraut.</li>
+          <li xml:lang="de">Verbesserung: Die Performanceberechnung sowie die Spalten für Klassifizierungen und Kursveränderungen in Wertpapierlisten sind schneller.</li>
+          <li xml:lang="de">Verbesserung: Während der Kursaktualisierung werden die Ansichten seltener neu berechnet, sodass die Anwendung reaktionsfähig bleibt.</li>
+          <li xml:lang="de">Verbesserung: Beim Umbenennen oder Kopieren einer Klassifizierung wird jetzt auch der oberste Knoten umbenannt, und beim Kopieren bleiben die Notizen aller Kategorien erhalten.</li>
+          <li xml:lang="de">Fehlerbehebung: Das Widget für die Sharpe Ratio verwendet jetzt die annualisierte Volatilität. Bisher hing der Wert von der Länge des Berichtszeitraums ab.</li>
+          <li xml:lang="de">Fehlerbehebung: Der CSV-Import von Dividenden, Steuern und Gebühren funktioniert jetzt auch, wenn nur die Spalte für den Wechselkurs zugeordnet ist, und bricht bei Wertpapieren ohne Währung nicht mehr ab.</li>
+          <li xml:lang="de">Fehlerbehebung: Beim Ausführen von Sparplänen während des Programmstarts tritt kein Fehler ("ConcurrentModificationException") mehr auf. Buchungen, die erstellt wurden, bevor ein fehlender Kurs einen Sparplan abbricht, werden jetzt angezeigt und gespeichert.</li>
+          <li xml:lang="de">Fehlerbehebung: Unter Linux bleiben Tabellenüberschriften und Beschriftungen der Werkzeugleiste lesbar, wenn das Fenster nicht im Fokus ist.</li>
+          <li xml:lang="de">Fehlerbehebung: Unter Linux erscheint in der Zahlungsmatrix nicht mehr der Fehler "Unknown column layout data".</li>
+          <li xml:lang="de">Fehlerbehebung: Ein Wechsel der Währung verursacht keinen Fehler mehr, wenn beim Rebalancing "Anlagebetrag anzeigen" eingeschaltet ist.</li>
+          <li xml:lang="de">Fehlerbehebung: Das Ringdiagramm beginnt jetzt am selben Winkel wie das Kreisdiagramm.</li>
+          <li xml:lang="de">Fehlerbehebung: Die CSV-Importe für Trade Republic und XTB zeigen jetzt den richtigen Titel im Assistenten.</li>
+          <li xml:lang="de">Fehlerbehebung: Das Schließen des Dialogs zur Suche nach Kurslieferanten verursacht keinen Fehler mehr.</li>
+        </ul>
+      </description>
+    </release>
+    <release version="0.89.0" date="2026-10-11">
+      <description>
+        <ul>
+          <li>Experimental: An MCP endpoint lets AI assistants read and update parts of your portfolio data. This first version does not cover everything yet, and feedback is welcome. It is off by default and can be enabled in the preferences.</li>
+          <li>New: "Open in new window" in the tab context menu opens a copy of the portfolio view in a separate window.</li>
+          <li>New: Deposit account attributes can now be shown as columns in the Statement of Assets and in taxonomies.</li>
+          <li>New: PDF importers for bank99, Charles Schwab, E*TRADE, Robinhood and Volksbank Wien.</li>
+          <li>Improvement: Improved PDF importers for Baader Bank, C24 Bank, DEGIRO, Deutsche Bank, DKB, easybank, Erste Bank, flatex, ING-DiBa, J&amp;T Direktbank (now also J&amp;T Banka Slovakia), Liechtensteinische Landesbank, Postbank, Raiffeisenbank, S-Broker, Scalable Capital, St.Galler Kantonalbank, Targobank and Trade Republic.</li>
+          <li>Improvement: The Trade Republic CSV importer now books deposit fees as separate fee transactions.</li>
+          <li>Improvement: The attribute type "Percent (simple)" has been renamed to "Number (2 decimals)" because the old name incorrectly suggested that the value was a percentage.</li>
+          <li>Fix: Fees charged on dividends are now included in a security's total fees.</li>
+          <li>Fix: For short trades, the moving-average cost is now shown as undefined instead of zero.</li>
+          <li>Fix: The Kraken quote feed now loads historical prices for securities without existing price data.</li>
+          <li xml:lang="de">Experimentell: Über einen MCP-Endpunkt können KI-Assistenten Teile deiner Portfoliodaten lesen und ändern. Diese erste Version deckt noch nicht alles ab und über Feedback freuen wir uns. Die Funktion ist standardmäßig ausgeschaltet und lässt sich in den Einstellungen aktivieren.</li>
+          <li xml:lang="de">Neu: "In neuem Fenster öffnen" im Kontextmenü der Registerkarten öffnet eine Kopie der Portfolioansicht in einem separaten Fenster.</li>
+          <li xml:lang="de">Neu: Attribute von Konten können jetzt als Spalten in der Vermögensaufstellung und in den Klassifizierungen angezeigt werden.</li>
+          <li xml:lang="de">Neu: PDF-Importer für bank99, Charles Schwab, E*TRADE, Robinhood und Volksbank Wien.</li>
+          <li xml:lang="de">Verbesserung: PDF-Importer für Baader Bank, C24 Bank, DEGIRO, Deutsche Bank, DKB, easybank, Erste Bank, flatex, ING-DiBa, J&amp;T Direktbank (jetzt auch J&amp;T Banka Slowakei), Liechtensteinische Landesbank, Postbank, Raiffeisenbank, S-Broker, Scalable Capital, St.Galler Kantonalbank, Targobank und Trade Republic wurden verbessert.</li>
+          <li xml:lang="de">Verbesserung: Der CSV-Importer für Trade Republic bucht Gebühren bei Einlagen/Einzahlungen jetzt als separate Gebührenbuchungen.</li>
+          <li xml:lang="de">Verbesserung: Der Attributtyp "Prozentzahl (einfach)" heißt jetzt "Zahl (2 Dezimalstellen)", da der alte Name fälschlicherweise einen Prozentwert suggerierte.</li>
+          <li xml:lang="de">Fehlerbehebung: Gebühren auf Dividenden werden jetzt in den Gesamtgebühren eines Wertpapiers berücksichtigt.</li>
+          <li xml:lang="de">Fehlerbehebung: Bei Leerverkäufen (Short-Trades) wird der gleitende Durchschnittseinstand jetzt als undefiniert statt als 0 angezeigt.</li>
+          <li xml:lang="de">Fehlerbehebung: Der Kursanbieter Kraken lädt jetzt historische Kurse auch für Wertpapiere, für die noch keine Kurse vorhanden sind.</li>
+        </ul>
+      </description>
+    </release>
+    <release version="0.88.0" date="2026-10-04">
+      <description>
+        <ul>
+          <li>New: Sifting is now available as an online provider for historical prices.</li>
+          <li>New: PDF importers for Alpian, Chase, Fondsdepot Bank, Morgan Stanley, Relai and Swisscard AECS.</li>
+          <li>New: The lists of deposit accounts, securities accounts and savings plans can be exported to CSV.</li>
+          <li>Improvement: Enhanced PDF importers for 1822direkt, 3 Banken, Advanzia Bank, Baader Bank, Bison, Consorsbank, DEGIRO, DZ Bank, Hello Bank, HypoVereinsbank, Hypothekarbank Lenzburg, ING-DiBa, LGT Bank, Liberty Vorsorge, Merkur Privatbank, MLP Banking, N26, Norddeutsche Landesbank, Oldenburgische Landesbank, Pictet, Postbank, Questrade, Quirin Privatbank, Schelhammer Capital Bank, Sutor Bank, Swissquote, Tradegate, UBS, Union Investment, V-Bank, Vanguard, VDK Bank, Volksbank, VZ VermögensZentrum, Weberbank and Zürcher Kantonalbank.</li>
+          <li>Improvement: The Yahoo Finance exchange picker now shows a label for FTSE Global Index quotes (.FGI).</li>
+          <li>Improvement: Converting a transaction now keeps the source it was imported from (for example, a buy into a delivery).</li>
+          <li>Fix: Historical prices from AMFI India load again after the provider changed its data format.</li>
+          <li>Fix: Yahoo Finance now uses the correct exchange code for the Saudi Stock Exchange (.SR).</li>
+          <li>Fix: The price preview for the MFAPI quote feed now updates when the scheme code changes.</li>
+          <li>Fix: The main tab area can no longer be detached by accident.</li>
+          <li xml:lang="de">Neu: Sifting steht jetzt als Online-Anbieter für historische Kurse zur Verfügung.</li>
+          <li xml:lang="de">Neu: PDF-Importer für Alpian, Chase, Fondsdepot Bank, Morgan Stanley, Relai und Swisscard AECS.</li>
+          <li xml:lang="de">Neu: Die Listen der Konten, Depots und Sparpläne lassen sich als CSV exportieren.</li>
+          <li xml:lang="de">Verbesserung: PDF-Importer für 1822direkt, 3 Banken, Advanzia Bank, Baader Bank, Bison, Consorsbank, DEGIRO, DZ Bank, Hello Bank, HypoVereinsbank, Hypothekarbank Lenzburg, ING-DiBa, LGT Bank, Liberty Vorsorge, Merkur Privatbank, MLP Banking, N26, Norddeutsche Landesbank, Oldenburgische Landesbank, Pictet, Postbank, Questrade, Quirin Privatbank, Schelhammer Capital Bank, Sutor Bank, Swissquote, Tradegate, UBS, Union Investment, V-Bank, Vanguard, VDK Bank, Volksbank, VZ VermögensZentrum, Weberbank und Zürcher Kantonalbank wurden verbessert.</li>
+          <li xml:lang="de">Verbesserung: Die Auswahl der Börsenplätze bei Yahoo Finance zeigt jetzt eine Bezeichnung für Kurse des FTSE Global Index (.FGI).</li>
+          <li xml:lang="de">Verbesserung: Beim Umwandeln einer Buchung (zum Beispiel eines Kaufs in eine Einlieferung) bleibt die Quelle des Imports jetzt erhalten.</li>
+          <li xml:lang="de">Fehlerbehebung: Historische Kurse von AMFI India werden wieder geladen, nachdem der Anbieter sein Datenformat geändert hat.</li>
+          <li xml:lang="de">Fehlerbehebung: Yahoo Finance verwendet jetzt das korrekte Börsenkürzel für die saudische Börse (.SR).</li>
+          <li xml:lang="de">Fehlerbehebung: Die Kursvorschau für den Anbieter MFAPI wird jetzt aktualisiert, wenn sich der Scheme Code ändert.</li>
+          <li xml:lang="de">Fehlerbehebung: Der Hauptbereich mit den Registerkarten lässt sich nicht mehr versehentlich abdocken.</li>
+        </ul>
+      </description>
+    </release>
+    <release version="0.87.0" date="2026-08-16">
+      <description>
+        <ul>
+          <li>New: Trades can now be grouped by lot: each purchase creates its own trade, and sales are split across the lots they close.</li>
+          <li>New: Categories in the statement of assets can be collapsed and expanded; the collapsed state is remembered per file and taxonomy.</li>
+          <li>New: The line width in the historical price chart can now be set to 1, 2, or 3 pixels via the chart menu.</li>
+          <li>Improvement: Enhanced PDF importers for Barclays Bank Ireland, comdirect, Consorsbank, DAB, Raiffeisen Bankengruppe, and Trade Republic.</li>
+          <li>Improvement: The title of the Trades view now reflects the selected accounts and portfolios.</li>
+          <li>Fix: Importing a large number of PDF documents no longer fails with a "No more handles" error.</li>
+          <li>Fix: Searching for a new instrument no longer aborts with an error when a search provider returns an unexpected answer.</li>
+          <li>Fix: Trades now use the exchange rate recorded on the transaction instead of the daily rate.</li>
+          <li>Fix: Fixed a sporadic error in the portfolio balance chart when it was updated twice in quick succession.</li>
+          <li>Fix: The donut chart now sorts consistently with the pie chart.</li>
+          <li xml:lang="de">Neu: Trades können jetzt je Zugang gruppiert werden: Jeder Kauf erzeugt einen eigenen Trade, und Verkäufe werden auf die Zugänge aufgeteilt, die dadurch geschlossen werden.</li>
+          <li xml:lang="de">Neu: Kategorien in der Vermögensaufstellung lassen sich ein- und ausklappen; der eingeklappte Zustand wird pro Datei und Klassifizierung gespeichert.</li>
+          <li xml:lang="de">Neu: Die Linienbreite im Kursdiagramm eines Wertpapiers lässt sich jetzt über das Diagramm-Menü auf 1, 2 oder 3 Pixel einstellen.</li>
+          <li xml:lang="de">Verbesserung: PDF-Importer für Barclays Bank Ireland, comdirect, Consorsbank, DAB, Raiffeisen Bankengruppe und Trade Republic wurden verbessert.</li>
+          <li xml:lang="de">Verbesserung: Der Titel der Trades-Ansicht berücksichtigt jetzt die ausgewählten Konten und Depots.</li>
+          <li xml:lang="de">Fehlerbehebung: Der Import vieler PDF-Dokumente schlägt nicht mehr mit dem Fehler "No more handles" fehl.</li>
+          <li xml:lang="de">Fehlerbehebung: Die Suche nach einem neuen Wertpapier bricht nicht mehr ab, wenn ein Suchanbieter eine unerwartete Antwort liefert.</li>
+          <li xml:lang="de">Fehlerbehebung: Trades verwenden jetzt den in der Buchung hinterlegten Wechselkurs statt des Tageskurses.</li>
+          <li xml:lang="de">Fehlerbehebung: Ein sporadischer Fehler im Diagramm zum Depotbestand wurde behoben, der auftrat, wenn es zweimal kurz hintereinander aktualisiert wurde.</li>
+          <li xml:lang="de">Fehlerbehebung: Das Donut-Diagramm sortiert jetzt wie das Kreisdiagramm.</li>
+        </ul>
+      </description>
+    </release>
+    <release version="0.86.1" date="2026-07-30">
+      <description>
+        <ul>
+          <li>New: PDF and CSV import remember the last used directory per account.</li>
+          <li>New: Added a PDF importer for Thurgauer Kantonalbank.</li>
+          <li>Improvement: Enhanced PDF importers for DADAT, Sunrise, St.Galler Kantonalbank, comdirect, S Broker, Union Investment, Findependent AG, UmweltBank, and DekaBank.</li>
+          <li>Improvement: The right-click menu on a table header now also lists the show/hide column actions.</li>
+          <li>Improvement: The attributes page of the edit security dialog can be scrolled.</li>
+          <li>Fix: FIFO capital gains now use the exchange rate recorded on the transaction, matching the moving average and cost calculations.</li>
+          <li>Fix: Corrected a regression in the calculation of shares held.</li>
+          <li xml:lang="de">Neu: PDF- und CSV-Import merken sich das zuletzt verwendete Verzeichnis je Depot.</li>
+          <li xml:lang="de">Neu: PDF-Importer für Thurgauer Kantonalbank hinzugefügt.</li>
+          <li xml:lang="de">Verbesserung: PDF-Importer für DADAT, Sunrise, St.Galler Kantonalbank, comdirect, S Broker, Union Investment, Findependent AG, UmweltBank und DekaBank verbessert.</li>
+          <li xml:lang="de">Verbesserung: Das Kontextmenü der Tabellenüberschrift enthält jetzt auch die Aktionen zum Ein- und Ausblenden von Spalten.</li>
+          <li xml:lang="de">Verbesserung: Die Attribute-Seite im Dialog zum Bearbeiten eines Wertpapiers lässt sich jetzt scrollen.</li>
+          <li xml:lang="de">Fehlerbehebung: Die Kapitalgewinne nach FIFO verwenden jetzt den in der Buchung hinterlegten Wechselkurs, passend zum gleitenden Durchschnitt und zur Kostenberechnung.</li>
+          <li xml:lang="de">Fehlerbehebung: Regression bei der Berechnung der gehaltenen Stücke behoben.</li>
+        </ul>
+      </description>
+    </release>
+    <release version="0.86.0" date="2026-07-16">
+      <description>
+        <ul>
+          <li>New: Rebalancing view now lets you enter an additional amount to invest or withdraw, so it can tell you how to allocate an upcoming cash flow.</li>
+          <li>New: Import and export custom security attributes via CSV.</li>
+          <li>New: Added a profit/loss column based on the moving average cost basis.</li>
+          <li>New: Added an option to use moving average as the cost method in the payments view.</li>
+          <li>New: Added a PDF importer for St.Galler Kantonalbank.</li>
+          <li>Improvement: Enhanced PDF importers for KBC/Bolero, flatex, Scalable Capital, comdirect, Raiffeisenbank Gruppe, and Consorsbank.</li>
+          <li>Improvement: The payments-per-quarter matrix can now display the first year only.</li>
+          <li>Improvement: The transaction source field is now inline-editable, like the note field.</li>
+          <li>Improvement: You can now type the date directly in the Time Machine on the statement of assets.</li>
+          <li>Fix: CSV import no longer fails on empty columns when re-reading a file.</li>
+          <li xml:lang="de">Neu: In der Rebalancing-Ansicht kannst du jetzt einen zusätzlichen Betrag zum Investieren oder Entnehmen eingeben, sodass dir angezeigt wird, wie du einen anstehenden Zahlungsstrom aufteilst.</li>
+          <li xml:lang="de">Neu: Import und Export benutzerdefinierter Wertpapier-Attribute per CSV.</li>
+          <li xml:lang="de">Neu: Spalte "Gewinn/Verlust" auf Basis der gleitenden durchschnittlichen Anschaffungskosten hinzugefügt.</li>
+          <li xml:lang="de">Neu: Option hinzugefügt, um den gleitenden Durchschnitt als Kostenmethode in der Zahlungen-Ansicht zu verwenden.</li>
+          <li xml:lang="de">Neu: PDF-Importer für St.Galler Kantonalbank hinzugefügt.</li>
+          <li xml:lang="de">Verbesserung: PDF-Importer für KBC/Bolero, flatex, Scalable Capital, comdirect, Raiffeisenbank Gruppe und Consorsbank verbessert.</li>
+          <li xml:lang="de">Verbesserung: "Quartal/Anlage" in der Zahlungen-Ansicht kann jetzt ebenfalls nur das erste Jahr anzeigen.</li>
+          <li xml:lang="de">Verbesserung: Das Feld "Quelle" einer Buchung ist jetzt direkt bearbeitbar, wie das Notizfeld.</li>
+          <li xml:lang="de">Verbesserung: In der Vermögensaufstellung kannst du das Datum jetzt direkt eingeben.</li>
+          <li xml:lang="de">Fehlerbehebung: Der CSV-Import schlägt beim erneuten Einlesen einer Datei nicht mehr an leeren Spalten fehl.</li>
+        </ul>
+      </description>
+    </release>
     <release version="0.85.0" date="2026-07-07">
       <description>
         <ul>

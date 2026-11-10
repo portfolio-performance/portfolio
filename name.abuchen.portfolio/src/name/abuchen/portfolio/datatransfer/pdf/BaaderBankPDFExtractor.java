@@ -1,16 +1,19 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
+import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetFee;
 import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetGrossUnit;
 import static name.abuchen.portfolio.util.TextUtil.concatenate;
 import static name.abuchen.portfolio.util.TextUtil.trim;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Locale;
 
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.datatransfer.ExtractorUtils;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
+import name.abuchen.portfolio.datatransfer.pdf.PDFParser.ParsedData;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
@@ -22,6 +25,51 @@ import name.abuchen.portfolio.money.Values;
 @SuppressWarnings("nls")
 public class BaaderBankPDFExtractor extends AbstractPDFExtractor
 {
+    private static final String REMAINING_DISCOUNT = "remainingDiscount";
+
+    /**
+     * Broker (white label partner of the Baader Bank) with the identifiers
+     * found in the letterhead or the footer of its documents.
+     */
+    private record Broker(String label, List<String> identifiers)
+    {
+    }
+
+    /**
+     * The Baader Bank settles the transactions for several brokers. To
+     * remember the target portfolio and account per broker in the import
+     * wizard, each document is labeled with the broker that issued it.
+     * <p>
+     * The first matching broker wins, therefore the order matters. Documents
+     * without any broker identifier keep the default label.
+     */
+    private static final List<Broker> BROKERS = List.of( //
+                    // GRATISBROKER was acquired by finanzen.net in 2021 and
+                    // renamed to finanzen.net zero. Both are intentionally
+                    // grouped under one label: old and new documents belong to
+                    // the same depot and should be imported into the same
+                    // portfolio and account. Do not split them.
+                    new Broker("Baader Bank AG / finanzen.net zero", //
+                                    List.of("finanzen.net zero GmbH", "finanzen.net/zero", "GRATISBROKER GmbH")), //
+
+                    new Broker("Baader Bank AG / Smartbroker+", //
+                                    List.of("Smartbroker AG", "smartbrokerplus.de", "SMARTBROKER+")), //
+
+                    // Oskar shares the address of Scalable Capital (Seitzstraße
+                    // 8e). Therefore Oskar is checked before Scalable Capital
+                    // and the address is not used as identifier.
+                    new Broker("Baader Bank AG / Oskar", //
+                                    List.of("Oskar.de GmbH")), //
+
+                    // Scalable Capital is checked before Traders Place because
+                    // there are documents with a Scalable Capital letterhead
+                    // and a Traders Place footer.
+                    new Broker("Baader Bank AG / Scalable Capital", //
+                                    List.of("Scalable Capital", "scalable.capital")), //
+
+                    new Broker("Baader Bank AG / Traders Place", //
+                                    List.of("Traders Place GmbH", "tradersplace.de")));
+
     public BaaderBankPDFExtractor(Client client)
     {
         super(client);
@@ -45,7 +93,21 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
     @Override
     public String getLabel()
     {
-        return "Baader Bank AG / Scalable Capital Vermögensverwaltung GmbH / Traders Place GmbH & Co. KGaA";
+        return "Baader Bank AG";
+    }
+
+    @Override
+    public String getLabel(PDFInputFile inputFile)
+    {
+        var text = inputFile.getText();
+
+        for (var broker : BROKERS)
+        {
+            if (broker.identifiers().stream().anyMatch(text::contains))
+                return broker.label();
+        }
+
+        return getLabel();
     }
 
     private void addBuySellTransaction()
@@ -92,7 +154,7 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                         // Is type --> "Ablauf der Optionsfrist" change from BUY to SELL
                         // Is type --> "Obligatorische Barabfindung" change from BUY to SELL
                         // Is type --> "Squeeze Out" change from BUY to SELL
-                        // @formatter:off
+                        // @formatter:on
                         .section("type").optional() //
                         .match("^(?<type>(Spitzenregulierung" //
                                         + "|Gesamtr.ckzahlung" //
@@ -270,6 +332,16 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                                                         .assign((t, v) -> {
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                                             t.setAmount(asAmount(v.get("amount")));
+                                                        }),
+                                        // @formatter:off
+                                        // Total Valuta: 12.09.2025 EUR 0,00
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("currency", "amount") //
+                                                        .match("^Total Valuta: [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<currency>[A-Z]{3}) (?<amount>[\\.,\\d]+)$") //
+                                                        .assign((t, v) -> {
+                                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                                            t.setAmount(asAmount(v.get("amount")));
                                                         }))
 
                         .optionalOneOf( //
@@ -345,9 +417,26 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                             t.setNote(concatenate(t.getNote(), v.get("note3"), " "));
                         })
 
+                        // @formatter:off
+                        // NEUKUNDENBONUS
+                        // @formatter:on
+                        .section("note").optional() //
+                        .match("^(?<note>NEUKUNDENBONUS)$") //
+                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), "Neukundenbonus", " | ")))
+
                         .conclude(ExtractorUtils.fixGrossValueBuySell())
 
-                        .wrap(BuySellEntryItem::new);
+                        .wrap((t, ctx) -> {
+                            // A purchase without any value (e.g. bonus shares
+                            // for new customers) is not supported, because a
+                            // purchase must have a value.
+                            if (t.getPortfolioTransaction().getType() == PortfolioTransaction.Type.BUY
+                                            && t.getPortfolioTransaction().getCurrencyCode() != null
+                                            && t.getPortfolioTransaction().getAmount() == 0L)
+                                ctx.markAsFailure(Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
+
+                            return new BuySellEntryItem(t);
+                        });
 
         addTaxesSectionsTransaction(pdfTransaction, type);
         addFeesSectionsTransaction(pdfTransaction, type);
@@ -1383,8 +1472,8 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
 
                         .section("n").optional() //
                         .match("^Ertragsthesaurierung .*$") //
-                        .match("Steuerliquidit.t (?<n>.*)") //
-                        .assign((t, v) -> type.getCurrentContext().putBoolean("noTax", true));
+                        .match("^Steuerliquidit.t (?<n>.*)$") //
+                        .assign((t, v) -> v.getTransactionContext().putBoolean("noTax", true));
 
         transaction //
 
@@ -1394,7 +1483,7 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                         .section("tax", "currency").optional() //
                         .match("^.* Finanztransaktionssteuer (?<currency>[A-Z]{3}) (?<tax>[\\.,\\d]+)$") //
                         .assign((t, v) -> {
-                            if (!type.getCurrentContext().getBoolean("noTax"))
+                            if (!v.getTransactionContext().getBoolean("noTax"))
                                 processTaxEntries(t, v, type);
                         })
 
@@ -1404,7 +1493,7 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                         .section("currency", "tax").optional() //
                         .match("^German flat rate tax (?<currency>[A-Z]{3}) (?<tax>[\\.,\\d]+) \\-$") //
                         .assign((t, v) -> {
-                            if (!type.getCurrentContext().getBoolean("noTax"))
+                            if (!v.getTransactionContext().getBoolean("noTax"))
                                 processTaxEntries(t, v, type);
                         })
 
@@ -1414,7 +1503,7 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                         .section("tax", "currency").optional() //
                         .match("^Kapitalertrags(s)?teuer (?<currency>[A-Z]{3}) (?<tax>[\\.,\\d]+) \\-$") //
                         .assign((t, v) -> {
-                            if (!type.getCurrentContext().getBoolean("noTax"))
+                            if (!v.getTransactionContext().getBoolean("noTax"))
                                 processTaxEntries(t, v, type);
                         })
 
@@ -1424,7 +1513,10 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                         .section("tax").optional() //
                         .documentContext("currency") //
                         .match("^Kapitalertrags(s)?teuer (?<tax>[\\.,\\d]+) \\-$") //
-                        .assign((t, v) -> processTaxEntries(t, v, type))
+                        .assign((t, v) -> {
+                            if (!v.getTransactionContext().getBoolean("noTax"))
+                                processTaxEntries(t, v, type);
+                        })
 
                         // @formatter:off
                         // Kirchensteuer EUR 11,49 -
@@ -1432,7 +1524,7 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                         .section("tax", "currency").optional() //
                         .match("^Kirchensteuer (?<currency>[A-Z]{3}) (?<tax>[\\.,\\d]+) \\-$") //
                         .assign((t, v) -> {
-                            if (!type.getCurrentContext().getBoolean("noTax"))
+                            if (!v.getTransactionContext().getBoolean("noTax"))
                                 processTaxEntries(t, v, type);
                         })
 
@@ -1442,15 +1534,18 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                         .section("tax").optional() //
                         .documentContext("currency") //
                         .match("^Kirchensteuer (?<tax>[\\.,\\d]+) \\-$") //
-                        .assign((t, v) -> processTaxEntries(t, v, type))
+                        .assign((t, v) -> {
+                            if (!v.getTransactionContext().getBoolean("noTax"))
+                                processTaxEntries(t, v, type);
+                        })
 
                         // @formatter:off
-                        // Solidaritätszuschlag 0,02 -
+                        // Solidaritätszuschlag EUR 0,02 -
                         // @formatter:on
                         .section("tax", "currency").optional() //
                         .match("^Solidarit.tszuschlag (?<currency>[A-Z]{3}) (?<tax>[\\.,\\d]+) \\-$") //
                         .assign((t, v) -> {
-                            if (!type.getCurrentContext().getBoolean("noTax"))
+                            if (!v.getTransactionContext().getBoolean("noTax"))
                                 processTaxEntries(t, v, type);
                         })
 
@@ -1460,7 +1555,10 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                         .section("tax").optional() //
                         .documentContext("currency") //
                         .match("^Solidarit.tszuschlag (?<tax>[\\.,\\d]+) \\-$") //
-                        .assign((t, v) -> processTaxEntries(t, v, type))
+                        .assign((t, v) -> {
+                            if (!v.getTransactionContext().getBoolean("noTax"))
+                                processTaxEntries(t, v, type);
+                        })
 
                         // @formatter:off
                         // Quellensteuer EUR 30,21 -
@@ -1469,7 +1567,7 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                         .section("withHoldingTax", "currency").optional() //
                         .match("^(US\\-)?Quellensteuer (?<currency>[A-Z]{3}) (?<withHoldingTax>[\\.,\\d]+) \\-$") //
                         .assign((t, v) -> {
-                            if (!type.getCurrentContext().getBoolean("noTax"))
+                            if (!v.getTransactionContext().getBoolean("noTax"))
                                 processWithHoldingTaxEntries(t, v, "withHoldingTax", type);
                         })
 
@@ -1479,7 +1577,7 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                         .section("withHoldingTax", "currency").optional() //
                         .match("^US withholding tax (?<currency>[A-Z]{3}) (?<withHoldingTax>[\\.,\\d]+) \\-$") //
                         .assign((t, v) -> {
-                            if (!type.getCurrentContext().getBoolean("noTax"))
+                            if (!v.getTransactionContext().getBoolean("noTax"))
                                 processWithHoldingTaxEntries(t, v, "withHoldingTax", type);
                         })
 
@@ -1489,7 +1587,7 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                         .section("withHoldingTax", "currency").optional() //
                         .match("^Withholding tax (?<currency>[A-Z]{3}) (?<withHoldingTax>[\\.,\\d]+) \\-$") //
                         .assign((t, v) -> {
-                            if (!type.getCurrentContext().getBoolean("noTax"))
+                            if (!v.getTransactionContext().getBoolean("noTax"))
                                 processWithHoldingTaxEntries(t, v, "withHoldingTax", type);
                         });
     }
@@ -1530,18 +1628,108 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                         .assign((t, v) -> processFeeEntries(t, v, type))
 
                         // @formatter:off
-                        // Mindermengenzuschlag Finanzen.net EUR 1,00
+                        // Finanzkommission Baader EUR 0,50
+                        // Handelsplatzabhängige Gutschrift Baader EUR 0,40 -
+                        //
+                        // Finanzkommission Baader EUR 0,50 -
+                        // Handelsplatzabhängige Gutschrift Baader EUR 3,15
+                        // @formatter:on
+                        .section("currency", "fee", "discountCurrency", "discount").optional() //
+                        .match("^Finanzkommission .* (?<currency>[A-Z]{3}) (?<fee>[\\.,\\d]+)( \\-)?$") //
+                        .match("^Handelsplatzabh.ngige Gutschrift .* (?<discountCurrency>[A-Z]{3}) (?<discount>[\\.,\\d]+)( \\-)?$") //
+                        .assign((t, v) -> {
+                            // The sign of the credit depends on the direction
+                            // of the document (purchase: "-", sale: no sign),
+                            // but it always reduces the fees.
+                            var fee = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("fee")));
+                            var discount = Money.of(asCurrencyCode(v.get("discountCurrency")), asAmount(v.get("discount")));
+
+                            if (fee.subtract(discount).isPositive())
+                            {
+                                fee = fee.subtract(discount);
+                                checkAndSetFee(fee, t, type.getCurrentContext());
+                            }
+                            else if (discount.subtract(fee).isPositive())
+                            {
+                                // The credit exceeds the Finanzkommission. Keep
+                                // the remaining credit to offset the following
+                                // fees.
+                                putRemainingDiscount(discount.subtract(fee), v);
+                            }
+
+                            v.getTransactionContext().putBoolean("noFinanzkommission", true);
+                        })
+
+                        // @formatter:off
+                        // Finanzkommission Baader EUR 0,50
                         // @formatter:on
                         .section("currency", "fee").optional() //
-                        .match("^Mindermengenzuschlag .* (?<currency>[A-Z]{3}) (?<fee>[\\.,\\d]+)( \\-)?$") //
-                        .assign((t, v) -> processFeeEntries(t, v, type))
+                        .match("^Finanzkommission .* (?<currency>[A-Z]{3}) (?<fee>[\\.,\\d]+)( \\-)?$") //
+                        .assign((t, v) -> {
+                            if (!v.getTransactionContext().getBoolean("noFinanzkommission"))
+                                processFeeEntries(t, v, type);
+                        })
+
+                        // @formatter:off
+                        // Mindermengenzuschlag Finanzen.net EUR 1,00
+                        // Mindermengenzuschlag EUR 1,00 -
+                        // @formatter:on
+                        .section("currency", "fee").optional() //
+                        .match("^Mindermengenzuschlag( .*)? (?<currency>[A-Z]{3}) (?<fee>[\\.,\\d]+)( \\-)?$") //
+                        .assign((t, v) -> processFeeEntriesWithRemainingDiscount(t, v, type))
+
+                        // @formatter:off
+                        // Vermittlungsentgelt Finanzen EUR 0,90
+                        // Vermittlungsentgelt Tradersplace EUR 2,65 -
+                        // @formatter:on
+                        .section("currency", "fee").optional() //
+                        .match("^Vermittlungsentgelt .* (?<currency>[A-Z]{3}) (?<fee>[\\.,\\d]+)( \\-)?$") //
+                        .assign((t, v) -> processFeeEntriesWithRemainingDiscount(t, v, type))
 
                         // @formatter:off
                         // Stamp HongKong EUR 0,12
                         // @formatter:on
                         .section("currency", "fee").optional() //
                         .match("^Stamp HongKong (?<currency>[A-Z]{3}) (?<fee>[\\.,\\d]+)( \\-)?$") //
-                        .assign((t, v) -> processFeeEntries(t, v, type));
+                        .assign((t, v) -> processFeeEntriesWithRemainingDiscount(t, v, type));
+    }
+
+    /**
+     * Stores the part of the "Handelsplatzabhängige Gutschrift" which exceeds
+     * the "Finanzkommission" in the transaction context. The transaction
+     * context only exists while one transaction is parsed, therefore a
+     * remaining credit can never offset the fees of another transaction.
+     */
+    private void putRemainingDiscount(Money discount, ParsedData v)
+    {
+        v.getTransactionContext().put(REMAINING_DISCOUNT, discount);
+    }
+
+    /**
+     * Processes a fee and offsets it against the remaining credit of the
+     * "Handelsplatzabhängige Gutschrift". Fees cannot be negative, therefore
+     * only the positive difference is booked and an excess credit is carried
+     * forward to the next fee. Without remaining credit, the fee is processed
+     * as usual.
+     */
+    private void processFeeEntriesWithRemainingDiscount(Object t, ParsedData v, DocumentType type)
+    {
+        var fee = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("fee")));
+
+        if (!(v.getTransactionContext().get(REMAINING_DISCOUNT) instanceof Money discount)
+                        || !fee.getCurrencyCode().equals(discount.getCurrencyCode()))
+        {
+            processFeeEntries(t, v, type);
+            return;
+        }
+
+        v.getTransactionContext().remove(REMAINING_DISCOUNT);
+
+        var remainingFee = fee.subtract(discount);
+        if (remainingFee.isPositive())
+            checkAndSetFee(remainingFee, t, type.getCurrentContext());
+        else if (remainingFee.isNegative())
+            putRemainingDiscount(remainingFee.absolute(), v);
     }
 
     @Override

@@ -112,7 +112,7 @@ public class ArkeaDirectBankPDFExtractor extends AbstractPDFExtractor
 
                         // Is type --> "Vente" change from BUY to SELL
                         .section("type").optional() //
-                        .match(".* Sens (?<type>(Achat|Vente|Souscription)).*$") //
+                        .match("^.* Sens (?<type>(Achat|Vente|Souscription)).*$") //
                         .assign((t, v) -> {
                             if ("Vente".equals(v.get("type")))
                                 t.setType(PortfolioTransaction.Type.SELL);
@@ -390,7 +390,7 @@ public class ArkeaDirectBankPDFExtractor extends AbstractPDFExtractor
                         .section("currency", "amount") //
                         .match("^Montant global soumis à la TTF : [\\d\\s]+,[\\d]{2} (?<currency>\\p{Sc})$") //
                         .find("Taux de TTF : [\\d\\s]+,[\\d]{2} %")
-                        .match("(Montant de la TTF:[\\s]*|^)(?<amount>[\\d\\s]+,[\\d]{2})$") //
+                        .match("^(Montant de la TTF:[\\s]*)?(?<amount>[\\d\\s]+,[\\d]{2})$") //
                         .assign((t, v) -> {
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(asAmount(v.get("amount")));

@@ -20,6 +20,7 @@ import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.TaxonomyTemplate;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.util.viewers.SafeTableColumnLayout;
 import name.abuchen.portfolio.ui.wizards.AbstractWizardPage;
 
 public class AddTaxonomyPage extends AbstractWizardPage
@@ -42,7 +43,7 @@ public class AddTaxonomyPage extends AbstractWizardPage
         Composite container = new Composite(parent, SWT.NONE);
         setControl(container);
 
-        TableColumnLayout layout = new TableColumnLayout();
+        TableColumnLayout layout = new SafeTableColumnLayout();
         container.setLayout(layout);
 
         final TableViewer viewer = new TableViewer(container);

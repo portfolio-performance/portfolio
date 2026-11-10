@@ -31,6 +31,9 @@ import name.abuchen.portfolio.util.WebAccess.WebAccessException;
 
         public static Optional<Result> from(JSONObject json)
         {
+            if (json == null)
+                return Optional.empty();
+
             var symbol = (String) json.get("symbol"); //$NON-NLS-1$
             if (symbol == null)
                 return Optional.empty();
@@ -152,14 +155,13 @@ import name.abuchen.portfolio.util.WebAccess.WebAccessException;
                             .addParameter("enableEnhancedTrivialQuery", "false") //
                             .get();
 
-            var responseData = (JSONObject) JSONValue.parse(html);
-            if (responseData != null)
+            if (JSONValue.parse(html) instanceof JSONObject responseData
+                            && responseData.get("quotes") instanceof JSONArray result) //$NON-NLS-1$
             {
-                var result = (JSONArray) responseData.get("quotes"); //$NON-NLS-1$
-                if (result != null)
+                for (var ii = 0; ii < result.size(); ii++)
                 {
-                    for (var ii = 0; ii < result.size(); ii++)
-                        Result.from((JSONObject) result.get(ii)).ifPresent(answer::add);
+                    if (result.get(ii) instanceof JSONObject quote)
+                        Result.from(quote).ifPresent(answer::add);
                 }
             }
         }

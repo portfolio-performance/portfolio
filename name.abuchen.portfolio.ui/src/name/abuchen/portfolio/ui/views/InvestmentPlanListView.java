@@ -44,6 +44,7 @@ import name.abuchen.portfolio.ui.editor.PortfolioPart;
 import name.abuchen.portfolio.ui.util.DropDown;
 import name.abuchen.portfolio.ui.util.LogoManager;
 import name.abuchen.portfolio.ui.util.SimpleAction;
+import name.abuchen.portfolio.ui.util.TableViewerCSVExporter;
 import name.abuchen.portfolio.ui.util.viewers.BooleanEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.Column;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport;
@@ -53,6 +54,7 @@ import name.abuchen.portfolio.ui.util.viewers.CopyPasteSupport;
 import name.abuchen.portfolio.ui.util.viewers.DateEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.DateLabelProvider;
 import name.abuchen.portfolio.ui.util.viewers.ListEditingSupport;
+import name.abuchen.portfolio.ui.util.viewers.SafeTableColumnLayout;
 import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
 import name.abuchen.portfolio.ui.util.viewers.ValueEditingSupport;
 import name.abuchen.portfolio.ui.views.columns.AttributeColumn;
@@ -105,6 +107,7 @@ public class InvestmentPlanListView extends AbstractFinanceView implements Modif
     protected void addButtons(ToolBarManager toolBar)
     {
         addNewInvestmentPlanButton(toolBar);
+        addExportButton(toolBar);
         addConfigButton(toolBar);
     }
 
@@ -127,6 +130,12 @@ public class InvestmentPlanListView extends AbstractFinanceView implements Modif
         }));
     }
 
+    private void addExportButton(ToolBarManager toolBar)
+    {
+        toolBar.add(new SimpleAction(Messages.MenuExportData, Images.EXPORT,
+                        a -> new TableViewerCSVExporter(plans).export(getTitle() + ".csv"))); //$NON-NLS-1$
+    }
+
     private void addConfigButton(final ToolBarManager toolBar)
     {
         toolBar.add(new DropDown(Messages.MenuShowHideColumns, Images.CONFIG, SWT.NONE,
@@ -137,7 +146,7 @@ public class InvestmentPlanListView extends AbstractFinanceView implements Modif
     protected Control createBody(Composite parent)
     {
         Composite container = new Composite(parent, SWT.NONE);
-        TableColumnLayout layout = new TableColumnLayout();
+        TableColumnLayout layout = new SafeTableColumnLayout();
         container.setLayout(layout);
 
         plans = new TableViewer(container, SWT.FULL_SELECTION);

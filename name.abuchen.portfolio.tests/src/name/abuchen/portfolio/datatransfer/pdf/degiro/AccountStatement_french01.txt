@@ -1,0 +1,43 @@
+Mr JEcmrr wjwKqL SLuQBjK
+DEcKkKuTox
+mim TFtGT-aONdMt 03
+96633 DPKsVypySs
+User name: ***rss
+Account statement from 03-12-2024 until 11-05-2026
+Date Time Value date Product ISIN Description FX Change Balance
+08-05-2026 07:33 08-05-2026 Degiro Cash Sweep Transfer EUR -22,59 EUR 31,73
+08-05-2026 07:33 08-05-2026 Virement vers votre Compte Espèces à la flatexDEGIRO EUR 54,32
+Bank: 22,59 EUR
+08-05-2026 06:31 07-05-2026 Operation de change - Crédit EUR 22,59 EUR 31,73
+08-05-2026 06:31 07-05-2026 Opération de change - Débit 10,908 SEK -246,40 SEK 0,00
+07-05-2026 07:10 06-05-2026 BOLIDEN AB SE0020050417 Dividende SEK 352,00 SEK 246,40
+07-05-2026 07:10 06-05-2026 BOLIDEN AB SE0020050417 Impôts sur dividende SEK -105,60 SEK -105,60
+07-04-2026 09:44 31-03-2026 Frais de connexion aux places boursières 2026 (London EUR -2,50 EUR 5 487,72
+Stock Exchange (LSE) - LSE)
+flatexDEGIRO Bank Dutch Branch, trading under the name DEGIRO, is the Dutch branch of flatexDEGIRO Bank SE. flatexDEGIRO Bank www.degiro.fr Account statement
+SE is primarily supervised by the German financial regulator (BaFin). In the Netherlands, flatexDEGIRO Bank Dutch Branch is registered clients@degiro.fr
+with DNB and supervised by AFM and DNB. Amstelplein 1 1096 HA 2026-05-11
+Page 17 /34
+Frau JEcmrr wjwKqL SLuQBjK
+DEcKkKuTox
+mim TFtGT-aONdMt 03
+96633 DPKsVypySs
+User name: ***rss
+Date Time Value date Product ISIN Description FX Change Balance
+06-04-2026 10:03 31-03-2026 Flatex Interest Income EUR 0,00 EUR 5 490,22
+24-03-2026 07:04 23-03-2026 WARTSILA OYJ ABP FI0009003727 Impôts sur dividende EUR -8,57 EUR 3 835,49
+24-03-2026 07:04 23-03-2026 WARTSILA OYJ ABP FI0009003727 Dividende EUR 24,49 EUR 3 844,06
+25-02-2026 16:19 25-02-2026 Remboursement offre promotionnelle EUR 100,00 EUR 100,00
+17-12-2025 15:30 17-12-2025 CATERPILLAR INC US1491231015 Frais DEGIRO de courtage et/ou de parties tierces EUR -2,00 EUR 28,07
+17-12-2025 15:30 17-12-2025 CATERPILLAR INC US1491231015 Vente 1 Caterpillar Inc@587,59 USD (US1491231015) USD 587,59 USD 587,59
+17-12-2025 07:07 16-12-2025 Operation de change - Crédit EUR 1,06 EUR 30,07
+17-12-2025 07:07 16-12-2025 Opération de change - Débit 1,1776 USD -1,25 USD 0,00
+16-12-2025 07:13 15-12-2025 ALPHABET INC CLASS A US02079K3059 Dividende USD 1,47 USD 1,25
+16-12-2025 07:12 15-12-2025 ALPHABET INC CLASS A US02079K3059 Impôts sur dividende USD -0,22 USD -0,22
+10-10-2025 11:30 10-10-2025 Degiro Cash Sweep Transfer EUR 320,50 EUR 9 846,22
+10-10-2025 11:30 10-10-2025 Virement depuis votre Compte Espèces à la flatexDEGIRO EUR 9 525,72
+Bank: 320,50 EUR
+08-10-2025 16:58 08-10-2025 VANECK URANIUM AND IE000M7V94E1 Frais DEGIRO de courtage et/ou de parties tierces EUR -1,00 EUR 9 525,72
+08-10-2025 16:58 08-10-2025 VANECK URANIUM AND IE000M7V94E1 Achat 6 VanEck Uranium and Nuclear Technologies UCITS ETF@53,25 EUR (IE000M7V94E1) EUR -319,50 EUR 9 526,72
+08-10-2025 14:50 08-10-2025 Dépôt flatex EUR 9 500,00 EUR 9 525,72
+07-10-2025 21:51 07-10-2025 Dépôt flatex EUR 500,00 EUR 500,00

@@ -20,7 +20,39 @@ PDF importers extract transactions from bank and broker PDF statements.
   - Split logic into methods like `addBuySellTransaction()`, `addDividendTransaction()` or `addInterestTransaction()`
   - When extracting information from pdf-documents, create multiple `section`-Blocks. 
   - Consistency in coding style between all extractors is more important than nice code.
-  - Add comment-blocks with `@formatter:off` and `@formatter:on` before each section-block showing the format that is handled there.
+  - Paste the matching document lines verbatim above each section-block, wrapped in `@formatter:off` / `@formatter:on` — see below.
+
+## `@formatter:off` / `@formatter:on`
+
+These directives protect layout the Eclipse formatter would destroy. Ask: *would reflowing or wrapping this comment lose information?* If yes, wrap it. If no, leave it bare.
+
+**Yes — wrap.** The primary case: document text copied verbatim and placed directly above the regex that parses it. The line breaks and column positions are what make it comparable to the pattern.
+
+```java
+// @formatter:off
+// Nominale Wertpapierbezeichnung ISIN (WKN)
+// Stück 250 GLENCORE PLC              JE00B4T3BW64 (A1JAGV)
+// @formatter:on
+.section("name", "isin", "wkn", "shares") //
+```
+
+Also wrap multi-line column maps (`// Formatting:` followed by the `A | B | C` variants) and long one-line formulas that must not be wrapped mid-expression.
+
+**No — leave bare.** Explanatory prose reads identically after reflowing, so the directives are noise:
+
+```java
+// correct
+// Percentage quotation, workaround for bonds
+var shares = asBigDecimal(v.get("shares"));
+
+// unnecessary
+// @formatter:off
+// Percentage quotation, workaround for bonds
+// @formatter:on
+var shares = asBigDecimal(v.get("shares"));
+```
+
+**In reviews:** flag a *missing* directive only where verbatim document text or a column map would be reflowed. Do not flag a missing directive on prose comments. Do not flag an *existing* directive as over-use — it is harmless and widespread, and churning it costs more than it saves. Class Javadoc is out of scope: do not flag its presence or absence either way.
 
 ## Regular Expressions
 
@@ -109,7 +141,7 @@ v.put("currency", asCurrencyCode("USD"));         // works but prefer named cons
 })
 ```
 
-**Runtime transaction type switch** — when a single PDF document format contains both deposits and removals (or buys and sells) distinguished only by a sign character, it is allowed to combine them into one block. Set `subject()` to the default type and switch in `assign()` based on the extracted sign. Use `@formatter:off/on` inside the assign lambda to mark the switch comment:
+**Runtime transaction type switch** — when a single PDF document format contains both deposits and removals (or buys and sells) distinguished only by a sign character, it is allowed to combine them into one block. Set `subject()` to the default type and switch in `assign()` based on the extracted sign:
 ```java
 var depositRemovalBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (Einzahlung|Auszahlung) (\\-)?[\\.,\\d]+ .*$");
 depositRemovalBlock.set(new Transaction<AccountTransaction>()
@@ -120,9 +152,7 @@ depositRemovalBlock.set(new Transaction<AccountTransaction>()
                 .documentContext("currency") //
                 .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (Einzahlung|Auszahlung)(?<type>\\s(\\-)?)(?<amount>[\\.,\\d]+) (?<note>.*)$") //
                 .assign((t, v) -> {
-                    // @formatter:off
                     // Is type --> "-" change from DEPOSIT to REMOVAL
-                    // @formatter:on
                     if ("-".equals(trim(v.get("type"))))
                         t.setType(AccountTransaction.Type.REMOVAL);
 

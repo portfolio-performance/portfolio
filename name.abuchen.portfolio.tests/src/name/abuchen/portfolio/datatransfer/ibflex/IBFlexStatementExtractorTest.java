@@ -18,9 +18,11 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTaxes;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTicker;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.inboundCash;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.outboundCash;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.purchase;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.sale;
-import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransfers;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.withFailureMessage;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransactions;
+import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransfers;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countBuySell;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countSecurities;
 import static org.hamcrest.CoreMatchers.hasItem;
@@ -45,8 +47,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.TimeZone;
 import java.util.stream.Collectors;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 
 import name.abuchen.portfolio.Messages;
@@ -74,6 +79,20 @@ import name.abuchen.portfolio.online.impl.YahooFinanceQuoteFeed;
 @SuppressWarnings("nls")
 public class IBFlexStatementExtractorTest
 {
+    private TimeZone defaultTZ;
+
+    @Before
+    public void saveDefaultTZ()
+    {
+        this.defaultTZ = TimeZone.getDefault();
+    }
+
+    @After
+    public void restoreDefaultTZ()
+    {
+        TimeZone.setDefault(defaultTZ);
+    }
+
     private Extractor.InputFile createTempFile(InputStream input) throws IOException
     {
         File tempFile = Files.createTempFile("IBFlexStatementExtractorTest", null).toFile();
@@ -3491,6 +3510,77 @@ public class IBFlexStatementExtractorTest
     }
 
     @Test
+    public void testDividendReversalIsFlaggedAsFailedItem() throws IOException
+    {
+        var extractor = new IBFlexStatementExtractor(new Client());
+        var activityStatement = getClass().getResourceAsStream("testIBFlexStatementFile30.xml");
+        var tempFile = createTempFile(activityStatement);
+        var errors = new ArrayList<Exception>();
+
+        var results = extractor.extract(Collections.singletonList(tempFile), errors);
+
+        assertThat(errors, empty());
+        assertThat(countAccountTransactions(results), is(3L));
+        new AssertImportActions().check(results, CurrencyUnit.USD);
+
+        // The reversal keeps the negative amount that IB reports and is flagged
+        // as a failure, because the correction cannot be applied to the
+        // original dividend. The user has to remove that one by hand.
+        assertThat(results, hasItem(withFailureMessage( //
+                        Messages.MsgErrorCashDividendCorrectionUnmatched, //
+                        dividend( //
+                                        hasDate("2026-06-16"), hasShares(-8), //
+                                        hasSecurity(hasTicker("TEST")), //
+                                        hasAmount("USD", -0.70)))));
+
+        // The replacement dividend is imported as usual.
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2026-06-16"), hasShares(9), //
+                        hasSecurity(hasTicker("TEST")), //
+                        hasAmount("USD", 0.76))));
+
+        // Signed cash across all three rows nets to zero, which is the
+        // arithmetic the report asks for. Reading the reversal as income
+        // instead overstates the account by 1.40 USD.
+        var cashDelta = results.stream().filter(TransactionItem.class::isInstance).map(TransactionItem.class::cast)
+                        .map(TransactionItem::getSubject).map(AccountTransaction.class::cast)
+                        .mapToLong(t -> t.getType().isDebit() ? -t.getAmount() : t.getAmount()).sum();
+        assertThat(cashDelta, is(0L));
+    }
+
+    /// A withholding tax lands on the dividend the user can actually import.
+    @Test
+    public void testDividendReversalDoesNotConsumeTheWithholdingTax() throws IOException
+    {
+        var extractor = new IBFlexStatementExtractor(new Client());
+        var activityStatement = getClass().getResourceAsStream("testIBFlexStatementFile31.xml");
+        var tempFile = createTempFile(activityStatement);
+        var errors = new ArrayList<Exception>();
+
+        var results = extractor.extract(Collections.singletonList(tempFile), errors);
+
+        assertThat(errors, empty());
+
+        // postProcessing pairs a tax with one dividend per date and security,
+        // and removes the tax item. The reversal and the replacement share both,
+        // so whichever is matched first takes the tax. It has to be the
+        // replacement: the reversal is flagged and never reaches the portfolio,
+        // which would drop the tax entirely.
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2026-06-16"), hasShares(9), //
+                        hasSecurity(hasTicker("TEST")), //
+                        hasAmount("USD", 0.65), hasGrossValue("USD", 0.76), //
+                        hasTaxes("USD", 0.11), hasFees("USD", 0.00))));
+
+        // The reversal keeps the amount IB reported and stays flagged.
+        assertThat(results, hasItem(withFailureMessage( //
+                        Messages.MsgErrorCashDividendCorrectionUnmatched, //
+                        dividend( //
+                                        hasDate("2026-06-16"), hasShares(-8), //
+                                        hasAmount("USD", -0.70)))));
+    }
+
+    @Test
     public void testIBFlexStatementFile27() throws IOException
     {
         // Test minor unit currency handling: IBKR provides GBP, security is GBX
@@ -3607,6 +3697,7 @@ public class IBFlexStatementExtractorTest
     @Test
     public void testParseDateTimeFormats()
     {
+        TimeZone.setDefault(TimeZone.getTimeZone("Europe/Berlin"));
         // Compact format yyyyMMdd - date only
         assertThat(IBFlexStatementExtractor.parseDateTime("20240115"), is(LocalDateTime.of(2024, 1, 15, 0, 0, 0)));
 
@@ -3618,9 +3709,9 @@ public class IBFlexStatementExtractorTest
         assertThat(IBFlexStatementExtractor.parseDateTime("20240115;14:30:52"),
                         is(LocalDateTime.of(2024, 1, 15, 14, 30, 52)));
 
-        // Compact format with timezone (timezone is dropped)
+        // Compact format with timezone
         assertThat(IBFlexStatementExtractor.parseDateTime("20240115;143052 EST"),
-                        is(LocalDateTime.of(2024, 1, 15, 14, 30, 52)));
+                        is(LocalDateTime.of(2024, 1, 15, 20, 30, 52)));
 
         // ISO format yyyy-MM-dd - date only
         assertThat(IBFlexStatementExtractor.parseDateTime("2024-01-15"), is(LocalDateTime.of(2024, 1, 15, 0, 0, 0)));
@@ -3666,9 +3757,9 @@ public class IBFlexStatementExtractorTest
         assertThat(IBFlexStatementExtractor.parseDateTime("15-Jan-24;14:30:52"),
                         is(LocalDateTime.of(2024, 1, 15, 14, 30, 52)));
 
-        // With timezone (should be dropped)
+        // With timezone
         assertThat(IBFlexStatementExtractor.parseDateTime("15-Jan-24;143052 UTC"),
-                        is(LocalDateTime.of(2024, 1, 15, 14, 30, 52)));
+                        is(LocalDateTime.of(2024, 1, 15, 15, 30, 52)));
 
         // Null and empty handling
         assertThat(IBFlexStatementExtractor.parseDateTime(null), is(nullValue()));
@@ -3676,6 +3767,13 @@ public class IBFlexStatementExtractorTest
 
         // Invalid format should return null
         assertThat(IBFlexStatementExtractor.parseDateTime("invalid"), is(nullValue()));
+
+        // from a given sample that failed to be parsed correctly
+        assertThat(IBFlexStatementExtractor.parseDateTime("20261005;06:11:35 EDT"),
+                        is(LocalDateTime.of(2026, 10, 05, 12, 11, 35)));
+        TimeZone.setDefault(TimeZone.getTimeZone("Asia/Tokyo"));
+        assertThat(IBFlexStatementExtractor.parseDateTime("20261005;06:11:35 EDT"),
+                        is(LocalDateTime.of(2026, 10, 05, 19, 11, 35)));
     }
 
     @Test
@@ -3887,5 +3985,42 @@ public class IBFlexStatementExtractorTest
         assertThat(krdivTransaction.getCurrencyCode(), is("KRW"));
         assertThat(krdivTransaction.getAmount(), is(Values.Amount.factorize(3100)));
         assertThat(krdivTransaction.getShares(), is(Values.Share.factorize(2)));
+    }
+
+    @Test
+    public void testIBFlexStatementFile32() throws IOException
+    {
+        TimeZone.setDefault(TimeZone.getTimeZone("Europe/Berlin"));
+        var client = new Client();
+
+        var referenceAccountAwithUSD = new Account("A");
+        referenceAccountAwithUSD.setCurrencyCode("USD");
+        client.addAccount(referenceAccountAwithUSD);
+
+        var portfolioA = new Portfolio("A");
+        portfolioA.setReferenceAccount(referenceAccountAwithUSD);
+        client.addPortfolio(portfolioA);
+
+        var extractor = new IBFlexStatementExtractor(client);
+        var activityStatement = getClass().getResourceAsStream("testIBFlexStatementFile32.xml");
+        var tempFile = createTempFile(activityStatement);
+        var errors = new ArrayList<Exception>();
+
+        var results = extractor.extract(Collections.singletonList(tempFile), errors);
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+
+        assertThat(results, hasItem(allOf( //
+                        hasPortfolio(portfolioA), //
+                        hasAccount(referenceAccountAwithUSD), //
+                        purchase( //
+                                        hasDate("2026-10-05T12:11:35"), hasShares(26), //
+                                        hasSecurity(hasTicker("AUUSIUSD"), hasIsin("CH0106027193")), //
+                                        hasAmount("USD", 3454.2), //
+                                        hasTaxes("USD", 0.00), hasFees("USD", 4.00), //
+                                        hasNote("Trade-ID: 1234567890 | Transaction-ID: 1234567890") //
+                        ))));
     }
 }

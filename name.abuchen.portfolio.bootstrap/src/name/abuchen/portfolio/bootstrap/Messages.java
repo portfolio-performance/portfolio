@@ -9,6 +9,7 @@ public class Messages extends NLS
     public static String LabelCloneWindow;
     public static String LabelCloseWindow;
     public static String LabelNo;
+    public static String LabelOpenInNewWindow;
     public static String LabelSaveAll;
     public static String LabelSaveNone;
     public static String LabelYes;

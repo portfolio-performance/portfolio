@@ -71,6 +71,7 @@ import name.abuchen.portfolio.ui.util.viewers.Column;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport.ModificationListener;
 import name.abuchen.portfolio.ui.util.viewers.CopyPasteSupport;
+import name.abuchen.portfolio.ui.util.viewers.SafeTreeColumnLayout;
 import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
 import name.abuchen.portfolio.ui.util.viewers.StringEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.ValueEditingSupport;
@@ -381,10 +382,10 @@ import name.abuchen.portfolio.util.TextUtil;
     }
 
     @Override
-    public final Control createControl(Composite parent)
+    public Control createControl(Composite parent)
     {
         Composite container = new Composite(parent, SWT.NONE);
-        TreeColumnLayout layout = new TreeColumnLayout();
+        TreeColumnLayout layout = new SafeTreeColumnLayout();
         container.setLayout(layout);
 
         nodeViewer = new TreeViewer(container, SWT.FULL_SELECTION | SWT.MULTI);
@@ -757,7 +758,7 @@ import name.abuchen.portfolio.util.TextUtil;
 
         getModel().getAttachedModels().forEach(m -> m.addColumns(support));
 
-        AttributeColumn.createFor(getModel().getClient(), Security.class) //
+        AttributeColumn.createForSecuritiesAndAccounts(getModel().getClient()) //
                         .forEach(c -> {
                             c.setSorter(null);
                             c.getEditingSupport().addListener(this);

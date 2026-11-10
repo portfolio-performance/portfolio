@@ -113,6 +113,7 @@ public class PerformanceChartView extends AbstractHistoricView
         composite.setBackground(Colors.theme().defaultBackground());
 
         chart = new TimelineChart(composite);
+        chart.setLineWidthConfigurable(false);
         chart.getTitle().setText(getTitle());
         chart.getTitle().setVisible(false);
         chart.getAxisSet().getYAxis(0).getTick().setFormat(new AxisTickPercentNumberFormat("0.#%")); //$NON-NLS-1$

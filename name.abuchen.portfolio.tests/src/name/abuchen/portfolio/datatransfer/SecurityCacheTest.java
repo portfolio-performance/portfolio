@@ -9,6 +9,7 @@ import org.junit.Test;
 
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.money.CurrencyUnit;
 
 @SuppressWarnings("nls")
 public class SecurityCacheTest
@@ -130,5 +131,32 @@ public class SecurityCacheTest
 
         SecurityCache cache = new SecurityCache(client);
         cache.lookup("DE0007164600", null, null, null, () -> new Security());
+    }
+
+    @Test
+    public void testWasCreatedFlag()
+    {
+        var existing = new Security("SAP SE", CurrencyUnit.EUR);
+        existing.setIsin("DE0007164600");
+
+        var client = new Client();
+        client.addSecurity(existing);
+
+        var cache = new SecurityCache(client);
+
+        var matched = cache.lookup("DE0007164600", null, null, "SAP SE",
+                        () -> new Security(null, CurrencyUnit.EUR));
+        assertThat(cache.wasCreated(matched), is(false));
+        assertThat(matched, is(existing));
+
+        var created = cache.lookup("US0378331005", null, null, "Apple Inc.",
+                        () -> new Security(null, CurrencyUnit.EUR));
+        assertThat(cache.wasCreated(created), is(true));
+
+        // second row, same new ISIN: returns the same object, still "created"
+        var again = cache.lookup("US0378331005", null, null, "Apple Inc.",
+                        () -> new Security(null, CurrencyUnit.EUR));
+        assertThat(again, is(created));
+        assertThat(cache.wasCreated(again), is(true));
     }
 }

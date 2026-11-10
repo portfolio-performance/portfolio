@@ -1,0 +1,65 @@
+PDFBox Version: 3.0.7
+Portfolio Performance Version: 0.87.0
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+Consorsbank • 90318 Nürnberg
+Depotnummer 0123456789
+1504753979/00
+Vorname Nachname
+Adress Str. 1
+01234 Stadt Vermerk der Bank 2000
+02
+ORDERABRECHNUNG
+VERKAUF AM 25.11.2020  UM 10:55:28 INL.AUSSERBOERSLICH NR. 182034228.001
+Bezeichnung WKN ISIN
+3,65 % GRIECHENLAND 12-32 10       24.FEB A1G1UK GR0133010232
+Einheit Umsatz Fälligkeit
+EUR 160,00000 Letzte Fälligkeit 24.02.2032
+Kurs 130,791000  % FRANCO COURTAGE  
+Kurswert EUR 209,27
+Stückzins    Zinsvaluta    26.11.2020    277    Tage EUR 4,42
+Provision EUR 5,00
+Grundgebühr EUR 4,95
+KAPST 25,00% EUR 34,51
+SOLZ 5,50% EUR 1,89
+Wert 27.11.2020 EUR 167,34
+zugunsten Konto-Nr. 8291948001
+Bestand zulasten Girosammelverwahrung 
+CBF 2126
+JAHRESSTEUERBESCHEINIGUNG FOLGT
+Limitkurs  130,791000 %
+Beratungsfreies Geschäft
+Hinweis für Orderabrechnungen und Depotbuchungsanzeigen:
+Einwendungen wegen Unrichtigkeit oder Unvollständigkeit dieser Mitteilung müssen unverzüglich erhoben werden, vgl. Nummer B. Ziffer I. 11 (4) und (5) der
+Allgemeinen Geschäftsbedingungen (AGB Banken).
+Machen Sie Ihre Einwendungen in Textform geltend, genügt die Absendung innerhalb der Sechs-Wochen-Frist an die Consorsbank oder per Fax oder Mail an die
+unten angegebenen Adressen. Das Unterlassen rechtzeitiger Einwendungen gilt als Genehmigung.
+Consorsbank ist eine eingetragene Marke der BNP Paribas S.A. Niederlassung Deutschland (AG nach franz. Recht).
+Standort Nürnberg: Bahnhofstraße 55, 90402 Nürnberg, HRB Nürnberg 31129, USt-IdNr. DE191528929
+Fon +49 (0) 911 / 369-30 00, Fax +49 (0) 911 / 369-10 00, info@consorsbank.de, www.consorsbank.de
+Sitz der BNP Paribas S.A.: 16, boulevard des Italiens, 75009 Paris, Frankreich, Registergericht: R.C.S. Paris 662 042 449
+Président du Conseil d‘Administration (Präsident des Verwaltungsrates): Jean Lemierre, Directeur Général (Generaldirektor): Jean-Laurent Bonnafé
+Seite 2 zu Orderabrechnung Nr. 182034228.001 vom 25.11.2020 Depotnummer 0123456789
+Infos bei Gewinn Aktien/ Wertpapiere ungleich Aktien
+Veräusserungsgewinn nach Differenzmethode EUR 133,60
+Erhaltene Kapst-pflichtige Stückzinsen EUR 4,42
+Summe ergibt
+KAPST-pflichtige Kapitalerträge EUR 138,02
+Mit Sparerpauschbetrag verrechnet EUR 0,00
+Bemessungsgrundlage für KAPST vor QUST EUR 138,02
+An Kapitalertrag anrechenbare. ausl. QUST 0,00*4 EUR 0,00
+Bemessungsgrundlage für KAPST EUR 138,02
+Bemessungsgrundlage für KAPST anteilig 100,00% EUR 138,02
+Salden nach dem Geschäft
+Verrechnungstopf Aktien nach dem Geschäft EUR 123,42
+Verrechnungstopf Allg. nach dem Geschäft EUR 0,00
+Verrechnungstopf QUST nach dem Geschäft EUR 0,00
+Sparerpauschbetrag nach dem Geschäft EUR 0,00
+Es wurde keine Kirchensteuer einbehalten.
+ 
+Consorsbank ist eine eingetragene Marke der BNP Paribas S.A. Niederlassung Deutschland (AG nach franz. Recht).
+Standort Nürnberg: Bahnhofstraße 55, 90402 Nürnberg, HRB Nürnberg 31129, USt-IdNr. DE191528929
+Fon +49 (0) 911 / 369-30 00, Fax +49 (0) 911 / 369-10 00, info@consorsbank.de, www.consorsbank.de
+Sitz der BNP Paribas S.A.: 16, boulevard des Italiens, 75009 Paris, Frankreich, Registergericht: R.C.S. Paris 662 042 449
+Président du Conseil d‘Administration (Präsident des Verwaltungsrates): Jean Lemierre, Directeur Général (Generaldirektor): Jean-Laurent Bonnafé
+

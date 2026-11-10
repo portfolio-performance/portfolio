@@ -6,6 +6,7 @@ import static name.abuchen.portfolio.util.TextUtil.trim;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
+import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
@@ -36,6 +37,7 @@ public class UmweltbankAGPDFExtractor extends AbstractPDFExtractor
         addBankIdentifier("UmweltBank AG");
 
         addBuySellTransaction();
+        addAccountStatementTransaction();
     }
 
     @Override
@@ -135,6 +137,113 @@ public class UmweltbankAGPDFExtractor extends AbstractPDFExtractor
                         .wrap(BuySellEntryItem::new);
 
         addFeesSectionsTransaction(pdfTransaction, type);
+    }
+
+    private void addAccountStatementTransaction()
+    {
+        final var type = new DocumentType("[A-Z]{3}\\-Konto Kontonummer", //
+                        documentContext -> documentContext //
+                                        // @formatter:off
+                                        // EUR-Konto Kontonummer 0050413
+                                        // @formatter:on
+                                        .section("currency") //
+                                        .match("^(?<currency>[A-Z]{3})\\-Konto Kontonummer.*$") //
+                                        .assign((ctx, v) -> ctx.put("currency", asCurrencyCode(v.get("currency"))))
+
+                                        // @formatter:off
+                                        // Laufertorgraben 6 * 90489 Nürnberg K o n to a u s z u g Nr.  4/2026
+                                        // @formatter:on
+                                        .section("year") //
+                                        .match("^.* Nr\\.[\\s]{1,}[\\d]{1,2}\\/(?<year>[\\d]{4})$") //
+                                        .assign((ctx, v) -> ctx.put("year", v.get("year"))));
+        this.addDocumentTyp(type);
+
+        // @formatter:off
+        // 10.04. 10.04. Dauerauftragsgutschr 200,00 H
+        //  ZeeWke NSCcip
+        //  für Anleihe-Sparplan zum 15. monatlich
+        // @formatter:on
+        var depositRemovalBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\. [\\d]{2}\\.[\\d]{2}\\. Dauerauftragsgutschr[\\s]{1,}[\\.,\\d]+ [S|H]$");
+        type.addBlock(depositRemovalBlock);
+        depositRemovalBlock.set(new Transaction<AccountTransaction>()
+
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.DEPOSIT))
+
+                        .section("date", "amount", "type") //
+                        .documentContext("currency", "year") //
+                        .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.) [\\d]{2}\\.[\\d]{2}\\. Dauerauftragsgutschr[\\s]{1,}(?<amount>[\\.,\\d]+) (?<type>[S|H])$") //
+                        .assign((t, v) -> {
+                            // @formatter:off
+                            // Is type --> "S" change from DEPOSIT to REMOVAL
+                            // @formatter:on
+                            if ("S".equals(v.get("type")))
+                                t.setType(AccountTransaction.Type.REMOVAL);
+
+                            t.setDateTime(asDate(v.get("date") + v.get("year")));
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setCurrencyCode(v.get("currency"));
+                            t.setNote("Dauerauftragsgutschrift");
+                        })
+
+                        .wrap(TransactionItem::new));
+
+        // @formatter:off
+        // 17.04. 17.04. Effekten  200,00 S
+        //  UmweltBank AG
+        //  WERTPAPIERABRECHNUNG
+        //  KAUF WKN A41CHM / LU3093383670
+        //  UMWELTBA-GR.SO.BD EO PEOD DEPOTNR.: 64666451
+        //  HANDELSTAG 15.04.2026 MENGE 20,0224
+        //  KURS 9,98880000 AUFTRAGSNR. 9028797680
+        // @formatter:on
+        var buyBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\. [\\d]{2}\\.[\\d]{2}\\. Effekten[\\s]{1,}[\\.,\\d]+ S$");
+        type.addBlock(buyBlock);
+        buyBlock.set(new Transaction<BuySellEntry>()
+
+                        .subject(() -> new BuySellEntry(PortfolioTransaction.Type.BUY))
+
+                        // @formatter:off
+                        // KAUF WKN A41CHM / LU3093383670
+                        // UMWELTBA-GR.SO.BD EO PEOD DEPOTNR.: 64666451
+                        // @formatter:on
+                        .section("wkn", "isin", "name") //
+                        .documentContext("currency") //
+                        .match("^([\\s]+)?KAUF[\\s]{1,}WKN (?<wkn>[A-Z0-9]{6}) \\/ (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
+                        .match("^([\\s]+)?(?<name>.*)[\\s]{1,}DEPOTNR\\.:[\\s]{1,}[\\d]+$") //
+                        .assign((t, v) -> {
+                            v.put("name", trim(v.get("name")));
+                            t.setSecurity(getOrCreateSecurity(v));
+                        })
+
+                        // @formatter:off
+                        // HANDELSTAG 15.04.2026 MENGE 20,0224
+                        // @formatter:on
+                        .section("date", "shares") //
+                        .match("^([\\s]+)?HANDELSTAG (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})[\\s]{1,}MENGE[\\s]{1,}(?<shares>[\\.,\\d]+)$") //
+                        .assign((t, v) -> {
+                            t.setDate(asDate(v.get("date")));
+                            t.setShares(asShares(v.get("shares")));
+                        })
+
+                        // @formatter:off
+                        // 17.04. 17.04. Effekten  200,00 S
+                        // @formatter:on
+                        .section("amount") //
+                        .documentContext("currency") //
+                        .match("^[\\d]{2}\\.[\\d]{2}\\. [\\d]{2}\\.[\\d]{2}\\. Effekten[\\s]{1,}(?<amount>[\\.,\\d]+) S$") //
+                        .assign((t, v) -> {
+                            t.setCurrencyCode(v.get("currency"));
+                            t.setAmount(asAmount(v.get("amount")));
+                        })
+
+                        // @formatter:off
+                        // KURS 9,98880000 AUFTRAGSNR. 9028797680
+                        // @formatter:on
+                        .section("note").optional() //
+                        .match("^([\\s]+)?KURS [\\.,\\d]+[\\s]{1,}AUFTRAGSNR\\.[\\s]{1,}(?<note>.*)$") //
+                        .assign((t, v) -> t.setNote("Auftragsnummer " + trim(v.get("note"))))
+
+                        .wrap(BuySellEntryItem::new));
     }
 
     private <T extends Transaction<?>> void addFeesSectionsTransaction(T transaction, DocumentType type)
