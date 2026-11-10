@@ -13,6 +13,7 @@ import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Event;
 
 import name.abuchen.portfolio.ui.Images;
@@ -98,11 +99,19 @@ public class ChartToolsManager
     }
 
     public static final int PADDING = 5;
+
+    /**
+     * minimum delay between two repaints while a tool continuously updates its
+     * overlay, roughly one repaint per frame
+     */
+    private static final int REPAINT_DELAY = 16; // msec
+
     private ChartTools activeTool = ChartTools.NONE;
     private ChartTool currentTool = null;
     private Color color = Colors.BLACK;
     private TimelineChart chart;
     private ArrayList<Pair<ChartTools, IAction>> buttons = new ArrayList<>();
+    private boolean repaintPending = false;
 
     public ChartToolsManager(TimelineChart chart)
     {
@@ -144,6 +153,35 @@ public class ChartToolsManager
             return;
 
         currentTool.paintControl(e);
+    }
+
+    /**
+     * Requests a repaint of the plot area: the tools draw their overlay on top
+     * of the chart, so a repaint of the plot area is sufficient. Requests are
+     * coalesced until the next frame. Without it every mouse move event
+     * triggers a full repaint of the whole chart: all series, the grid and the
+     * labels of all axes are drawn again, and the redraw() of swtchart's Chart
+     * even does so twice. That makes the tools feel sluggish.
+     */
+    void requestRepaint()
+    {
+        if (repaintPending)
+            return;
+
+        repaintPending = true;
+        chart.getDisplay().timerExec(REPAINT_DELAY, this::repaintPlotArea);
+    }
+
+    private void repaintPlotArea()
+    {
+        repaintPending = false;
+
+        if (chart.isDisposed())
+            return;
+
+        Control control = chart.getPlotArea().getControl();
+        if (!control.isDisposed())
+            control.redraw();
     }
 
     public Color getColor()
