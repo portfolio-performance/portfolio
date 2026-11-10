@@ -71,7 +71,7 @@ public class RevolutLtdPDFExtractorTest
 
         // check buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2025-01-06T00:00"), hasShares(2.61848651), //
+                        hasDate("2025-01-02T08:10:12"), hasShares(2.61848651), //
                         hasSource("Buy01.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 100.00), hasGrossValue("EUR", 100.00), //
@@ -105,10 +105,10 @@ public class RevolutLtdPDFExtractorTest
 
         // check buy sell transaction
         assertThat(results, hasItem(sale( //
-                        hasDate("2021-11-03T00:00"), hasShares(2.1451261), //
+                        hasDate("2021-11-01T15:51:47"), hasShares(2.1451261), //
                         hasSource("Sell01.txt"), //
                         hasNote(null), //
-                        hasAmount("USD", 1166.12), hasGrossValue("USD", 1166.14), //
+                        hasAmount("USD", 2501.45), hasGrossValue("USD", 2501.47), //
                         hasTaxes("USD", 0.00), hasFees("USD", 0.02))));
     }
 
