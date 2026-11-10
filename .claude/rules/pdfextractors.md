@@ -79,8 +79,20 @@ Beside general good practices for regular expressions, keep in mind:
 | Amount | 751,68 | `[\\.,\\d]+` or `[\\.\\d]+,[\\d]{2}` |
 | Amount | 74'120.00 | `[\\.'\\d]+` |
 | Amount | 20 120.00 | `[\\.\\d\\s]+` |
+| Amount directly after free text (e.g. a security name) | FUND 2030 1 181,76 | `[\\d]{1,3}(\\s[\\d]{3})*,[\\d]{2}` |
 | Currency | EUR | `[A-Z]{3}` |
 | Currency Symbol | € or $ | `\\p{Sc}` |
+
+**Amounts directly after free text** — when a free-text value such as a security name is directly followed by an amount with space grouping, do not use `[\\.\\d\\s]+` at that boundary: a name ending with a number (e.g. `AVENIR RETRAITE 2030 236,35`) would be merged into the amount. Use the strict pattern `[\\d]{1,3}(\\s[\\d]{3})*,[\\d]{2}` instead. If the boundary is still ambiguous (a name ending with a 1–3 digit number, e.g. `S&P 500 236,35`), resolve it with a plausibility check against other values of the same line (e.g. shares × price) — see `NatixisInterepargnePDFExtractor.assignProfitSharing()`.
+
+## Securities without identifier
+
+Some documents contain only the security name, without ISIN, WKN or ticker symbol (e.g. French employee savings plans).
+
+- Create the security with name and currency only (`getOrCreateSecurity(v)`). Do not invent or hard-code identifiers (e.g. a name-to-ISIN mapping table).
+- Existing securities are then matched by the exact name (case-sensitive). Always extract the name verbatim from the transaction line — never from summaries or holdings overviews, which may spell the same security differently.
+- In the import dialog, new securities without identifier are marked with a warning by `CheckSecurityIdentifierAction`, so the user can check manually and assign an existing security via "Use existing security...". This check is intentionally not part of `AssertImportActions`, therefore extractor tests are not affected.
+- In tests, assert the missing identifiers explicitly: `hasIsin(null), hasWkn(null), hasTicker(null)`.
 
 ## Conventions
 
