@@ -5,6 +5,8 @@ import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetGros
 import static name.abuchen.portfolio.util.TextUtil.concatenate;
 import static name.abuchen.portfolio.util.TextUtil.trim;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import name.abuchen.portfolio.datatransfer.ExtractorUtils;
@@ -17,9 +19,36 @@ import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.money.Money;
 
+/**
+ * @formatter:off
+ * @implNote Fondsdepot Bank provides two separate documents for a reinvested distribution.
+ *           The distribution (Ausschüttung) with the ex-date and the reinvestment (Wiederanlage) with the payment date.
+ *
+ *           The distribution document only contains the document date, but not the payment date.
+ *           In postProcessing, the date of the distribution is replaced by the date of the reinvestment.
+ *           The ex-date of the distribution is retained.
+ *
+ *           Both transactions are only linked if the assignment is unique, i.e. exactly one distribution
+ *           matches exactly one reinvestment, and all of the following criteria are met:
+ *              - the distribution is reinvested (Wiederanlagebetrag)
+ *              - same security
+ *              - reinvestment amount (Wiederanlagebetrag) equals investment amount (Anlagebetrag)
+ *              - shares of the distribution equal the shares before the reinvestment (Bestand alt)
+ *              - date of the reinvestment is between the ex-date and the document date of the distribution
+ *
+ *           Otherwise both transactions are kept unchanged.
+ * @formatter:on
+ */
 @SuppressWarnings("nls")
 public class FondsdepotBankPDFExtractor extends AbstractPDFExtractor
 {
+    private static record DividendReinvestmentPair(Item dividend, Item reinvestment)
+    {
+    }
+
+    private static final String ATTRIBUTE_REINVESTED_DIVIDEND = "reinvested_dividend";
+    private static final String ATTRIBUTE_REINVESTMENT_SHARES_BEFORE = "reinvestment_shares_before";
+
     public FondsdepotBankPDFExtractor(Client client)
     {
         super(client);
@@ -179,9 +208,30 @@ public class FondsdepotBankPDFExtractor extends AbstractPDFExtractor
                         .match("^(?<note2>Ertrag) .*$") //
                         .assign((t, v) -> t.setNote(concatenate(v.get("note1"), v.get("note2"), " ")))
 
+                        // @formatter:off
+                        // The shares before the reinvestment (Bestand alt) are used
+                        // in postProcessing to link the reinvestment with the distribution.
+                        //
+                        // Wiederanlage 19,81 EUR 11.11.2025 25,5500 EUR +0,775
+                        // Ertrag 0,00 EUR 0,00 EUR 157,501
+                        // @formatter:on
+                        .section("sharesBefore").optional() //
+                        .match("^Wiederanlage [\\.,\\d]+ [A-Z]{3} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\.,\\d]+ [A-Z]{3} \\+[\\.,\\d]+$") //
+                        .match("^Ertrag (\\-)?[\\.,\\d]+ [A-Z]{3} .* (?<sharesBefore>[\\.,\\d]+)$") //
+                        .assign((t, v) -> v.getTransactionContext().putString(ATTRIBUTE_REINVESTMENT_SHARES_BEFORE, v.get("sharesBefore")))
+
                         .conclude(ExtractorUtils.fixGrossValueBuySell())
 
-                        .wrap(BuySellEntryItem::new);
+                        .wrap((t, ctx) -> {
+                            var item = new BuySellEntryItem(t);
+
+                            // Store attribute in item data map
+                            var sharesBefore = ctx.getString(ATTRIBUTE_REINVESTMENT_SHARES_BEFORE);
+                            if (sharesBefore != null)
+                                item.setData(ATTRIBUTE_REINVESTMENT_SHARES_BEFORE, asShares(sharesBefore));
+
+                            return item;
+                        });
 
         addSellTransaction(type);
         addSellForCustodyFeeTransaction(type);
@@ -467,6 +517,9 @@ public class FondsdepotBankPDFExtractor extends AbstractPDFExtractor
                         })
 
                         // @formatter:off
+                        // The distribution is reinvested. This is used in postProcessing
+                        // to link the distribution with the reinvestment.
+                        //
                         // Wiederanlagebetrag 19,81
                         // @formatter:on
                         .section("amount") //
@@ -475,9 +528,18 @@ public class FondsdepotBankPDFExtractor extends AbstractPDFExtractor
                         .assign((t, v) -> {
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(v.get("currency"));
+
+                            v.getTransactionContext().putBoolean(ATTRIBUTE_REINVESTED_DIVIDEND, true);
                         })
 
-                        .wrap(TransactionItem::new);
+                        .wrap((t, ctx) -> {
+                            var item = new TransactionItem(t);
+
+                            // Store attribute in item data map
+                            item.setData(ATTRIBUTE_REINVESTED_DIVIDEND, ctx.getBoolean(ATTRIBUTE_REINVESTED_DIVIDEND));
+
+                            return item;
+                        });
 
         addTaxesSectionsTransaction(pdfTransaction, type);
 
@@ -638,5 +700,109 @@ public class FondsdepotBankPDFExtractor extends AbstractPDFExtractor
             entry.setAmount(entry.getPortfolioTransaction().getAmount() - refund);
         else if (t instanceof AccountTransaction tx)
             tx.setAmount(tx.getAmount() - refund);
+    }
+
+    @Override
+    public void postProcessing(List<Item> items)
+    {
+        // Filter reinvested dividend transactions with ex-date
+        var dividendTransactionList = items.stream() //
+                        .filter(TransactionItem.class::isInstance) //
+                        .filter(i -> i.getSubject() instanceof AccountTransaction) //
+                        .filter(i -> AccountTransaction.Type.DIVIDENDS //
+                                        .equals(((AccountTransaction) i.getSubject()).getType())) //
+                        .filter(i -> Boolean.TRUE.equals(i.getData(ATTRIBUTE_REINVESTED_DIVIDEND))) //
+                        .filter(i -> ((AccountTransaction) i.getSubject()).getExDate() != null) //
+                        .filter(i -> i.getSecurity() != null) //
+                        .toList();
+
+        // Filter reinvestment transactions with shares before the reinvestment
+        var reinvestmentTransactionList = items.stream() //
+                        .filter(BuySellEntryItem.class::isInstance) //
+                        .filter(i -> i.getSubject() instanceof BuySellEntry) //
+                        .filter(i -> PortfolioTransaction.Type.BUY //
+                                        .equals(((BuySellEntry) i.getSubject()).getPortfolioTransaction().getType())) //
+                        .filter(i -> i.getData(ATTRIBUTE_REINVESTMENT_SHARES_BEFORE) != null) //
+                        .filter(i -> i.getSecurity() != null) //
+                        .toList();
+
+        // @formatter:off
+        // First, all pairs are determined and only then the dates are adjusted.
+        // Otherwise an adjusted date would influence the matching of the following pairs.
+        //
+        // A pair is only formed if the assignment is unique in both directions:
+        // the dividend matches exactly one reinvestment and this reinvestment matches exactly one dividend.
+        // @formatter:on
+        var pairs = new ArrayList<DividendReinvestmentPair>();
+
+        for (Item dividend : dividendTransactionList)
+        {
+            var reinvestments = reinvestmentTransactionList.stream() //
+                            .filter(r -> isMatchingDividendReinvestmentPair(dividend, r)) //
+                            .toList();
+
+            if (reinvestments.size() != 1)
+                continue;
+
+            var reinvestment = reinvestments.get(0);
+
+            var dividends = dividendTransactionList.stream() //
+                            .filter(d -> isMatchingDividendReinvestmentPair(d, reinvestment)) //
+                            .count();
+
+            if (dividends != 1)
+                continue;
+
+            pairs.add(new DividendReinvestmentPair(dividend, reinvestment));
+        }
+
+        // @formatter:off
+        // The distribution document only contains the document date.
+        // The payment date is the date of the reinvestment, the ex-date is retained.
+        // @formatter:on
+        for (DividendReinvestmentPair pair : pairs)
+        {
+            var dividendTransaction = (AccountTransaction) pair.dividend().getSubject();
+            var reinvestmentTransaction = ((BuySellEntry) pair.reinvestment().getSubject()).getPortfolioTransaction();
+
+            dividendTransaction.setDateTime(reinvestmentTransaction.getDateTime());
+        }
+    }
+
+    /**
+     * @formatter:off
+     * Checks if the dividend and the reinvestment belong together.
+     *
+     * Both transactions belong together, if
+     *    - the security is the same,
+     *    - the reinvestment amount (Wiederanlagebetrag) equals the investment amount (Anlagebetrag),
+     *    - the shares of the dividend equal the shares before the reinvestment (Bestand alt) and
+     *    - the date of the reinvestment is between the ex-date and the document date of the dividend.
+     *
+     * @param dividend      The dividend item.
+     * @param reinvestment  The reinvestment item.
+     * @return true, if the dividend and the reinvestment belong together.
+     * @formatter:on
+     */
+    private boolean isMatchingDividendReinvestmentPair(Item dividend, Item reinvestment)
+    {
+        var dividendTransaction = (AccountTransaction) dividend.getSubject();
+        var reinvestmentTransaction = ((BuySellEntry) reinvestment.getSubject()).getPortfolioTransaction();
+
+        if (dividend.getSecurity() != reinvestment.getSecurity())
+            return false;
+
+        if (!dividendTransaction.getMonetaryAmount().equals(reinvestmentTransaction.getMonetaryAmount()))
+            return false;
+
+        var sharesBefore = (Long) reinvestment.getData(ATTRIBUTE_REINVESTMENT_SHARES_BEFORE);
+        if (sharesBefore == null || dividendTransaction.getShares() != sharesBefore)
+            return false;
+
+        var exDate = dividendTransaction.getExDate().toLocalDate();
+        var documentDate = dividendTransaction.getDateTime().toLocalDate();
+        var reinvestmentDate = reinvestmentTransaction.getDateTime().toLocalDate();
+
+        return !reinvestmentDate.isBefore(exDate) && !reinvestmentDate.isAfter(documentDate);
     }
 }
