@@ -67,7 +67,7 @@ public class FirstradeSecuritiesIncPDFExtractorTest
 
         // check buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2022-07-01T00:00"), hasShares(5.00), //
+                        hasDate("2022-06-29T00:00"), hasShares(5.00), //
                         hasSource("Buy01.txt"), //
                         hasNote(null), //
                         hasAmount("USD", 371.65), hasGrossValue("USD", 371.65), //
@@ -101,7 +101,7 @@ public class FirstradeSecuritiesIncPDFExtractorTest
 
         // check buy sell transaction
         assertThat(results, hasItem(sale( //
-                        hasDate("2021-11-24T00:00"), hasShares(1.00), //
+                        hasDate("2021-11-22T00:00"), hasShares(1.00), //
                         hasSource("Sale01.txt"), //
                         hasNote(null), //
                         hasAmount("USD", 1156.02), hasGrossValue("USD", 1156.03), //
@@ -129,13 +129,13 @@ public class FirstradeSecuritiesIncPDFExtractorTest
 
         // check security
         assertThat(results, hasItem(security( //
-                        hasIsin(null), hasWkn("8SFXJX7"), hasTicker("PYPL"), //
-                        hasName("PAYPAL HOLDINGS INC"), //
+                        hasIsin(null), hasWkn("8SFXJX7"), hasTicker(null), //
+                        hasName("PUT PYPL 11/26/21 190 PAYPAL HOLDINGS INC"), //
                         hasCurrencyCode("USD"))));
 
         // check buy sell transaction
         assertThat(results, hasItem(sale( //
-                        hasDate("2021-11-24T00:00"), hasShares(1.00), //
+                        hasDate("2021-11-23T00:00"), hasShares(1.00), //
                         hasSource("Sale02.txt"), //
                         hasNote(null), //
                         hasAmount("USD", 439.97), hasGrossValue("USD", 440.00), //
