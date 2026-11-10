@@ -27,6 +27,7 @@ import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Money;
+import name.abuchen.portfolio.snapshot.AccruedInterestScenario;
 
 /**
  * This is intended to be unit test for Trade (and by extension, TradeCollector)
@@ -420,5 +421,22 @@ public class TradeTest
         assertThat(trade.isClosed(), is(false));
         assertThat(trade.getEntryValue(), is(Money.of(CurrencyUnit.EUR, amountOf(1000))));
         assertThat(trade.getExitValue(), is(Money.of(CurrencyUnit.EUR, amountOf(1010))));
+    }
+
+    @Test
+    public void testTradeWithAccruedInterest() throws TradeCollectorException
+    {
+        var scenario = new AccruedInterestScenario();
+
+        List<Trade> trades = new TradeCollector(scenario.client, new TestCurrencyConverter()).collect(scenario.bond);
+        assertThat(trades.size(), is(1));
+
+        // accrued interest is income, not part of the trade
+        Trade trade = trades.get(0);
+        assertThat(trade.isClosed(), is(true));
+        assertThat(trade.getEntryValue(), is(AccruedInterestScenario.eur(1005)));
+        assertThat(trade.getExitValue(), is(AccruedInterestScenario.eur(1005)));
+        assertThat(trade.getProfitLoss(), is(AccruedInterestScenario.eur(0)));
+        assertThat(trade.getProfitLossWithoutTaxesAndFees(), is(AccruedInterestScenario.eur(10)));
     }
 }

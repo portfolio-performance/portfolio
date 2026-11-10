@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.money.CurrencyConverter;
@@ -43,6 +44,10 @@ import name.abuchen.portfolio.util.Dates;
          * Rate of return for this payment.
          */
         public final double rateOfReturn;
+        /**
+         * Accrued interest (in term currency) offset against this payment.
+         */
+        private long accruedInterest;
 
         /**
          * Constructs an instance.
@@ -98,16 +103,45 @@ import name.abuchen.portfolio.util.Dates;
             }
             this.rateOfReturn = rr;
         }
+
+        /**
+         * Rate of return including the accrued interest offset against this
+         * payment. The rate of return is the payment divided by the cost (or
+         * the price), hence it is scaled by the adjusted amount.
+         */
+        public double getRateOfReturnInclAccruedInterest()
+        {
+            if (accruedInterest == 0)
+                return rateOfReturn;
+            return rateOfReturn * (amount.getAmount() + accruedInterest) / amount.getAmount();
+        }
+    }
+
+    /**
+     * Accrued interest of a purchase (negative) or sale (positive).
+     */
+    private record AccruedInterest(LocalDate date, long amount)
+    {
     }
 
     private final List<Payment> payments = new ArrayList<>();
+    private final List<AccruedInterest> accruedInterestItems = new ArrayList<>();
     private Periodicity periodicity;
     private MutableMoney sum;
+
+    /**
+     * Accrued interest paid with purchases (negative) and received with sales
+     * (positive). It is part of the interest income of the security, but not
+     * a payment (it does not change periodicity and number of payments).
+     */
+    private MutableMoney accruedInterest;
     private double rateOfReturnPerYear;
 
     @Override
     public void finish(CurrencyConverter converter, List<CalculationLineItem> lineItems)
     {
+        sum.add(accruedInterest.toMoney());
+
         // no payments result in no periodicity
         if (payments.isEmpty())
         {
@@ -120,6 +154,8 @@ import name.abuchen.portfolio.util.Dates;
 
         // first sort
         Collections.sort(payments, (r, l) -> r.date.compareTo(l.date));
+
+        offsetAccruedInterest();
 
         // get first and last payment
         LocalDate firstPayment = payments.get(0).date;
@@ -134,7 +170,7 @@ import name.abuchen.portfolio.util.Dates;
         {
             // add to total sum
             sum.add(p.amount);
-            sumRateOfReturn += p.rateOfReturn;
+            sumRateOfReturn += p.getRateOfReturnInclAccruedInterest();
         }
 
         int years = 0;
@@ -222,6 +258,45 @@ import name.abuchen.portfolio.util.Dates;
         }
     }
 
+    /**
+     * Adjusts the rate of return of the payments by the accrued interest: the
+     * accrued interest paid with a purchase reduces the first payment on or
+     * after the purchase, the accrued interest received with a sale increases
+     * the last payment on or before the sale. Accrued interest without such a
+     * payment does not change the rate of return. The amount of the payments
+     * (and therefore periodicity and significance) is not changed.
+     */
+    private void offsetAccruedInterest()
+    {
+        for (AccruedInterest item : accruedInterestItems)
+        {
+            Payment target = null;
+
+            if (item.amount() < 0)
+            {
+                for (Payment p : payments)
+                {
+                    if (!p.date.isBefore(item.date()) && !p.amount.isZero())
+                    {
+                        target = p;
+                        break;
+                    }
+                }
+            }
+            else
+            {
+                for (Payment p : payments)
+                {
+                    if (!p.date.isAfter(item.date()) && !p.amount.isZero())
+                        target = p;
+                }
+            }
+
+            if (target != null)
+                target.accruedInterest += item.amount();
+        }
+    }
+
     public DividendCalculationResult getResult()
     {
         return new DividendCalculationResult(sum.toMoney(), getLastDividendPayment(), payments.size(), periodicity,
@@ -263,6 +338,7 @@ import name.abuchen.portfolio.util.Dates;
     {
         super.setTermCurrency(termCurrency);
         this.sum = MutableMoney.of(termCurrency);
+        this.accruedInterest = MutableMoney.of(termCurrency);
     }
 
     @Override
@@ -270,5 +346,21 @@ import name.abuchen.portfolio.util.Dates;
     {
         // construct new payment and add it to the list
         payments.add(new Payment(converter, t, getSecurity()));
+    }
+
+    @Override
+    public void visit(CurrencyConverter converter, CalculationLineItem.TransactionItem item, PortfolioTransaction t)
+    {
+        Money interest = t.getAccruedInterest(converter);
+        if (interest.isZero())
+            return;
+
+        if (t.getType().isPurchase())
+            accruedInterest.subtract(interest);
+        else
+            accruedInterest.add(interest);
+
+        long signed = t.getType().isPurchase() ? -interest.getAmount() : interest.getAmount();
+        accruedInterestItems.add(new AccruedInterest(t.getDateTime().toLocalDate(), signed));
     }
 }
