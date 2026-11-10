@@ -155,6 +155,12 @@ public class ManualTransactionEntryPage extends AbstractWizardPage
         // #disposeControl)
         if (pdfViewer != null)
             pdfViewer.initialize();
+
+        // the control is recreated before the previous page stores its column
+        // widths, therefore apply them again (the widths of this page are
+        // stored when the control is disposed in #afterPage)
+        if (itemsTable != null)
+            itemsTable.loadColumnWidths();
     }
 
     @Override
