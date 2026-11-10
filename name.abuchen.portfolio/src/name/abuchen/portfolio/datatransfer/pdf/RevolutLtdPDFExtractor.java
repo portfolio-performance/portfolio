@@ -3,6 +3,7 @@ package name.abuchen.portfolio.datatransfer.pdf;
 import static name.abuchen.portfolio.util.TextUtil.replaceMultipleBlanks;
 import static name.abuchen.portfolio.util.TextUtil.trim;
 
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -66,7 +67,6 @@ public class RevolutLtdPDFExtractor extends AbstractPDFExtractor
                         .oneOf( //
                                         // @formatter:off
                                         // TSLA Tesla US88160R1014 Sell 2.1451261 $1,166.12 03 Nov 2021
-                                        // Zu Gunsten Konto 12345004 Valuta: 12.05.2017 EUR 75,92
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("tickerSymbol", "name", "isin", "currency") //
@@ -85,27 +85,65 @@ public class RevolutLtdPDFExtractor extends AbstractPDFExtractor
                         // SPPW SPDR MSCI World UCITS ETF (Acc) IE00BFY0GT14 Buy 2.61848651 €38.19 €100 06 Jan 2025
                         // @formatter:on
                         .section("shares") //
-                        .match("^[A-Z0-9]{3,4} .* [A-Z]{2}[A-Z0-9]{9}[0-9] (Sell|Buy) (?<shares>[\\.,\\d]+) .*$") //
+                        .match("^[A-Z0-9]{1,6}(?:\\.[A-Z]{1,4})? .* [A-Z]{2}[A-Z0-9]{9}[0-9] (Sell|Buy) (?<shares>[\\.,\\d]+) .*$") //
                         .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
-                        // @formatter:off
-                        // TSLA Tesla US88160R1014 Sell 2.1451261 $1,166.12 03 Nov 2021
-                        // SPPW SPDR MSCI World UCITS ETF (Acc) IE00BFY0GT14 Buy 2.61848651 €38.19 €100 06 Jan 2025
-                        // @formatter:on
-                        .section("date") //
-                        .match("^[A-Z0-9]{3,4} .* [A-Z]{2}[A-Z0-9]{9}[0-9] (Sell|Buy) .* (?<date>[\\d]{2} .* [\\d]{4})$") //
-                        .assign((t, v) -> t.setDate(asDate(v.get("date"), Locale.UK)))
+                        .oneOf( //
+                                        // @formatter:off
+                                        // Execution details
+                                        // Symbol Company Type Quantity Price Execution time Execution venue
+                                        // TSLA Tesla Sell 2 1,166.121 01 Nov 2021 15:51:47 GMT XOFF
+                                        // SPPW SPDR MSCI World UCITS ETF (Acc) Buy 2.6184865147 €38.19 €100 02 Jan 2025 08:10:12 GMT XOFF
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("date", "time") //
+                                                        .find("Execution details.*") //
+                                                        .match("^.* (Sell|Buy) [\\.,\\d]+ .* (?<date>[\\d]{2} [\\w]{3} [\\d]{4}) (?<time>[\\d]{2}\\:[\\d]{2}\\:[\\d]{2}) GMT.*$") //
+                                                        .assign((t, v) -> t.setDate(asDate(v.get("date"), v.get("time")))),
+                                        // @formatter:off
+                                        // TSLA Tesla US88160R1014 Sell 2.1451261 $1,166.12 03 Nov 2021
+                                        // SPPW SPDR MSCI World UCITS ETF (Acc) IE00BFY0GT14 Buy 2.61848651 €38.19 €100 06 Jan 2025
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("date") //
+                                                        .match("^[A-Z0-9]{1,6}(?:\\.[A-Z]{1,4})? .* [A-Z]{2}[A-Z0-9]{9}[0-9] (Sell|Buy) .* (?<date>[\\d]{2} [\\w]{3} [\\d]{4})$") //
+                                                        .assign((t, v) -> t.setDate(asDate(v.get("date"), Locale.UK))))
 
-                        // @formatter:off
-                        // TSLA Tesla US88160R1014 Sell 2.1451261 $1,166.12 03 Nov 2021
-                        // SPPW SPDR MSCI World UCITS ETF (Acc) IE00BFY0GT14 Buy 2.61848651 €38.19 €100 06 Jan 2025
-                        // @formatter:on
-                        .section("amount", "currency") //
-                        .match("^[A-Z0-9]{3,4} .* [A-Z]{2}[A-Z0-9]{9}[0-9] (Sell|Buy) .* (?<currency>\\p{Sc})(?<amount>[\\.,\\d]+) [\\d]{2} .* [\\d]{4}$") //
-                        .assign((t, v) -> {
-                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                            t.setAmount(asAmount(v.get("amount")));
-                        })
+                        .oneOf( //
+                                        // @formatter:off
+                                        // SPPW SPDR MSCI World UCITS ETF (Acc) IE00BFY0GT14 Buy 2.61848651 €38.19 €100 06 Jan 2025
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("currency", "amount") //
+                                                        .match("^[A-Z0-9]{1,6}(?:\\.[A-Z]{1,4})? .* [A-Z]{2}[A-Z0-9]{9}[0-9] (Sell|Buy) [\\.,\\d]+ \\p{Sc}[\\.,\\d]+ (?<currency>\\p{Sc})(?<amount>[\\.,\\d]+) [\\d]{2} [\\w]{3} [\\d]{4}$") //
+                                                        .assign((t, v) -> {
+                                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                        }),
+                                        // @formatter:off
+                                        // Without a total amount column, the gross value is quantity × price.
+                                        //
+                                        // TSLA Tesla US88160R1014 Sell 2.1451261 $1,166.12 03 Nov 2021
+                                        // Total Fee charged $0.02
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("shares", "currency", "price", "fee") //
+                                                        .match("^[A-Z0-9]{1,6}(?:\\.[A-Z]{1,4})? .* [A-Z]{2}[A-Z0-9]{9}[0-9] (Sell|Buy) (?<shares>[\\.,\\d]+) (?<currency>\\p{Sc})(?<price>[\\.,\\d]+) [\\d]{2} [\\w]{3} [\\d]{4}$") //
+                                                        .match("^Total Fee charged \\p{Sc}(?<fee>[\\.,\\d]+)$") //
+                                                        .assign((t, v) -> {
+                                                            var currency = asCurrencyCode(v.get("currency"));
+                                                            var shares = ExtractorUtils.convertToNumberBigDecimal(v.get("shares"), Values.Share, "en", "UK");
+                                                            var price = ExtractorUtils.convertToNumberBigDecimal(v.get("price"), Values.Share, "en", "UK");
+
+                                                            var gross = Money.of(currency, shares.multiply(price).movePointRight(Values.Amount.precision()) //
+                                                                            .setScale(0, RoundingMode.HALF_UP).longValue());
+                                                            var fee = Money.of(currency, asAmount(v.get("fee")));
+
+                                                            if (PortfolioTransaction.Type.SELL == t.getPortfolioTransaction().getType())
+                                                                t.setMonetaryAmount(gross.subtract(fee));
+                                                            else
+                                                                t.setMonetaryAmount(gross.add(fee));
+                                                        }))
 
                         .wrap(BuySellEntryItem::new);
 
@@ -159,14 +197,14 @@ public class RevolutLtdPDFExtractor extends AbstractPDFExtractor
         // 07/08/2020 07/08/2020 USD CDEP Cash Disbursement - Wallet (USD) 460.85
         // 07/15/2020 07/15/2020 USD CDEP Cash Disbursement - Wallet (USD) 204.15
         // @formatter:on
-        var blockDeposit = new Block("^[\\d]{2}\\/[\\d]{2}\\/[\\d]{4} [\\d]{2}\\/[\\d]{2}\\/[\\d]{4} [\\w]{3} .* Cash Disbursement \\- Wallet \\([\\w]{3}\\) [\\.,\\d]+$");
+        var blockDeposit = new Block("^[\\d]{2}\\/[\\d]{2}\\/[\\d]{4} [\\d]{2}\\/[\\d]{2}\\/[\\d]{4} [A-Z]{3} .* Cash Disbursement \\- Wallet \\([A-Z]{3}\\) [\\.,\\d]+$");
         type.addBlock(blockDeposit);
         blockDeposit.set(new Transaction<AccountTransaction>()
 
                         .subject(() -> new AccountTransaction(AccountTransaction.Type.DEPOSIT))
 
                         .section("date", "currency", "amount") //
-                        .match("^(?<date>[\\d]{2}\\/[\\d]{2}\\/[\\d]{4}) [\\d]{2}\\/[\\d]{2}\\/[\\d]{4} (?<currency>[\\w]{3}) .* Cash Disbursement \\- Wallet \\([\\w]{3}\\) (?<amount>[\\.,\\d]+)$") //
+                        .match("^(?<date>[\\d]{2}\\/[\\d]{2}\\/[\\d]{4}) [\\d]{2}\\/[\\d]{2}\\/[\\d]{4} (?<currency>[A-Z]{3}) .* Cash Disbursement \\- Wallet \\([A-Z]{3}\\) (?<amount>[\\.,\\d]+)$") //
                         .assign((t, v) -> {
                             t.setDateTime(asDate(v.get("date"), Locale.UK));
                             t.setAmount(asAmount(v.get("amount")));
@@ -179,14 +217,14 @@ public class RevolutLtdPDFExtractor extends AbstractPDFExtractor
         // 07/06/2020 07/08/2020 USD BUY V - VISA INC    COM CL A - TRD V B 0.4 at 196.19 Principal. 0.4 196.19 (78.48)
         // 07/13/2020 07/15/2020 USD BUY NET - CLOUDFLARE INC   CL A COM - TRD NET B 1 at 40.59 Agency. 1 40.59 (41.78)
         // @formatter:on
-        var blockBuy = new Block("^[\\d]{2}\\/[\\d]{2}\\/[\\d]{4} [\\d]{2}\\/[\\d]{2}\\/[\\d]{4} [\\w]{3} BUY .* \\- TRD .*$");
+        var blockBuy = new Block("^[\\d]{2}\\/[\\d]{2}\\/[\\d]{4} [\\d]{2}\\/[\\d]{2}\\/[\\d]{4} [A-Z]{3} BUY .* \\- TRD .*$");
         type.addBlock(blockBuy);
         blockBuy.set(new Transaction<BuySellEntry>()
 
                         .subject(() -> new BuySellEntry(PortfolioTransaction.Type.BUY))
 
                         .section("date", "currency", "tickerSymbol", "name", "shares", "amount") //
-                        .match("^(?<date>[\\d]{2}\\/[\\d]{2}\\/[\\d]{4}) [\\d]{2}\\/[\\d]{2}\\/[\\d]{4} (?<currency>[\\w]{3}) BUY (?<tickerSymbol>[A-Z0-9]{1,6}(?:\\.[A-Z]{1,4})?) \\- (?<name>.*) \\- TRD .* (?<shares>[\\.,\\d]+) [\\.,\\d]+ \\((?<amount>[\\.,\\d]+)\\)$") //
+                        .match("^(?<date>[\\d]{2}\\/[\\d]{2}\\/[\\d]{4}) [\\d]{2}\\/[\\d]{2}\\/[\\d]{4} (?<currency>[A-Z]{3}) BUY (?<tickerSymbol>[A-Z0-9]{1,6}(?:\\.[A-Z]{1,4})?) \\- (?<name>.*) \\- TRD .* (?<shares>[\\.,\\d]+) [\\.,\\d]+ \\((?<amount>[\\.,\\d]+)\\)$") //
                         .assign((t, v) -> {
                             v.put("name", trim(replaceMultipleBlanks(v.get("name"))));
 
