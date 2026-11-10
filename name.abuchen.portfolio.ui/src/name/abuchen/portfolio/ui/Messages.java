@@ -1325,6 +1325,7 @@ public class Messages extends NLS
     public static String PrefMsgRestApiTokenShownOnce;
     public static String PrefMsgRestApiUnsavedFiles;
     public static String PrefMyDividends24APIKey;
+    public static String PrefNoteExperimentsRestartRequired;
     public static String PrefNoteIndirectQuotation;
     public static String PrefNoteStoreSettingsNextToFile;
     public static String PrefPortfolioReportAPIKey;

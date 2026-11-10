@@ -21,5 +21,8 @@ public class ExperimentsPreferencePage extends FieldEditorPreferencePage
 
         addField(new CheckboxGroupFieldEditor(UIConstants.Preferences.EXPERIMENTS,
                         Messages.PrefLabelEnableExperimentalFeatures, features, getFieldEditorParent()));
+
+        PreferenceDialogUtil.createNoteComposite(getFieldEditorParent().getFont(), getFieldEditorParent(),
+                        Messages.PrefLabelNote, Messages.PrefNoteExperimentsRestartRequired);
     }
 }

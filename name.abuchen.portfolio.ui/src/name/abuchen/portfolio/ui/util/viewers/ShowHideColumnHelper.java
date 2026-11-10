@@ -1,11 +1,15 @@
 package name.abuchen.portfolio.ui.util.viewers;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.function.Consumer;
+import java.util.function.IntFunction;
+import java.util.function.IntSupplier;
 import java.util.stream.Stream;
 
 import org.eclipse.core.runtime.Platform;
@@ -28,6 +32,8 @@ import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.TreeViewerColumn;
 import org.eclipse.jface.viewers.ViewerColumn;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.ControlListener;
+import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Composite;
@@ -35,15 +41,20 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Item;
 import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.ScrollBar;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
+import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeColumn;
 import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.swt.widgets.Widget;
 
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.preferences.Experiments;
+import name.abuchen.portfolio.ui.theme.ThemePreferences;
 import name.abuchen.portfolio.ui.util.ConfigurationStore;
 import name.abuchen.portfolio.ui.util.ConfigurationStore.ConfigurationStoreOwner;
 import name.abuchen.portfolio.ui.util.ContextMenu;
@@ -157,6 +168,352 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
             // labels, but not Windows
             return Platform.OS_WIN32.equals(Platform.getOS()) ? TextUtil.wordwrap(text) : text;
         }
+    }
+
+    /**
+     * Returns the logical label of a column, i.e. the label without any line break
+     * inserted for the two-line header display. Use this instead of
+     * {@link Item#getText()} wherever the label is consumed as data - for example
+     * when exporting to CSV - so that a wrapped header never leaks a line break
+     * into the output.
+     */
+    public static String getColumnLabel(Item column)
+    {
+        var label = (String) column.getData(WRAP_LABEL_KEY);
+        return label != null ? label : column.getText();
+    }
+
+    /**
+     * Re-applies the two-line header wrap after the label of a column has been
+     * changed. Does nothing unless the wrap is active for this column, so callers
+     * do not need to know whether the feature is enabled.
+     */
+    private static void reflowHeader(Item column)
+    {
+        if (column.getData(REFLOW_KEY) instanceof Runnable reflow)
+            reflow.run();
+    }
+
+    /**
+     * Updates the height of the header after a label has been set directly or
+     * columns have been removed. The reflow updates it only if it changes a
+     * label.
+     */
+    private void updateHeaderHeight()
+    {
+        if (new Experiments().isEnabled(Experiments.Feature.NOV26_WRAP_COLUMN_HEADERS))
+            WindowsHeaderWrap.update(policy.getViewer().getControl());
+    }
+
+    /**
+     * Returns the line by which SWT should measure the header when it fits the
+     * column after a double click on the divider: the longer line of the most
+     * balanced two-line split of the label. A long label then keeps two lines
+     * instead of widening the column to a single line; the cell contents still
+     * count, so a wider value wins.
+     *
+     * @return the line, or {@code null} if the column has no label that can
+     *         wrap
+     */
+    static String headerLineToFit(Item column, Control measureControl)
+    {
+        if (!(column.getData(REFLOW_KEY) instanceof Runnable))
+            return null;
+
+        var label = (String) column.getData(WRAP_LABEL_KEY);
+        if (label == null || !label.contains(" ")) //$NON-NLS-1$
+            return null;
+
+        var gc = new GC(measureControl);
+        try
+        {
+            useHeaderFont(gc, measureControl);
+            return HeaderLabelWrap.longerLineOfBalancedSplit(label, text -> gc.textExtent(text).x);
+        }
+        finally
+        {
+            gc.dispose();
+        }
+    }
+
+    /**
+     * Returns the horizontal space of a header item that is not available for
+     * the label: on Windows the text margin of the header, on Linux the padding
+     * of the header button and the sort indicator. On macOS the measurement
+     * already includes that space (see the reflow).
+     */
+    private static int headerLabelMargin(Control control, Item column)
+    {
+        var os = Platform.getOS();
+        if (Platform.OS_WIN32.equals(os))
+            return WindowsHeaderWrap.labelMargin(control);
+        if (Platform.OS_LINUX.equals(os))
+            return LinuxHeaderWrap.labelMargin(control, column);
+        return 0;
+    }
+
+    /** Returns the horizontal padding of a cell, for the fit of a column. */
+    private static int cellMargin(Control control)
+    {
+        if (Platform.OS_LINUX.equals(Platform.getOS()))
+            return LinuxHeaderWrap.cellMargin();
+        return WindowsHeaderWrap.labelMargin(control);
+    }
+
+    /**
+     * Selects the font in which the header label is drawn if it differs from
+     * the font of the control: GTK draws it in bold.
+     */
+    private static void useHeaderFont(GC gc, Control control)
+    {
+        if (Platform.OS_LINUX.equals(Platform.getOS()))
+            gc.setFont(LinuxHeaderWrap.headerFont(control));
+    }
+
+    /**
+     * Completes the fit after SWT has fitted a column on a double click on its
+     * divider: widens the column until every cell and the header fit - for a
+     * label that can wrap the given line, otherwise the whole label, next to the
+     * header's text margin; then wraps the label for the new width.
+     * <p>
+     * The native fit of the list view (Windows) or of the tree view (Linux)
+     * does not reliably cover the cells of the tables here: it measures the cells in the font of the table only (bold
+     * sums are cut off) and cuts off some cells with images and long texts.
+     * Each cell is therefore measured with its own font, from the start of its
+     * text (after image and indent) to the end of the text plus the margin. The
+     * native fit ignores the header, too.
+     * Virtual tables are left as SWT fitted them, measuring would create all
+     * items.
+     *
+     * @param line
+     *            the line returned by {@link #headerLineToFit(Item, Control)},
+     *            or {@code null} if the label does not wrap
+     */
+    static void completeFit(Item column, Control control, String line)
+    {
+        if (column.isDisposed() || control.isDisposed())
+            return;
+
+        var needed = 0;
+
+        var gc = new GC(control);
+        try
+        {
+            var headerText = line != null ? line : getColumnLabel(column);
+            if (!headerText.isEmpty())
+            {
+                useHeaderFont(gc, control);
+                needed = gc.textExtent(headerText).x + headerLabelMargin(control, column);
+            }
+            if ((control.getStyle() & SWT.VIRTUAL) == 0)
+                needed = Math.max(needed, widestCell(column, control, gc) + cellMargin(control));
+        }
+        finally
+        {
+            gc.dispose();
+        }
+
+        if (getWidth(column) < needed)
+        {
+            if (column instanceof TableColumn tableColumn)
+                tableColumn.setWidth(needed);
+            else if (column instanceof TreeColumn treeColumn)
+                treeColumn.setWidth(needed);
+        }
+
+        if (column.getData(REFLOW_KEY) instanceof Runnable reflow)
+            reflow.run();
+    }
+
+    private static int getWidth(Item column)
+    {
+        if (column instanceof TableColumn tableColumn)
+            return tableColumn.getWidth();
+        if (column instanceof TreeColumn treeColumn)
+            return treeColumn.getWidth();
+        return 0;
+    }
+
+    /**
+     * Returns the width the widest cell of the column needs without the right
+     * margin: from the left edge of the column to the end of the text in the
+     * cell's own font. Trees count the expanded items only.
+     */
+    private static int widestCell(Item column, Control control, GC gc)
+    {
+        var widest = 0;
+
+        if (control instanceof Table table && column instanceof TableColumn tableColumn)
+        {
+            var index = table.indexOf(tableColumn);
+            var left = columnLeft(index, table.getColumnOrder(), table::getColumn, table.getHorizontalBar());
+            for (TableItem item : table.getItems())
+            {
+                var text = item.getText(index);
+                if (text.isEmpty())
+                    continue;
+                gc.setFont(item.getFont(index));
+                widest = Math.max(widest, item.getTextBounds(index).x - left + gc.textExtent(text).x);
+            }
+        }
+        else if (control instanceof Tree tree && column instanceof TreeColumn treeColumn)
+        {
+            var index = tree.indexOf(treeColumn);
+            var left = columnLeft(index, tree.getColumnOrder(), tree::getColumn, tree.getHorizontalBar());
+            var pending = new ArrayList<TreeItem>(Arrays.asList(tree.getItems()));
+            while (!pending.isEmpty())
+            {
+                var item = pending.remove(pending.size() - 1);
+                if (item.getExpanded())
+                    pending.addAll(Arrays.asList(item.getItems()));
+
+                var text = item.getText(index);
+                if (text.isEmpty())
+                    continue;
+                gc.setFont(item.getFont(index));
+                widest = Math.max(widest, item.getTextBounds(index).x - left + gc.textExtent(text).x);
+            }
+        }
+
+        return widest;
+    }
+
+    /** the x position of the left edge of a column in the client area */
+    private static int columnLeft(int index, int[] order, IntFunction<Item> columnAt,
+                    ScrollBar horizontalBar)
+    {
+        var left = horizontalBar != null ? -horizontalBar.getSelection() : 0;
+        for (int ii : order)
+        {
+            if (ii == index)
+                break;
+            left += getWidth(columnAt.apply(ii));
+        }
+        return left;
+    }
+
+    /**
+     * Answers whether the header is drawn small enough for a second line to fit.
+     * A size that cannot be determined counts as too large: wrapping a header that
+     * then does not fit is worse than not wrapping one that would.
+     */
+    private static boolean isFontSizeSmallEnoughToWrap()
+    {
+        return ThemePreferences.getSessionFontSize().orElse(Integer.MAX_VALUE) <= MAX_FONT_SIZE_FOR_WRAP;
+    }
+
+    /**
+     * Wraps a column header label onto a second line only when the full label does
+     * not fit the column's current width; snaps back to a single line once it does.
+     * Re-evaluated on every column resize, so it stays correct as the user drags.
+     * The label to wrap is tracked via {@link #WRAP_LABEL_KEY} rather than closed
+     * over at attach time, so a later rename or restored custom label is wrapped
+     * instead of being silently overwritten by the original label on next resize.
+     */
+    private static void attachDynamicHeaderWrap(Item column, IntSupplier widthSupplier, Consumer<String> textSetter,
+                    Control measureControl, String fullLabel)
+    {
+        if (!new Experiments().isEnabled(Experiments.Feature.NOV26_WRAP_COLUMN_HEADERS))
+            return;
+
+        // an embedded "\n" produces a two-line header natively on macOS and on
+        // Linux (GTK lays out the header label). On Windows the native header
+        // is one line high and draws one line only; WindowsHeaderWrap makes
+        // room for the second line and draws wrapped labels itself
+        var os = Platform.getOS();
+        var isMac = Platform.OS_MACOSX.equals(os);
+        var isWindows = Platform.OS_WIN32.equals(os);
+        var isLinux = Platform.OS_LINUX.equals(os);
+        if (!isMac && !isWindows && !isLinux)
+            return;
+
+        // on macOS the header row has a fixed height that does not grow with
+        // the font size. Two lines only fit while the header is drawn in the
+        // small system font; as soon as a larger font size is configured, the
+        // style sheet sets that font on the table, the header cell inherits it,
+        // and the second line would be cut off. Keep the single line in that
+        // case. On Windows the header grows with the font.
+        if (isMac && !isFontSizeSmallEnoughToWrap())
+            return;
+
+        column.setData(WRAP_LABEL_KEY, fullLabel);
+
+        Consumer<String> setIfChanged = text -> {
+            if (!text.equals(column.getText()))
+            {
+                textSetter.accept(text);
+                WindowsHeaderWrap.update(measureControl);
+            }
+        };
+
+        Runnable reflow = () -> {
+            var label = (String) column.getData(WRAP_LABEL_KEY);
+            if (label == null)
+                label = fullLabel;
+
+            if (!label.contains(" ")) //$NON-NLS-1$
+            {
+                setIfChanged.accept(label);
+                return;
+            }
+
+            var gc = new GC(measureControl);
+            try
+            {
+                // this GC inherits the table's 13pt body font, but on macOS
+                // the header itself always renders in Cocoa's 11pt small
+                // system font (both fixed AppKit constants) -- SWT exposes no
+                // API for the header's real font or its usable width, so this
+                // ~15% overestimate is used deliberately in place of an
+                // explicit margin: it approximates the space actually
+                // reserved by native chrome SWT doesn't expose (sort-arrow
+                // icon, cell padding). Do not "fix" this by measuring with
+                // the true 11pt font unless an explicit margin is added back
+                // for that reserved space -- doing one without the other
+                // causes real clipping on sorted columns
+                var available = widthSupplier.getAsInt();
+
+                // measure with the font of the header label and leave the
+                // space of the header item that is not available for it
+                available -= headerLabelMargin(measureControl, column);
+                useHeaderFont(gc, measureControl);
+
+                if (available <= 0)
+                    return;
+
+                // GTK widens the column until the longest line of the label
+                // fits instead of cutting it off
+                setIfChanged.accept(HeaderLabelWrap.wrap(label, column.getText(), available, UNWRAP_HYSTERESIS_PX,
+                                isLinux, text -> gc.textExtent(text).x));
+            }
+            finally
+            {
+                gc.dispose();
+            }
+        };
+
+        column.setData(REFLOW_KEY, reflow);
+
+        if (isWindows)
+            WindowsHeaderWrap.attach(measureControl);
+        else if (isLinux)
+            LinuxHeaderWrap.attach(measureControl);
+
+        if (column instanceof TableColumn tc)
+            tc.addControlListener(ControlListener.controlResizedAdapter(e -> reflow.run()));
+        else if (column instanceof TreeColumn tc)
+            tc.addControlListener(ControlListener.controlResizedAdapter(e -> reflow.run()));
+
+        reflow.run();
+
+        // the theme engine applies fonts only after the columns have been
+        // created and a font change fires no resize event, so the measurement
+        // above can still be based on the pre-theme font; recompute once the
+        // UI has settled so that a view already wraps when it is first opened
+        measureControl.getDisplay().asyncExec(() -> {
+            if (!column.isDisposed() && !measureControl.isDisposed())
+                reflow.run();
+        });
     }
 
     private static class TableViewerPolicy extends ViewerPolicy
@@ -288,6 +645,8 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
                 tableColumn.setText(column.getLabel());
                 tableColumn.setToolTipText(
                                 createToolTip(column.getLabel(), column.getDescription(), column.getMenuLabel()));
+                attachDynamicHeaderWrap(tableColumn, tableColumn::getWidth, tableColumn::setText, table.getTable(),
+                                column.getLabel());
             }
             else
             {
@@ -297,6 +656,8 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
                 tableColumn.setToolTipText(createToolTip(text, description, column.getMenuLabel()));
 
                 tableColumn.setData(OPTIONS_KEY, option);
+                attachDynamicHeaderWrap(tableColumn, tableColumn::getWidth, tableColumn::setText, table.getTable(),
+                                text);
             }
 
             CellLabelProvider labelProvider = column.getLabelProvider().get();
@@ -476,6 +837,8 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
                 treeColumn.setText(column.getLabel());
                 treeColumn.setToolTipText(
                                 createToolTip(column.getLabel(), column.getDescription(), column.getMenuLabel()));
+                attachDynamicHeaderWrap(treeColumn, treeColumn::getWidth, treeColumn::setText, tree.getTree(),
+                                column.getLabel());
             }
             else
             {
@@ -484,6 +847,7 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
                 String description = column.getOptions().getDescription(option);
                 treeColumn.setToolTipText(createToolTip(text, description, column.getMenuLabel()));
                 treeColumn.setData(OPTIONS_KEY, option);
+                attachDynamicHeaderWrap(treeColumn, treeColumn::getWidth, treeColumn::setText, tree.getTree(), text);
             }
 
             CellLabelProvider labelProvider = column.getLabelProvider().get();
@@ -523,6 +887,10 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
 
     /* package */static final String OPTIONS_KEY = Column.class.getName() + "_OPTION"; //$NON-NLS-1$
     private static final String ORIGINAL_LABEL_KEY = "$original_label$"; //$NON-NLS-1$
+    private static final String WRAP_LABEL_KEY = "$wrap_label$"; //$NON-NLS-1$
+    private static final String REFLOW_KEY = "$wrap_reflow$"; //$NON-NLS-1$
+    private static final int UNWRAP_HYSTERESIS_PX = 8;
+    private static final int MAX_FONT_SIZE_FOR_WRAP = 11;
     private static final int NO_COLUMN_SELECTED = -1;
 
     private final String identifier;
@@ -761,6 +1129,7 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
                 policy.getViewer().setComparator(null);
 
             viewerColumn.dispose();
+            updateHeaderHeight();
 
             if (store != null)
                 store.updateActive(serialize());
@@ -847,6 +1216,8 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
                     col.dispose();
                 }
             }
+
+            updateHeaderHeight();
         }
         finally
         {
@@ -946,13 +1317,19 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
 
                 if (item.getLabel() != null)
                 {
-                    viewerColumn.setData(ORIGINAL_LABEL_KEY, viewerColumn.getText());
+                    var cleanDefault = viewerColumn.getData(WRAP_LABEL_KEY);
+                    viewerColumn.setData(ORIGINAL_LABEL_KEY,
+                                    cleanDefault != null ? cleanDefault : viewerColumn.getText());
                     viewerColumn.setText(item.getLabel());
+                    viewerColumn.setData(WRAP_LABEL_KEY, item.getLabel());
+                    reflowHeader(viewerColumn);
                 }
             });
 
             for (int ii = 0; ii < oldCount; ii++)
                 policy.getColumn(0).dispose();
+
+            updateHeaderHeight();
         }
         finally
         {
@@ -982,6 +1359,8 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
 
             for (int ii = 0; ii < count; ii++)
                 policy.getColumn(0).dispose();
+
+            updateHeaderHeight();
         }
         finally
         {
@@ -1015,7 +1394,10 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
 
             String originalLabel = (String) col.getData(ORIGINAL_LABEL_KEY);
             if (originalLabel != null)
-                item.setLabel(col.getText());
+            {
+                var wrapLabel = (String) col.getData(WRAP_LABEL_KEY);
+                item.setLabel(wrapLabel != null ? wrapLabel : col.getText());
+            }
 
             configuration.addItem(item);
         }
@@ -1056,12 +1438,14 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
             return;
 
         String originalLabel = (String) widget.getData(ORIGINAL_LABEL_KEY);
+        var wrapLabel = (String) widget.getData(WRAP_LABEL_KEY);
+        var currentLabel = wrapLabel != null ? wrapLabel : widget.getText();
 
-        manager.add(new LabelOnly(originalLabel != null ? originalLabel : widget.getText()));
+        manager.add(new LabelOnly(originalLabel != null ? originalLabel : currentLabel));
 
         manager.add(new SimpleAction(Messages.MenuRenameColumn, a -> {
 
-            String oldLabel = widget.getText();
+            var oldLabel = currentLabel;
 
             InputDialog dlg = new InputDialog(Display.getCurrent().getActiveShell(), Messages.ColumnName,
                             Messages.ColumnName, oldLabel,
@@ -1071,6 +1455,9 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
 
             String newLabel = dlg.getValue();
             widget.setText(newLabel);
+            widget.setData(WRAP_LABEL_KEY, newLabel);
+            reflowHeader(widget);
+            updateHeaderHeight();
 
             if (originalLabel == null)
                 widget.setData(ORIGINAL_LABEL_KEY, oldLabel);
@@ -1081,6 +1468,9 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
             manager.add(new SimpleAction(Messages.MenuResetColumnName, a -> {
                 widget.setData(ORIGINAL_LABEL_KEY, null);
                 widget.setText(originalLabel);
+                widget.setData(WRAP_LABEL_KEY, originalLabel);
+                reflowHeader(widget);
+                updateHeaderHeight();
             }));
         }
 
