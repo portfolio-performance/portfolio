@@ -54,8 +54,7 @@ import name.abuchen.portfolio.money.Money;
         fields.add(new AmountField(FieldCode.GROSS, Messages.CSVColumn_GrossAmount).setOptional(true));
         fields.add(new Field(FieldCode.CURRENCY_GROSS, Messages.CSVColumn_CurrencyGrossAmount).setOptional(true));
         fields.add(new AmountField(FieldCode.EXCHANGE_RATE, Messages.CSVColumn_ExchangeRate).setOptional(true));
-        fields.add(new DateField("exDate", Messages.CSVColumn_ExDate).setOptional(true)); //$NON-NLS-1$
-        fields.add(new DateField("exDate", Messages.CSVColumn_ExDate).setOptional(true)); //$NON-NLS-1$
+        fields.add(new DateField(FieldCode.EX_DATE, Messages.CSVColumn_ExDate).setOptional(true));
     }
 
     @Override
@@ -81,8 +80,7 @@ import name.abuchen.portfolio.money.Money;
         var date = getDate(FieldCode.DATE, FieldCode.TIME, rawValues, field2column);
         if (date == null)
             throw new ParseException(MessageFormat.format(Messages.CSVImportMissingField, Messages.CSVColumn_Date), 0);
-        var exDate = getDate(Messages.CSVColumn_ExDate, null, rawValues, field2column);
-        var exDate = getDate(Messages.CSVColumn_ExDate, null, rawValues, field2column);
+        var exDate = getDate(FieldCode.EX_DATE, null, rawValues, field2column);
         var note = getText(FieldCode.NOTE, rawValues, field2column);
         var shares = getShares(FieldCode.SHARES, rawValues, field2column);
         var taxes = getAmount(FieldCode.TAXES, rawValues, field2column);

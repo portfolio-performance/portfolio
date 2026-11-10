@@ -859,7 +859,7 @@ public class CSVAccountTransactionExtractorTest
         var results = extractor.extract(1,
                         Arrays.<String[]>asList(new String[] { "2026-03-31", "2026-03-28", "DE0007164600", "SAP.DE",
                                         "", "100", "EUR", "DIVIDENDS", "SAP SE", "10", "Notiz" }),
-                        buildField2Column(extractor, new String[] { "date", "exDate", "isin", "ticker", "wkn",
+                        buildField2Column(extractor, new String[] { "date", "ex-date", "isin", "ticker", "wkn",
                                         "value", "currency", "type", "name", "shares", "note" }),
                         errors);
 

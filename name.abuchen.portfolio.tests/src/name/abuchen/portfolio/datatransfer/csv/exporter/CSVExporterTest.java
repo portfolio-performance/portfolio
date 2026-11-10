@@ -7,24 +7,27 @@ import static org.hamcrest.Matchers.is;
 import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-<<<<<<< Upstream, based on origin/master
-=======
 import java.nio.file.Path;
 import java.time.LocalDateTime;
->>>>>>> 0599cab CSV Import/Export for ex-date
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
+import java.util.stream.IntStream;
 
 import org.junit.Test;
 
+import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.datatransfer.Extractor.Item;
 import name.abuchen.portfolio.datatransfer.Extractor.SecurityUpdateItem;
 import name.abuchen.portfolio.datatransfer.csv.CSVImporter;
+import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.AttributeType;
 import name.abuchen.portfolio.model.AttributeType.PercentConverter;
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.money.CurrencyUnit;
+import name.abuchen.portfolio.util.TextUtil;
 
 @SuppressWarnings("nls")
 public class CSVExporterTest
