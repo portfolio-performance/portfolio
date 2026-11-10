@@ -1317,6 +1317,9 @@ public class Messages extends NLS
     public static String PrefMsgCalendar;
     public static String PrefMsgConfigureUpdates;
     public static String PrefMsgLanguageConfig;
+    public static String PrefMsgLanguageDevelopmentLaunch;
+    public static String PrefMsgLanguageNotApplied;
+    public static String PrefMsgLanguageOverriddenByArgument;
     public static String PrefMsgRestApiConnectorSettings;
     public static String PrefMsgRestApiEnterClientName;
     public static String PrefMsgRestApiInvalidPort;
