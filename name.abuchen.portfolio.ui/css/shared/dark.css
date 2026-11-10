@@ -30,6 +30,7 @@ CTabFolder {
 	background-color: #15171A;
 }
 
+.tooltip,
 .tooltip Label,
 .tooltip Composite,
 .tooltip Text {

@@ -15,6 +15,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swtchart.Chart;
 
 import name.abuchen.portfolio.ui.UIConstants;
+import name.abuchen.portfolio.ui.util.Colors;
 
 public abstract class AbstractChartToolTip implements Listener
 {
@@ -43,11 +44,30 @@ public abstract class AbstractChartToolTip implements Listener
     public void setActive(boolean isActive)
     {
         this.isActive = isActive;
+
+        if (!isActive)
+        {
+            // while inactive no event is received anymore: close an open tool
+            // tip as the SWT.MouseUp event that closes it is never seen
+            showToolTip = false;
+            closeToolTip();
+        }
     }
 
     protected abstract Object getFocusObjectAt(Event event);
 
     protected abstract void createComposite(Composite parent);
+
+    /**
+     * Updates the existing controls of the tool tip instead of disposing and
+     * re-creating all of them whenever the mouse moves to another focus object.
+     * Returns <code>true</code> if the content could be updated in place, and
+     * <code>false</code> if the controls have to be re-created.
+     */
+    protected boolean updateContent()
+    {
+        return false;
+    }
 
     protected Chart getChart()
     {
@@ -108,7 +128,7 @@ public abstract class AbstractChartToolTip implements Listener
     private Point createAndMeasureTooltip()
     {
         createComposite(tip);
-        tip.layout();
+        tip.layout(true, true);
         return tip.computeSize(SWT.DEFAULT, SWT.DEFAULT);
     }
 
@@ -126,11 +146,20 @@ public abstract class AbstractChartToolTip implements Listener
         tip.setLayout(new FillLayout());
         tip.setData(UIConstants.CSS.CLASS_NAME, "tooltip"); //$NON-NLS-1$
 
+        // the CSS styles are applied after the shell has been created: set a
+        // background color right away so that areas that are not (yet) covered
+        // by a child are not painted in black
+        tip.setBackground(Colors.theme().defaultBackground());
+
         Point size = createAndMeasureTooltip();
         Rectangle bounds = calculateBounds(event, size);
 
         tip.setBounds(bounds);
         tip.setVisible(true);
+
+        // paint now: otherwise the window is visible for a moment before its
+        // children are painted
+        tip.update();
     }
 
     private void moveToolTip(Event event)
@@ -147,16 +176,19 @@ public abstract class AbstractChartToolTip implements Listener
         }
         else if (focusObjectChanged && exists)
         {
-            // delete composite
-            for (Control c : tip.getChildren())
-                c.dispose();
-
-            // re-create labels
             focus = newFocusObject;
-            Point size = createAndMeasureTooltip();
+
+            // re-creating every control makes the tool tip lag behind the
+            // mouse: update the existing ones whenever that is possible
+            Point size = updateContent() ? relayout() : recreateContent();
 
             Rectangle bounds = calculateBounds(event, size);
-            tip.setBounds(bounds);
+            if (!bounds.equals(tip.getBounds()))
+                tip.setBounds(bounds);
+
+            // paint the new or re-created content right away: the area of a
+            // freshly created control stays black until it is painted
+            tip.update();
         }
         else if (focusObjectChanged && !exists)
         {
@@ -166,8 +198,27 @@ public abstract class AbstractChartToolTip implements Listener
         {
             Point size = tip.getSize();
             Rectangle bounds = calculateBounds(event, size);
-            tip.setLocation(new Point(bounds.x, bounds.y));
+
+            Point location = tip.getLocation();
+            if (location.x != bounds.x || location.y != bounds.y)
+                tip.setLocation(bounds.x, bounds.y);
         }
+    }
+
+    private Point recreateContent()
+    {
+        // delete composite
+        for (Control c : tip.getChildren())
+            c.dispose();
+
+        // re-create labels
+        return createAndMeasureTooltip();
+    }
+
+    private Point relayout()
+    {
+        tip.layout(true, true);
+        return tip.computeSize(SWT.DEFAULT, SWT.DEFAULT);
     }
 
     private Rectangle calculateBounds(Event event, Point size)
@@ -187,7 +238,7 @@ public abstract class AbstractChartToolTip implements Listener
     protected final Composite getPlotArea()
     {
         if (chart != null)
-            return (Composite) chart.getPlotArea();
+            return (Composite) chart.getPlotArea().getControl();
         else
             throw new IllegalArgumentException("no plot area found"); //$NON-NLS-1$
     }
