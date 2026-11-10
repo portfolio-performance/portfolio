@@ -5,6 +5,7 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.dividend;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasAmount;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasCurrencyCode;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasDate;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasExDate;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasFees;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasForexGrossValue;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasGrossValue;
@@ -178,7 +179,8 @@ public class RaisinBankAGPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2024-06-26T00:00"), hasShares(154.9996), //
+                        hasDate("2024-06-26T00:00"), hasExDate(null), //
+                        hasShares(154.9996), //
                         hasSource("Dividende01.txt"), //
                         hasNote("Auftragsnummer: 680ZY015-5cfb-4240-961c-865127t5147j"), //
                         hasAmount("EUR", 92.21), hasGrossValue("EUR", 114.67), //
@@ -212,7 +214,8 @@ public class RaisinBankAGPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2024-07-01T00:00"), hasShares(6.38096), //
+                        hasDate("2024-07-01T00:00"), hasExDate(null), //
+                        hasShares(6.38096), //
                         hasSource("Dividende02.txt"), //
                         hasNote("Auftragsnummer: 237dcf5e-bbe9-4127-9eef-4153d9c85ccf"), //
                         hasAmount("EUR", 2.38), hasGrossValue("EUR", 2.91), //
@@ -247,7 +250,8 @@ public class RaisinBankAGPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2024-07-01T00:00"), hasShares(6.38096), //
+                        hasDate("2024-07-01T00:00"), hasExDate(null), //
+                        hasShares(6.38096), //
                         hasSource("Dividende02.txt"), //
                         hasNote("Auftragsnummer: 237dcf5e-bbe9-4127-9eef-4153d9c85ccf"), //
                         hasAmount("EUR", 2.38), hasGrossValue("EUR", 2.91), //
