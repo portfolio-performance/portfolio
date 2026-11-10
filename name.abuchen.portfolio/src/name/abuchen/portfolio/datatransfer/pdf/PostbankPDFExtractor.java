@@ -83,7 +83,7 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
                         .section("type").optional() //
                         .match("^Wertpapier Abrechnung (?<type>(Kauf|Verkauf|Ausgabe Investmentfonds|R.cknahme Investmentfonds)).*$") //
                         .assign((t, v) -> {
-                            if ("Verkauf".equals(v.get("type")) || "Rücknahme Investmentfonds".equals(v.get("type")))
+                            if (v.get("type").matches("^(Verkauf|R.cknahme Investmentfonds)$"))
                                 t.setType(PortfolioTransaction.Type.SELL);
                         })
 
@@ -109,7 +109,7 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
                                                         .match("^(?<name1>.*)$") //
                                                         .match("^(Ausf.hrungskurs|Abrech\\.\\-Preis) [\\.,\\d]+ (?<currency>[A-Z]{3})$") //
                                                         .assign((t, v) -> {
-                                                            if (!v.get("name1").startsWith("Handels-/Ausführungsplatz"))
+                                                            if (!v.get("name1").startsWith("Handels-/Ausf"))
                                                                 v.put("name", trim(v.get("name")) + " " + trim(v.get("name1")));
 
                                                             t.setSecurity(getOrCreateSecurity(v));
@@ -146,7 +146,7 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
                                                         .match("^(?<notation>(St.ck|[A-Z]{3})) (?<shares>[\\.,\\d]+) .* [A-Z]{2}[A-Z0-9]{9}[0-9] \\([A-Z0-9]{6}\\)$") //
                                                         .assign((t, v) -> {
                                                             // Percentage quotation, workaround for bonds
-                                                            if (v.get("notation") != null && !"Stück".equalsIgnoreCase(v.get("notation")))
+                                                            if (v.get("notation").matches("^[A-Z]{3}$"))
                                                             {
                                                                 t.setShares(asBondNominal(v.get("shares")));
                                                             }
