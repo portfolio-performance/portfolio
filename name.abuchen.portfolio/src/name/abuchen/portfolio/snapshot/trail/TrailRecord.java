@@ -32,6 +32,17 @@ public interface TrailRecord
         return EmptyTrail.INSTANCE;
     }
 
+    /**
+     * Returns a trail with a value of zero in the given currency. Unlike
+     * {@link #empty()} this trail is not empty and can be used as the minuend
+     * of a {@link #subtract(TrailRecord)} (which {@link #empty()} does not
+     * support), e.g. to render "0 - outflows" when there are no inflows.
+     */
+    public static TrailRecord ofZero(String currencyCode)
+    {
+        return new DefaultTrail(null, Messages.LabelSum, null, Money.of(currencyCode, 0));
+    }
+
     public static TrailRecord of(List<TrailRecord> trails)
     {
         if (trails.isEmpty())
