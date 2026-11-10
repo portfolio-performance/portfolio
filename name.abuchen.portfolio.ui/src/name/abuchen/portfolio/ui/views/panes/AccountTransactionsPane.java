@@ -284,6 +284,35 @@ public class AccountTransactionsPane implements InformationPanePage, Modificatio
         column.setVisible(false);
         transactionsColumns.addColumn(column);
 
+        column = new Column("accruedInterest", Messages.ColumnAccruedInterest, SWT.RIGHT, 80); //$NON-NLS-1$
+        Function<AccountTransaction, Money> getAccruedInterest = tx -> {
+            // accrued interest is stored with the portfolio transaction of a
+            // purchase or sale (shown as positive amount like fees)
+            CrossEntry entry = tx.getCrossEntry();
+            if (entry != null && entry.getCrossTransaction(tx) instanceof PortfolioTransaction)
+                return entry.getCrossTransaction(tx).getUnitSum(Unit.Type.ACCRUED_INTEREST);
+
+            return tx.getUnitSum(Unit.Type.ACCRUED_INTEREST);
+        };
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object e)
+            {
+                return Values.Money.formatNonZero(getAccruedInterest.apply((AccountTransaction) e),
+                                client.getBaseCurrency());
+            }
+
+            @Override
+            public Color getForeground(Object element)
+            {
+                return colorFor((AccountTransaction) element);
+            }
+        });
+        ColumnViewerSorter.create(element -> getAccruedInterest.apply((AccountTransaction) element)).attachTo(column);
+        column.setVisible(false);
+        transactionsColumns.addColumn(column);
+
         column = new Column("3", Messages.Balance, SWT.RIGHT, 80); //$NON-NLS-1$
         column.setLabelProvider(new ColumnLabelProvider()
         {

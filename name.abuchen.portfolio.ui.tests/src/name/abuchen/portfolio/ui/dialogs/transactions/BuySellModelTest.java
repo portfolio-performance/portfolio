@@ -11,6 +11,7 @@ import java.time.LocalDateTime;
 import org.eclipse.core.databinding.validation.ValidationStatus;
 import org.junit.Test;
 
+import name.abuchen.portfolio.junit.TestCurrencyConverter;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
@@ -306,5 +307,133 @@ public class BuySellModelTest
         model.setQuote(BigDecimal.valueOf(90.0));
         assertThat(model.getCalculationStatus(), is(ValidationStatus
                         .error(MessageFormat.format(Messages.MsgDialogInputRequired, Messages.ColumnNominal))));
+    }
+
+    @SuppressWarnings("nls")
+    @Test
+    public void testPurchaseWithAccruedInterest()
+    {
+        var client = new Client();
+        var model = new BuySellModel(client, PortfolioTransaction.Type.BUY);
+        model.setExchangeRateProviderFactory(new ExchangeRateProviderFactory(client));
+        var account = new Account();
+        account.setCurrencyCode("EUR");
+        var portfolio = new Portfolio();
+        portfolio.setReferenceAccount(account);
+        model.setAccount(account);
+        model.setPortfolio(portfolio);
+
+        var bond = new Security("Acme Bond", "EUR");
+        bond.setPercentageQuoted(true);
+        model.setSecurity(bond);
+        model.setShares(1000L * Values.Share.factor());
+        model.setQuote(BigDecimal.valueOf(100.5));
+        model.setAccruedInterest(Values.Amount.factorize(12.34));
+        model.setFees(Values.Amount.factorize(5));
+
+        // debit = gross value + accrued interest + fees
+        assertThat(model.getGrossValue(), is(Values.Amount.factorize(1005)));
+        assertThat(model.getTotal(), is(Values.Amount.factorize(1022.34)));
+        assertThat(model.getCalculationStatus(), is(ValidationStatus.ok()));
+
+        // changing the total keeps the accrued interest out of the price
+        model.setTotal(Values.Amount.factorize(1027.34));
+        assertThat(model.getGrossValue(), is(Values.Amount.factorize(1010)));
+        assertThat(model.getQuote(), is(BigDecimal.valueOf(101.0)));
+
+        model.applyChanges();
+
+        var transaction = portfolio.getTransactions().getFirst();
+        assertThat(transaction.getAmount(), is(Values.Amount.factorize(1027.34)));
+        assertThat(transaction.getAccruedInterest(), is(Money.of("EUR", Values.Amount.factorize(12.34))));
+        assertThat(transaction.getGrossValueAmount(), is(Values.Amount.factorize(1010)));
+
+        // reopen the transaction
+        var edit = new BuySellModel(client, PortfolioTransaction.Type.BUY);
+        edit.setExchangeRateProviderFactory(new ExchangeRateProviderFactory(client));
+        edit.setSource(transaction.getCrossEntry());
+        assertThat(edit.getAccruedInterest(), is(Values.Amount.factorize(12.34)));
+        assertThat(edit.getGrossValue(), is(Values.Amount.factorize(1010)));
+        assertThat(edit.getQuote(), is(BigDecimal.valueOf(101.0)));
+        assertThat(edit.getCalculationStatus(), is(ValidationStatus.ok()));
+    }
+
+    @SuppressWarnings("nls")
+    @Test
+    public void testSaleWithAccruedInterest()
+    {
+        var model = new BuySellModel(new Client(), PortfolioTransaction.Type.SELL);
+        var bond = new Security("Acme Bond", "EUR");
+        bond.setPercentageQuoted(true);
+        model.setSecurity(bond);
+        model.setShares(1000L * Values.Share.factor());
+        model.setQuote(BigDecimal.valueOf(101.0));
+        model.setAccruedInterest(Values.Amount.factorize(5));
+        model.setFees(Values.Amount.factorize(5));
+
+        // credit = gross value + accrued interest - fees
+        assertThat(model.getGrossValue(), is(Values.Amount.factorize(1010)));
+        assertThat(model.getTotal(), is(Values.Amount.factorize(1010)));
+        assertThat(model.getCalculationStatus(), is(ValidationStatus.ok()));
+    }
+
+    @SuppressWarnings("nls")
+    @Test
+    public void testPurchaseWithAccruedInterestInForeignCurrency()
+    {
+        // EUR bond bought via USD account at 1.10 USD/EUR
+        var client = new Client();
+        var account = new Account();
+        account.setCurrencyCode("USD");
+        client.addAccount(account);
+        var portfolio = new Portfolio();
+        portfolio.setReferenceAccount(account);
+        client.addPortfolio(portfolio);
+        var bond = new Security("Acme Bond", "EUR");
+        bond.setPercentageQuoted(true);
+        client.addSecurity(bond);
+
+        var model = new BuySellModel(client, PortfolioTransaction.Type.BUY);
+        model.setExchangeRateProviderFactory(new ExchangeRateProviderFactory(client));
+        model.setAccount(account);
+        model.setPortfolio(portfolio);
+        model.setSecurity(bond);
+        model.setDate(LocalDate.parse("2015-01-15"));
+        model.setShares(1000L * Values.Share.factor());
+        model.setQuote(BigDecimal.valueOf(100.0));
+        model.setExchangeRate(new BigDecimal("1.1"));
+        model.setForexAccruedInterest(Values.Amount.factorize(10));
+        model.setFees(Values.Amount.factorize(5.50));
+
+        // debit = 1,100.00 + 11.00 (10.00 EUR) + 5.50 USD
+        assertThat(model.getConvertedGrossValue(), is(Values.Amount.factorize(1100)));
+        assertThat(model.getTotal(), is(Values.Amount.factorize(1116.50)));
+        assertThat(model.getCalculationStatus(), is(ValidationStatus.ok()));
+
+        model.applyChanges();
+
+        // the accrued interest is stored with the exchange rate of the
+        // transaction
+        var transaction = portfolio.getTransactions().getFirst();
+        var unit = transaction.getUnit(Unit.Type.ACCRUED_INTEREST).orElseThrow();
+        assertThat(unit.getAmount(), is(Money.of("USD", Values.Amount.factorize(11))));
+        assertThat(unit.getForex(), is(Money.of("EUR", Values.Amount.factorize(10))));
+        assertThat(unit.getExchangeRate(), is(new BigDecimal("1.1")));
+        assertThat(transaction.getGrossValueAmount(), is(Values.Amount.factorize(1100)));
+
+        // cost in the currency of the security uses the transaction rate
+        // for both, the amount and the accrued interest
+        var converter = new TestCurrencyConverter();
+        assertThat(transaction.getMonetaryAmountWithoutAccruedInterest(converter),
+                        is(Money.of("EUR", Values.Amount.factorize(1005))));
+
+        // reopen
+        var edit = new BuySellModel(client, PortfolioTransaction.Type.BUY);
+        edit.setExchangeRateProviderFactory(new ExchangeRateProviderFactory(client));
+        edit.setSource(transaction.getCrossEntry());
+        assertThat(edit.getForexAccruedInterest(), is(Values.Amount.factorize(10)));
+        assertThat(edit.getAccruedInterest(), is(0L));
+        assertThat(edit.getTotal(), is(Values.Amount.factorize(1116.50)));
+        assertThat(edit.getCalculationStatus(), is(ValidationStatus.ok()));
     }
 }

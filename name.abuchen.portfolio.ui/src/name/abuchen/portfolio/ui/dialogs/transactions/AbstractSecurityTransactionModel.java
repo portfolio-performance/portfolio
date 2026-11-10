@@ -33,7 +33,9 @@ public abstract class AbstractSecurityTransactionModel extends AbstractModel
     public enum Properties
     {
         portfolio, security, account, date, time, shares, quote, grossValue, exchangeRate, inverseExchangeRate, //
-        convertedGrossValue, forexFees, fees, forexTaxes, taxes, total, note, exchangeRateCurrencies, //
+        convertedGrossValue, forexAccruedInterest, accruedInterest, forexFees, fees, forexTaxes, taxes, total, //
+        note, //
+        exchangeRateCurrencies, //
         inverseExchangeRateCurrencies, transactionCurrency, transactionCurrencyCode, securityCurrencyCode, //
         securityQuotation, calculationStatus;
     }
@@ -50,6 +52,8 @@ public abstract class AbstractSecurityTransactionModel extends AbstractModel
     protected long grossValue;
     protected BigDecimal exchangeRate = BigDecimal.ONE;
     protected long convertedGrossValue;
+    protected long forexAccruedInterest;
+    protected long accruedInterest;
     protected long forexFees;
     protected long fees;
     protected long forexTaxes;
@@ -92,6 +96,8 @@ public abstract class AbstractSecurityTransactionModel extends AbstractModel
         setGrossValue(0);
         setConvertedGrossValue(0);
         setTotal(0);
+        setAccruedInterest(0);
+        setForexAccruedInterest(0);
         setFees(0);
         setTaxes(0);
         setForexFees(0);
@@ -136,6 +142,12 @@ public abstract class AbstractSecurityTransactionModel extends AbstractModel
                     else
                         this.taxes += unit.getAmount().getAmount();
                     break;
+                case ACCRUED_INTEREST:
+                    if (unit.getForex() != null)
+                        this.forexAccruedInterest += unit.getForex().getAmount();
+                    else
+                        this.accruedInterest += unit.getAmount().getAmount();
+                    break;
                 default:
                     throw new UnsupportedOperationException();
             }
@@ -166,6 +178,10 @@ public abstract class AbstractSecurityTransactionModel extends AbstractModel
             transaction.addUnit(new Transaction.Unit(Transaction.Unit.Type.TAX, //
                             Money.of(getTransactionCurrencyCode(), taxes)));
 
+        if (accruedInterest != 0)
+            transaction.addUnit(new Transaction.Unit(Transaction.Unit.Type.ACCRUED_INTEREST, //
+                            Money.of(getTransactionCurrencyCode(), accruedInterest)));
+
         boolean hasForex = !getTransactionCurrencyCode().equals(getSecurityCurrencyCode());
         if (hasForex)
         {
@@ -181,6 +197,15 @@ public abstract class AbstractSecurityTransactionModel extends AbstractModel
                                 Money.of(getTransactionCurrencyCode(),
                                                 Math.round(forexTaxes * exchangeRate.doubleValue())), //
                                 Money.of(getSecurityCurrencyCode(), forexTaxes), //
+                                exchangeRate));
+
+            // store the exchange rate of the transaction so that the accrued
+            // interest is converted consistently with the gross value
+            if (forexAccruedInterest != 0)
+                transaction.addUnit(new Transaction.Unit(Transaction.Unit.Type.ACCRUED_INTEREST, //
+                                Money.of(getTransactionCurrencyCode(),
+                                                Math.round(forexAccruedInterest * exchangeRate.doubleValue())), //
+                                Money.of(getSecurityCurrencyCode(), forexAccruedInterest), //
                                 exchangeRate));
 
             transaction.addUnit(new Transaction.Unit(Transaction.Unit.Type.GROSS_VALUE, //
@@ -517,6 +542,46 @@ public abstract class AbstractSecurityTransactionModel extends AbstractModel
         triggerTotal(calculateTotal());
     }
 
+    public long getAccruedInterest()
+    {
+        return accruedInterest;
+    }
+
+    /**
+     * Sets the accrued interest (in transaction currency) which is paid in
+     * addition to the price with a purchase and received in addition to the
+     * proceeds with a sale.
+     */
+    public void setAccruedInterest(long accruedInterest)
+    {
+        firePropertyChange(Properties.accruedInterest.name(), this.accruedInterest,
+                        this.accruedInterest = accruedInterest);
+        triggerTotal(calculateTotal());
+
+        firePropertyChange(Properties.calculationStatus.name(), this.calculationStatus,
+                        this.calculationStatus = calculateStatus());
+    }
+
+    public long getForexAccruedInterest()
+    {
+        return forexAccruedInterest;
+    }
+
+    /**
+     * Sets the accrued interest in the currency of the security (if it differs
+     * from the transaction currency). It is converted with the exchange rate
+     * of the transaction.
+     */
+    public void setForexAccruedInterest(long forexAccruedInterest)
+    {
+        firePropertyChange(Properties.forexAccruedInterest.name(), this.forexAccruedInterest,
+                        this.forexAccruedInterest = forexAccruedInterest);
+        triggerTotal(calculateTotal());
+
+        firePropertyChange(Properties.calculationStatus.name(), this.calculationStatus,
+                        this.calculationStatus = calculateStatus());
+    }
+
     public long getFees()
     {
         return fees;
@@ -662,14 +727,18 @@ public abstract class AbstractSecurityTransactionModel extends AbstractModel
     {
         long feesAndTaxes = fees + taxes + Math.round(exchangeRate.doubleValue() * (forexFees + forexTaxes));
 
+        // accrued interest is paid (purchase) or received (sale) in addition:
+        // it is never part of the gross value
+        long accrued = calculateAccruedInterest();
+
         switch (type)
         {
             case BUY:
             case DELIVERY_INBOUND:
-                return Math.max(0, total - feesAndTaxes);
+                return Math.max(0, total - feesAndTaxes - accrued);
             case SELL:
             case DELIVERY_OUTBOUND:
-                return total + feesAndTaxes;
+                return total + feesAndTaxes - accrued;
             default:
                 throw new UnsupportedOperationException();
         }
@@ -678,17 +747,27 @@ public abstract class AbstractSecurityTransactionModel extends AbstractModel
     private long calculateTotal()
     {
         long feesAndTaxes = fees + taxes + Math.round(exchangeRate.doubleValue() * (forexFees + forexTaxes));
+        long accrued = calculateAccruedInterest();
 
         switch (type)
         {
             case BUY:
             case DELIVERY_INBOUND:
-                return convertedGrossValue + feesAndTaxes;
+                return convertedGrossValue + accrued + feesAndTaxes;
             case SELL:
             case DELIVERY_OUTBOUND:
-                return Math.max(0, convertedGrossValue - feesAndTaxes);
+                return Math.max(0, convertedGrossValue + accrued - feesAndTaxes);
             default:
                 throw new UnsupportedOperationException();
         }
+    }
+
+    /**
+     * Returns the accrued interest in transaction currency (incl. the
+     * converted accrued interest given in the currency of the security).
+     */
+    private long calculateAccruedInterest()
+    {
+        return accruedInterest + Math.round(exchangeRate.doubleValue() * forexAccruedInterest);
     }
 }
