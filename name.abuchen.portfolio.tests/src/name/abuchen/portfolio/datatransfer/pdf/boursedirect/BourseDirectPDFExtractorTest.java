@@ -58,11 +58,11 @@ public class BourseDirectPDFExtractorTest
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(3L));
         assertThat(countBuySell(results), is(3L));
-        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
         assertThat(countSkippedItems(results), is(0L));
-        assertThat(results.size(), is(6));
+        assertThat(results.size(), is(7));
         new AssertImportActions().check(results, "EUR");
 
         // check security
@@ -106,6 +106,10 @@ public class BourseDirectPDFExtractorTest
                         hasNote(null), //
                         hasAmount("EUR", 886.98), hasGrossValue("EUR", 885.08), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 1.90))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2024-12-10"), hasAmount("EUR", 10000.00), //
+                        hasSource("ReleveDeCompte01.txt"), hasNote(null))));
     }
 
     @Test
@@ -120,11 +124,11 @@ public class BourseDirectPDFExtractorTest
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(5L));
         assertThat(countBuySell(results), is(5L));
-        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
         assertThat(countSkippedItems(results), is(0L));
-        assertThat(results.size(), is(10));
+        assertThat(results.size(), is(11));
         new AssertImportActions().check(results, "EUR");
 
         // check security
@@ -162,7 +166,7 @@ public class BourseDirectPDFExtractorTest
                         hasDate("2025-08-05T16:35:33"), hasShares(7.00), //
                         hasSource("ReleveDeCompte02.txt"), //
                         hasNote(null), //
-                        hasAmount("EUR", 363.59), hasGrossValue("EUR", 361.15), //
+                        hasAmount("EUR", 365.04), hasGrossValue("EUR", 362.60), //
                         hasTaxes("EUR", 1.45), hasFees("EUR", 0.99))));
 
         // check buy sell transaction
@@ -196,6 +200,10 @@ public class BourseDirectPDFExtractorTest
                         hasNote(null), //
                         hasAmount("EUR", 174.18), hasGrossValue("EUR", 173.31), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.87))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2025-08-05"), hasAmount("EUR", 1240.00), //
+                        hasSource("ReleveDeCompte02.txt"), hasNote(null))));
     }
 
     @Test
@@ -408,7 +416,11 @@ public class BourseDirectPDFExtractorTest
         new AssertImportActions().check(results, "EUR");
 
         // assert transaction
-        assertThat(results, hasItem(fee(hasDate("2021-07-06"), hasAmount("EUR", 0.81), //
-                        hasSource("ReleveDeCompte07.txt"), hasNote("DDG ETG 2T21"))));
+        assertThat(results, hasItem(fee( //
+                        hasDate("2021-07-06"), //
+                        hasSource("ReleveDeCompte07.txt"), //
+                        hasNote("DDG ETG 2T21"), //
+                        hasAmount("EUR", 0.81), hasGrossValue("EUR", 0.81), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 }
