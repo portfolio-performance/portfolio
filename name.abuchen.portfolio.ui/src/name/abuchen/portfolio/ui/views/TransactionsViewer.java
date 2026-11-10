@@ -358,7 +358,7 @@ public final class TransactionsViewer implements ModificationListener
         column.setLabelProvider(new TransactionLabelProvider(t -> {
             if (t instanceof PortfolioTransaction pt)
                 return t.getShares() != 0
-                                ? Values.CalculatedQuote.format(pt.getGrossPricePerShare(),
+                                ? Values.CalculatedQuote.formatFor(pt.getSecurity(), pt.getQuotedGrossPricePerShare(),
                                                 owner.getClient().getBaseCurrency())
                                 : null;
             else
@@ -366,7 +366,8 @@ public final class TransactionsViewer implements ModificationListener
         }));
         ColumnViewerSorter.create(e -> {
             Transaction tx = ((TransactionPair<?>) e).getTransaction();
-            return tx instanceof PortfolioTransaction pt ? pt.getGrossPricePerShare() : null;
+            // sort by the quote as shown (percentage-quoted securities)
+            return tx instanceof PortfolioTransaction pt ? pt.getQuotedGrossPricePerShare() : null;
         }).attachTo(column);
         support.addColumn(column);
 

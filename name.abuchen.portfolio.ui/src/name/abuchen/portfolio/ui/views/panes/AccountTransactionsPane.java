@@ -393,7 +393,7 @@ public class AccountTransactionsPane implements InformationPanePage, Modificatio
             if (t.getCrossEntry() instanceof BuySellEntry entry)
             {
                 PortfolioTransaction pt = entry.getPortfolioTransaction();
-                return pt.getGrossPricePerShare();
+                return pt.getQuotedGrossPricePerShare();
             }
             else if (t.getType() == Type.DIVIDENDS && t.getShares() != 0)
             {
@@ -405,7 +405,12 @@ public class AccountTransactionsPane implements InformationPanePage, Modificatio
             {
                 return null;
             }
-        }, element -> colorFor((AccountTransaction) element));
+        }, element -> colorFor((AccountTransaction) element),
+                        // prices of buy/sell transactions are shown in the
+                        // quotation of the security (dividends per share not)
+                        element -> ((AccountTransaction) element).getCrossEntry() instanceof BuySellEntry entry
+                                        ? entry.getPortfolioTransaction().getSecurity()
+                                        : null);
         transactionsColumns.addColumn(column);
 
         column = new Column("7", Messages.ColumnOffsetAccount, SWT.None, 120); //$NON-NLS-1$

@@ -45,12 +45,13 @@ public class QuoteRangeColumn extends Column implements Column.CacheInvalidation
             if (range == null || range.getLow() == null || range.getHigh() == null)
                 return null;
             var value = range.getRelLowDistance();
+            var security = Adaptor.adapt(Security.class, element);
 
             return String.format("%s +%.2f%% (%s) | %s -%.2f%% (%s)", //$NON-NLS-1$
-                            Values.Quote.format(range.getLow()), //
+                            Values.Quote.formatFor(security, range.getLow()), //
                             value * 100, //
                             Values.Date.format(range.getLowDate()), //
-                            Values.Quote.format(range.getHigh()), //
+                            Values.Quote.formatFor(security, range.getHigh()), //
                             (1 - value) * 100, //
                             Values.Date.format(range.getHighDate()) //
             );
@@ -63,12 +64,13 @@ public class QuoteRangeColumn extends Column implements Column.CacheInvalidation
             if (range == null || range.getLow() == null || range.getHigh() == null)
                 return null;
             Double value = range.getRelLowDistance();
+            var security = Adaptor.adapt(Security.class, e);
 
             return String.format("%s -%.2f%% (%s)%n%s +%.2f%% (%s)", //$NON-NLS-1$
-                            Values.Quote.format(range.getHigh()), //
+                            Values.Quote.formatFor(security, range.getHigh()), //
                             (1 - value) * 100, //
                             Values.Date.format(range.getHighDate()), //
-                            Values.Quote.format(range.getLow()), //
+                            Values.Quote.formatFor(security, range.getLow()), //
                             value * 100, //
                             Values.Date.format(range.getLowDate()));
         }
