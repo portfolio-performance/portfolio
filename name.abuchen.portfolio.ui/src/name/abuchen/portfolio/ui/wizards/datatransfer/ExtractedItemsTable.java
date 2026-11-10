@@ -378,6 +378,8 @@ public class ExtractedItemsTable
         if (atLeastOneNotImported)
         {
             manager.add(new SimpleAction(Messages.LabelDoImport, a -> {
+                var securityOverrideRemoved = false;
+
                 for (Object element : tableViewer.getStructuredSelection().toList())
                 {
                     var entry = (ExtractedEntry) element;
@@ -387,10 +389,16 @@ public class ExtractedItemsTable
                     {
                         entries.stream().filter(e -> e.getSecurityDependency() == entry)
                                         .forEach(e -> e.setSecurityOverride(null));
+                        securityOverrideRemoved = true;
                     }
                 }
 
-                tableViewer.refresh();
+                // re-run the checks (e.g. duplicate detection) as the
+                // transactions refer to the new security again
+                if (securityOverrideRemoved && onEntriesChanged != null)
+                    onEntriesChanged.run();
+                else
+                    tableViewer.refresh();
             }));
         }
 
@@ -469,7 +477,13 @@ public class ExtractedItemsTable
                 entry.setImported(false);
                 entries.stream().filter(e -> e.getSecurityDependency() == entry)
                                 .forEach(e -> e.setSecurityOverride((Security) selected[0]));
-                tableViewer.refresh();
+
+                // re-run the checks (e.g. duplicate detection) against the
+                // selected existing security
+                if (onEntriesChanged != null)
+                    onEntriesChanged.run();
+                else
+                    tableViewer.refresh();
             }
         }
     }
