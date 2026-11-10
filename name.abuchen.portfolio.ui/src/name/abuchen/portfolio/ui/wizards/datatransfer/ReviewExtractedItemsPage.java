@@ -72,6 +72,7 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
     private static final String IMPORT_TARGET_PORTFOLIO = IMPORT_TARGET + "-portfolio-"; //$NON-NLS-1$
     private static final String IMPORT_TARGET_ACCOUNT = IMPORT_TARGET + "-account-"; //$NON-NLS-1$
     private static final String IMPORT_TARGET_SECONDARY_ACCOUNT = IMPORT_TARGET + "-secondary-account-"; //$NON-NLS-1$
+    private static final String IMPORT_TARGET_SECONDARY_PORTFOLIO = IMPORT_TARGET + "-secondary-portfolio-"; //$NON-NLS-1$
     /**
      * Preference for the import wizard to convert "BuySell" transactions to
      * "Delivery" transactions
@@ -401,25 +402,8 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
 
         }
 
-        for (var entry : secondaryAccounts.entrySet())
-        {
-            var currencyPair = entry.getKey();
-            var combo = entry.getValue().getRight();
-            var list = (List<?>) combo.getInput();
-
-            if (list.isEmpty())
-                continue;
-
-            // use the target account of the previous import if still available
-            var uuid = preferences.getString(
-                            IMPORT_TARGET_SECONDARY_ACCOUNT + extractor.getLabel() + currencyPair.getPreferenceKey());
-            var index = IntStream.range(0, list.size()) //
-                            .filter(i -> ((Account) list.get(i)).getUUID().equals(uuid)) //
-                            .findAny().orElse(0);
-
-            // do not trigger a selection (do not use #setSelection)
-            combo.getCombo().select(index);
-        }
+        // the offset accounts depend on the accounts selected above
+        secondaryAccounts.forEach((currencyPair, pair) -> preselectSecondaryAccount(currencyPair, pair.getRight()));
 
         List<Portfolio> activePortfolios = client.getActivePortfolios();
         if (activePortfolios.isEmpty())
@@ -432,10 +416,51 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
             primaryPortfolio.getCombo().select(IntStream.range(0, activePortfolios.size())
                             .filter(i -> activePortfolios.get(i).getUUID().equals(uuid)).findAny().orElse(0));
 
-            if (secondaryPortfolio != null)
-                secondaryPortfolio.getCombo().select(0);
+            // the offset portfolio depends on the portfolio selected above
+            preselectSecondaryPortfolio();
         }
 
+    }
+
+    /**
+     * Preselects the offset account of the currency pair: the account of the
+     * previous import if it is still available, otherwise for a transfer
+     * within one currency the first account which differs from the account
+     * selected for that currency.
+     */
+    private void preselectSecondaryAccount(CurrencyPair currencyPair, ComboViewer combo)
+    {
+        var uuid = preferences.getString(
+                        IMPORT_TARGET_SECONDARY_ACCOUNT + extractor.getLabel() + currencyPair.getPreferenceKey());
+        var differentFrom = currencyPair.source().equals(currencyPair.target()) ? getAccount(currencyPair.source())
+                        : null;
+
+        var index = DropDownSelection.indexOf((List<?>) combo.getInput(),
+                        element -> ((Account) element).getUUID().equals(uuid), differentFrom);
+
+        // do not trigger a selection (do not use #setSelection)
+        if (index >= 0)
+            combo.getCombo().select(index);
+    }
+
+    /**
+     * Preselects the offset portfolio: the portfolio of the previous import if
+     * it is still available, otherwise the first portfolio which differs from
+     * the selected portfolio.
+     */
+    private void preselectSecondaryPortfolio()
+    {
+        if (secondaryPortfolio == null)
+            return;
+
+        var uuid = preferences.getString(IMPORT_TARGET_SECONDARY_PORTFOLIO + extractor.getLabel());
+
+        var index = DropDownSelection.indexOf((List<?>) secondaryPortfolio.getInput(),
+                        element -> ((Portfolio) element).getUUID().equals(uuid), getPortfolio());
+
+        // do not trigger a selection (do not use #setSelection)
+        if (index >= 0)
+            secondaryPortfolio.getCombo().select(index);
     }
 
     private void addColumnsExceptionTable(TableViewer viewer, TableColumnLayout layout)
@@ -573,6 +598,10 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
         }
 
         preferences.setValue(IMPORT_TARGET_PORTFOLIO + extractor.getLabel(), getPortfolio().getUUID());
+
+        var offsetPortfolio = getSecondaryPortfolio();
+        if (offsetPortfolio != null)
+            preferences.setValue(IMPORT_TARGET_SECONDARY_PORTFOLIO + extractor.getLabel(), offsetPortfolio.getUUID());
 
         preferences.setValue(IMPORT_CONVERT_BUYSELL_TO_DELIVERY + extractor.getLabel(), doConvertToDelivery());
         preferences.setValue(IMPORT_REMOVE_DIVIDENDS + extractor.getLabel(), doRemoveDividends());
@@ -808,11 +837,22 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
         populateAccountSelectionContainer(allEntries);
 
         primaryAccounts.forEach((currency, pair) -> select(pair.getRight(), primarySelection.get(currency)));
-        secondaryAccounts.forEach((currencyPair, pair) -> select(pair.getRight(),
-                        secondarySelection.get(currencyPair)));
         select(primaryPortfolio, portfolioSelection);
+
+        // dropdowns which appear because of the type change have no previous
+        // selection: preselect them like when the page is shown
+        secondaryAccounts.forEach((currencyPair, pair) -> {
+            select(pair.getRight(), secondarySelection.get(currencyPair));
+            if (pair.getRight().getSelection().isEmpty())
+                preselectSecondaryAccount(currencyPair, pair.getRight());
+        });
+
         if (secondaryPortfolio != null)
+        {
             select(secondaryPortfolio, secondaryPortfolioSelection);
+            if (secondaryPortfolio.getSelection().isEmpty())
+                preselectSecondaryPortfolio();
+        }
 
         checkEntriesAndRefresh(allEntries);
     }
