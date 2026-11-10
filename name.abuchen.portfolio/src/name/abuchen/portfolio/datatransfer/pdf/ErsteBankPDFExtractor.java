@@ -12,7 +12,6 @@ import java.math.RoundingMode;
 import java.util.Locale;
 import java.util.Map;
 
-import name.abuchen.portfolio.datatransfer.ExtrExchangeRate;
 import name.abuchen.portfolio.datatransfer.ExtractorUtils;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
@@ -21,7 +20,6 @@ import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
-import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
 
@@ -57,12 +55,12 @@ public class ErsteBankPDFExtractor extends AbstractPDFExtractor
 
     private void addBuySellTransaction_DocFormat01()
     {
-        DocumentType type = new DocumentType("(IHR )?(KAUF|VERKAUF)");
+        final var type = new DocumentType("(IHR )?(KAUF|VERKAUF)");
         this.addDocumentTyp(type);
 
-        Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
+        var pdfTransaction = new Transaction<BuySellEntry>();
 
-        Block firstRelevantLine = new Block("^.*Referenz Nr.*$");
+        var firstRelevantLine = new Block("^.*Referenz Nr.*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -175,7 +173,7 @@ public class ErsteBankPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("time").optional() //
                         .match("^.*Ausf.hrungszeit: (?<time>[\\d]{1,2}:[\\d]{1,2}:[\\d]{1,2})$") //
-                        .assign((t, v) -> type.getCurrentContext().put("time", v.get("time")))
+                        .assign((t, v) -> v.getTransactionContext().putString("time", v.get("time")))
 
                         .oneOf( //
                                         // @formatter:off
@@ -185,8 +183,8 @@ public class ErsteBankPDFExtractor extends AbstractPDFExtractor
                                                         .attributes("date") //
                                                         .match("^Ausf.hrungsdatum: (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
                                                         .assign((t, v) -> {
-                                                            if (type.getCurrentContext().get("time") != null)
-                                                                t.setDate(asDate(v.get("date"), type.getCurrentContext().get("time")));
+                                                            if (v.getTransactionContext().getString("time") != null)
+                                                                t.setDate(asDate(v.get("date"), v.getTransactionContext().getString("time")));
                                                             else
                                                                 t.setDate(asDate(v.get("date")));
                                                         }),
@@ -197,8 +195,8 @@ public class ErsteBankPDFExtractor extends AbstractPDFExtractor
                                                         .attributes("date") //
                                                         .match("^Ausf.hrungsdatum: (?<date>[\\d]{2}\\. .* [\\d]{4}).*$") //
                                                         .assign((t, v) -> {
-                                                            if (type.getCurrentContext().get("time") != null)
-                                                                t.setDate(asDate(v.get("date"), type.getCurrentContext().get("time")));
+                                                            if (v.getTransactionContext().getString("time") != null)
+                                                                t.setDate(asDate(v.get("date"), v.getTransactionContext().getString("time")));
                                                             else
                                                                 t.setDate(asDate(v.get("date")));
                                                         }))
@@ -239,11 +237,11 @@ public class ErsteBankPDFExtractor extends AbstractPDFExtractor
                                                         .match("^.* Devisenkurs: (?<exchangeRate>[\\.,\\d]+)$") //
                                                         .match("^.*Gesamtbetrag.*: (?<termCurrency>[\\w]{3}) [\\.,\\d]+$") //
                                                         .assign((t, v) -> {
-                                                            ExtrExchangeRate rate = asExchangeRate(v);
+                                                            var rate = asExchangeRate(v);
                                                             type.getCurrentContext().putType(rate);
 
-                                                            Money fxGross = Money.of(rate.getBaseCurrency(), asAmount(v.get("fxGross")));
-                                                            Money gross = rate.convert(rate.getTermCurrency(), fxGross);
+                                                            var fxGross = Money.of(rate.getBaseCurrency(), asAmount(v.get("fxGross")));
+                                                            var gross = rate.convert(rate.getTermCurrency(), fxGross);
 
                                                             checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                                                         }),
@@ -258,11 +256,11 @@ public class ErsteBankPDFExtractor extends AbstractPDFExtractor
                                                         .match("^.* Devisenkurs: (?<exchangeRate>[\\.,\\d]+)$") //
                                                         .match("^.* Gesamtbetrag.*: (?<baseCurrency>[\\w]{3}) [\\.,\\d]+$") //
                                                         .assign((t, v) -> {
-                                                            ExtrExchangeRate rate = asExchangeRate(v);
+                                                            var rate = asExchangeRate(v);
                                                             type.getCurrentContext().putType(rate);
 
-                                                            Money fxGross = Money.of(rate.getTermCurrency(), asAmount(v.get("fxGross")));
-                                                            Money gross = rate.convert(rate.getBaseCurrency(), fxGross);
+                                                            var fxGross = Money.of(rate.getTermCurrency(), asAmount(v.get("fxGross")));
+                                                            var gross = rate.convert(rate.getBaseCurrency(), fxGross);
 
                                                             checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                                                         }),
@@ -277,11 +275,11 @@ public class ErsteBankPDFExtractor extends AbstractPDFExtractor
                                                         .match("^.*Devisenkurs: (?<exchangeRate>[\\.,\\d]+)$") //
                                                         .match("^.*Gesamtbetrag : (?<termCurrency>[\\w]{3}) [\\.,\\d]+$") //
                                                         .assign((t, v) -> {
-                                                            ExtrExchangeRate rate = asExchangeRate(v);
+                                                            var rate = asExchangeRate(v);
                                                             type.getCurrentContext().putType(rate);
 
-                                                            Money fxGross = Money.of(rate.getBaseCurrency(), asAmount(v.get("fxGross")));
-                                                            Money gross = rate.convert(rate.getTermCurrency(), fxGross);
+                                                            var fxGross = Money.of(rate.getBaseCurrency(), asAmount(v.get("fxGross")));
+                                                            var gross = rate.convert(rate.getTermCurrency(), fxGross);
 
                                                             checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                                                         }))
@@ -292,7 +290,7 @@ public class ErsteBankPDFExtractor extends AbstractPDFExtractor
                         .section("currency", "tax").multipleTimes().optional() //
                         .match("^.* KESt( [A-Z]{1,3})? (?<currency>[\\w]{3}) (?<tax>[\\.,\\d]+)(\\-)?$") //
                         .assign((t, v) -> {
-                            Money taxes = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")));
+                            var taxes = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")));
                             t.setMonetaryAmount(t.getPortfolioTransaction().getMonetaryAmount().add(taxes));
                         })
 
@@ -328,12 +326,12 @@ public class ErsteBankPDFExtractor extends AbstractPDFExtractor
 
     private void addBuySellTransaction_DocFormat02()
     {
-        DocumentType type = new DocumentType("(Kauf|Verkauf)");
+        final var type = new DocumentType("(Kauf|Verkauf)");
         this.addDocumentTyp(type);
 
-        Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
+        var pdfTransaction = new Transaction<BuySellEntry>();
 
-        Block firstRelevantLine = new Block("^(WERTPAPIER|.*W E R T P A P I E R.*)$");
+        var firstRelevantLine = new Block("^(WERTPAPIER|.*W E R T P A P I E R.*)$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -454,11 +452,11 @@ public class ErsteBankPDFExtractor extends AbstractPDFExtractor
                         .match("^[\\.,\\d]+ STK [\\.,\\d]+ (?<termCurrency>[\\w]{3})[\\s]{1,}(?<fxGross>[\\.,\\d]+) [\\w]{3}$") //
                         .match("^USD Devisenkurs Mitte (?<exchangeRate>[\\.,\\d]+) Umgerechneter Kurswert [\\.,\\d]+ (?<baseCurrency>[\\w]{3}).*$") //
                         .assign((t, v) -> {
-                            ExtrExchangeRate rate = asExchangeRate(v);
+                            var rate = asExchangeRate(v);
                             type.getCurrentContext().putType(rate);
 
-                            Money fxGross = Money.of(rate.getTermCurrency(), asAmount(v.get("fxGross")));
-                            Money gross = rate.convert(rate.getBaseCurrency(), fxGross);
+                            var fxGross = Money.of(rate.getTermCurrency(), asAmount(v.get("fxGross")));
+                            var gross = rate.convert(rate.getBaseCurrency(), fxGross);
 
                             checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                         })
@@ -488,7 +486,7 @@ public class ErsteBankPDFExtractor extends AbstractPDFExtractor
 
     private void addSummaryStatementBuySellTransaction()
     {
-        final DocumentType type = new DocumentType(".*für den Zeitraum von [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} \\- [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}.*", //
+        final var type = new DocumentType(".*für den Zeitraum von [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} \\- [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}.*", //
                         documentContext -> documentContext //
                                         // @formatter:off
                                         // Die ausgewiesenen Kosten und Gebühren in Prozent beziehen sich auf den Kurswert von 4.053,90 EUR.
@@ -498,9 +496,9 @@ public class ErsteBankPDFExtractor extends AbstractPDFExtractor
                                         .assign((ctx, v) -> ctx.put("currency", asCurrencyCode(v.get("currency")))));
         this.addDocumentTyp(type);
 
-        Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
+        var pdfTransaction = new Transaction<BuySellEntry>();
 
-        Block firstRelevantLine = new Block("^.* ISIN [A-Z]{2}[A-Z0-9]{9}[0-9].*$", "^Summe .*$");
+        var firstRelevantLine = new Block("^.* ISIN [A-Z]{2}[A-Z0-9]{9}[0-9].*$", "^Summe .*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -536,7 +534,7 @@ public class ErsteBankPDFExtractor extends AbstractPDFExtractor
                         .section("amount") //
                         .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}[\\s]{1,}Kauf[\\s]{1,}[\\.,\\d]+[\\s]{1,}\\-(?<amount>[\\.,\\d]+)[\\s]{1,}[\\.,\\d]+.*$") //
                         .assign((t, v) -> {
-                            t.setCurrencyCode(asCurrencyCode(CurrencyUnit.EUR));
+                            t.setCurrencyCode(asCurrencyCode("EUR"));
                             t.setAmount(asAmount(v.get("amount")));
                         })
 
@@ -548,16 +546,16 @@ public class ErsteBankPDFExtractor extends AbstractPDFExtractor
 
     private void addDividendeTransaction_DocFormat01()
     {
-        DocumentType type = new DocumentType("(BARDIVIDENDE" //
+        final var type = new DocumentType("(BARDIVIDENDE" //
                         + "|FONDS\\-AUSSCH.TTUNG" //
                         + "|FONDS \\- AUSSCH.TTUNG" //
                         + "|LIQUIDATIONSZAHLUNG" //
                         + "|KAPITALAUSSCH.TTUNG)");
         this.addDocumentTyp(type);
 
-        Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
+        var pdfTransaction = new Transaction<AccountTransaction>();
 
-        Block firstRelevantLine = new Block("^.*Referenz.*$");
+        var firstRelevantLine = new Block("^.*Referenz.*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -722,11 +720,11 @@ public class ErsteBankPDFExtractor extends AbstractPDFExtractor
                                                         .match("^Devisenkurs : (?<exchangeRate>[\\.,\\d]+)$") //
                                                         .match("^Gesamtbetrag .in : (?<termCurrency>[\\w]{3}) [\\.,\\d]+$") //
                                                         .assign((t, v) -> {
-                                                            ExtrExchangeRate rate = asExchangeRate(v);
+                                                            var rate = asExchangeRate(v);
                                                             type.getCurrentContext().putType(rate);
 
-                                                            Money fxGross = Money.of(rate.getBaseCurrency(), asAmount(v.get("fxGross")));
-                                                            Money gross = rate.convert(rate.getTermCurrency(), fxGross);
+                                                            var fxGross = Money.of(rate.getBaseCurrency(), asAmount(v.get("fxGross")));
+                                                            var gross = rate.convert(rate.getTermCurrency(), fxGross);
 
                                                             checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                                                         }),
@@ -741,11 +739,11 @@ public class ErsteBankPDFExtractor extends AbstractPDFExtractor
                                                         .match("^.* Devisenkurs : (?<exchangeRate>[\\.,\\d]+)$") //
                                                         .match("^Dividende Netto : (?<baseCurrency>[\\w]{3}) [\\.,\\d]+$") //
                                                         .assign((t, v) -> {
-                                                            ExtrExchangeRate rate = asExchangeRate(v);
+                                                            var rate = asExchangeRate(v);
                                                             type.getCurrentContext().putType(rate);
 
-                                                            Money fxGross = Money.of(rate.getTermCurrency(), asAmount(v.get("fxGross")));
-                                                            Money gross = rate.convert(rate.getBaseCurrency(), fxGross);
+                                                            var fxGross = Money.of(rate.getTermCurrency(), asAmount(v.get("fxGross")));
+                                                            var gross = rate.convert(rate.getBaseCurrency(), fxGross);
 
                                                             checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                                                         }))
@@ -767,13 +765,13 @@ public class ErsteBankPDFExtractor extends AbstractPDFExtractor
 
     private void addDividendeTransaction_DocFormat02()
     {
-        DocumentType type = new DocumentType("(Aussch.ttung|Quartalsdividende|Dividende|Kapitalr.ckzahlung)", //
+        final var type = new DocumentType("(Aussch.ttung|Quartalsdividende|Dividende|Kapitalr.ckzahlung)", //
                         "WERTPAPIERGUTSCHRIFT");
         this.addDocumentTyp(type);
 
-        Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
+        var pdfTransaction = new Transaction<AccountTransaction>();
 
-        Block firstRelevantLine = new Block("^([\\s]+)?(Aussch.ttung|Quartalsdividende|Dividende|Kapitalr.ckzahlung)([\\s]+)?$");
+        var firstRelevantLine = new Block("^([\\s]+)?(Aussch.ttung|Quartalsdividende|Dividende|Kapitalr.ckzahlung)([\\s]+)?$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -880,7 +878,7 @@ public class ErsteBankPDFExtractor extends AbstractPDFExtractor
                                                             // If the taxes exceed the gross amount, the account
                                                             // is debited, then it is taxes.
                                                             t.setType(AccountTransaction.Type.TAXES);
-                                                            type.getCurrentContext().putBoolean("noTax", true);
+                                                            v.getTransactionContext().putBoolean("noTax", true);
 
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                                             t.setAmount(asAmount(v.get("amount")));
@@ -896,11 +894,11 @@ public class ErsteBankPDFExtractor extends AbstractPDFExtractor
                                                         .match("^Brutto [\\w]{3}[\\s]{1,}(?<fxGross>[\\.,\\d]+)[\\s]{1,}(?<gross>[\\.,\\d]+).*$") //
                                                         .match("^Devisenkurs (?<termCurrency>[\\w]{3})\\/(?<baseCurrency>[\\w]{3}) .* [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<exchangeRate>[\\.,\\d]+).*$") //
                                                         .assign((t, v) -> {
-                                                            ExtrExchangeRate rate = asExchangeRate(v);
+                                                            var rate = asExchangeRate(v);
                                                             type.getCurrentContext().putType(rate);
 
-                                                            Money fxGross = Money.of(rate.getTermCurrency(), asAmount(v.get("fxGross")));
-                                                            Money gross = rate.convert(rate.getBaseCurrency(), fxGross);
+                                                            var fxGross = Money.of(rate.getTermCurrency(), asAmount(v.get("fxGross")));
+                                                            var gross = rate.convert(rate.getBaseCurrency(), fxGross);
 
                                                             checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                                                         }),
@@ -917,11 +915,11 @@ public class ErsteBankPDFExtractor extends AbstractPDFExtractor
                                                         .assign((t, v) -> {
                                                             // The amounts in EUR are calculated with the middle rate,
                                                             // the difference to the customer rate is shown as fee.
-                                                            ExtrExchangeRate rate = asExchangeRate(v);
+                                                            var rate = asExchangeRate(v);
                                                             type.getCurrentContext().putType(rate);
 
-                                                            Money fxGross = Money.of(rate.getTermCurrency(), asAmount(v.get("fxGross")));
-                                                            Money gross = rate.convert(rate.getBaseCurrency(), fxGross);
+                                                            var fxGross = Money.of(rate.getTermCurrency(), asAmount(v.get("fxGross")));
+                                                            var gross = rate.convert(rate.getBaseCurrency(), fxGross);
 
                                                             checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                                                         }))
@@ -934,13 +932,7 @@ public class ErsteBankPDFExtractor extends AbstractPDFExtractor
                         .match("^.* (?<note>(Aussch.ttung|Quartalsdividende)).*$") //
                         .assign((t, v) -> t.setNote(trim(v.get("note"))))
 
-                        .wrap(t -> {
-                            // If we have multiple entries in the document, then
-                            // the "noTax" flag must be removed.
-                            type.getCurrentContext().remove("noTax");
-
-                            return new TransactionItem(t);
-                        });
+                        .wrap(TransactionItem::new);
 
         addTaxesSectionsTransaction(pdfTransaction, type);
         addFeesSectionsTransaction(pdfTransaction, type);
@@ -948,7 +940,7 @@ public class ErsteBankPDFExtractor extends AbstractPDFExtractor
 
     private void addCertificateOfLostAdjustmentTransaction()
     {
-        final DocumentType type = new DocumentType("BESCHEINIGUNG .BER DEN VERLUSTAUSGLEICH", //
+        final var type = new DocumentType("BESCHEINIGUNG .BER DEN VERLUSTAUSGLEICH", //
                         documentContext -> documentContext //
                                         // @formatter:off
                                         // Abcd Abcdefghijk Währung:  EUR
@@ -958,9 +950,9 @@ public class ErsteBankPDFExtractor extends AbstractPDFExtractor
                                         .assign((ctx, v) -> ctx.put("currency", asCurrencyCode(v.get("currency")))));
         this.addDocumentTyp(type);
 
-        Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
+        var pdfTransaction = new Transaction<AccountTransaction>();
 
-        Block firstRelevantLine = new Block("^.*Depotkreis:.*$");
+        var firstRelevantLine = new Block("^.*Depotkreis:.*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -998,9 +990,9 @@ public class ErsteBankPDFExtractor extends AbstractPDFExtractor
 
     private void addTaxLostAdjustmentTransaction(Map<String, String> context, DocumentType type)
     {
-        Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
+        var pdfTransaction = new Transaction<AccountTransaction>();
 
-        Block firstRelevantLine = new Block("^.*Referenz Nr.*$");
+        var firstRelevantLine = new Block("^.*Referenz Nr.*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -1027,7 +1019,7 @@ public class ErsteBankPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("time").optional() //
                         .match("^.*Ausf.hrungszeit: (?<time>[\\d]{1,2}:[\\d]{1,2}:[\\d]{1,2})$") //
-                        .assign((t, v) -> type.getCurrentContext().put("time", v.get("time")))
+                        .assign((t, v) -> v.getTransactionContext().putString("time", v.get("time")))
 
                         .optionalOneOf( //
                                         // @formatter:off
@@ -1037,8 +1029,8 @@ public class ErsteBankPDFExtractor extends AbstractPDFExtractor
                                                         .attributes("date") //
                                                         .match("^Ausf.hrungsdatum: (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
                                                         .assign((t, v) -> {
-                                                            if (type.getCurrentContext().get("time") != null)
-                                                                t.setDateTime(asDate(v.get("date"), type.getCurrentContext().get("time")));
+                                                            if (v.getTransactionContext().getString("time") != null)
+                                                                t.setDateTime(asDate(v.get("date"), v.getTransactionContext().getString("time")));
                                                             else
                                                                 t.setDateTime(asDate(v.get("date")));
                                                         }),
@@ -1049,8 +1041,8 @@ public class ErsteBankPDFExtractor extends AbstractPDFExtractor
                                                         .attributes("date") //
                                                         .match("^Ausf.hrungsdatum: (?<date>[\\d]{2}\\. .* [\\d]{4}).*$") //
                                                         .assign((t, v) -> {
-                                                            if (type.getCurrentContext().get("time") != null)
-                                                                t.setDateTime(asDate(v.get("date"), type.getCurrentContext().get("time")));
+                                                            if (v.getTransactionContext().getString("time") != null)
+                                                                t.setDateTime(asDate(v.get("date"), v.getTransactionContext().getString("time")));
                                                             else
                                                                 t.setDateTime(asDate(v.get("date")));
                                                         }))
@@ -1080,7 +1072,7 @@ public class ErsteBankPDFExtractor extends AbstractPDFExtractor
                         .section("currency", "tax").optional() //
                         .match("^.* Fremde Steuer : (?<currency>[\\w]{3}) (?<tax>[\\.,\\d]+)$") //
                         .assign((t, v) -> {
-                            if (!type.getCurrentContext().getBoolean("noTax"))
+                            if (!v.getTransactionContext().getBoolean("noTax"))
                                 processTaxEntries(t, v, type);
                         })
 
@@ -1095,7 +1087,7 @@ public class ErsteBankPDFExtractor extends AbstractPDFExtractor
                         .match("^Steuer : KESt[\\d]$") //
                         .match("^Steuern : (?<currency>[\\w]{3}) (?<tax>[\\.,\\d]+)$") //
                         .assign((t, v) -> {
-                            if (!type.getCurrentContext().getBoolean("noTax"))
+                            if (!v.getTransactionContext().getBoolean("noTax"))
                                 processTaxEntries(t, v, type);
                         })
 
@@ -1106,7 +1098,7 @@ public class ErsteBankPDFExtractor extends AbstractPDFExtractor
                         .section("tax", "currency").optional() //
                         .match("^.* KESt auf Kursgewinne[\\s]{1,}(\\-)?(?<tax>[\\.,\\d]+)(\\-)? (?<currency>[\\w]{3}).*$") //
                         .assign((t, v) -> {
-                            if (!type.getCurrentContext().getBoolean("noTax"))
+                            if (!v.getTransactionContext().getBoolean("noTax"))
                                 processTaxEntries(t, v, type);
                         })
 
@@ -1120,7 +1112,7 @@ public class ErsteBankPDFExtractor extends AbstractPDFExtractor
                         .section("currency", "tax").multipleTimes().optional() //
                         .match("^.*KESt( [A-Z]{1,3})? : (?<currency>[\\w]{3}) (?<tax>[\\.,\\d]+)$") //
                         .assign((t, v) -> {
-                            if (!type.getCurrentContext().getBoolean("noTax"))
+                            if (!v.getTransactionContext().getBoolean("noTax"))
                                 processTaxEntries(t, v, type);
                         })
 
@@ -1133,7 +1125,7 @@ public class ErsteBankPDFExtractor extends AbstractPDFExtractor
                         .section("currency", "tax").multipleTimes().optional() //
                         .match("^KESt [A-Z]{1,3} pro St.ck [\\.,\\d]+ .*(?<currency>[\\w]{3}) .*\\-(?<tax>[\\.,\\d]+).*$") //
                         .assign((t, v) -> {
-                            if (!type.getCurrentContext().getBoolean("noTax"))
+                            if (!v.getTransactionContext().getBoolean("noTax"))
                                 processTaxEntries(t, v, type);
                         })
 
@@ -1148,7 +1140,7 @@ public class ErsteBankPDFExtractor extends AbstractPDFExtractor
                         .match("^.* Betr.ge in (?<currency>[\\w]{3}).*$") //
                         .match("^KESt [A-Z]{1,3} [\\.,\\d]+ % .*\\-(?<tax>[\\.,\\d]+).*$") //
                         .assign((t, v) -> {
-                            if (!type.getCurrentContext().getBoolean("noTax"))
+                            if (!v.getTransactionContext().getBoolean("noTax"))
                                 processTaxEntries(t, v, type);
                         })
 
@@ -1160,7 +1152,7 @@ public class ErsteBankPDFExtractor extends AbstractPDFExtractor
                         .match("^.* Betr.ge in (?<currency>[\\w]{3}).*$") //
                         .match("^KESt [A-Z]{1,3} pro St.ck [\\.,\\d]+ % .*\\-(?<tax>[\\.,\\d]+).*$") //
                         .assign((t, v) -> {
-                            if (!type.getCurrentContext().getBoolean("noTax"))
+                            if (!v.getTransactionContext().getBoolean("noTax"))
                                 processTaxEntries(t, v, type);
                         })
 
@@ -1172,7 +1164,7 @@ public class ErsteBankPDFExtractor extends AbstractPDFExtractor
                         .match("^Steuer : Quellensteuer$") //
                         .match("^Steuern : (?<currency>[\\w]{3}) (?<withHoldingTax>[\\.,\\d]+)$") //
                         .assign((t, v) -> {
-                            if (!type.getCurrentContext().getBoolean("noTax"))
+                            if (!v.getTransactionContext().getBoolean("noTax"))
                                 processWithHoldingTaxEntries(t, v, "withHoldingTax", type);
                         })
 
@@ -1185,7 +1177,7 @@ public class ErsteBankPDFExtractor extends AbstractPDFExtractor
                         .match("^.* Betr.ge in (?<currency>[\\w]{3}).*$") //
                         .match("^QESt [\\.,\\d]+ % .*\\-(?<withHoldingTax>[\\.,\\d]+).*$") //
                         .assign((t, v) -> {
-                            if (!type.getCurrentContext().getBoolean("noTax"))
+                            if (!v.getTransactionContext().getBoolean("noTax"))
                                 processWithHoldingTaxEntries(t, v, "withHoldingTax", type);
                         });
     }
@@ -1197,7 +1189,7 @@ public class ErsteBankPDFExtractor extends AbstractPDFExtractor
 
                         .section("noFee").optional() //
                         .match("^NAV: (?<noFee>[\\w]{3} [\\.,\\d]+)$") //
-                        .assign((t, v) -> type.getCurrentContext().putBoolean("noFee", true));
+                        .assign((t, v) -> v.getTransactionContext().putBoolean("noFee", true));
 
         transaction //
 
@@ -1207,7 +1199,7 @@ public class ErsteBankPDFExtractor extends AbstractPDFExtractor
                         .section("currency", "fee").optional() //
                         .match("^.* Zahlungsprovision : (?<currency>[\\w]{3}) (?<fee>[\\.,\\d]+)(\\-)?$") //
                         .assign((t, v) -> {
-                            if (!type.getCurrentContext().getBoolean("noFee"))
+                            if (!v.getTransactionContext().getBoolean("noFee"))
                                 processFeeEntries(t, v, type);
                         })
 
@@ -1217,7 +1209,7 @@ public class ErsteBankPDFExtractor extends AbstractPDFExtractor
                         .section("currency", "fee").optional() //
                         .match("^.* Tradinggeb.hren: (?<currency>[\\w]{3}) (?<fee>[\\.,\\d]+)(\\-)?$") //
                         .assign((t, v) -> {
-                            if (!type.getCurrentContext().getBoolean("noFee"))
+                            if (!v.getTransactionContext().getBoolean("noFee"))
                                 processFeeEntries(t, v, type);
                         })
 
@@ -1227,7 +1219,7 @@ public class ErsteBankPDFExtractor extends AbstractPDFExtractor
                         .section("currency", "fee").optional() //
                         .match("^.* Inkassogeb.hr : (?<currency>[\\w]{3}) (?<fee>[\\.,\\d]+)(\\-)?$") //
                         .assign((t, v) -> {
-                            if (!type.getCurrentContext().getBoolean("noFee"))
+                            if (!v.getTransactionContext().getBoolean("noFee"))
                                 processFeeEntries(t, v, type);
                         })
 
@@ -1240,7 +1232,7 @@ public class ErsteBankPDFExtractor extends AbstractPDFExtractor
                         .section("currency", "fee").multipleTimes().optional() //
                         .match("^Spesen : (?<currency>[\\w]{3}) (?<fee>[\\.,\\d]+)$") //
                         .assign((t, v) -> {
-                            if (!type.getCurrentContext().getBoolean("noFee"))
+                            if (!v.getTransactionContext().getBoolean("noFee"))
                                 processFeeEntries(t, v, type);
                         })
 
@@ -1250,7 +1242,7 @@ public class ErsteBankPDFExtractor extends AbstractPDFExtractor
                         .section("currency", "fee").optional() //
                         .match("^.* WP\\-Kommission: (?<currency>[\\w]{3}) (?<fee>[\\.,\\d]+)(\\-)?$") //
                         .assign((t, v) -> {
-                            if (!type.getCurrentContext().getBoolean("noFee"))
+                            if (!v.getTransactionContext().getBoolean("noFee"))
                                 processFeeEntries(t, v, type);
                         })
 
@@ -1260,7 +1252,7 @@ public class ErsteBankPDFExtractor extends AbstractPDFExtractor
                         .section("currency", "fee").optional() //
                         .match("^.* FX\\-Kommission: (?<currency>[\\w]{3}) (?<fee>[\\.,\\d]+)(\\-)?$") //
                         .assign((t, v) -> {
-                            if (!type.getCurrentContext().getBoolean("noFee"))
+                            if (!v.getTransactionContext().getBoolean("noFee"))
                                 processFeeEntries(t, v, type);
                         })
 
@@ -1270,7 +1262,7 @@ public class ErsteBankPDFExtractor extends AbstractPDFExtractor
                         .section("currency", "fee").optional() //
                         .match("^.* Devisenprovision: (?<currency>[\\w]{3}) (?<fee>[\\.,\\d]+)(\\-)?$") //
                         .assign((t, v) -> {
-                            if (!type.getCurrentContext().getBoolean("noFee"))
+                            if (!v.getTransactionContext().getBoolean("noFee"))
                                 processFeeEntries(t, v, type);
                         })
 
@@ -1281,7 +1273,7 @@ public class ErsteBankPDFExtractor extends AbstractPDFExtractor
                         .match("^.* Betr.ge in (?<currency>[\\w]{3}).*$") //
                         .match("^Zahlungsprovision[\\s]{1,}\\-(?<fee>[\\.,\\d]+).*$") //
                         .assign((t, v) -> {
-                            if (!type.getCurrentContext().getBoolean("noFee"))
+                            if (!v.getTransactionContext().getBoolean("noFee"))
                                 processFeeEntries(t, v, type);
                         })
 
@@ -1291,7 +1283,7 @@ public class ErsteBankPDFExtractor extends AbstractPDFExtractor
                         .section("fee", "currency").optional() //
                         .match("^.* Fremde Spesen[\\s]{1,}(?<fee>[\\.,\\d]+)\\- (?<currency>[\\w]{3}).*$") //
                         .assign((t, v) -> {
-                            if (!type.getCurrentContext().getBoolean("noFee"))
+                            if (!v.getTransactionContext().getBoolean("noFee"))
                                 processFeeEntries(t, v, type);
                         })
 
@@ -1301,7 +1293,7 @@ public class ErsteBankPDFExtractor extends AbstractPDFExtractor
                         .section("fee", "currency").optional() //
                         .match("^.* Mindestspesen[\\s]{1,}(?<fee>[\\.,\\d]+)\\- (?<currency>[\\w]{3}).*$") //
                         .assign((t, v) -> {
-                            if (!type.getCurrentContext().getBoolean("noFee"))
+                            if (!v.getTransactionContext().getBoolean("noFee"))
                                 processFeeEntries(t, v, type);
                         })
 
@@ -1311,7 +1303,7 @@ public class ErsteBankPDFExtractor extends AbstractPDFExtractor
                         .section("fee", "currency").optional() //
                         .match("^.* Inl\\. WP \\- Spesen[\\s]{1,}(?<fee>[\\.,\\d]+)\\- (?<currency>[\\w]{3}).*$") //
                         .assign((t, v) -> {
-                            if (!type.getCurrentContext().getBoolean("noFee"))
+                            if (!v.getTransactionContext().getBoolean("noFee"))
                                 processFeeEntries(t, v, type);
                         })
 
@@ -1321,7 +1313,7 @@ public class ErsteBankPDFExtractor extends AbstractPDFExtractor
                         .section("fee", "currency").optional() //
                         .match("^.* Gesamtkosten und \\-geb.hren[\\s]{1,}(?<fee>[\\.,\\d]+)\\+ (?<currency>[\\w]{3}).*$") //
                         .assign((t, v) -> {
-                            if (!type.getCurrentContext().getBoolean("noFee"))
+                            if (!v.getTransactionContext().getBoolean("noFee"))
                                 processFeeEntries(t, v, type);
                         })
 
@@ -1336,7 +1328,7 @@ public class ErsteBankPDFExtractor extends AbstractPDFExtractor
                         .match("^.* [\\.,\\d]+[\\s]{1,}\\-(?<fee>[\\.,\\d]+)[\\s]{1,}[\\.,\\d]+.*$") //
                         .match("^.* [\\.,\\d]+[\\s]{1,}[\\.,\\d]+[\\s]{1,}[\\.,\\d]+.*$") //
                         .assign((t, v) -> {
-                            if (!type.getCurrentContext().getBoolean("noFee"))
+                            if (!v.getTransactionContext().getBoolean("noFee"))
                                 processFeeEntries(t, v, type);
                         })
 
@@ -1346,7 +1338,7 @@ public class ErsteBankPDFExtractor extends AbstractPDFExtractor
                         .section("currency", "fee").optional() //
                         .match("^Summe der Dienstleistungskosten (?<currency>[\\w]{3}) (?<fee>[\\.,\\d]+) .*$") //
                         .assign((t, v) -> {
-                            if (!type.getCurrentContext().getBoolean("noFee"))
+                            if (!v.getTransactionContext().getBoolean("noFee"))
                                 processFeeEntries(t, v, type);
                         })
 
@@ -1365,15 +1357,15 @@ public class ErsteBankPDFExtractor extends AbstractPDFExtractor
                         .match("^Preis: (?<currencyPerShare>[\\w]{3}) (?<amountPerShare>[\\.,\\d]+)$") //
                         .assign((t, v) -> {
                             BigDecimal shares = asBigDecimal(v.get("shares"));
-                            Money amountNetAssetValue = Money.of(asCurrencyCode(v.get("currencyNetAssetValue")), asAmount(v.get("netAssetValue")));
-                            Money amountPerShare = Money.of(asCurrencyCode(v.get("currencyPerShare")), asAmount(v.get("amountPerShare")));
+                            var amountNetAssetValue = Money.of(asCurrencyCode(v.get("currencyNetAssetValue")), asAmount(v.get("netAssetValue")));
+                            var amountPerShare = Money.of(asCurrencyCode(v.get("currencyPerShare")), asAmount(v.get("amountPerShare")));
 
                             // @formatter:off
                             // fxAmount = amountNetAssetValue - amountPerShare
                             // fee = shares * amountNetAssetValue - amountPerShare
                             // @formatter:on
-                            Money fxAmount = amountPerShare.subtract(amountNetAssetValue);
-                            Money fee = Money.of(fxAmount.getCurrencyCode(), //
+                            var fxAmount = amountPerShare.subtract(amountNetAssetValue);
+                            var fee = Money.of(fxAmount.getCurrencyCode(), //
                                             BigDecimal.valueOf(fxAmount.getAmount()) //
                                                             .multiply(shares, Values.MC) //
                                                             .setScale(0, RoundingMode.HALF_UP).longValue());
