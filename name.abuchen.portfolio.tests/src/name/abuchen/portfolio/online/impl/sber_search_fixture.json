@@ -1,0 +1,102 @@
+{
+ "securities": {
+  "columns": [
+   "secid",
+   "shortname",
+   "regnumber",
+   "name",
+   "isin",
+   "is_traded",
+   "emitent_id",
+   "emitent_title",
+   "emitent_inn",
+   "emitent_okpo",
+   "type",
+   "group",
+   "primary_boardid",
+   "marketprice_boardid"
+  ],
+  "data": [
+   [
+    "FIXSBER",
+    "SBER Price Fixing",
+    null,
+    "SBER Price Fixing",
+    null,
+    1,
+    null,
+    null,
+    null,
+    null,
+    "stock_index_pf",
+    "stock_index",
+    "INPF",
+    null
+   ],
+   [
+    "SBER",
+    "Sberbank",
+    "10301481B",
+    "Sberbank",
+    "RU0009029540",
+    1,
+    484,
+    "Sberbank of Russia",
+    "7707083893",
+    "00032537",
+    "common_share",
+    "stock_shares",
+    "TQBR",
+    "TQBR"
+   ],
+   [
+    "SBERP",
+    "Sberbank (pref)",
+    "20301481B",
+    "Sberbank (pref)",
+    "RU0009029557",
+    1,
+    484,
+    "Sberbank of Russia",
+    "7707083893",
+    "00032537",
+    "preferred_share",
+    "stock_shares",
+    "TQBR",
+    "TQBR"
+   ],
+   [
+    "RU000A10DS74",
+    "SBER51",
+    "4B02-804-01481-B-001P",
+    "SBER51",
+    "RU000A10DS74",
+    1,
+    484,
+    "Sberbank of Russia",
+    "7707083893",
+    "00032537",
+    "exchange_bond",
+    "stock_bonds",
+    "TQCB",
+    "TQCB"
+   ],
+   [
+    "RU000A0ZZMD7",
+    "OPIF RSHB Fund Bonds",
+    "2567",
+    "OPIF RSHB Fund Bonds",
+    "RU000A0ZZMD7",
+    1,
+    6281,
+    "\"RSHB Asset Management\" Limited Liability Company",
+    "7704814182",
+    "11396254",
+    "public_ppif",
+    "stock_ppif",
+    "TQBR",
+    "TQBR"
+   ]
+  ]
+ }
+}
