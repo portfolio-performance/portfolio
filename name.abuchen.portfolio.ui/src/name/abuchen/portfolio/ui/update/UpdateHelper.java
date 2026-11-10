@@ -378,7 +378,9 @@ public final class UpdateHelper
         if (operation == null)
             checkForUpdates(monitor);
 
-        checkWritePermissions();
+        File installDir = getInstallDir();
+
+        checkWritePermissions(installDir);
 
         ProvisioningJob job = operation.getProvisioningJob(null);
         IStatus status = job.runModal(monitor);
@@ -389,22 +391,28 @@ public final class UpdateHelper
             throw new CoreException(status);
     }
 
+    private File getInstallDir()
+    {
+        Location installLocation = Platform.getInstallLocation();
+        if (installLocation == null)
+            return null;
+
+        URL url = installLocation.getURL();
+        if (url == null)
+            return null;
+
+        return URLUtil.toFile(url);
+    }
+
     /**
      * Check that update process has correct permissions to update the
      * installation. Particularly on Windows, we might have to prompt users to
      * run PP as administrator.
      */
-    private void checkWritePermissions() throws CoreException
+    private void checkWritePermissions(File installDir) throws CoreException
     {
-        Location installLocation = Platform.getInstallLocation();
-        if (installLocation == null)
+        if (installDir == null)
             return;
-
-        URL url = installLocation.getURL();
-        if (url == null)
-            return;
-
-        File installDir = URLUtil.toFile(url);
 
         boolean canWrite = canWrite(installDir);
 
