@@ -139,6 +139,7 @@ message PTransactionUnit {
     GROSS_VALUE = 0;
     TAX = 1;
     FEE = 2;
+    ACCRUED_INTEREST = 3;
   }
   Type type = 1;
   int64 amount = 2;

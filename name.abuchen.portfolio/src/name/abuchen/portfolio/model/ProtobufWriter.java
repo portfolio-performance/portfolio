@@ -591,6 +591,9 @@ import name.abuchen.portfolio.money.Money;
                 case PTransactionUnit.Type.FEE_VALUE:
                     type = Transaction.Unit.Type.FEE;
                     break;
+                case PTransactionUnit.Type.ACCRUED_INTEREST_VALUE:
+                    type = Transaction.Unit.Type.ACCRUED_INTEREST;
+                    break;
                 default:
                     throw new UnsupportedOperationException();
             }
@@ -1205,6 +1208,9 @@ import name.abuchen.portfolio.money.Money;
                 break;
             case FEE:
                 newUnit.setTypeValue(PTransactionUnit.Type.FEE_VALUE);
+                break;
+            case ACCRUED_INTEREST:
+                newUnit.setTypeValue(PTransactionUnit.Type.ACCRUED_INTEREST_VALUE);
                 break;
             default:
                 throw new UnsupportedOperationException();

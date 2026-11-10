@@ -129,4 +129,83 @@ public class PortfolioTransactionTest
                         Money.of(CurrencyUnit.USD, Values.Amount.factorize(1010)), BigDecimal.valueOf(0.9)));
         return t;
     }
+
+    @Test
+    public void testGrossValueOfPurchaseWithAccruedInterest()
+    {
+        // amount = gross value + accrued interest + fees + taxes
+        PortfolioTransaction t = createWithAccruedInterest(PortfolioTransaction.Type.BUY, 5232.20);
+
+        assertThat(t.getAccruedInterest(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(150.86))));
+        assertThat(t.getGrossValue(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(5003.00))));
+        assertThat(t.getMonetaryAmountWithoutAccruedInterest(),
+                        is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(5081.34))));
+        assertThat(t.getGrossPricePerShare(), is(Quote.of(CurrencyUnit.USD, Values.Quote.factorize(100.06))));
+    }
+
+    @Test
+    public void testGrossValueOfSaleWithAccruedInterest()
+    {
+        // amount = gross value + accrued interest - fees - taxes
+        PortfolioTransaction t = createWithAccruedInterest(PortfolioTransaction.Type.SELL, 5075.52);
+
+        assertThat(t.getGrossValue(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(5003.00))));
+        assertThat(t.getMonetaryAmountWithoutAccruedInterest(),
+                        is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(4924.66))));
+
+        CurrencyConverter converter = new TestCurrencyConverter().with(CurrencyUnit.USD);
+        assertThat(t.getAccruedInterest(converter), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(150.86))));
+        assertThat(t.getMonetaryAmountWithoutAccruedInterest(converter),
+                        is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(4924.66))));
+    }
+
+    @Test
+    public void testAccruedInterestInSecurityCurrencyUsesTransactionRate()
+    {
+        Security bond = new Security("Bond", CurrencyUnit.USD); //$NON-NLS-1$
+        bond.setPercentageQuoted(true);
+
+        // EUR account, USD bond: 1,010.00 USD at 0.9 = 909.00 EUR, accrued
+        // interest entered in transaction currency only (9.00 EUR)
+        PortfolioTransaction t = createForexPurchase(bond);
+        t.setMonetaryAmount(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(918)));
+        t.addUnit(new Unit(Unit.Type.ACCRUED_INTEREST, Money.of(CurrencyUnit.EUR, Values.Amount.factorize(9))));
+
+        CurrencyConverter usd = new TestCurrencyConverter().with(CurrencyUnit.USD);
+
+        // converted with the rate of the transaction like the amount (918 /
+        // 0.9 = 1,020.00 USD), not with the historical rate of that day
+        assertThat(t.getMonetaryAmount(usd), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(1020))));
+        assertThat(t.getAccruedInterest(usd), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(10))));
+        assertThat(t.getMonetaryAmountWithoutAccruedInterest(usd),
+                        is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(1010))));
+
+        // in transaction currency nothing is converted
+        CurrencyConverter eur = new TestCurrencyConverter().with(CurrencyUnit.EUR);
+        assertThat(t.getAccruedInterest(eur), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(9))));
+
+        // accrued interest stored in the currency of the security is kept
+        PortfolioTransaction f = createForexPurchase(bond);
+        f.setMonetaryAmount(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(918)));
+        f.addUnit(new Unit(Unit.Type.ACCRUED_INTEREST, Money.of(CurrencyUnit.EUR, Values.Amount.factorize(9)),
+                        Money.of(CurrencyUnit.USD, Values.Amount.factorize(10.01)), BigDecimal.valueOf(0.9)));
+        assertThat(f.getAccruedInterest(usd), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(10.01))));
+    }
+
+    private static PortfolioTransaction createWithAccruedInterest(PortfolioTransaction.Type type, double amount)
+    {
+        Security bond = new Security("Bond", CurrencyUnit.USD); //$NON-NLS-1$
+        bond.setPercentageQuoted(true);
+
+        // 5,000 nominal at 100.06 %, accrued interest 150.86, fees 78.34
+        PortfolioTransaction t = new PortfolioTransaction();
+        t.setType(type);
+        t.setDateTime(LocalDateTime.parse("2025-08-21T00:00")); //$NON-NLS-1$
+        t.setSecurity(bond);
+        t.setShares(Values.Share.factorize(5000));
+        t.setMonetaryAmount(Money.of(CurrencyUnit.USD, Values.Amount.factorize(amount)));
+        t.addUnit(new Unit(Unit.Type.ACCRUED_INTEREST, Money.of(CurrencyUnit.USD, Values.Amount.factorize(150.86))));
+        t.addUnit(new Unit(Unit.Type.FEE, Money.of(CurrencyUnit.USD, Values.Amount.factorize(78.34))));
+        return t;
+    }
 }
