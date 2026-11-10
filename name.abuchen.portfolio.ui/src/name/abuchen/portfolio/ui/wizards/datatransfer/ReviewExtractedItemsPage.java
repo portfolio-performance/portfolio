@@ -7,6 +7,7 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -37,6 +38,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 
+import name.abuchen.portfolio.datatransfer.DuplicatesWithinImport;
 import name.abuchen.portfolio.datatransfer.Extractor;
 import name.abuchen.portfolio.datatransfer.Extractor.SkippedItem;
 import name.abuchen.portfolio.datatransfer.ImportAction;
@@ -125,6 +127,12 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
     private List<Extractor.InputFile> files;
     private Account account;
     private Portfolio portfolio;
+
+    /**
+     * If true, the extracted items are also checked for duplicates among each
+     * other (only between items from different source files)
+     */
+    private boolean detectDuplicatesWithinImport = false;
 
     private List<ExtractedEntry> allEntries = new ArrayList<>();
 
@@ -492,6 +500,11 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
         this.portfolio = portfolio;
     }
 
+    public void setDetectDuplicatesWithinImport(boolean detectDuplicatesWithinImport)
+    {
+        this.detectDuplicatesWithinImport = detectDuplicatesWithinImport;
+    }
+
     private void setResults(List<ExtractedEntry> entries, List<Exception> errors)
     {
         allEntries.addAll(entries);
@@ -652,6 +665,18 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
         }
     }
 
+    /**
+     * Returns the items which are checked for duplicates within the import,
+     * i.e. without failures and skipped items
+     */
+    private static List<Extractor.Item> importedItems(List<ExtractedEntry> entries)
+    {
+        return entries.stream() //
+                        .map(ExtractedEntry::getItem) //
+                        .filter(item -> !item.isFailure() && !item.isSkipped()) //
+                        .toList();
+    }
+
     private void checkEntries(List<ExtractedEntry> entries)
     {
         List<ImportAction> actions = new ArrayList<>();
@@ -708,7 +733,34 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
             }
         }
 
+        if (detectDuplicatesWithinImport)
+            checkDuplicatesWithinImport(entries);
+
         errorTableViewer.setInput(allErrors);
+    }
+
+    /**
+     * Checks for duplicates between the files of the import in addition to the
+     * import actions, so that the item shows which file contains the kept
+     * copy. Runs after the import actions in order to prefer copies without
+     * import errors.
+     */
+    private static void checkDuplicatesWithinImport(List<ExtractedEntry> entries)
+    {
+        Set<Extractor.Item> itemsWithErrors = Collections.newSetFromMap(new IdentityHashMap<>());
+        entries.stream() //
+                        .filter(entry -> entry.getStatus().anyMatch(s -> s.getCode() == Code.ERROR)) //
+                        .forEach(entry -> itemsWithErrors.add(entry.getItem()));
+
+        var duplicatesWithinImport = DuplicatesWithinImport.of(importedItems(entries), itemsWithErrors::contains);
+
+        for (ExtractedEntry entry : entries)
+        {
+            duplicatesWithinImport.keptCopyOf(entry.getItem())
+                            .ifPresent(kept -> entry.addStatus(new ImportAction.Status(Code.WARNING,
+                                            MessageFormat.format(Messages.LabelAlsoContainedInFile,
+                                                            kept.getSource()))));
+        }
     }
 
 }
