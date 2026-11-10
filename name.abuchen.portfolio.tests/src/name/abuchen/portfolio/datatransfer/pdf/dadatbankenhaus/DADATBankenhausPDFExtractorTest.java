@@ -19,7 +19,7 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTaxes;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTicker;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasWkn;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.inboundCash;
-import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.interest;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.interestCharge;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.outboundCash;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.purchase;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.removal;
@@ -766,7 +766,7 @@ public class DADATBankenhausPDFExtractorTest
         new AssertImportActions().check(results, "EUR");
 
         // check interest transaction
-        assertThat(results, hasItem(interest( //
+        assertThat(results, hasItem(interestCharge( //
                         hasDate("2021-03-31T00:00"), //
                         hasSource("Kontoauszug09.txt"), //
                         hasNote("Sollzinsen"), //
@@ -1191,7 +1191,7 @@ public class DADATBankenhausPDFExtractorTest
         new AssertImportActions().check(results, "EUR");
 
         // check interest transaction
-        assertThat(results, hasItem(interest( //
+        assertThat(results, hasItem(interestCharge( //
                         hasDate("2021-09-30T00:00"), //
                         hasSource("Kontoauszug20.txt"), //
                         hasNote("Sollzinsen"), //
