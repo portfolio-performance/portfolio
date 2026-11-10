@@ -125,7 +125,8 @@ public final class FundTransferLotBuilder
         {
             // When editing an existing transfer, rebuild the preview from the
             // portfolio state as if that transfer had not been recorded yet.
-            if (ignoredEntries.contains(transaction.getCrossEntry()))
+            var crossEntry = transaction.getCrossEntry();
+            if (crossEntry != null && ignoredEntries.contains(crossEntry))
                 continue;
 
             // Statement of Assets and portfolio snapshots are date-based. The

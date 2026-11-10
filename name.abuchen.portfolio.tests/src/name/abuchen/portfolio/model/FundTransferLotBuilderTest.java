@@ -89,6 +89,30 @@ public class FundTransferLotBuilderTest
     }
 
     @Test
+    public void testBuildIncludesInboundDeliveryWithoutCrossEntry()
+    {
+        var client = new Client();
+        var sourceFund = new SecurityBuilder().addTo(client);
+        var sourcePortfolio = new PortfolioBuilder().addTo(client);
+
+        var delivery = new PortfolioTransaction();
+        delivery.setType(PortfolioTransaction.Type.DELIVERY_INBOUND);
+        delivery.setSecurity(sourceFund);
+        delivery.setDateTime(LocalDateTime.parse("2020-01-01T00:00"));
+        delivery.setShares(Values.Share.factorize(10));
+        delivery.setMonetaryAmount(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1000)));
+        sourcePortfolio.addTransaction(delivery);
+
+        var lots = FundTransferLotBuilder.build(client, sourcePortfolio, sourceFund,
+                        LocalDateTime.parse("2020-06-01T00:00"), Values.Share.factorize(5),
+                        Values.Share.factorize(8), CurrencyUnit.EUR);
+
+        assertThat(lots.size(), is(1));
+        assertThat(lots.getFirst().getSourceTransactionUUID(), is(delivery.getUUID()));
+        assertThat(lots.getFirst().getAcquisitionValue(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(500))));
+    }
+
+    @Test
     public void testBuildIncludesLotsRecordedOnTransferDate()
     {
         Client client = new Client();
