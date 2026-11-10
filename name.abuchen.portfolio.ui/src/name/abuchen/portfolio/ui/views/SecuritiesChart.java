@@ -13,6 +13,8 @@ import java.util.Comparator;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
@@ -263,22 +265,6 @@ public class SecuritiesChart
                         CostMethod.MOVING_AVERAGE.getLabel())), //
         BOLLINGERBANDS(Messages.LabelChartDetailIndicatorBollingerBands), //
         MACD(Messages.LabelChartDetailIndicatorMacd), //
-        SMA_5DAYS(Messages.LabelChartDetailMovingAverage_5days), //
-        SMA_20DAYS(Messages.LabelChartDetailMovingAverage_20days), //
-        SMA_30DAYS(Messages.LabelChartDetailMovingAverage_30days), //
-        SMA_38DAYS(Messages.LabelChartDetailMovingAverage_38days), //
-        SMA_50DAYS(Messages.LabelChartDetailMovingAverage_50days), //
-        SMA_90DAYS(Messages.LabelChartDetailMovingAverage_90days), //
-        SMA_100DAYS(Messages.LabelChartDetailMovingAverage_100days), //
-        SMA_200DAYS(Messages.LabelChartDetailMovingAverage_200days), //
-        EMA_5DAYS(Messages.LabelChartDetailMovingAverage_5days), //
-        EMA_20DAYS(Messages.LabelChartDetailMovingAverage_20days), //
-        EMA_30DAYS(Messages.LabelChartDetailMovingAverage_30days), //
-        EMA_38DAYS(Messages.LabelChartDetailMovingAverage_38days), //
-        EMA_50DAYS(Messages.LabelChartDetailMovingAverage_50days), //
-        EMA_90DAYS(Messages.LabelChartDetailMovingAverage_90days), //
-        EMA_100DAYS(Messages.LabelChartDetailMovingAverage_100days), //
-        EMA_200DAYS(Messages.LabelChartDetailMovingAverage_200days), //
         SHOW_MARKER_LINES(Messages.LabelChartDetailSettingsShowMarkerLines), //
         SHOW_DATA_DIVESTMENT_INVESTMENT_LABEL(Messages.LabelChartDetailSettingsShowDivestmentInvestmentDataLabel), //
         SHOW_DATA_DIVIDEND_LABEL(Messages.LabelChartDetailSettingsShowDividendDataLabel), //
@@ -391,6 +377,9 @@ public class SecuritiesChart
     private Color colorEMA7 = Colors.getColor(200, 107, 200); // #C86BC8
 
     private static final String PREF_KEY = "security-chart-details"; //$NON-NLS-1$
+    private static final String PREF_KEY_MOVING_AVERAGE_PERIODS = "security-chart-moving-average-periods"; //$NON-NLS-1$
+    private static final String PREF_KEY_SMA_PERIODS = "security-chart-sma-periods"; //$NON-NLS-1$
+    private static final String PREF_KEY_EMA_PERIODS = "security-chart-ema-periods"; //$NON-NLS-1$
 
     private static final int MAX_SECURITIES_BENCHMARK = 10;
 
@@ -420,6 +409,10 @@ public class SecuritiesChart
 
     private EnumSet<ChartDetails> chartConfig = EnumSet.of(ChartDetails.INVESTMENT, ChartDetails.EVENTS,
                     ChartDetails.SCALING_LINEAR, ChartDetails.SHOW_MAIN_HORIZONTAL_LINES);
+
+    private List<Integer> movingAveragePeriods = new ArrayList<>(MovingAveragePeriod.DEFAULT_PERIODS);
+    private Set<Integer> smaConfig = new TreeSet<>();
+    private Set<Integer> emaConfig = new TreeSet<>();
 
     /**
      * Assign and remember stable colors if multiple instruments are selected.
@@ -653,16 +646,12 @@ public class SecuritiesChart
         DecimalFormat calculatedFormat = new DecimalFormat(Values.CalculatedQuote.pattern());
         calculatedFormat.setMinimumFractionDigits(precision);
         calculatedFormat.setMaximumFractionDigits(precision);
-        for (String period : new String[] { Messages.LabelChartDetailMovingAverage_5days,
-                        Messages.LabelChartDetailMovingAverage_20days, Messages.LabelChartDetailMovingAverage_30days,
-                        Messages.LabelChartDetailMovingAverage_38days, Messages.LabelChartDetailMovingAverage_50days,
-                        Messages.LabelChartDetailMovingAverage_100days,
-                        Messages.LabelChartDetailMovingAverage_200days, })
+        for (Integer period : movingAveragePeriods)
         {
-            toolTip.overrideValueFormat(String.format("%s (%s)", Messages.LabelChartDetailMovingAverageEMA, period), //$NON-NLS-1$
-                            calculatedFormat);
-            toolTip.overrideValueFormat(String.format("%s (%s)", Messages.LabelChartDetailMovingAverageSMA, period), //$NON-NLS-1$
-                            calculatedFormat);
+            toolTip.overrideValueFormat(String.format("%s (%s)", Messages.LabelChartDetailMovingAverageEMA, //$NON-NLS-1$
+                            MovingAveragePeriod.format(period)), calculatedFormat);
+            toolTip.overrideValueFormat(String.format("%s (%s)", Messages.LabelChartDetailMovingAverageSMA, //$NON-NLS-1$
+                            MovingAveragePeriod.format(period)), calculatedFormat);
         }
         toolTip.overrideValueFormat(Messages.LabelChartDetailIndicatorBollingerBandsLower, calculatedFormat);
         toolTip.overrideValueFormat(Messages.LabelChartDetailIndicatorBollingerBandsUpper, calculatedFormat);
@@ -782,6 +771,19 @@ public class SecuritiesChart
 
     private final void readChartConfig(Client client)
     {
+        Client writableClient = ReadOnlyClient.unwrap(client);
+        List<Integer> persistedMovingAveragePeriods = MovingAveragePeriod
+                        .parse(writableClient.getProperty(PREF_KEY_MOVING_AVERAGE_PERIODS));
+        this.movingAveragePeriods = MovingAveragePeriod.merge(MovingAveragePeriod.DEFAULT_PERIODS,
+                        persistedMovingAveragePeriods);
+
+        this.smaConfig.clear();
+        this.smaConfig.addAll(MovingAveragePeriod.parse(writableClient.getProperty(PREF_KEY_SMA_PERIODS)));
+        this.emaConfig.clear();
+        this.emaConfig.addAll(MovingAveragePeriod.parse(writableClient.getProperty(PREF_KEY_EMA_PERIODS)));
+        this.movingAveragePeriods = MovingAveragePeriod.merge(this.movingAveragePeriods,
+                        MovingAveragePeriod.merge(this.smaConfig, this.emaConfig));
+
         String pref = ReadOnlyClient.unwrap(client).getProperty(PREF_KEY);
         if (pref == null)
             return;
@@ -791,6 +793,20 @@ public class SecuritiesChart
         {
             try
             {
+                Integer smaDays = getLegacyMovingAverageDays(key, "SMA_"); //$NON-NLS-1$
+                if (smaDays != null)
+                {
+                    smaConfig.add(smaDays);
+                    continue;
+                }
+
+                Integer emaDays = getLegacyMovingAverageDays(key, "EMA_"); //$NON-NLS-1$
+                if (emaDays != null)
+                {
+                    emaConfig.add(emaDays);
+                    continue;
+                }
+
                 chartConfig.add(ChartDetails.valueOf(key));
             }
             catch (IllegalArgumentException ignore)
@@ -800,6 +816,37 @@ public class SecuritiesChart
                 // anymore
             }
         }
+        this.movingAveragePeriods = MovingAveragePeriod.merge(this.movingAveragePeriods,
+                        MovingAveragePeriod.merge(this.smaConfig, this.emaConfig));
+    }
+
+    private Integer getLegacyMovingAverageDays(String key, String prefix)
+    {
+        if (!key.startsWith(prefix) || !key.endsWith("DAYS")) //$NON-NLS-1$
+            return null;
+
+        String days = key.substring(prefix.length(), key.length() - "DAYS".length()); //$NON-NLS-1$
+        try
+        {
+            int period = Integer.parseInt(days);
+            return period > 0 ? period : null;
+        }
+        catch (NumberFormatException e)
+        {
+            return null;
+        }
+    }
+
+    private void writeChartConfig()
+    {
+        Client writableClient = ReadOnlyClient.unwrap(client);
+
+        writableClient.setProperty(PREF_KEY, String.join(",", //$NON-NLS-1$
+                        chartConfig.stream().map(ChartDetails::name).toList()));
+        writableClient.setProperty(PREF_KEY_MOVING_AVERAGE_PERIODS,
+                        MovingAveragePeriod.serialize(movingAveragePeriods));
+        writableClient.setProperty(PREF_KEY_SMA_PERIODS, MovingAveragePeriod.serialize(smaConfig));
+        writableClient.setProperty(PREF_KEY_EMA_PERIODS, MovingAveragePeriod.serialize(emaConfig));
     }
 
     public void addButtons(ToolBarManager toolBar)
@@ -861,22 +908,8 @@ public class SecuritiesChart
         subMenuChartMarker.add(addMenuAction(ChartDetails.SHOW_LIMITS));
         subMenuChartIndicator.add(addMenuAction(ChartDetails.BOLLINGERBANDS));
         subMenuChartIndicator.add(addMenuAction(ChartDetails.MACD));
-        subMenuChartMovingAverageSMA.add(addMenuAction(ChartDetails.SMA_5DAYS));
-        subMenuChartMovingAverageSMA.add(addMenuAction(ChartDetails.SMA_20DAYS));
-        subMenuChartMovingAverageSMA.add(addMenuAction(ChartDetails.SMA_30DAYS));
-        subMenuChartMovingAverageSMA.add(addMenuAction(ChartDetails.SMA_38DAYS));
-        subMenuChartMovingAverageSMA.add(addMenuAction(ChartDetails.SMA_50DAYS));
-        subMenuChartMovingAverageSMA.add(addMenuAction(ChartDetails.SMA_90DAYS));
-        subMenuChartMovingAverageSMA.add(addMenuAction(ChartDetails.SMA_100DAYS));
-        subMenuChartMovingAverageSMA.add(addMenuAction(ChartDetails.SMA_200DAYS));
-        subMenuChartMovingAverageEMA.add(addMenuAction(ChartDetails.EMA_5DAYS));
-        subMenuChartMovingAverageEMA.add(addMenuAction(ChartDetails.EMA_20DAYS));
-        subMenuChartMovingAverageEMA.add(addMenuAction(ChartDetails.EMA_30DAYS));
-        subMenuChartMovingAverageEMA.add(addMenuAction(ChartDetails.EMA_38DAYS));
-        subMenuChartMovingAverageEMA.add(addMenuAction(ChartDetails.EMA_50DAYS));
-        subMenuChartMovingAverageEMA.add(addMenuAction(ChartDetails.EMA_90DAYS));
-        subMenuChartMovingAverageEMA.add(addMenuAction(ChartDetails.EMA_100DAYS));
-        subMenuChartMovingAverageEMA.add(addMenuAction(ChartDetails.EMA_200DAYS));
+        addMovingAverageActions(subMenuChartMovingAverageSMA, smaConfig);
+        addMovingAverageActions(subMenuChartMovingAverageEMA, emaConfig);
         subMenuChartSettings.add(addMenuAction(ChartDetails.SHOW_MARKER_LINES));
         subMenuChartSettings.add(addMenuAction(ChartDetails.SHOW_DATA_DIVIDEND_LABEL));
         subMenuChartSettings.add(addMenuAction(ChartDetails.SHOW_DATA_EXTREMES_LABEL));
@@ -896,6 +929,57 @@ public class SecuritiesChart
         subMenuChartMovingAverage.add(subMenuChartMovingAverageSMA);
         subMenuChartMovingAverage.add(subMenuChartMovingAverageEMA);
         manager.add(subMenuChartSettings);
+    }
+
+    private void addMovingAverageActions(MenuManager subMenu, Set<Integer> activePeriods)
+    {
+        for (Integer period : movingAveragePeriods)
+            subMenu.add(addMovingAverageAction(activePeriods, period));
+
+        subMenu.add(new Separator());
+        subMenu.add(new SimpleAction(Messages.MenuCreateColumnConfig, a -> {
+            Integer period = MovingAveragePeriod.createNew(chart.getShell(), movingAveragePeriods);
+            if (period == null)
+                return;
+
+            movingAveragePeriods = MovingAveragePeriod.merge(movingAveragePeriods, List.of(period));
+            activePeriods.add(period);
+            writeChartConfig();
+            updateChart();
+        }));
+
+        List<Integer> removablePeriods = movingAveragePeriods.stream()
+                        .filter(p -> !MovingAveragePeriod.DEFAULT_PERIODS.contains(p)).toList();
+        if (!removablePeriods.isEmpty())
+        {
+            MenuManager removeMenu = new MenuManager(Messages.ChartSeriesPickerRemove);
+            for (Integer period : removablePeriods)
+            {
+                removeMenu.add(new SimpleAction(MovingAveragePeriod.format(period), a -> {
+                    movingAveragePeriods = movingAveragePeriods.stream().filter(p -> !p.equals(period)).toList();
+                    smaConfig.remove(period);
+                    emaConfig.remove(period);
+                    writeChartConfig();
+                    updateChart();
+                }));
+            }
+            subMenu.add(removeMenu);
+        }
+    }
+
+    private Action addMovingAverageAction(Set<Integer> activePeriods, Integer period)
+    {
+        Action action = new SimpleAction(MovingAveragePeriod.format(period), a -> {
+            if (activePeriods.contains(period))
+                activePeriods.remove(period);
+            else
+                activePeriods.add(period);
+
+            writeChartConfig();
+            updateChart();
+        });
+        action.setChecked(activePeriods.contains(period));
+        return action;
     }
 
     private Action addMenuAction(ChartDetails detail)
@@ -950,8 +1034,7 @@ public class SecuritiesChart
             if (!chartConfig.contains(ChartDetails.SCALING_LINEAR) && !chartConfig.contains(ChartDetails.SCALING_LOG))
                 chartConfig.add(ChartDetails.SCALING_LINEAR);
 
-            ReadOnlyClient.unwrap(client).setProperty(PREF_KEY, String.join(",", //$NON-NLS-1$
-                            chartConfig.stream().map(ChartDetails::name).toList()));
+            writeChartConfig();
 
             updateChart();
 
@@ -1113,7 +1196,7 @@ public class SecuritiesChart
                     firstQuote = referenceQuote;
                 }
 
-                addChartMarkerBackground(chartInterval, range, security, chartConfigPainting);
+                addChartMarkerBackground(chartInterval, range, security, chartConfigPainting, isSingleSecurityMode);
 
                 for (int ii = 0; ii < range.size; ii++)
                 {
@@ -1231,7 +1314,7 @@ public class SecuritiesChart
     }
 
     private void addChartMarkerBackground(ChartInterval chartInterval, ChartRange range, Security security,
-                    EnumSet<ChartDetails> chartConfig)
+                    EnumSet<ChartDetails> chartConfig, boolean isSingleSecurityMode)
     {
         if (chartConfig.contains(ChartDetails.BOLLINGERBANDS))
             addBollingerBandsMarkerLines(chartInterval, 20, 2, security);
@@ -1239,72 +1322,51 @@ public class SecuritiesChart
         if (chartConfig.contains(ChartDetails.MACD))
             addMacdMarkerLines(chartInterval, colorMACD, security);
 
-        if (chartConfig.contains(ChartDetails.SMA_5DAYS))
-            addSMAMarkerLines(chartInterval, Messages.LabelChartDetailMovingAverageSMA,
-                            Messages.LabelChartDetailMovingAverage_5days, 5, colorSMA1, security);
-
-        if (chartConfig.contains(ChartDetails.SMA_20DAYS))
-            addSMAMarkerLines(chartInterval, Messages.LabelChartDetailMovingAverageSMA,
-                            Messages.LabelChartDetailMovingAverage_20days, 20, colorSMA2, security);
-
-        if (chartConfig.contains(ChartDetails.SMA_30DAYS))
-            addSMAMarkerLines(chartInterval, Messages.LabelChartDetailMovingAverageSMA,
-                            Messages.LabelChartDetailMovingAverage_30days, 30, colorSMA3, security);
-
-        if (chartConfig.contains(ChartDetails.SMA_38DAYS))
-            addSMAMarkerLines(chartInterval, Messages.LabelChartDetailMovingAverageSMA,
-                            Messages.LabelChartDetailMovingAverage_38days, 38, colorSMA4, security);
-
-        if (chartConfig.contains(ChartDetails.SMA_50DAYS))
-            addSMAMarkerLines(chartInterval, Messages.LabelChartDetailMovingAverageSMA,
-                            Messages.LabelChartDetailMovingAverage_50days, 50, colorSMA4, security);
-
-        if (chartConfig.contains(ChartDetails.SMA_90DAYS))
-            addSMAMarkerLines(chartInterval, Messages.LabelChartDetailMovingAverageSMA,
-                            Messages.LabelChartDetailMovingAverage_90days, 90, colorSMA5, security);
-
-        if (chartConfig.contains(ChartDetails.SMA_100DAYS))
-            addSMAMarkerLines(chartInterval, Messages.LabelChartDetailMovingAverageSMA,
-                            Messages.LabelChartDetailMovingAverage_100days, 100, colorSMA6, security);
-
-        if (chartConfig.contains(ChartDetails.SMA_200DAYS))
-            addSMAMarkerLines(chartInterval, Messages.LabelChartDetailMovingAverageSMA,
-                            Messages.LabelChartDetailMovingAverage_200days, 200, colorSMA7, security);
-
-        if (chartConfig.contains(ChartDetails.EMA_5DAYS))
-            addEMAMarkerLines(chartInterval, Messages.LabelChartDetailMovingAverageEMA,
-                            Messages.LabelChartDetailMovingAverage_5days, 5, colorEMA1, security);
-
-        if (chartConfig.contains(ChartDetails.EMA_20DAYS))
-            addEMAMarkerLines(chartInterval, Messages.LabelChartDetailMovingAverageEMA,
-                            Messages.LabelChartDetailMovingAverage_20days, 20, colorEMA2, security);
-
-        if (chartConfig.contains(ChartDetails.EMA_30DAYS))
-            addEMAMarkerLines(chartInterval, Messages.LabelChartDetailMovingAverageEMA,
-                            Messages.LabelChartDetailMovingAverage_30days, 30, colorEMA3, security);
-
-        if (chartConfig.contains(ChartDetails.EMA_38DAYS))
-            addEMAMarkerLines(chartInterval, Messages.LabelChartDetailMovingAverageEMA,
-                            Messages.LabelChartDetailMovingAverage_38days, 38, colorEMA4, security);
-
-        if (chartConfig.contains(ChartDetails.EMA_50DAYS))
-            addEMAMarkerLines(chartInterval, Messages.LabelChartDetailMovingAverageEMA,
-                            Messages.LabelChartDetailMovingAverage_50days, 50, colorEMA4, security);
-
-        if (chartConfig.contains(ChartDetails.EMA_90DAYS))
-            addEMAMarkerLines(chartInterval, Messages.LabelChartDetailMovingAverageEMA,
-                            Messages.LabelChartDetailMovingAverage_90days, 90, colorEMA5, security);
-
-        if (chartConfig.contains(ChartDetails.EMA_100DAYS))
-            addEMAMarkerLines(chartInterval, Messages.LabelChartDetailMovingAverageEMA,
-                            Messages.LabelChartDetailMovingAverage_100days, 100, colorEMA6, security);
-
-        if (chartConfig.contains(ChartDetails.EMA_200DAYS))
-            addEMAMarkerLines(chartInterval, Messages.LabelChartDetailMovingAverageEMA,
-                            Messages.LabelChartDetailMovingAverage_200days, 200, colorEMA7, security);
+        if (isSingleSecurityMode)
+        {
+            int index = 0;
+            for (Integer period : movingAveragePeriods)
+            {
+                if (smaConfig.contains(period))
+                    addSMAMarkerLines(chartInterval, Messages.LabelChartDetailMovingAverageSMA,
+                                    MovingAveragePeriod.format(period), period, getSmaColor(index), security);
+                if (emaConfig.contains(period))
+                    addEMAMarkerLines(chartInterval, Messages.LabelChartDetailMovingAverageEMA,
+                                    MovingAveragePeriod.format(period), period, getEmaColor(index), security);
+                index++;
+            }
+        }
 
         if (this.showMarkings && chartConfig.contains(ChartDetails.SHOW_LIMITS))
             addLimitLines(range, security);
+    }
+
+    private Color getSmaColor(int index)
+    {
+        return switch (index % 7)
+        {
+            case 0 -> colorSMA1;
+            case 1 -> colorSMA2;
+            case 2 -> colorSMA3;
+            case 3 -> colorSMA4;
+            case 4 -> colorSMA5;
+            case 5 -> colorSMA6;
+            default -> colorSMA7;
+        };
+    }
+
+    private Color getEmaColor(int index)
+    {
+        return switch (index % 7)
+        {
+            case 0 -> colorEMA1;
+            case 1 -> colorEMA2;
+            case 2 -> colorEMA3;
+            case 3 -> colorEMA4;
+            case 4 -> colorEMA5;
+            case 5 -> colorEMA6;
+            default -> colorEMA7;
+        };
     }
 
     private void addChartMarkerForeground(ChartInterval chartInterval, Security security,
@@ -1387,6 +1449,7 @@ public class SecuritiesChart
             return;
 
         String lineID = smaSeries + " (" + smaDaysWording + ")"; //$NON-NLS-1$ //$NON-NLS-2$
+        setupTooltipDisplayCalculatedQuote(lineID);
 
         @SuppressWarnings("unchecked")
         ILineSeries<Integer> lineSeriesSMA = (ILineSeries<Integer>) chart.getSeriesSet().createSeries(SeriesType.LINE,
@@ -1410,6 +1473,7 @@ public class SecuritiesChart
             return;
 
         String lineID = emaSeries + " (" + emaDaysWording + ")"; //$NON-NLS-1$ //$NON-NLS-2$
+        setupTooltipDisplayCalculatedQuote(lineID);
 
         @SuppressWarnings("unchecked")
         ILineSeries<Integer> lineSeriesEMA = (ILineSeries<Integer>) chart.getSeriesSet().createSeries(SeriesType.LINE,
