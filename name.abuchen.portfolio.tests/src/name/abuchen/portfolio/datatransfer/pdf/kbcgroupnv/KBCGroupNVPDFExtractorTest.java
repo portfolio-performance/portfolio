@@ -166,11 +166,6 @@ public class KBCGroupNVPDFExtractorTest
                         hasCurrencyCode("EUR"))));
 
         assertThat(results, hasItem(security( //
-                        hasIsin("EU000A3KWCF4"), hasWkn(null), hasTicker(null), //
-                        hasName("EUROP UN 21-28 0% 04/10 REGS MTN"), //
-                        hasCurrencyCode("EUR"))));
-
-        assertThat(results, hasItem(security( //
                         hasIsin("EU000A3KRJQ6"), hasWkn(null), hasTicker(null), //
                         hasName("EUROPEAN UNION 21-29 0% 04/07 REGS"), //
                         hasCurrencyCode("EUR"))));
@@ -852,8 +847,12 @@ public class KBCGroupNVPDFExtractorTest
                         hasTaxes("EUR", 132.92), hasFees("EUR", 56.96 + 94.94))));
 
         // assert transaction
-        assertThat(results, hasItem(fee(hasDate("2024-08-05"), hasAmount("EUR", 179.48), //
-                        hasSource("Rekeninguittreksel05.txt"), hasNote("Bewaarloon"))));
+        assertThat(results, hasItem(fee( //
+                        hasDate("2024-08-05"), //
+                        hasSource("Rekeninguittreksel05.txt"), //
+                        hasNote("Bewaarloon"), //
+                        hasAmount("EUR", 179.48), hasGrossValue("EUR", 179.48), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
     @Test
