@@ -389,6 +389,33 @@ public final class UpdateHelper
             throw new OperationCanceledException();
         if (status.getSeverity() != IStatus.OK)
             throw new CoreException(status);
+
+        // only the installer tells Windows which version is installed, and a
+        // self-update does not run it: correct the number of the program list
+
+        WindowsUninstallRegistry.updateInstalledVersion(installedVersion(), installDir);
+    }
+
+    /**
+     * The version of the update that has just been installed. The operation
+     * installs the selected updates - unless chosen otherwise the latest one of
+     * every installed unit - while the possible updates can also hold older
+     * versions, in no particular order. A new release updates many units at
+     * once, among them units with a numbering of their own such as the bundled
+     * Java runtime: the number of the installation is that of a unit of the
+     * application.
+     */
+    private String installedVersion()
+    {
+        Update[] updates = operation.getSelectedUpdates();
+
+        for (Update update : updates)
+        {
+            if (WindowsUninstallRegistry.belongsToApplication(update.replacement.getId()))
+                return update.replacement.getVersion().toString();
+        }
+
+        return null;
     }
 
     private File getInstallDir()
