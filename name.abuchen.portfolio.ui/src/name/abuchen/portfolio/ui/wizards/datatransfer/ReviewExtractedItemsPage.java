@@ -684,7 +684,7 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
                 {
                     try
                     {
-                        ImportAction.Status actionStatus = entry.getItem().apply(action, this);
+                        ImportAction.Status actionStatus = entry.apply(action, this);
                         entry.addStatus(actionStatus);
                     }
                     catch (Exception e)
