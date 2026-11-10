@@ -839,20 +839,16 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
         primaryAccounts.forEach((currency, pair) -> select(pair.getRight(), primarySelection.get(currency)));
         select(primaryPortfolio, portfolioSelection);
 
-        // dropdowns which appear because of the type change have no previous
-        // selection: preselect them like when the page is shown
+        // the offset dropdowns depend on the selection restored above:
+        // dropdowns without a previous selection (for example because they
+        // appear with the type change) are preselected again
         secondaryAccounts.forEach((currencyPair, pair) -> {
-            select(pair.getRight(), secondarySelection.get(currencyPair));
-            if (pair.getRight().getSelection().isEmpty())
+            if (!select(pair.getRight(), secondarySelection.get(currencyPair)))
                 preselectSecondaryAccount(currencyPair, pair.getRight());
         });
 
-        if (secondaryPortfolio != null)
-        {
-            select(secondaryPortfolio, secondaryPortfolioSelection);
-            if (secondaryPortfolio.getSelection().isEmpty())
-                preselectSecondaryPortfolio();
-        }
+        if (secondaryPortfolio != null && !select(secondaryPortfolio, secondaryPortfolioSelection))
+            preselectSecondaryPortfolio();
 
         checkEntriesAndRefresh(allEntries);
     }
@@ -860,15 +856,20 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
     /**
      * Selects the element if it is available (without triggering a selection
      * event, like the preselection of the dropdowns).
+     *
+     * @return true if the element has been selected
      */
-    private void select(ComboViewer combo, Object element)
+    private boolean select(ComboViewer combo, Object element)
     {
         if (element == null)
-            return;
+            return false;
 
         var index = ((List<?>) combo.getInput()).indexOf(element);
-        if (index >= 0)
-            combo.getCombo().select(index);
+        if (index < 0)
+            return false;
+
+        combo.getCombo().select(index);
+        return true;
     }
 
     /**
