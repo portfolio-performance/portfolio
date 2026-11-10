@@ -1,8 +1,10 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
+import static name.abuchen.portfolio.util.TextUtil.concatenate;
 import static name.abuchen.portfolio.util.TextUtil.trim;
 
 import java.math.BigDecimal;
+import java.util.Locale;
 
 import name.abuchen.portfolio.datatransfer.ExtractorUtils;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
@@ -100,13 +102,7 @@ public class CreditSuisseAGPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("shares") //
                                                         .match("^[A-Z]{3} (?<shares>[\\.,\\d]+) [\\.,\\d]+ %.*$") //
-                                                        .assign((t, v) -> {
-                                                            // @formatter:off
-                                                            // Percentage quotation, workaround for bonds
-                                                            // @formatter:on
-                                                            var shares = asExchangeRate(v.get("shares"));
-                                                            t.setShares(Values.Share.factorize(shares.doubleValue() / 100));
-                                                        }),
+                                                        .assign((t, v) -> t.setShares(asBondNominal(v.get("shares"), Locale.US))),
                                         // @formatter:off
                                         // 900 Registered Shs Iron Mountain Inc USD 0.01
                                         // @formatter:on
@@ -122,7 +118,7 @@ public class CreditSuisseAGPDFExtractor extends AbstractPDFExtractor
                         .section("time").optional() //
                         .find("Ausf.hrungszeit") //
                         .match("^.* (?<time>[\\d]{2}:[\\d]{2}:[\\d]{2}) [\\w]{3,4} .*$") //
-                        .assign((t, v) -> type.getCurrentContext().put("time", v.get("time")))
+                        .assign((t, v) -> v.getTransactionContext().putString("time", v.get("time")))
 
                         // @formatter:off
                         // Datum 08.06.2020
@@ -130,8 +126,10 @@ public class CreditSuisseAGPDFExtractor extends AbstractPDFExtractor
                         .section("date") //
                         .match("^Datum (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$") //
                         .assign((t, v) -> {
-                            if (type.getCurrentContext().get("time") != null)
-                                t.setDate(asDate(v.get("date"), type.getCurrentContext().get("time")));
+                            var time = v.getTransactionContext().getString("time");
+
+                            if (time != null)
+                                t.setDate(asDate(v.get("date"), time));
                             else
                                 t.setDate(asDate(v.get("date")));
                         })
@@ -148,9 +146,10 @@ public class CreditSuisseAGPDFExtractor extends AbstractPDFExtractor
                         })
 
                         // @formatter:off
-                        // If we have the "Internet-Vergünstigung",
-                        // we add up it from the amount and reset it.
-                        // The "Internet discount" is then posted as a fee refund.
+                        // The "Internet-Vergünstigung" is posted as a separate
+                        // fee refund. Therefore it is removed from the amount:
+                        // added for a purchase (higher debit) and subtracted
+                        // for a sale (lower credit).
                         // @formatter:on
 
                         // @formatter:off
@@ -160,8 +159,20 @@ public class CreditSuisseAGPDFExtractor extends AbstractPDFExtractor
                         .section("feeRefund", "currency").optional() //
                         .match("^Internet\\-Verg.nstigung (?<currency>[A-Z]{3}) (\\- )?(?<feeRefund>[\\.,\\d]+)$") //
                         .assign((t, v) -> {
-                            t.setAmount(t.getPortfolioTransaction().getAmount() + asAmount(v.get("feeRefund")));
+                            var feeRefund = asAmount(v.get("feeRefund"));
+
+                            if (t.getPortfolioTransaction().getType() == PortfolioTransaction.Type.SELL)
+                                t.setAmount(t.getPortfolioTransaction().getAmount() - feeRefund);
+                            else
+                                t.setAmount(t.getPortfolioTransaction().getAmount() + feeRefund);
                         })
+
+                        // @formatter:off
+                        // Zins 158 Tage USD 5,486.11
+                        // @formatter:on
+                        .section("note").optional() //
+                        .match("^Zins (?<note>[\\d]+ Tage [A-Z]{3} [\\.,\\d]+)$") //
+                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), "Stückzins " + v.get("note"), " | ")))
 
                         .wrap(BuySellEntryItem::new);
 
@@ -216,13 +227,7 @@ public class CreditSuisseAGPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("shares") //
                                                         .match("^[A-Z]{3} (?<shares>[\\.,\\d]+) [\\.,\\d]+ %.*$") //
-                                                        .assign((t, v) -> {
-                                                            // @formatter:off
-                                                            // Percentage quotation, workaround for bonds
-                                                            // @formatter:on
-                                                            var shares = asExchangeRate(v.get("shares"));
-                                                            t.setShares(Values.Share.factorize(shares.doubleValue() / 100));
-                                                        }),
+                                                        .assign((t, v) -> t.setShares(asBondNominal(v.get("shares"), Locale.US))),
                                         // @formatter:off
                                         // 900 Registered Shs Iron Mountain Inc USD 0.01
                                         // @formatter:on
@@ -312,13 +317,7 @@ public class CreditSuisseAGPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("shares") //
                                                         .match("^[A-Z]{3} (?<shares>[\\.,\\d]+) [\\.,\\d]+ % (?<name>.*)$") //
-                                                        .assign((t, v) -> {
-                                                            // @formatter:off
-                                                            // Percentage quotation, workaround for bonds
-                                                            // @formatter:on
-                                                            var shares = asExchangeRate(v.get("shares"));
-                                                            t.setShares(Values.Share.factorize(shares.doubleValue() / 100));
-                                                        }),
+                                                        .assign((t, v) -> t.setShares(asBondNominal(v.get("shares"), Locale.US))),
                                         // @formatter:off
                                         // 900 Registered Shs Iron Mountain Inc USD 0.01
                                         // @formatter:on
@@ -393,7 +392,7 @@ public class CreditSuisseAGPDFExtractor extends AbstractPDFExtractor
                         // Kosten und Abgaben Ausland USD 2.00
                         // @formatter:on
                         .section("currency", "fee").optional() //
-                        .match("^Kosten und Abgaben (?<currency>[A-Z]{3}) (\\- )?(?<fee>[\\.,\\d]+)$") //
+                        .match("^Kosten und Abgaben .*(?<currency>[A-Z]{3}) (\\- )?(?<fee>[\\.,\\d]+)$") //
                         .assign((t, v) -> processFeeEntries(t, v, type));
     }
 
