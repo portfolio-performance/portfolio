@@ -2,16 +2,20 @@ package name.abuchen.portfolio.datatransfer.pdf;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Predicate;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.PortfolioLog;
+import name.abuchen.portfolio.datatransfer.DuplicatesWithinImport;
 import name.abuchen.portfolio.datatransfer.Extractor;
 import name.abuchen.portfolio.datatransfer.Extractor.Item;
 import name.abuchen.portfolio.datatransfer.SecurityCache;
@@ -28,7 +32,7 @@ public class PDFImportAssistant
     public PDFImportAssistant(Client client, List<File> files)
     {
         this.client = client;
-        this.files = files;
+        this.files = distinctFiles(files);
 
         extractors.add(new ABNAMROGroupPDFExtractor(client));
         extractors.add(new AdvanziaBankPDFExtractor(client));
@@ -208,6 +212,7 @@ public class PDFImportAssistant
                     if (!items.isEmpty())
                     {
                         extracted = true;
+                        markSourceKey(items, inputFile);
                         var key = lookupExtractor(extractor, inputFile);
                         itemsByExtractor.computeIfAbsent(key, e -> new ArrayList<Item>()).addAll(items);
                         break;
@@ -226,6 +231,7 @@ public class PDFImportAssistant
                             if (!items.isEmpty())
                             {
                                 extracted = true;
+                                markSourceKey(items, inputFile);
                                 var key = lookupExtractor(extractor, inputFile);
                                 itemsByExtractor.computeIfAbsent(key, e -> new ArrayList<Item>()).addAll(items);
                                 break;
@@ -276,6 +282,30 @@ public class PDFImportAssistant
         securityCache.addMissingSecurityItems(itemsByExtractor);
 
         return itemsByExtractor;
+    }
+
+    /**
+     * Marks the items with the absolute path of the input file. The source of
+     * the transactions only contains the file name which is not unique if
+     * files with the same name from different folders or ZIP archives are
+     * imported. The path is used to detect duplicates between the files.
+     */
+    /* testing */ static void markSourceKey(List<Item> items, PDFInputFile inputFile)
+    {
+        var sourceKey = inputFile.getFile().getAbsolutePath();
+        items.forEach(item -> item.setData(DuplicatesWithinImport.SOURCE_KEY, sourceKey));
+    }
+
+    /**
+     * Removes repeated input files (same absolute path, e.g. a file selected
+     * twice). Otherwise the transactions of both copies carry the same source
+     * key, are considered to stem from one document and are not detected as
+     * duplicates between the files.
+     */
+    /* testing */ static List<File> distinctFiles(List<File> files)
+    {
+        Set<Path> paths = new HashSet<>();
+        return files.stream().filter(file -> paths.add(file.getAbsoluteFile().toPath().normalize())).toList();
     }
 
     public Map<File, PDFInputFile> getFailedInputFiles()
