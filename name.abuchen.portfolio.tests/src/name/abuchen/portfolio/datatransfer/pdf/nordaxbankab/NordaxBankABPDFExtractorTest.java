@@ -193,8 +193,12 @@ public class NordaxBankABPDFExtractorTest
                         hasSource("AccountStatement03.txt"), hasNote("DE22513900000075401501 xyz PKW Abschlag"))));
 
         // assert transaction
-        assertThat(results, hasItem(interest(hasDate("2026-01-01"), hasAmount("EUR", 129.70), //
-                        hasSource("AccountStatement03.txt"), hasNote(null))));
+        assertThat(results, hasItem(interest( //
+                        hasDate("2026-01-01"), //
+                        hasSource("AccountStatement03.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 129.70), hasGrossValue("EUR", 129.70), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -222,8 +226,71 @@ public class NordaxBankABPDFExtractorTest
                         hasNote("DE22513900000075401501 Einzahlung 01 BankNorwegian"))));
 
         // assert transaction
-        assertThat(results, hasItem(interest(hasDate("2026-01-01"), hasAmount("EUR", 34.77), //
-                        hasSource("AccountStatement04.txt"), hasNote(null))));
+        assertThat(results, hasItem(interest( //
+                        hasDate("2026-01-01"), //
+                        hasSource("AccountStatement04.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 34.77), hasGrossValue("EUR", 34.77), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+    }
 
+    @Test
+    public void testAccountStatement05()
+    {
+        var extractor = new NordaxBankABPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "AccountStatement05.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(10L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(10));
+        new AssertImportActions().check(results, "EUR");
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2026-10-02"), hasAmount("EUR", 100.00), //
+                        hasSource("AccountStatement05.txt"), hasNote("jmLJWph ZVhDSo CmINZBXnX"))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2026-09-02"), hasAmount("EUR", 100.00), //
+                        hasSource("AccountStatement05.txt"), hasNote("YBIbMiH baNumV RjBXvjaYe"))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2026-08-03"), hasAmount("EUR", 100.00), //
+                        hasSource("AccountStatement05.txt"), hasNote("lfSlGnj dvGmiQ soxkdJOoL"))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2026-08-03"), hasAmount("EUR", 1000.00), //
+                        hasSource("AccountStatement05.txt"), hasNote("VTWOQZd vnHoiA PxvraKLvt"))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2026-07-02"), hasAmount("EUR", 100.00), //
+                        hasSource("AccountStatement05.txt"), hasNote("gcKaEyg GPKwtY iNGUTqKFX"))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2026-06-02"), hasAmount("EUR", 100.00), //
+                        hasSource("AccountStatement05.txt"), hasNote("WdqFzcb tVgsjN DETukkPoe"))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2026-05-04"), hasAmount("EUR", 40.00), //
+                        hasSource("AccountStatement05.txt"), hasNote("edcIJDH kgqhfX MnEmSpnhO"))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2026-04-02"), hasAmount("EUR", 40.00), //
+                        hasSource("AccountStatement05.txt"), hasNote("UwTyojy YAAZeZ GfvNhmxuY"))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2026-03-02"), hasAmount("EUR", 40.00), //
+                        hasSource("AccountStatement05.txt"), hasNote("IBHGUrd UfEoHd UHHXtINZh"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2026-01-06"), hasAmount("EUR", 1000.00), //
+                        hasSource("AccountStatement05.txt"), hasNote("LDRyMxdSV liNnRA"))));
     }
 }
