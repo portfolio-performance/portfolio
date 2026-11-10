@@ -7,6 +7,7 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -686,10 +687,6 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
         actions.add(new CheckCurrenciesAction());
         actions.add(new CheckForexGrossValueAction());
 
-        var duplicatesWithinImport = detectDuplicatesWithinImport
-                        ? DuplicatesWithinImport.of(importedItems(entries))
-                        : DuplicatesWithinImport.none();
-
         List<Exception> allErrors = new ArrayList<>(extractionErrors);
 
         for (ExtractedEntry entry : entries)
@@ -729,14 +726,6 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
                     }
                 }
 
-                // duplicates between the files of the import are checked in
-                // addition to the import actions, so that the item shows
-                // which file contains the kept copy
-                duplicatesWithinImport.keptCopyOf(entry.getItem())
-                                .ifPresent(kept -> entry.addStatus(new ImportAction.Status(Code.WARNING,
-                                                MessageFormat.format(Messages.LabelAlsoContainedInFile,
-                                                                kept.getSource()))));
-
                 entry.getStatus().filter(s -> s.getCode() == ImportAction.Status.Code.ERROR)
                                 .forEach(status -> allErrors
                                                 .add(new IOException(MessageFormat.format(Messages.LabelColonSeparated,
@@ -744,7 +733,34 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
             }
         }
 
+        if (detectDuplicatesWithinImport)
+            checkDuplicatesWithinImport(entries);
+
         errorTableViewer.setInput(allErrors);
+    }
+
+    /**
+     * Checks for duplicates between the files of the import in addition to the
+     * import actions, so that the item shows which file contains the kept
+     * copy. Runs after the import actions in order to prefer copies without
+     * import errors.
+     */
+    private static void checkDuplicatesWithinImport(List<ExtractedEntry> entries)
+    {
+        Set<Extractor.Item> itemsWithErrors = Collections.newSetFromMap(new IdentityHashMap<>());
+        entries.stream() //
+                        .filter(entry -> entry.getStatus().anyMatch(s -> s.getCode() == Code.ERROR)) //
+                        .forEach(entry -> itemsWithErrors.add(entry.getItem()));
+
+        var duplicatesWithinImport = DuplicatesWithinImport.of(importedItems(entries), itemsWithErrors::contains);
+
+        for (ExtractedEntry entry : entries)
+        {
+            duplicatesWithinImport.keptCopyOf(entry.getItem())
+                            .ifPresent(kept -> entry.addStatus(new ImportAction.Status(Code.WARNING,
+                                            MessageFormat.format(Messages.LabelAlsoContainedInFile,
+                                                            kept.getSource()))));
+        }
     }
 
 }

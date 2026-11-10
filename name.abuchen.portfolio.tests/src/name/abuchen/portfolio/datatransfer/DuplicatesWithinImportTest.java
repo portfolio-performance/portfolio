@@ -11,6 +11,7 @@ import java.util.Collections;
 import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Predicate;
 
 import org.junit.Test;
 
@@ -496,6 +497,110 @@ public class DuplicatesWithinImportTest
         }
     }
 
+    @Test
+    public void testCopyWithoutErrorsIsKeptRatherThanDetailedCopyWithErrors()
+    {
+        // the purchase document is more detailed, but the import actions
+        // report an error for it (e.g. an invalid gross value): the statement
+        // is kept, otherwise neither copy would be imported
+        var security = new Security();
+
+        var statement = getTestEntry(PortfolioTransaction.Type.BUY, security, 100L, "Kontoauszug01.pdf");
+        var purchase = getTestEntry(PortfolioTransaction.Type.BUY, security, 100L, "Wertpapierabrechnung01.pdf");
+        purchase.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE, Money.of("EUR", 500)));
+
+        var statementItem = new BuySellEntryItem(statement);
+        var purchaseItem = new BuySellEntryItem(purchase);
+
+        Predicate<Extractor.Item> hasErrors = item -> item == purchaseItem;
+
+        assertThat(statusOf(List.of(statementItem, purchaseItem), hasErrors), is(List.of(Code.OK, Code.WARNING)));
+        assertThat(statusOf(List.of(purchaseItem, statementItem), hasErrors), is(List.of(Code.WARNING, Code.OK)));
+
+        var duplicates = DuplicatesWithinImport.of(List.of(statementItem, purchaseItem), hasErrors);
+        assertThat(duplicates.keptCopyOf(purchaseItem).orElseThrow().getSource(), is("Kontoauszug01.pdf"));
+    }
+
+    @Test
+    public void testDetailedCopyIsKeptIfAllCopiesHaveErrors()
+    {
+        var security = new Security();
+
+        var statement = getTestEntry(PortfolioTransaction.Type.BUY, security, 100L, "Kontoauszug01.pdf");
+        var purchase = getTestEntry(PortfolioTransaction.Type.BUY, security, 100L, "Wertpapierabrechnung01.pdf");
+        purchase.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE, Money.of("EUR", 500)));
+
+        var items = List.<Extractor.Item>of(new BuySellEntryItem(statement), new BuySellEntryItem(purchase));
+
+        assertThat(statusOf(items, item -> true), is(List.of(Code.WARNING, Code.OK)));
+    }
+
+    @Test
+    public void testErrorsDoNotChangeNumberOfKeptCopies()
+    {
+        // the account statement lists two fees, each fee is also documented
+        // in a separate (more detailed) document, one of which has an error:
+        // still two fees are kept, the fee document with the error is not
+        // among them
+        var statement1 = new TransactionItem(getTestEntry(AccountTransaction.Type.FEES, "Kontoauszug01.pdf"));
+        var statement2 = new TransactionItem(getTestEntry(AccountTransaction.Type.FEES, "Kontoauszug01.pdf"));
+
+        var fee1 = getTestEntry(AccountTransaction.Type.FEES, "Gebuehr01.pdf");
+        fee1.addUnit(new Unit(Unit.Type.TAX, Money.of("EUR", 10)));
+        var fee2 = getTestEntry(AccountTransaction.Type.FEES, "Gebuehr02.pdf");
+        fee2.addUnit(new Unit(Unit.Type.TAX, Money.of("EUR", 10)));
+        var feeItem1 = new TransactionItem(fee1);
+        var feeItem2 = new TransactionItem(fee2);
+
+        var items = List.<Extractor.Item>of(statement1, statement2, feeItem1, feeItem2);
+        var duplicates = DuplicatesWithinImport.of(items, item -> item == feeItem1);
+
+        assertThat(items.stream().filter(item -> !duplicates.isDuplicate(item)).count(), is(2L));
+        assertThat(duplicates.isDuplicate(feeItem1), is(true));
+        assertThat(duplicates.isDuplicate(feeItem2), is(false));
+
+        // the kept copy always stems from another input file
+        assertThat(duplicates.keptCopyOf(feeItem1).orElseThrow().getSource().equals("Gebuehr01.pdf"), is(false));
+        assertThat(duplicates.keptCopyOf(statement2).orElseThrow().getSource(), is("Gebuehr02.pdf"));
+    }
+
+    @Test
+    public void testResultWithErrorsDoesNotDependOnOrderOfFiles()
+    {
+        // three copies of the same purchase: the most detailed one has an
+        // error, the result must be the same for all orders of the files
+        var security = new Security();
+
+        var detailed = getTestEntry(PortfolioTransaction.Type.BUY, security, 100L, "Wertpapierabrechnung01.pdf");
+        detailed.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE, Money.of("EUR", 500)));
+        detailed.getPortfolioTransaction().addUnit(new Unit(Unit.Type.TAX, Money.of("EUR", 100)));
+
+        var withFee = getTestEntry(PortfolioTransaction.Type.BUY, security, 100L, "Wertpapierabrechnung02.pdf");
+        withFee.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE, Money.of("EUR", 500)));
+
+        var statement = getTestEntry(PortfolioTransaction.Type.BUY, security, 100L, "Kontoauszug01.pdf");
+
+        var detailedItem = new BuySellEntryItem(detailed);
+        var withFeeItem = new BuySellEntryItem(withFee);
+        var statementItem = new BuySellEntryItem(statement);
+
+        List<Extractor.Item> files = List.of(detailedItem, withFeeItem, statementItem);
+        Predicate<Extractor.Item> hasErrors = item -> item == detailedItem;
+
+        for (var order : permutations(List.of(0, 1, 2)))
+        {
+            List<Extractor.Item> items = new ArrayList<>();
+            order.forEach(index -> items.add(files.get(index)));
+
+            var duplicates = DuplicatesWithinImport.of(items, hasErrors);
+
+            // the most detailed copy without errors is kept
+            assertThat(order.toString(), duplicates.isDuplicate(withFeeItem), is(false));
+            assertThat(order.toString(), duplicates.isDuplicate(detailedItem), is(true));
+            assertThat(order.toString(), duplicates.isDuplicate(statementItem), is(true));
+        }
+    }
+
     /**
      * Returns WARNING for duplicates and OK for kept items (as shown in the
      * review of the import).
@@ -503,6 +608,12 @@ public class DuplicatesWithinImportTest
     private List<Code> statusOf(List<Extractor.Item> items)
     {
         var duplicates = DuplicatesWithinImport.of(items);
+        return items.stream().map(item -> duplicates.isDuplicate(item) ? Code.WARNING : Code.OK).toList();
+    }
+
+    private List<Code> statusOf(List<Extractor.Item> items, Predicate<Extractor.Item> hasErrors)
+    {
+        var duplicates = DuplicatesWithinImport.of(items, hasErrors);
         return items.stream().map(item -> duplicates.isDuplicate(item) ? Code.WARNING : Code.OK).toList();
     }
 

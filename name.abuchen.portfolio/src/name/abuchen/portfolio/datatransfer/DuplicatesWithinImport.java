@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Predicate;
 
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.AccountTransferEntry;
@@ -30,8 +31,9 @@ import name.abuchen.portfolio.model.Transaction.Unit;
  * <ul>
  * <li>Matching: which items describe the same transaction (see
  * {@link DuplicateKey}).</li>
- * <li>Which copy to keep: the more detailed document first (see
- * {@link #BY_DETAIL}), then a fixed order of input file and position.</li>
+ * <li>Which copy to keep: a copy without import errors first, then the more
+ * detailed document (see {@link #BY_DETAIL}), then a fixed order of input
+ * file and position.</li>
  * <li>How many copies to keep: as many as the input file with the most
  * occurrences contains.</li>
  * </ul>
@@ -76,19 +78,23 @@ public final class DuplicatesWithinImport
     }
 
     /**
-     * An item of the import together with the input file it stems from and
-     * its position within that file.
+     * An item of the import together with the input file it stems from, its
+     * position within that file and whether the import actions reported an
+     * error for it.
      */
-    private record Candidate(Extractor.Item item, String sourceKey, int position)
+    private record Candidate(Extractor.Item item, String sourceKey, int position, boolean hasErrors)
     {
     }
 
     /**
-     * Order in which the copies are kept: the more detailed document first,
-     * then by input file and position within the file.
+     * Order in which the copies are kept: a copy without import errors first
+     * (otherwise a usable copy could be marked as duplicate of a copy which
+     * cannot be imported), then the more detailed document, then by input file
+     * and position within the file.
      */
     private static final Comparator<Candidate> KEEP_ORDER = Comparator
-                    .comparing(Candidate::item, BY_DETAIL) //
+                    .comparing(Candidate::hasErrors) //
+                    .thenComparing(Candidate::item, BY_DETAIL) //
                     .thenComparing(Candidate::sourceKey) //
                     .thenComparingInt(Candidate::position);
 
@@ -129,8 +135,25 @@ public final class DuplicatesWithinImport
      * occurrences in the input file with the most occurrences can be marked as
      * duplicates.</li>
      * </ul>
+     * All items are treated as importable, see
+     * {@link #of(List, Predicate)}.
      */
     public static DuplicatesWithinImport of(List<Extractor.Item> items)
+    {
+        return of(items, item -> false);
+    }
+
+    /**
+     * Determines the duplicates within the given items like {@link #of(List)},
+     * but prefers to keep copies without import errors: if the more detailed
+     * copy cannot be imported (e.g. because of an invalid gross value), the
+     * other copy is kept. The number of kept copies does not change.
+     *
+     * @param hasErrors
+     *            returns true if the import actions reported an error for the
+     *            item
+     */
+    public static DuplicatesWithinImport of(List<Extractor.Item> items, Predicate<Extractor.Item> hasErrors)
     {
         Map<DuplicateKey, List<Candidate>> groups = new HashMap<>();
         Map<String, Integer> positions = new HashMap<>();
@@ -150,7 +173,7 @@ public final class DuplicatesWithinImport
             var position = positions.merge(sourceKey, 1, Integer::sum);
 
             groups.computeIfAbsent(duplicateKeyOf(transaction), k -> new ArrayList<>())
-                            .add(new Candidate(item, sourceKey, position));
+                            .add(new Candidate(item, sourceKey, position, hasErrors.test(item)));
         }
 
         Map<Extractor.Item, Extractor.Item> duplicates = new IdentityHashMap<>();
