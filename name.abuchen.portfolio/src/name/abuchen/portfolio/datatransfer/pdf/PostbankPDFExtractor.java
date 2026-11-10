@@ -168,7 +168,7 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("shares") //
-                                                        .match("^WKN [A-Z0-9]{6} Nominal [A-Z]{3} (?<shares>[\\.,\\d]+)$") //
+                                                        .match("^WKN [A-Z0-9]{6}[\\s]+Nominal[\\s]+[A-Z]{3}[\\s]+(?<shares>[\\.,\\d]+).*$") //
                                                         .assign((t, v) -> t.setShares(asBondNominal(v.get("shares")))))
 
                         .oneOf( //
@@ -192,7 +192,7 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("date", "time") //
-                                                        .match("^.*Schlusstag\\/\\-zeit ... (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}).*$") //
+                                                        .match("^.*Schlusstag\\/\\-zeit ... (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<time>[\\d]{2}\\:[\\d]{2}(\\:[\\d]{2})?).*$") //
                                                         .assign((t, v) -> t
                                                                         .setDate(asDate(v.get("date"), v.get("time")))),
                                         // @formatter:off
@@ -666,7 +666,7 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
                         )
 
                         .wrap(t -> {
-                            if (t.getCurrencyCode() == null || t.getAmount() == 0)
+                            if (t.getCurrencyCode() != null && t.getAmount() == 0)
                                 return new SkippedItem(new TransactionItem(t), Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
 
                             return new TransactionItem(t);
@@ -705,7 +705,7 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
 
                         .subject(() -> new AccountTransaction(AccountTransaction.Type.DEPOSIT))
 
-                        .section("date", "note", "amount").optional() //
+                        .section("date", "note", "amount") //
                         .documentContext("currency", "year") //
                         .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.)(\\/|[\\s]*)[\\d]{2}\\.[\\d]{2}\\. (?<note>(SEPA .berweisung|D Gut SEPA|Gutschr\\.SEPA)).* \\+ (?<amount>[\\.,\\d]+)$") //
                         .assign((t, v) -> {
@@ -725,9 +725,10 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
                         })
 
                         .wrap(t -> {
-                            if (t.getCurrencyCode() != null && t.getAmount() != 0)
-                                return new TransactionItem(t);
-                            return null;
+                            if (t.getCurrencyCode() != null && t.getAmount() == 0)
+                                return new SkippedItem(new TransactionItem(t), Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
+
+                            return new TransactionItem(t);
                         }));
 
         // @formatter:off
@@ -740,7 +741,7 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
 
                         .subject(() -> new AccountTransaction(AccountTransaction.Type.REMOVAL))
 
-                        .section("date", "note", "amount").optional() //
+                        .section("date", "note", "amount") //
                         .documentContext("currency", "year") //
                         .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.)(\\/|[\\s]*)[\\d]{2}\\.[\\d]{2}\\. (?<note>SEPA (.berw\\. Einzel|Lastschrifteinzug|.berweisung)).* \\- (?<amount>[\\.,\\d]+)$") //
                         .assign((t, v) -> {
@@ -756,9 +757,10 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
                         })
 
                         .wrap(t -> {
-                            if (t.getCurrencyCode() != null && t.getAmount() != 0)
-                                return new TransactionItem(t);
-                            return null;
+                            if (t.getCurrencyCode() != null && t.getAmount() == 0)
+                                return new SkippedItem(new TransactionItem(t), Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
+
+                            return new TransactionItem(t);
                         }));
     }
 
