@@ -195,6 +195,17 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
     }
 
     /**
+     * Updates the height of the header after a label has been set directly or
+     * columns have been removed. The reflow updates it only if it changes a
+     * label.
+     */
+    private void updateHeaderHeight()
+    {
+        if (new Experiments().isEnabled(Experiments.Feature.NOV26_WRAP_COLUMN_HEADERS))
+            WindowsHeaderWrap.update(policy.getViewer().getControl());
+    }
+
+    /**
      * Returns the line by which SWT should measure the header when it fits the
      * column after a double click on the divider: the longer line of the most
      * balanced two-line split of the label. A long label then keeps two lines
@@ -1118,6 +1129,7 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
                 policy.getViewer().setComparator(null);
 
             viewerColumn.dispose();
+            updateHeaderHeight();
 
             if (store != null)
                 store.updateActive(serialize());
@@ -1204,6 +1216,8 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
                     col.dispose();
                 }
             }
+
+            updateHeaderHeight();
         }
         finally
         {
@@ -1314,6 +1328,8 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
 
             for (int ii = 0; ii < oldCount; ii++)
                 policy.getColumn(0).dispose();
+
+            updateHeaderHeight();
         }
         finally
         {
@@ -1343,6 +1359,8 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
 
             for (int ii = 0; ii < count; ii++)
                 policy.getColumn(0).dispose();
+
+            updateHeaderHeight();
         }
         finally
         {
@@ -1439,6 +1457,7 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
             widget.setText(newLabel);
             widget.setData(WRAP_LABEL_KEY, newLabel);
             reflowHeader(widget);
+            updateHeaderHeight();
 
             if (originalLabel == null)
                 widget.setData(ORIGINAL_LABEL_KEY, oldLabel);
@@ -1451,6 +1470,7 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
                 widget.setText(originalLabel);
                 widget.setData(WRAP_LABEL_KEY, originalLabel);
                 reflowHeader(widget);
+                updateHeaderHeight();
             }));
         }
 
