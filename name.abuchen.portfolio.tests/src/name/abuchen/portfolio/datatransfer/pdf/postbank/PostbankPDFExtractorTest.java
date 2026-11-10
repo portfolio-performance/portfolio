@@ -832,7 +832,14 @@ public class PostbankPDFExtractorTest
                         hasSource("Dividende01.txt"), //
                         hasNote("Abrechnungsnr. 12345678999 | Quartalsdividende"), //
                         hasAmount("EUR", 8.64), hasGrossValue("EUR", 10.17), //
-                        hasTaxes("EUR", 1.53), hasFees("EUR", 0.00))));
+                        hasTaxes("EUR", 1.53), hasFees("EUR", 0.00), //
+                        check(tx -> {
+                            var c = new CheckCurrenciesAction();
+                            var account = new Account();
+                            account.setCurrencyCode("EUR");
+                            var s = c.process((AccountTransaction) tx, account);
+                            assertThat(s, is(Status.OK_STATUS));
+                        }))));
     }
 
     @Test
@@ -1017,7 +1024,14 @@ public class PostbankPDFExtractorTest
                         hasSource("Dividende05.txt"), //
                         hasNote("Abrechnungsnr. 55626672580"), //
                         hasAmount("EUR", 9.65), hasGrossValue("EUR", 9.65), //
-                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00), //
+                        check(tx -> {
+                            var c = new CheckCurrenciesAction();
+                            var account = new Account();
+                            account.setCurrencyCode("EUR");
+                            var s = c.process((AccountTransaction) tx, account);
+                            assertThat(s, is(Status.OK_STATUS));
+                        }))));
     }
 
     @Test
@@ -1091,7 +1105,14 @@ public class PostbankPDFExtractorTest
                         hasSource("Dividende06.txt"), //
                         hasNote("Abrechnungsnr. 11111111111"), //
                         hasAmount("EUR", 124.02), hasGrossValue("EUR", 145.91), //
-                        hasTaxes("EUR", 21.89), hasFees("EUR", 0.00))));
+                        hasTaxes("EUR", 21.89), hasFees("EUR", 0.00), //
+                        check(tx -> {
+                            var c = new CheckCurrenciesAction();
+                            var account = new Account();
+                            account.setCurrencyCode("EUR");
+                            var s = c.process((AccountTransaction) tx, account);
+                            assertThat(s, is(Status.OK_STATUS));
+                        }))));
     }
 
     @Test
@@ -1165,7 +1186,14 @@ public class PostbankPDFExtractorTest
                         hasSource("Dividende07.txt"), //
                         hasNote("Abrechnungsnr. 72953370000"), //
                         hasAmount("EUR", 74.38), hasGrossValue("EUR", 101.02), //
-                        hasTaxes("EUR", 12.63 + 0.69 + 12.63 + 0.69), hasFees("EUR", 0.00))));
+                        hasTaxes("EUR", 12.63 + 0.69 + 12.63 + 0.69), hasFees("EUR", 0.00), //
+                        check(tx -> {
+                            var c = new CheckCurrenciesAction();
+                            var account = new Account();
+                            account.setCurrencyCode("EUR");
+                            var s = c.process((AccountTransaction) tx, account);
+                            assertThat(s, is(Status.OK_STATUS));
+                        }))));
     }
 
     @Test
@@ -1239,7 +1267,14 @@ public class PostbankPDFExtractorTest
                         hasSource("Dividende08.txt"), //
                         hasNote("Abrechnungsnr. 11223344550"), //
                         hasAmount("EUR", 17.76), hasGrossValue("EUR", 22.20), //
-                        hasTaxes("EUR", 4.44), hasFees("EUR", 0.00))));
+                        hasTaxes("EUR", 4.44), hasFees("EUR", 0.00), //
+                        check(tx -> {
+                            var c = new CheckCurrenciesAction();
+                            var account = new Account();
+                            account.setCurrencyCode("EUR");
+                            var s = c.process((AccountTransaction) tx, account);
+                            assertThat(s, is(Status.OK_STATUS));
+                        }))));
     }
 
     @Test
@@ -1350,7 +1385,14 @@ public class PostbankPDFExtractorTest
                         hasSource("Dividende10.txt"), //
                         hasNote("Abrechnungsnr. 75805627080 | Zinsschein 180 Tag(e)"), //
                         hasAmount("EUR", 122.44), hasGrossValue("EUR", 166.30), //
-                        hasTaxes("EUR", 20.79 + 1.14 + 20.79 + 1.14), hasFees("EUR", 0.00))));
+                        hasTaxes("EUR", 20.79 + 1.14 + 20.79 + 1.14), hasFees("EUR", 0.00), //
+                        check(tx -> {
+                            var c = new CheckCurrenciesAction();
+                            var account = new Account();
+                            account.setCurrencyCode("EUR");
+                            var s = c.process((AccountTransaction) tx, account);
+                            assertThat(s, is(Status.OK_STATUS));
+                        }))));
     }
 
     @Test
@@ -1424,7 +1466,14 @@ public class PostbankPDFExtractorTest
                         hasSource("Dividende11.txt"), //
                         hasNote("Abrechnungsnr. 83904157190"), //
                         hasAmount("EUR", 1.56), hasGrossValue("EUR", 1.56), //
-                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00), //
+                        check(tx -> {
+                            var c = new CheckCurrenciesAction();
+                            var account = new Account();
+                            account.setCurrencyCode("EUR");
+                            var s = c.process((AccountTransaction) tx, account);
+                            assertThat(s, is(Status.OK_STATUS));
+                        }))));
     }
 
     @Test
@@ -1535,7 +1584,14 @@ public class PostbankPDFExtractorTest
                         hasSource("Dividende13.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 210.44), hasGrossValue("EUR", 285.83), //
-                        hasTaxes("EUR", 71.46 + 3.93), hasFees("EUR", 0.00))));
+                        hasTaxes("EUR", 71.46 + 3.93), hasFees("EUR", 0.00), //
+                        check(tx -> {
+                            var c = new CheckCurrenciesAction();
+                            var account = new Account();
+                            account.setCurrencyCode("EUR");
+                            var s = c.process((AccountTransaction) tx, account);
+                            assertThat(s, is(Status.OK_STATUS));
+                        }))));
     }
 
     @Test
