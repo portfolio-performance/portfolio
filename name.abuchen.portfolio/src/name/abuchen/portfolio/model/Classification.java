@@ -164,9 +164,9 @@ public class Classification implements Named
         if (color == null)
         {
             Random r = new Random();
-            this.color = '#' + Integer.toHexString(((r.nextInt(128) + 127) << 16) //
-                            | ((r.nextInt(128) + 127) << 8) //
-                            | (r.nextInt(128) + 127));
+            // use a saturated color to avoid near-white defaults that become
+            // invisible against light backgrounds (issue #2829)
+            this.color = ColorConversion.toHex(r.nextInt(360), 0.5f, 0.8f);
         }
 
         this.weight = ONE_HUNDRED_PERCENT;
@@ -509,8 +509,10 @@ public class Classification implements Named
         if (children.isEmpty())
             return;
 
-        float childSaturation = Math.max(0f, saturation - 0.1f);
-        float childBrightness = Math.min(1f, brightness + 0.1f);
+        // keep descendants saturated and away from white so cascaded colors
+        // remain visible in pie/donut charts (issue #2829)
+        float childSaturation = Math.max(0.25f, saturation - 0.1f);
+        float childBrightness = Math.min(0.85f, brightness + 0.1f);
 
         for (Classification child : children)
         {

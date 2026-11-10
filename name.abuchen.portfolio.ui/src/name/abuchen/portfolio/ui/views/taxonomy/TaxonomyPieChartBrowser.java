@@ -89,7 +89,7 @@ public class TaxonomyPieChartBrowser implements IPieChart
             {
                 buffer.append("{\"uuid\":\"\",\"name\":\"\",\"caption\":\"\",");
                 buffer.append("\"value\":").append(node.getActual().getAmount());
-                buffer.append(",\"color\":\"#FFFFFF\"");
+                buffer.append(",\"color\":\"#C8C8C8\"");
             }
             else
             {
@@ -103,7 +103,9 @@ public class TaxonomyPieChartBrowser implements IPieChart
                                 .append(")\",");
                 buffer.append("\"value\":").append(node.getActual().getAmount());
                 buffer.append(",\"color\":\"")
-                                .append(node.isAssignment() ? ColorConversion.brighter(nodeColor) : node.getColor())
+                                .append(ColorConversion.toHex(ColorConversion.ensureVisible(ColorConversion.hex2RGB(
+                                                node.isAssignment() ? ColorConversion.brighter(nodeColor)
+                                                : node.getColor()))))
                                 .append("\"");
             }
 
