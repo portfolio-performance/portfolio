@@ -12,13 +12,14 @@ import name.abuchen.portfolio.model.InvestmentPlan;
 import name.abuchen.portfolio.model.InvestmentPlan.Type;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.model.WeekendAdjustment;
 import name.abuchen.portfolio.ui.Messages;
 
 public class InvestmentPlanModel extends AbstractModel
 {
     public enum Properties
     {
-        calculationStatus, name, security, securityCurrencyCode, portfolio, account, accountCurrencyCode, start, interval, amount, grossAmount, fees, taxes, transactionCurrencyCode, autoGenerate; // NOSONAR
+        calculationStatus, name, security, securityCurrencyCode, portfolio, account, accountCurrencyCode, start, interval, amount, grossAmount, fees, taxes, transactionCurrencyCode, autoGenerate, weekendAdjustment; // NOSONAR
     }
 
     public static final Account DELIVERY = new Account(Messages.InvestmentPlanOptionDelivery);
@@ -34,6 +35,7 @@ public class InvestmentPlanModel extends AbstractModel
     private Account account;
 
     private boolean autoGenerate;
+    private WeekendAdjustment weekendAdjustment = WeekendAdjustment.NEXT_BUSINESS_DAY;
 
     private LocalDate start = LocalDate.now();
 
@@ -147,6 +149,7 @@ public class InvestmentPlanModel extends AbstractModel
         plan.setAutoGenerate(autoGenerate);
         plan.setStart(start);
         plan.setInterval(interval);
+        plan.setWeekendAdjustment(this.weekendAdjustment);
         plan.setAmount(amount);
         plan.setFees(fees);
         plan.setTaxes(taxes);
@@ -186,6 +189,7 @@ public class InvestmentPlanModel extends AbstractModel
         this.autoGenerate = plan.isAutoGenerate();
         this.start = plan.getStart();
         this.interval = plan.getInterval();
+        this.weekendAdjustment = plan.getWeekendAdjustment();
         this.amount = plan.getAmount();
         this.grossAmount = switch (planType)
         {
@@ -286,6 +290,17 @@ public class InvestmentPlanModel extends AbstractModel
     public Account getAccount()
     {
         return account;
+    }
+
+    public WeekendAdjustment getWeekendAdjustment()
+    {
+        return weekendAdjustment;
+    }
+
+    public void setWeekendAdjustment(WeekendAdjustment weekendAdjustment)
+    {
+        firePropertyChange(Properties.weekendAdjustment.name(), this.weekendAdjustment,
+                        this.weekendAdjustment = weekendAdjustment);
     }
 
     public void setAccount(Account account)
