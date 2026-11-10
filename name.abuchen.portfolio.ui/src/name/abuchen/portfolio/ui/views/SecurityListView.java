@@ -568,5 +568,7 @@ public class SecurityListView extends AbstractFinanceView
         pages.add(make(TradesPane.class));
         pages.add(make(SecurityEventsPane.class));
         pages.add(make(HistoricalPricesDataQualityPane.class));
+        // NOTE: Should it be here too?
+        // pages.add(make(AbsolutePerformancePane.class));
     }
 }
