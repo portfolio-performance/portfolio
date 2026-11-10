@@ -111,10 +111,10 @@ public class DeutscheBankPDFExtractor extends AbstractPDFExtractor
                                         // ISIN US900123AY60 Kurs 100,06 %
                                         // @formatter:on
                                         section -> section //
-                                                        .attributes("name", "wkn", "isin", "currency") //
+                                                        .attributes("name", "wkn", "isin", "currency", "percent") //
                                                         .match("^[\\d]{3} [\\d]+ [\\d]{2} (?<name>.*) [\\d]\\/[\\d]{1,2}$")//
                                                         .match("^WKN (?<wkn>[A-Z0-9]{6}) Nominal (?<currency>[A-Z]{3}) [\\.,\\d]+$") //
-                                                        .match("^ISIN (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) Kurs .* %$") //
+                                                        .match("^ISIN (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) Kurs .* (?<percent>%)$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))))
 
                         .oneOf( //
@@ -136,8 +136,15 @@ public class DeutscheBankPDFExtractor extends AbstractPDFExtractor
                                                             // @formatter:off
                                                             // Percentage quotation, workaround for bonds
                                                             // @formatter:on
-                                                            var shares = asBigDecimal(v.get("shares"));
-                                                            t.setShares(Values.Share.factorize(shares.doubleValue() / 100));
+                                                            if (t.getSecurity().isPercentageQuoted())
+                                                            {
+                                                                t.setShares(asShares(v.get("shares")));
+                                                            }
+                                                            else
+                                                            {
+                                                                var shares = asBigDecimal(v.get("shares"));
+                                                                t.setShares(Values.Share.factorize(shares.doubleValue() / 100));
+                                                            }
                                                         }))
                         // @formatter:off
                         // 09:05 MEZ 1447743358 618 14,80 9.146,40 9.120,93
@@ -365,7 +372,7 @@ public class DeutscheBankPDFExtractor extends AbstractPDFExtractor
                                                         .attributes("currency", "wkn", "isin", "name") //
                                                         .match("^[\\.,\\d]+ (?<currency>[A-Z]{3}) (?<wkn>[A-Z0-9]{6}) (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
                                                         .match("^(?<name>.*)$") //
-                                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))))
+                                                        .assign((t, v) -> t.setSecurity(getOrCreatePercentageQuotedSecurity(v))))
 
                         .oneOf( //
                                         // @formatter:off
@@ -385,8 +392,15 @@ public class DeutscheBankPDFExtractor extends AbstractPDFExtractor
                                                             // @formatter:off
                                                             // Percentage quotation, workaround for bonds
                                                             // @formatter:on
-                                                            var shares = asBigDecimal(v.get("shares"));
-                                                            t.setShares(Values.Share.factorize(shares.doubleValue() / 100));
+                                                            if (t.getSecurity().isPercentageQuoted())
+                                                            {
+                                                                t.setShares(asShares(v.get("shares")));
+                                                            }
+                                                            else
+                                                            {
+                                                                var shares = asBigDecimal(v.get("shares"));
+                                                                t.setShares(Values.Share.factorize(shares.doubleValue() / 100));
+                                                            }
                                                         }))
 
                         // @formatter:off
