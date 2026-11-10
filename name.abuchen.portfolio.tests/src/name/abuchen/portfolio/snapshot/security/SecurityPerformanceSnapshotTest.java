@@ -151,4 +151,30 @@ public class SecurityPerformanceSnapshotTest
         assertThat(record.getOpeningValue(), is(Money.of(CurrencyUnit.EUR, 0)));
         assertThat(record.getMarketValue(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(100 * 15d))));
     }
+
+    @Test
+    public void testCostPerSharesHeldOfPercentageQuotedSecurity()
+    {
+        Client client = new Client();
+
+        Security bond = new SecurityBuilder().addTo(client);
+        bond.setPercentageQuoted(true);
+
+        new PortfolioBuilder() //
+                        .buy(bond, "2018-05-01", Values.Share.factorize(1000), Values.Amount.factorize(1005)) //
+                        .addTo(client);
+
+        LazySecurityPerformanceSnapshot snapshot = LazySecurityPerformanceSnapshot.create(client,
+                        new TestCurrencyConverter(),
+                        Interval.of(LocalDate.parse("2018-04-01"), LocalDate.parse("2018-06-01")));
+
+        assertThat(snapshot.getRecords(), hasSize(1));
+        LazySecurityPerformanceRecord record = snapshot.getRecords().get(0);
+
+        // the purchase price is given in percent like the security prices
+        assertThat(record.getCostPerSharesHeld(CostMethod.FIFO, TaxesAndFees.NOT_INCLUDED),
+                        is(Quote.of(CurrencyUnit.EUR, Values.Quote.factorize(100.5))));
+        assertThat(record.getCostPerSharesHeld(CostMethod.MOVING_AVERAGE, TaxesAndFees.NOT_INCLUDED),
+                        is(Quote.of(CurrencyUnit.EUR, Values.Quote.factorize(100.5))));
+    }
 }

@@ -201,9 +201,10 @@ public class PortfolioTransaction extends Transaction
         if (getShares() == 0)
             return Quote.of(getCurrencyCode(), 0);
 
-        long grossPrice = BigDecimal.valueOf(getGrossValueAmount()).movePointRight(Values.Quote.precisionDeltaToMoney()) //
+        long grossPrice = BigDecimal.valueOf(getGrossValueAmount())
+                        .movePointRight(Values.Quote.precisionDeltaToMoney()) //
                         .movePointRight(Values.Share.precision()) //
-                        .divide(BigDecimal.valueOf(getShares()), Values.MC) //
+                        .divide(BigDecimal.valueOf(getShares()).multiply(getQuoteMultiplier()), Values.MC) //
                         .setScale(0, RoundingMode.HALF_EVEN).longValue();
 
         return Quote.of(getCurrencyCode(), grossPrice);
@@ -229,9 +230,46 @@ public class PortfolioTransaction extends Transaction
         long grossPrice = BigDecimal.valueOf(getGrossValue(converter).getAmount())
                         .movePointRight(Values.Quote.precisionDeltaToMoney()) //
                         .movePointRight(Values.Share.precision()) //
-                        .divide(BigDecimal.valueOf(getShares()), Values.MC) //
+                        .divide(BigDecimal.valueOf(getShares()).multiply(getQuoteMultiplier()), Values.MC) //
                         .setScale(0, RoundingMode.HALF_EVEN).longValue();
         return Quote.of(converter.getTermCurrency(), grossPrice);
+    }
+
+    /**
+     * Returns the gross price per share as the security is quoted. For
+     * percentage-quoted securities, the price is given in the currency of the
+     * security because a percentage refers to the nominal value in that
+     * currency. It is taken from the forex gross value of the transaction if
+     * the transaction currency differs. In all other cases this is the same as
+     * {@link #getGrossPricePerShare()}.
+     */
+    public Quote getQuotedGrossPricePerShare()
+    {
+        var security = getSecurity();
+        if (security == null || !security.isPercentageQuoted() || getShares() == 0
+                        || security.getCurrencyCode().equals(getCurrencyCode()))
+            return getGrossPricePerShare();
+
+        Optional<Unit> grossValue = getUnit(Unit.Type.GROSS_VALUE);
+        if (grossValue.isEmpty())
+            return getGrossPricePerShare();
+
+        long grossPrice = BigDecimal.valueOf(grossValue.get().getForex().getAmount())
+                        .movePointRight(Values.Quote.precisionDeltaToMoney()) //
+                        .movePointRight(Values.Share.precision()) //
+                        .divide(BigDecimal.valueOf(getShares()).multiply(getQuoteMultiplier()), Values.MC) //
+                        .setScale(0, RoundingMode.HALF_EVEN).longValue();
+        return Quote.of(security.getCurrencyCode(), grossPrice);
+    }
+
+    /**
+     * Returns the quote multiplier of the security (see
+     * {@link Security#getQuoteMultiplier()}), 1 if no security is set.
+     */
+    private BigDecimal getQuoteMultiplier()
+    {
+        var security = getSecurity();
+        return security != null ? security.getQuoteMultiplier() : BigDecimal.ONE;
     }
 
     @Override

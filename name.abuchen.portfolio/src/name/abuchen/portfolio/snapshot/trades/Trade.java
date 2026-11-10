@@ -134,6 +134,7 @@ public class Trade implements Adaptable
                             .movePointLeft(Values.Share.precision()) //
                             .multiply(BigDecimal.valueOf(security.getSecurityPrice(now).getValue()), Values.MC)
                             .movePointLeft(Values.Quote.precisionDeltaToMoney()) //
+                            .multiply(security.getQuoteMultiplier()) //
                             .setScale(0, RoundingMode.HALF_UP).longValue();
 
             this.exitValue = converter.at(now).apply(Money.of(security.getCurrencyCode(), marketValue));

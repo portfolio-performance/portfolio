@@ -148,4 +148,33 @@ public class ProtobufWriterAdditionalTest
         assertThat(reloadedTransaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(100))));
     }
+
+    @Test
+    public void testPercentageQuotedSecurityRoundtrip() throws IOException
+    {
+        Client client = new Client();
+
+        Security bond = new Security("Bond", CurrencyUnit.EUR);
+        bond.setUpdatedAt(Instant.now());
+        bond.setPercentageQuoted(true);
+        client.addSecurity(bond);
+
+        Security share = new Security("Share", CurrencyUnit.EUR);
+        share.setUpdatedAt(Instant.now());
+        client.addSecurity(share);
+
+        ProtobufWriter protobufWriter = new ProtobufWriter();
+
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        protobufWriter.save(client, stream);
+        stream.close();
+
+        Client newClient = protobufWriter.load(new ByteArrayInputStream(stream.toByteArray()));
+
+        assertThat(newClient.getSecurities().size(), is(2));
+        assertThat(newClient.getSecurities().stream().filter(s -> "Bond".equals(s.getName())).findFirst()
+                        .orElseThrow().isPercentageQuoted(), is(true));
+        assertThat(newClient.getSecurities().stream().filter(s -> "Share".equals(s.getName())).findFirst()
+                        .orElseThrow().isPercentageQuoted(), is(false));
+    }
 }
