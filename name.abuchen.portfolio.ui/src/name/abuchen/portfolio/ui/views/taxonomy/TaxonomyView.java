@@ -28,6 +28,7 @@ import org.eclipse.swt.custom.StackLayout;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Text;
 
 import name.abuchen.portfolio.bootstrap.BundleMessages;
@@ -46,6 +47,7 @@ import name.abuchen.portfolio.ui.util.JSONExporterDialog;
 import name.abuchen.portfolio.ui.util.ReportingPeriodDropDown;
 import name.abuchen.portfolio.ui.util.ReportingPeriodDropDown.ReportingPeriodListener;
 import name.abuchen.portfolio.ui.util.SimpleAction;
+import name.abuchen.portfolio.ui.views.StatementOfAssetsView;
 import name.abuchen.portfolio.ui.views.panes.HistoricalPricesPane;
 import name.abuchen.portfolio.ui.views.panes.InformationPanePage;
 import name.abuchen.portfolio.ui.views.panes.SecurityEventsPane;
@@ -154,6 +156,9 @@ public class TaxonomyView extends AbstractFinanceView implements PropertyChangeL
 
     private Composite container;
     private List<Action> viewActions = new ArrayList<>();
+
+    /** true if a reload of the view has been scheduled */
+    private boolean isReloadScheduled = false;
 
     @Override
     protected String getDefaultTitle()
@@ -372,9 +377,44 @@ public class TaxonomyView extends AbstractFinanceView implements PropertyChangeL
     @Override
     public void notifyModelUpdated()
     {
+        if (isReloadScheduled)
+            return;
+
+        if (!getClient().getTaxonomies().contains(taxonomy))
+        {
+            // taxonomy has been removed elsewhere
+            scheduleReload(() -> getPart().activateView(StatementOfAssetsView.class, null));
+            return;
+        }
+
+        if (model.isStructureOutdated())
+        {
+            // categories or assignments have been changed elsewhere (e.g.
+            // taxonomy import, editing an instrument). The TaxonomyNode objects
+            // do not reflect these changes, therefore do a complete reload of
+            // the view including the taxonomy model.
+            scheduleReload(() -> getPart().activateView(TaxonomyView.class, taxonomy));
+            return;
+        }
+
         Client filteredClient = this.clientFilterDropDown.getSelectedFilter().filter(getClient());
         setToContext(UIConstants.Context.FILTERED_CLIENT, filteredClient);
         model.updateClientSnapshot(filteredClient);
+    }
+
+    /**
+     * Reloads asynchronously because the view must not be disposed while it is
+     * still processing the update notification.
+     */
+    private void scheduleReload(Runnable reload)
+    {
+        isReloadScheduled = true;
+
+        Display.getDefault().asyncExec(() -> {
+            var control = getControl();
+            if (control != null && !control.isDisposed())
+                reload.run();
+        });
     }
 
     private void addView(final ToolBarManager toolBar, String label, Images image, final int index)

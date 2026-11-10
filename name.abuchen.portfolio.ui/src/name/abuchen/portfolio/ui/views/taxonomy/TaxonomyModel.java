@@ -97,6 +97,13 @@ public final class TaxonomyModel
     private TaxonomyNode unassignedNode;
     private Map<InvestmentVehicle, Assignment> investmentVehicle2weight = new HashMap<>();
 
+    /**
+     * Fingerprint of the taxonomy structure the node tree was built from (or
+     * last edited to by this model). Used to detect structural changes made
+     * elsewhere, see {@link #isStructureOutdated()}.
+     */
+    private String structureFingerprint;
+
     private boolean excludeUnassignedCategoryInCharts = false;
     private boolean excludeSecuritiesInPieChart = false;
     private boolean orderByTaxonomyInStackChart = false;
@@ -173,6 +180,8 @@ public final class TaxonomyModel
 
         // add unassigned
         addUnassigned(client);
+
+        this.structureFingerprint = TaxonomyStructureFingerprint.of(taxonomy);
 
         // calculate actuals
         visitActuals(snapshot, virtualRootNode);
@@ -481,9 +490,26 @@ public final class TaxonomyModel
         dirtyListener.add(listener);
     }
 
+    /**
+     * Marks the model as edited by the view. All edits of the view must go
+     * through this method because it also takes over the current structure of
+     * the taxonomy as baseline: edits made by the view itself must not be
+     * detected as outdated structure.
+     */
     public void markDirty()
     {
+        this.structureFingerprint = TaxonomyStructureFingerprint.of(taxonomy);
         dirtyListener.forEach(DirtyListener::onModelEdited);
+    }
+
+    /**
+     * Returns true if the structure of the taxonomy (categories or
+     * assignments) was changed elsewhere since the node tree was built. The
+     * node tree is then outdated and the model must be recreated.
+     */
+    public boolean isStructureOutdated()
+    {
+        return !structureFingerprint.equals(TaxonomyStructureFingerprint.of(taxonomy));
     }
 
     public int getWeightByInvestmentVehicle(InvestmentVehicle vehicle)
