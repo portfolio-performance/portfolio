@@ -3,6 +3,7 @@ package name.abuchen.portfolio.datatransfer.pdf.deutschebank;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.check;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.deposit;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.dividend;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasAccruedInterest;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasAmount;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasCurrencyCode;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasDate;
@@ -1134,7 +1135,8 @@ public class DeutscheBankPDFExtractorTest
                         hasDate("2025-08-21T16:37"), hasShares(5000.00), //
                         hasSource("Kauf10.txt"), //
                         hasNote("Belegnummer 1234567890 / 123456789 | Zinsen für 158 Zinstage: 150,86 USD"), //
-                        hasAmount("USD", 5232.20), hasGrossValue("USD", 5153.86), //
+                        hasAmount("USD", 5232.20), hasGrossValue("USD", 5003.00), //
+                        hasAccruedInterest("USD", 150.86), //
                         hasTaxes("USD", 0.00), hasFees("USD", 68.32 + 5.22 + 4.80))));
     }
 
@@ -1176,7 +1178,8 @@ public class DeutscheBankPDFExtractorTest
                         hasDate("2025-08-21T16:37"), hasShares(50.00), //
                         hasSource("Kauf10.txt"), //
                         hasNote("Belegnummer 1234567890 / 123456789 | Zinsen für 158 Zinstage: 150,86 USD"), //
-                        hasAmount("USD", 5232.20), hasGrossValue("USD", 5153.86), //
+                        hasAmount("USD", 5232.20), hasGrossValue("USD", 5003.00), //
+                        hasAccruedInterest("USD", 150.86), //
                         hasTaxes("USD", 0.00), hasFees("USD", 68.32 + 5.22 + 4.80))));
     }
 
@@ -1211,7 +1214,8 @@ public class DeutscheBankPDFExtractorTest
                         hasSource("Kauf11.txt"), //
                         hasNote("Belegnummer 1234567890 / 1234567"), //
                         hasAmount("EUR", 1010.00), hasGrossValue("EUR", 1010.00), //
-                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00), //
+                        hasAccruedInterest("EUR", 0.00))));
     }
 
     @Test
@@ -1253,7 +1257,8 @@ public class DeutscheBankPDFExtractorTest
                         hasSource("Kauf11.txt"), //
                         hasNote("Belegnummer 1234567890 / 1234567"), //
                         hasAmount("EUR", 1010.00), hasGrossValue("EUR", 1010.00), //
-                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00), //
+                        hasAccruedInterest("EUR", 0.00))));
     }
 
     @Test

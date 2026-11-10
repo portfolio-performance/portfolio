@@ -17,6 +17,7 @@ import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
+import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
 
@@ -239,6 +240,13 @@ public class DeutscheBankPDFExtractor extends AbstractPDFExtractor
                                                             t.setNote(concatenate(t.getNote(), v.get("note1"), " | "));
                                                             t.setNote(concatenate(t.getNote(), v.get("note2"), ": "));
                                                             t.setNote(concatenate(t.getNote(), v.get("note3"), " "));
+
+                                                            // @formatter:off
+                                                            // Accrued interest: paid with a purchase, received with a sale
+                                                            // @formatter:on
+                                                            var accruedInterest = Money.of(asCurrencyCode(v.get("note3")), asAmount(v.get("note2")));
+                                                            if (accruedInterest.getCurrencyCode().equals(t.getPortfolioTransaction().getCurrencyCode()))
+                                                                t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.ACCRUED_INTEREST, accruedInterest));
                                                         }))
 
                         .wrap(t -> {
