@@ -1,0 +1,65 @@
+PDFBox Version: 3.0.8
+Portfolio Performance Version: 0.89.0
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+LGT Bank AG 
+Zweigniederlassung Österreich 
+Bankgasse 9, A-1010 Wien 
+Tel. +43 1 22759-0 
+lgt.austria@lgt.com, www.lgt.at, BIC BLFLATWW 
+FN 383530s HG Wien, Sitz Wien, UID Nr. ATU57631067 
+pIzp 
+GkvNd hluWHoo Jgr DkOnp 
+JGpwQHaqMc 79/27 
+1526 bexa 
+1 /  2 
+Wien, 7. Oktober 2026 
+Abrechnung Verkauf Portfolio: 7820370.893 
+Auftragsnummer: 204746282 Kundenportfolio Aktienmandat Global Quality Leaders 
+Kunde: rLsXH wWq GgAEa 
+Titel  New York Times Co 
+Namen-Aktien -A- 
+ISIN US6501111073 
+Valorennummer 956840 
+Wertpapierkennnummer  857534 
+Abschlussdatum  07.10.2026 22:00:03 
+Ausführungsplatz NYSE New York Stock Exchange 
+Auftragstyp Bestens 
+Anzahl  168 Stück 
+Kurs USD 64,101279 
+Kurswert USD 10.769,01 
+Börsengebühren   USD -0,23 
+KESt   USD -604,36 
+Gutschrift USD Konto 9332814.677 USD 10.164,42 
+Valuta 08.10.2026 
+Die Gutschrift erfolgt vorbehaltlich des effektiven Zahlungseinganges. 
+Eine allfällige KESt-Abfuhr erfolgt an das Finanzamt für Großbetriebe. 
+LGT Bank AG, Zweigniederlassung Österreich ist eine Zweigniederlassung der LGT Bank AG, eingetragen im Handelsregister des Fürstentum Liechtenstein; 
+HR Nr.: 1122356-7, Sitz: 9490 Vaduz, MWST-Nr. 50119, CH-260 887 880 
+3852370 13E T VIE I TRD1001 8799436 22:19 07.10.2026 %Media:XML-A4H 
+LGT Bank AG 
+Zweigniederlassung Österreich 
+Bankgasse 9, A-1010 Wien 
+Tel. +43 1 22759-0 
+lgt.austria@lgt.com, www.lgt.at, BIC BLFLATWW 
+FN 383530s HG Wien, Sitz Wien, UID Nr. ATU57631067 
+2 /  2 
+Abrechnung Verkauf Kundenportfolio Aktienmandat Global Quality Leaders 
+Auftragsnummer: 204746282 Portfolio: 5893370.122 
+Kunde: LMBek bXx OuqKL 
+Steuerliche Informationen (Werte in EUR) 
+Wechselkurs EUR/USD 1,125600 
+Bestandsverminderung Stück 
+davon Neubestand 168,00 
+Bestand nach Abwicklung der Transaktion Stück 
+Anteile Gesamt 0,00 
+Neubestand 
+steuerlicher Veräußerungserlös EUR 9.567,35 
+-steuerliche Anschaffungskosten EUR 7.614,91 
+steuerlicher Gewinn EUR 1.952,44 
+KESt 27,5 % EUR 536,92 
+KESt Zusammenfassung 
+Verlustausgleichsfähiger Ertrag EUR 1.952,44 
+KESt Bemessungsgrundlage EUR 1.952,44 
+Bezahlte KESt EUR 536,92 
+3852370 13E T VIE I TRD1001 8799436 22:19 07.10.2026 %Media:XML-A4H
