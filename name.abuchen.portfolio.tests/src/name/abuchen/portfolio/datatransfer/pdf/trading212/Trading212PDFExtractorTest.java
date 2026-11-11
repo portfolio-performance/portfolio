@@ -45,6 +45,40 @@ import name.abuchen.portfolio.model.Client;
 public class Trading212PDFExtractorTest
 {
     @Test
+    public void testWertpapierKauf01()
+    {
+        var extractor = new Trading212PDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf01.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("KYG875721634"), hasWkn(null), hasTicker("NNND"), //
+                        hasName("Tencent"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check purchase transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2026-04-15T06:07:41"), hasShares(0.92438528), //
+                        hasSource("Kauf01.txt"), //
+                        hasNote("Auftrags-ID-Nr.: 76880828286"), //
+                        hasAmount("EUR", 50.00), hasGrossValue("EUR", 50.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+    }
+
+    @Test
     public void testAktivitaetsauszug01()
     {
         var extractor = new Trading212PDFExtractor(new Client());
