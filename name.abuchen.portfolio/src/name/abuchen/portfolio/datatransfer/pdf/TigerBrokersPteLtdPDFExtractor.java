@@ -72,7 +72,7 @@ public class TigerBrokersPteLtdPDFExtractor extends AbstractPDFExtractor
     {
         final var type = new DocumentType("Activity Statement", (context, lines) -> {
             var pCurrency = Pattern.compile("^.* (Base Currency :|Cash) (?<currency>[A-Z]{3})$");
-            var pSecurity = Pattern.compile("^(?<tickerSymbol>(?!(GST|Net))[A-Z0-9]{1,6}(?:\\\\.[A-Z]{1,4})?) (?<name>.*) [\\d]$");
+            var pSecurity = Pattern.compile("^(?<tickerSymbol>(?!(GST|Net))[A-Z0-9]{1,6}(?:\\.[A-Z]{1,4})?) (?<name>.*) [\\d]$");
             var pSecurityCurrency = Pattern.compile("^Stock Currency: (?<securityCurrency>[A-Z]{3})$");
             var pDividendTaxes = Pattern.compile("^(?<date>[\\d]{4}\\-[\\d]{2}\\-[\\d]{2}) (?<tickerSymbol>[A-Z0-9]{1,6}(?:\\.[A-Z]{1,4})?) Cash Dividend .* \\-(?<tax>[\\.,\\d]+).*$");
 
