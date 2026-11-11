@@ -246,7 +246,7 @@ public class SunrisePDFExtractorTest
     }
 
     @Test
-    public void testDividende22()
+    public void testDividende01()
     {
         var extractor = new SunrisePDFExtractor(new Client());
 

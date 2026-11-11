@@ -50,12 +50,12 @@ public class SunrisePDFExtractor extends AbstractPDFExtractor
 
     private void addBuySellTransaction()
     {
-        DocumentType type = new DocumentType("Fondsabrechnung");
+        final var type = new DocumentType("Fondsabrechnung");
         this.addDocumentTyp(type);
 
-        Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
+        var pdfTransaction = new Transaction<BuySellEntry>();
 
-        Block firstRelevantLine = new Block("^Kauf .* [\\.'\\d]+ \\p{Sc} [\\.'\\d]+ \\p{Sc} [\\.'\\d]+$");
+        var firstRelevantLine = new Block("^Kauf .* [\\.'\\d]+ \\p{Sc} [\\.'\\d]+ \\p{Sc} [\\.'\\d]+$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -107,7 +107,7 @@ public class SunrisePDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("amount", "currency") //
                                                         .match("^[A-Z]{2}[A-Z0-9]{9}[0-9] [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}$") //
-                                                        .match("^[\\s]{1,}(?<amount>[\\.'\\d]+) (?<currency>\\p{Sc})$") //
+                                                        .match("^[\\s]+(?<amount>[\\.'\\d]+) (?<currency>\\p{Sc})$") //
                                                         .assign((t, v) -> {
                                                             t.setAmount(asAmount(v.get("amount")));
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
@@ -126,7 +126,7 @@ public class SunrisePDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("note") //
-                                                        .match("^[\\s]{1,}(?<note>[\\d]{20,})$") //
+                                                        .match("^[\\s]+(?<note>[\\d]{20,})$") //
                                                         .assign((t, v) -> t.setNote("Auftrags-Nummer: " + trim(v.get("note")))))
 
                         .wrap(BuySellEntryItem::new);
@@ -136,12 +136,12 @@ public class SunrisePDFExtractor extends AbstractPDFExtractor
 
     private void addDividendeTransaction()
     {
-        DocumentType type = new DocumentType("Aussch.ttungsanzeige");
+        final var type = new DocumentType("Aussch.ttungsanzeige");
         this.addDocumentTyp(type);
 
-        Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
+        var pdfTransaction = new Transaction<AccountTransaction>();
 
-        Block firstRelevantLine = new Block("^.*Aussch.ttungsanzeige$");
+        var firstRelevantLine = new Block("^.*Aussch.ttungsanzeige$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -170,10 +170,10 @@ public class SunrisePDFExtractor extends AbstractPDFExtractor
                         .match("^Aussch.ttung je Anteil: (?<amountPerShare>['\\.\\d]+)$") //
                         .match("^Aussch.ttung gesamt: (?<gross>[\\.'\\d]+)$") //
                         .assign((t, v) -> {
-                            BigDecimal amountPerShare = BigDecimal.valueOf(asAmount(v.get("amountPerShare")));
-                            BigDecimal gross = BigDecimal.valueOf(asAmount(v.get("gross")));
+                            var amountPerShare = BigDecimal.valueOf(asAmount(v.get("amountPerShare")));
+                            var gross = BigDecimal.valueOf(asAmount(v.get("gross")));
 
-                            BigDecimal shares = gross.divide(amountPerShare, Values.Share.precision(), RoundingMode.HALF_UP);
+                            var shares = gross.divide(amountPerShare, Values.Share.precision(), RoundingMode.HALF_UP);
                             t.setShares(shares.movePointRight(Values.Share.precision()).longValue());
                         })
 
@@ -193,7 +193,7 @@ public class SunrisePDFExtractor extends AbstractPDFExtractor
                         .match("^.*Zur Auszahlung kommender Betrag: (?<amount>[\\.'\\d]+)$") //
                         .assign((t, v) -> {
                             t.setAmount(asAmount(v.get("amount")));
-                            t.setCurrencyCode(asCurrencyCode("EUR"));
+                            t.setCurrencyCode(asCurrencyCode(EUR));
 
                             // @formatter:off
                             // If the dividend amount correspond to the tax amount to be paid,
@@ -213,12 +213,10 @@ public class SunrisePDFExtractor extends AbstractPDFExtractor
                         .match("^.* (?<note>Turnus: .*)$") //
                         .assign((t, v) -> t.setNote(trim(v.get("note"))))
 
-                        .wrap((t, ctx) -> {
+                        .wrap(t -> {
                             type.getCurrentContext().remove("noTax");
 
-                            TransactionItem item = new TransactionItem(t);
-
-                            return item;
+                            return new TransactionItem(t);
                         });
 
         addTaxesSectionsTransaction(pdfTransaction, type);
@@ -227,9 +225,9 @@ public class SunrisePDFExtractor extends AbstractPDFExtractor
 
     private void addDividendeTaxBlock(DocumentType type)
     {
-        Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
+        var pdfTransaction = new Transaction<AccountTransaction>();
 
-        Block firstRelevantLine = new Block("Aussch.ttungsanzeige");
+        var firstRelevantLine = new Block("Aussch.ttungsanzeige");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -264,10 +262,10 @@ public class SunrisePDFExtractor extends AbstractPDFExtractor
                         .match("^Aussch.ttung je Anteil: (?<amountPerShare>['\\.\\d]+)$") //
                         .match("^Aussch.ttung gesamt: (?<gross>[\\.'\\d]+)$") //
                         .assign((t, v) -> {
-                            BigDecimal amountPerShare = BigDecimal.valueOf(asAmount(v.get("amountPerShare")));
-                            BigDecimal gross = BigDecimal.valueOf(asAmount(v.get("gross")));
+                            var amountPerShare = BigDecimal.valueOf(asAmount(v.get("amountPerShare")));
+                            var gross = BigDecimal.valueOf(asAmount(v.get("gross")));
 
-                            BigDecimal shares = gross.divide(amountPerShare, Values.Share.precision(), RoundingMode.HALF_UP);
+                            var shares = gross.divide(amountPerShare, Values.Share.precision(), RoundingMode.HALF_UP);
                             t.setShares(shares.movePointRight(Values.Share.precision()).longValue());
                         })
 
@@ -286,8 +284,8 @@ public class SunrisePDFExtractor extends AbstractPDFExtractor
                         .match("^Kapitalertragsteuer \\(KESt\\) gesamt: (?<tax>[\\.'\\d]+)$") //
                         .match("^.*Zur Auszahlung kommender Betrag: (?<amount>[\\.'\\d]+)$") //
                         .assign((t, v) -> {
-                            Money tax = Money.of(EUR, asAmount(v.get("tax")));
-                            Money amount = Money.of(EUR, asAmount(v.get("amount")));
+                            var tax = Money.of(EUR, asAmount(v.get("tax")));
+                            var amount = Money.of(EUR, asAmount(v.get("amount")));
 
                             if (amount.isZero())
                             {
@@ -296,7 +294,7 @@ public class SunrisePDFExtractor extends AbstractPDFExtractor
                             else
                             {
                                 t.setAmount(0L);
-                                t.setCurrencyCode(asCurrencyCode("EUR"));
+                                t.setCurrencyCode(asCurrencyCode(EUR));
                             }
                         })
 
