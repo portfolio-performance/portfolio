@@ -2101,7 +2101,7 @@ public class SwissquotePDFExtractorTest
                         hasDate("2022-12-30"), //
                         hasSource("Zinsabrechnung01.txt"), //
                         hasNote("Zinsabrechnung 05.09.2022 - 31.12.2022"), //
-                        hasAmount("USD", 0.07), hasGrossValue("USD", 0.07), //
+                        hasAmount("USD", 0.08), hasGrossValue("USD", 0.08), //
                         hasTaxes("USD", 0.00), hasFees("USD", 0.00))));
 
         // check interest transaction
@@ -2109,7 +2109,7 @@ public class SwissquotePDFExtractorTest
                         hasDate("2022-12-30"), //
                         hasSource("Zinsabrechnung01.txt"), //
                         hasNote("Zinsabrechnung 05.09.2022 - 31.12.2022"), //
-                        hasAmount("EUR", 0.59), hasGrossValue("EUR", 0.59), //
+                        hasAmount("EUR", 0.60), hasGrossValue("EUR", 0.60), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 

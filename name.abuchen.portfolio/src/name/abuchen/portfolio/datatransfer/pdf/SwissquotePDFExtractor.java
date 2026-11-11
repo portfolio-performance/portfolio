@@ -600,14 +600,21 @@ public class SwissquotePDFExtractor extends AbstractPDFExtractor
 
                         // @formatter:off
                         // IBAN : CH3308781000123456700 - Währung : CHF
+                        // Datum Habenzins Sollzins Zu Ihren Verrechnungs- Total CHF
                         // Total 1.36 0.00 1.36 0.00 1.36
+                        //
+                        // IBAN : CH3308781000123456700 - Währung : USD
+                        // Datum Habenzins Sollzins Zu Ihren Verrechnungs- Total USD Kurs Total CHF
+                        // Total 0.08 0.00 0.08 0.00 0.08 0.07
                         // @formatter:on
-                        .section("currency", "amount") //
+                        .section("currency", "tax", "amount") //
                         .match("^IBAN : .* W.hrung : (?<currency>[A-Z]{3})$") //
-                        .match("^Total .* (?<amount>[\\.'\\d]+)$") //
+                        .match("^Total [\\.'\\d]+ [\\.'\\d]+ [\\.'\\d]+ (?<tax>[\\.'\\d]+) (?<amount>[\\.'\\d]+)( [\\.'\\d]+)?$") //
                         .assign((t, v) -> {
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(asAmount(v.get("amount")));
+
+                            processTaxEntries(t, v, type);
                         })
 
                         // @formatter:off
