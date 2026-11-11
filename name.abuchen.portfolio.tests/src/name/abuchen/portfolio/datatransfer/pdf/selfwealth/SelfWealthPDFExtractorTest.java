@@ -109,13 +109,13 @@ public class SelfWealthPDFExtractorTest
     }
 
     @Test
-    public void testSecurityBuy04()
+    public void testSecurityBuy03()
     {
         var extractor = new SelfWealthPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Buy04.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Buy03.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -136,7 +136,7 @@ public class SelfWealthPDFExtractorTest
         // check buy sell transaction
         assertThat(results, hasItem(purchase( //
                         hasDate("2023-05-05T00:00"), hasShares(3795.00), //
-                        hasSource("Buy04.txt"), //
+                        hasSource("Buy03.txt"), //
                         hasNote("433059"), //
                         hasAmount("AUD", 692.60), hasGrossValue("AUD", 683.10), //
                         hasTaxes("AUD", 0.00), hasFees("AUD", 9.50))));
