@@ -2,6 +2,7 @@ package name.abuchen.portfolio.datatransfer.pdf.scalablecapital;
 
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.deposit;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.dividend;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.fee;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasAmount;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasCurrencyCode;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasDate;
@@ -2209,8 +2210,12 @@ public class ScalableCapitalPDFExtractorTest
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // assert transaction
-        assertThat(results, hasItem(removal(hasDate("2025-04-04"), hasAmount("EUR", 4.99), //
-                        hasSource("Kontoauszug01.txt"), hasNote("Prime-Abonnementgebühr"))));
+        assertThat(results, hasItem(fee( //
+                        hasDate("2025-04-04"), //
+                        hasSource("Kontoauszug01.txt"), //
+                        hasNote("Prime-Abonnementgebühr"), //
+                        hasAmount("EUR", 4.99), hasGrossValue("EUR", 4.99), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // assert transaction
         assertThat(results, hasItem(deposit(hasDate("2025-04-07"), hasAmount("EUR", 29715.63), //

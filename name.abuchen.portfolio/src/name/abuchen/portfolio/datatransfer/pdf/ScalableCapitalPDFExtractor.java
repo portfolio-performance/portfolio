@@ -571,13 +571,11 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
                         .wrap(TransactionItem::new));
 
         // @formatter:off
-        // 03.04.2025 04.04.2025 Prime-Abonnementgebühr -4,99 EUR
         // 13.08.2026 13.08.2026 Überweisung -50,00 EUR
         // 10.09.2026 10.09.2026 Abhebung vom Geldkonto -300,00 EUR
         // @formatter:on
         var removalBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} " //
-                        + "(Prime\\-Abonnementgeb.hr" //
-                        + "|Abhebung vom Geldkonto" //
+                        + "(Abhebung vom Geldkonto" //
                         + "|.berweisung) " //
                         + "\\-[\\.,\\d]+ [A-Z]{3}[\\s]*$");
         type.addBlock(removalBlock);
@@ -587,9 +585,32 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
 
                         .section("date", "note", "amount", "currency") //
                         .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) " //
-                                        + "(?<note>(Prime\\-Abonnementgeb.hr" //
-                                        + "|Abhebung vom Geldkonto" //
+                                        + "(?<note>(Abhebung vom Geldkonto" //
                                         + "|.berweisung)) " //
+                                        + "\\-(?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3})[\\s]*$") //
+                        .assign((t, v) -> {
+                            t.setDateTime(asDate(v.get("date")));
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setNote(v.get("note"));
+                        })
+
+                        .wrap(TransactionItem::new));
+
+        // @formatter:off
+        // 03.04.2025 04.04.2025 Prime-Abonnementgebühr -4,99 EUR
+        // @formatter:on
+        var feeBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} " //
+                        + "Prime\\-Abonnementgeb.hr " //
+                        + "\\-[\\.,\\d]+ [A-Z]{3}[\\s]*$");
+        type.addBlock(feeBlock);
+        feeBlock.set(new Transaction<AccountTransaction>()
+
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.FEES))
+
+                        .section("date", "note", "amount", "currency") //
+                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) " //
+                                        + "(?<note>Prime\\-Abonnementgeb.hr) " //
                                         + "\\-(?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3})[\\s]*$") //
                         .assign((t, v) -> {
                             t.setDateTime(asDate(v.get("date")));
