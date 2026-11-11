@@ -40,7 +40,14 @@ public class SberbankEuropeAGPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         .section("year") //
                                         .match("^.* Kontoauszug Nr\\.[\\s]+[\\d]+\\/(?<year>[\\d]{4})$") //
-                                        .assign((ctx, v) -> ctx.put("year", v.get("year"))));
+                                        .assign((ctx, v) -> ctx.put("year", v.get("year")))
+
+                                        // @formatter:off
+                                        //  neuer Kontostand vom 30.07.2021 123.456,78 H
+                                        // @formatter:on
+                                        .section("referenceDate").optional() //
+                                        .match("^.*neuer Kontostand vom (?<referenceDate>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) .*$") //
+                                        .assign((ctx, v) -> ctx.put("referenceDate", v.get("referenceDate"))));
 
         this.addDocumentTyp(type);
 
@@ -58,6 +65,7 @@ public class SberbankEuropeAGPDFExtractor extends AbstractPDFExtractor
 
                         .section("date", "note", "amount", "type") //
                         .documentContext("currency", "year") //
+                        .documentContextOptionally("referenceDate") //
                         .match("^[\\d]{2}\\.[\\d]{2}\\. " //
                                         + "(?<date>[\\d]{2}\\.[\\d]{2}\\.) " //
                                         + "(?<note>.berweisungsgutschr\\.) " //
@@ -70,8 +78,7 @@ public class SberbankEuropeAGPDFExtractor extends AbstractPDFExtractor
                             if ("S".equals(v.get("type")))
                                 t.setType(AccountTransaction.Type.REMOVAL);
 
-                            // create a long date from the year in the context
-                            t.setDateTime(asDate(v.get("date") + v.get("year")));
+                            t.setDateTime(asDate(v.get("date") + getYear(v.get("date"), v.get("referenceDate"), v.get("year"))));
 
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(v.get("currency"));
@@ -84,5 +91,26 @@ public class SberbankEuropeAGPDFExtractor extends AbstractPDFExtractor
                         })
 
                         .wrap(TransactionItem::new));
+    }
+
+    /**
+     * Returns the year of a booking date without year (dd.MM.). The year is
+     * taken from the date of the new balance. If the booking month is after
+     * the month of the new balance, the booking belongs to the previous year
+     * (statement across the turn of the year). Without the date of the new
+     * balance, the year of the statement number is used.
+     */
+    private String getYear(String date, String referenceDate, String year)
+    {
+        if (referenceDate == null)
+            return year;
+
+        var reference = asDate(referenceDate);
+        var month = Integer.parseInt(date.substring(3, 5));
+
+        if (month > reference.getMonthValue())
+            return String.valueOf(reference.getYear() - 1);
+
+        return String.valueOf(reference.getYear());
     }
 }
