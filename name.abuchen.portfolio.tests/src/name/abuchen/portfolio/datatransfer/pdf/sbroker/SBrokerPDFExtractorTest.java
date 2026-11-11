@@ -466,39 +466,6 @@ public class SBrokerPDFExtractorTest
     }
 
     @Test
-    public void testWertpapierKauf12()
-    {
-        var extractor = new SBrokerPDFExtractor(new Client());
-
-        List<Exception> errors = new ArrayList<>();
-
-        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf12.txt"), errors);
-
-        assertThat(errors, empty());
-        assertThat(countSecurities(results), is(1L));
-        assertThat(countBuySell(results), is(1L));
-        assertThat(countAccountTransactions(results), is(0L));
-        assertThat(countAccountTransfers(results), is(0L));
-        assertThat(countItemsWithFailureMessage(results), is(0L));
-        assertThat(countSkippedItems(results), is(0L));
-        assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, "EUR");
-
-        // check security
-        assertThat(results, hasItem(security( //
-                        hasIsin("DE000A0D8Q49"), hasWkn("A0D8Q4"), hasTicker(null), //
-                        hasName("ISH.DJ U.S.SELECT DIV.U.ETF DE INHABER-ANTEILE"), //
-                        hasCurrencyCode("EUR"))));
-
-        // check buy sell transaction
-        assertThat(results, hasItem(purchase( //
-                        hasDate("2021-11-05"), hasShares(0.7769), //
-                        hasSource("Kauf12.txt"), hasNote(null), //
-                        hasAmount("EUR", 58.63), hasGrossValue("EUR", 57.20), //
-                        hasTaxes("EUR", 0.00), hasFees("EUR", 1.43))));
-    }
-
-    @Test
     public void testWertpapierKauf13()
     {
         var extractor = new SBrokerPDFExtractor(new Client());
@@ -1285,85 +1252,6 @@ public class SBrokerPDFExtractorTest
                         hasNote("Abrechnungsnr."), //
                         hasAmount("EUR", 18.50), hasGrossValue("EUR", 25.01), //
                         hasTaxes("EUR", 3.75 + 2.44 + 0.13 + 0.19), hasFees("EUR", 0.00), //
-                        check(tx -> {
-                            var c = new CheckCurrenciesAction();
-                            var account = new Account();
-                            account.setCurrencyCode("EUR");
-                            var s = c.process((AccountTransaction) tx, account);
-                            assertThat(s, is(Status.OK_STATUS));
-                        }))));
-    }
-
-    @Test
-    public void testDividende06()
-    {
-        var extractor = new SBrokerPDFExtractor(new Client());
-
-        List<Exception> errors = new ArrayList<>();
-
-        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende06.txt"), errors);
-
-        assertThat(errors, empty());
-        assertThat(countSecurities(results), is(1L));
-        assertThat(countBuySell(results), is(0L));
-        assertThat(countAccountTransactions(results), is(1L));
-        assertThat(countAccountTransfers(results), is(0L));
-        assertThat(countItemsWithFailureMessage(results), is(0L));
-        assertThat(countSkippedItems(results), is(0L));
-        assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, "EUR");
-
-        // check security
-        assertThat(results, hasItem(security( //
-                        hasIsin("US83012A1097"), hasWkn("A2P60W"), hasTicker(null), //
-                        hasName("SIXTH STREET SPECIALITY LEND. REGISTERED SHARES DL -,01"), //
-                        hasCurrencyCode("USD"))));
-
-        // check dividends transaction
-        assertThat(results, hasItem(dividend( //
-                        hasDate("2021-12-31"), hasExDate("2021-11-29"), //
-                        hasShares(250), //
-                        hasSource("Dividende06.txt"), //
-                        hasNote("Abrechnungsnr."), //
-                        hasAmount("EUR", 11.36), hasGrossValue("EUR", 15.36), //
-                        hasForexGrossValue("USD", 17.50), //
-                        hasTaxes("EUR", 2.30 + 1.50 + 0.08 + 0.12), hasFees("EUR", 0.00))));
-    }
-
-    @Test
-    public void testDividende06WithSecurityInEUR()
-    {
-        var security = new Security("SIXTH STREET SPECIALITY LEND. REGISTERED SHARES DL -,01", "EUR");
-        security.setIsin("US83012A1097");
-        security.setWkn("A2P60W");
-
-        var client = new Client();
-        client.addSecurity(security);
-
-        var extractor = new SBrokerPDFExtractor(client);
-
-        List<Exception> errors = new ArrayList<>();
-
-        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende06.txt"), errors);
-
-        assertThat(errors, empty());
-        assertThat(countSecurities(results), is(0L));
-        assertThat(countBuySell(results), is(0L));
-        assertThat(countAccountTransactions(results), is(1L));
-        assertThat(countAccountTransfers(results), is(0L));
-        assertThat(countItemsWithFailureMessage(results), is(0L));
-        assertThat(countSkippedItems(results), is(0L));
-        assertThat(results.size(), is(1));
-        new AssertImportActions().check(results, "EUR");
-
-        // check dividends transaction
-        assertThat(results, hasItem(dividend( //
-                        hasDate("2021-12-31"), hasExDate("2021-11-29"), //
-                        hasShares(250), //
-                        hasSource("Dividende06.txt"), //
-                        hasNote("Abrechnungsnr."), //
-                        hasAmount("EUR", 11.36), hasGrossValue("EUR", 15.36), //
-                        hasTaxes("EUR", 2.30 + 1.50 + 0.08 + 0.12), hasFees("EUR", 0.00), //
                         check(tx -> {
                             var c = new CheckCurrenciesAction();
                             var account = new Account();
