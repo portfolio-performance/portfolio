@@ -236,11 +236,9 @@ public class SaxoBankPDFExtractor extends AbstractPDFExtractor
                                                         .match("^.*Quantity (?<shares>[\\.,\\d]+)$") //
                                                         .find("Bond Traded Value") //
                                                         .assign((t, v) -> {
-                                                            // @formatter:off
                                                             // Percentage quotation, workaround for bonds
-                                                            // @formatter:on
-                                                            var shares = asBigDecimal(v.get("shares"));
-                                                            t.setShares(Values.Share.factorize(shares.doubleValue() / 100));
+                                                            t.setShares(asBondNominal(v.get("shares"),
+                                                                            ExtractorUtils.guessNumberLocale(v.get("shares"), Locale.GERMANY)));
                                                         }),
                                         // @formatter:off
                                         // B/S Buy Quantity 49,00
