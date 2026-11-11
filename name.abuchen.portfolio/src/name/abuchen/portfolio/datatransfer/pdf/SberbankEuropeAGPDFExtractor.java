@@ -26,20 +26,20 @@ public class SberbankEuropeAGPDFExtractor extends AbstractPDFExtractor
 
     private void addAccountStatementTransaction()
     {
-        final DocumentType type = new DocumentType("Tagesgeld", //
+        final var type = new DocumentType("Tagesgeld", //
                         documentContext -> documentContext //
                                         // @formatter:off
                                         // EUR-Konto Kontonummer 0123456789
                                         // @formatter:on
                                         .section("currency") //
-                                        .match("^(?<currency>[\\w]{3})\\-Konto Kontonummer.*$") //
+                                        .match("^(?<currency>[A-Z]{3})\\-Konto Kontonummer.*$") //
                                         .assign((ctx, v) -> ctx.put("currency", asCurrencyCode(v.get("currency"))))
 
                                         // @formatter:off
                                         // Postfach 6 20, 45956 Gladbeck Kontoauszug Nr.  1/2021
                                         // @formatter:on
                                         .section("year") //
-                                        .match("^.* Kontoauszug Nr\\.[\\s]{1,}[\\d]+\\/(?<year>[\\d]{4})$") //
+                                        .match("^.* Kontoauszug Nr\\.[\\s]+[\\d]+\\/(?<year>[\\d]{4})$") //
                                         .assign((ctx, v) -> ctx.put("year", v.get("year"))));
 
         this.addDocumentTyp(type);
@@ -47,9 +47,9 @@ public class SberbankEuropeAGPDFExtractor extends AbstractPDFExtractor
         // @formatter:off
         // 01.07. 01.07. Überweisungsgutschr. 123.456,78 H
         // @formatter:on
-        Block depositRemovalBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\. [\\d]{2}\\.[\\d]{2}\\. " //
+        var depositRemovalBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\. [\\d]{2}\\.[\\d]{2}\\. " //
                         + "(.berweisungsgutschr\\.)" //
-                        + " .* [S|H]$");
+                        + " .* [SH]$");
         type.addBlock(depositRemovalBlock);
 
         depositRemovalBlock.set(new Transaction<AccountTransaction>()
@@ -62,10 +62,10 @@ public class SberbankEuropeAGPDFExtractor extends AbstractPDFExtractor
                                         + "(?<date>[\\d]{2}\\.[\\d]{2}\\.) " //
                                         + "(?<note>.berweisungsgutschr\\.) " //
                                         + "(?<amount>[\\.,\\d]+) " //
-                                        + "(?<type>[S|H])$")
+                                        + "(?<type>[SH])$") //
                         .assign((t, v) -> {
                             // @formatter:off
-                            // Is type --> "-" change from DEPOSIT to REMOVAL
+                            // Is type --> "S" change from DEPOSIT to REMOVAL
                             // @formatter:on
                             if ("S".equals(v.get("type")))
                                 t.setType(AccountTransaction.Type.REMOVAL);
@@ -77,7 +77,7 @@ public class SberbankEuropeAGPDFExtractor extends AbstractPDFExtractor
                             t.setCurrencyCode(v.get("currency"));
 
                             // Formatting some notes
-                            if ("Überweisungsgutschr.".equals(v.get("note")))
+                            if (v.get("note").matches(".berweisungsgutschr\\."))
                                 v.put("note", "Überweisungsgutschrift");
 
                             t.setNote(v.get("note"));
