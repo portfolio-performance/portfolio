@@ -88,6 +88,7 @@ public class SolarisbankAGPDFExtractorTest
 
         // assert transaction
         assertThat(results, hasItem(deposit(hasDate("2022-10-26"), hasAmount("EUR", 100.00), //
+                        hasSource("GiroKontoauszug02.txt"), //
                         hasNote("von Peter Panzwischen Kunden DE11111111111111111111"))));
     }
 
