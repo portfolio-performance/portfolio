@@ -226,7 +226,7 @@ public class SaxoBankPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("date", "time") //
-                                                        .match("^.*(Handelszeit|Trade time) (?<date>[\\d]{2}\\-[\\w]+\\-[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}:[\\d]{2})$") //
+                                                        .match("^.*(Handelszeit|Trade time) (?<date>[\\d]{2}\\-[^\\-]+\\-[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}:[\\d]{2})$") //
                                                         .assign((t, v) -> t.setDate(asDate(v.get("date"), v.get("time")))))
 
                         .oneOf( //
@@ -316,7 +316,7 @@ public class SaxoBankPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("note1", "note2") //
                                                         .match("^(?<note1>Bond Accrued).*$") //
-                                                        .match("[\\d]+ [\\d]{2}\\-[\\w]+\\-[\\d]{4} [\\d]{2}\\-[\\w]+\\-[\\d]{4} \\-(?<note2>[\\.,'\\d]+) [\\.,'\\d]+ [\\.,'\\d]+ \\-[\\.,'\\d]+$") //
+                                                        .match("^[\\d]+ [\\d]{2}\\-[^\\-]+\\-[\\d]{4} [\\d]{2}\\-[^\\-]+\\-[\\d]{4} \\-(?<note2>[\\.,'\\d]+) [\\.,'\\d]+ [\\.,'\\d]+ \\-[\\.,'\\d]+$") //
                                                         .find("Interest.*") //
                                                         .assign((t, v) -> {
 
@@ -400,7 +400,7 @@ public class SaxoBankPDFExtractor extends AbstractPDFExtractor
                         // 43640515029 15-Apr-2025 15-Apr-2025 02-Apr-2025 30-Apr-2025 56,11 1,000000 56,11
                         // @formatter:on
                         .section("date") //
-                        .match("^.*(?<date>[\\d]{2}\\-[\\w]+\\-[\\d]{4}) [\\.,'\\d]+ [\\.,'\\d]+ [\\.,'\\d]+$") //
+                        .match("^.*(?<date>[\\d]{2}\\-[^\\-]+\\-[\\d]{4}) [\\.,'\\d]+ [\\.,'\\d]+ [\\.,'\\d]+$") //
                         .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
 
                         .oneOf( //
@@ -462,7 +462,7 @@ public class SaxoBankPDFExtractor extends AbstractPDFExtractor
                         // Interest 43681798738 01-Mai-2025 3,32 USD 1,000000 3,32
                         // @formatter:on
                         .section("date") //
-                        .match("^Interest .* (?<date>[\\d]{2}\\-[\\w]+\\-[\\d]{4}).*$") //
+                        .match("^Interest .* (?<date>[\\d]{2}\\-[^\\-]+\\-[\\d]{4}).*$") //
                         .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
 
                         .oneOf( //
@@ -508,7 +508,7 @@ public class SaxoBankPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("note", "date", "amount", "currency") //
                                                         .find("Bargeldtransfer") //
-                                                        .match("^Einlage (?<note>[\\d]+) [\\d]{2}\\-[\\w]+\\-[\\d]{4} (?<date>[\\d]{2}\\-[\\w]+\\-[\\d]{4}) .* (?<amount>[\\.,'\\d]+)$") //
+                                                        .match("^Einlage (?<note>[\\d]+) [\\d]{2}\\-[^\\-]+\\-[\\d]{4} (?<date>[\\d]{2}\\-[^\\-]+\\-[\\d]{4}) .* (?<amount>[\\.,'\\d]+)$") //
                                                         .match("^W.hrung: (?<currency>[A-Z]{3}).*$") //
                                                         .assign((t, v) -> {
                                                             t.setDateTime(asDate(v.get("date")));
@@ -529,7 +529,7 @@ public class SaxoBankPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("type", "note", "date", "amount", "currency") //
                                                         .find("Cash Transfer") //
-                                                        .match("^(?<type>(Deposit|Withdrawal)) (?<note>[\\d]+) [\\d]{2}\\-[\\w]+\\-[\\d]{4} (?<date>[\\d]{2}\\-[\\w]+\\-[\\d]{4}) .* (\\-)?(?<amount>[\\.,'\\d]+)$") //
+                                                        .match("^(?<type>(Deposit|Withdrawal)) (?<note>[\\d]+) [\\d]{2}\\-[^\\-]+\\-[\\d]{4} (?<date>[\\d]{2}\\-[^\\-]+\\-[\\d]{4}) .* (\\-)?(?<amount>[\\.,'\\d]+)$") //
                                                         .match("^.*Currency: (?<currency>[A-Z]{3}).*$") //
                                                         .assign((t, v) -> {
                                                             // @formatter:off
@@ -563,7 +563,7 @@ public class SaxoBankPDFExtractor extends AbstractPDFExtractor
         // @formatter:off
         // 26-Nov-2024 26-Nov-2024 DEPOSIT (6980803089, 6083903733) 700,00 700,00
         // @formatter:on
-        var depositBlock = new Block("^[\\d]{2}\\-[\\w]+\\-[\\d]{4} [\\d]{2}\\-[\\w]+\\-[\\d]{4} (DEPOSIT) .* [\\.,'\\d]+ [\\.,'\\d]+$");
+        var depositBlock = new Block("^[\\d]{2}\\-[^\\-]+\\-[\\d]{4} [\\d]{2}\\-[^\\-]+\\-[\\d]{4} (DEPOSIT) .* [\\.,'\\d]+ [\\.,'\\d]+$");
         type.addBlock(depositBlock);
         depositBlock.set(new Transaction<AccountTransaction>()
 
@@ -571,16 +571,15 @@ public class SaxoBankPDFExtractor extends AbstractPDFExtractor
 
                         .section("date", "amount") //
                         .documentContext("currency") //
-                        .match("^[\\d]{2}\\-[\\w]+\\-[\\d]{4} " //
-                                        + "(?<date>[\\d]{2}\\-[\\w]+\\-[\\d]{4}) " //
+                        .match("^[\\d]{2}\\-[^\\-]+\\-[\\d]{4} " //
+                                        + "(?<date>[\\d]{2}\\-[^\\-]+\\-[\\d]{4}) " //
                                         + "DEPOSIT .* " //
-                                        + "(?<amount>[\\.,'\\d]+)" //
+                                        + "(?<amount>[\\.,'\\d]+) " //
                                         + "[\\.,'\\d]+$") //
                         .assign((t, v) -> {
                             t.setDateTime(asDate(v.get("date")));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(v.get("currency"));
-                            t.setNote(v.get("note"));
                         })
 
                         .wrap(TransactionItem::new));
@@ -658,7 +657,7 @@ public class SaxoBankPDFExtractor extends AbstractPDFExtractor
                         .section("fee").optional() //
                         .documentContext("currency") //
                         .find("Bond Accrued.*") //
-                        .match("^[\\d]+ [\\d]{2}\\-[\\w]+\\-[\\d]{4} [\\d]{2}\\-[\\w]+\\-[\\d]{4} \\-(?<fee>[\\.,'\\d]+) [\\.,'\\d]+ [\\.,'\\d]+ \\-[\\.,'\\d]+$") //
+                        .match("^[\\d]+ [\\d]{2}\\-[^\\-]+\\-[\\d]{4} [\\d]{2}\\-[^\\-]+\\-[\\d]{4} \\-(?<fee>[\\.,'\\d]+) [\\.,'\\d]+ [\\.,'\\d]+ \\-[\\.,'\\d]+$") //
                         .find("Interest.*") //
                         .assign((t, v) -> processFeeEntries(t, v, type))
 
@@ -677,7 +676,7 @@ public class SaxoBankPDFExtractor extends AbstractPDFExtractor
                         .section("fee").optional() //
                         .documentContext("currency") //
                         .find("Swiss Stamp Duty.*") //
-                        .match("^[\\d]+ [\\d]{2}\\-[\\w]+\\-[\\d]{4} [\\d]{2}\\-[\\w]+\\-[\\d]{4} \\-(?<fee>[\\.,'\\d]+) [\\.,'\\d]+ [\\.,'\\d]+ \\-[\\.,'\\d]+$") //
+                        .match("^[\\d]+ [\\d]{2}\\-[^\\-]+\\-[\\d]{4} [\\d]{2}\\-[^\\-]+\\-[\\d]{4} \\-(?<fee>[\\.,'\\d]+) [\\.,'\\d]+ [\\.,'\\d]+ \\-[\\.,'\\d]+$") //
                         .assign((t, v) -> processFeeEntries(t, v, type))
 
                         // @formatter:off
@@ -695,7 +694,7 @@ public class SaxoBankPDFExtractor extends AbstractPDFExtractor
                         .section("fee").optional() //
                         .documentContext("currency") //
                         .find(".*Stock.*") //
-                        .match("^[\\d]+ [\\d]{2}\\-[\\w]+\\-[\\d]{4} [\\d]{2}\\-[\\w]+\\-[\\d]{4} \\-(?<fee>[\\.,'\\d]+) [\\.,'\\d]+ [\\.,'\\d]+ \\-[\\.,'\\d]+$") //
+                        .match("^[\\d]+ [\\d]{2}\\-[^\\-]+\\-[\\d]{4} [\\d]{2}\\-[^\\-]+\\-[\\d]{4} \\-(?<fee>[\\.,'\\d]+) [\\.,'\\d]+ [\\.,'\\d]+ \\-[\\.,'\\d]+$") //
                         .assign((t, v) -> processFeeEntries(t, v, type));
     }
 
