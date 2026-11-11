@@ -1,0 +1,243 @@
+PDFBox Version: 3.0.8
+Portfolio Performance Version: 0.90.0
+System: macosx | aarch64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+justTRADE
+Ein Service der Sutor Bank GmbH
+Herr JT Technologies GmbH
+hnciDF gmoGJcmoL EGWMpP Hamburger Allee 14
+BRzCfTKzkEFJS. 10 60486 Frankfurt am Main
+78342 NnQewhPH E-Mail: service@justtrade.com
+Web: www.justtrade.com
+Name des Kunden: rxwdSN bLNMqxPQG wSwGwj
+Depotnummer: 987042671
+WERTPAPIERABRECHNUNG
+Sehr geehrter Herr tkXRJb KXkGzoBIK MxxEnB,
+dieses Dokument ist eine Bestätigung der Transaktion, die wir in Ihrem Namen durchgeführt haben.
+Bei Fragen oder im Falle einer fehlerhaften Abrechnung wenden Sie sich bitte an unseren Kundenservice. Sie
+finden die Kontaktdetails im Briefkopf dieses Schreibens.
+Der Gegenwert der Transaktion wird per Valutatag gebucht.
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+Produktbezeichnung - OE Turbo Call auf adesso SE
+Internationale Wertpapierkennnummer (ISIN): DE000MR3FNR4
+Währung: EUR
+Handels-/Ausführungsplatz: MESI
+Handelsreferenz: 6afc7206e7fa6ad8084bf8e4
+Orderausführung Datum/Zeit: 17 Nov 2026 16:25:58
+Valutatag Datum: 19 Nov 2026
+Transaktionsart: Kauf
+Kurs: €2,8600
+Stück/Nominale: 180,0000
+Kurswert: €514,80
+Orderprovision: €5,47
+Ausgleichszahlung/Rabatt/Zuwendung: - €5,47
+Ausmachender Betrag (einschl. Ausgleichszahlung €514,80
+Dritter):
+SUTOR BANK GmbH TELEFON 040-8090685-0 GESCHÄFTSFÜHRUNG FINANZAMT HAMBURG AMTSGERICHT HAMBURG
+HERMANNSTRASSE 46 TELEFAX 040-8090685-810 ROBERT FREITAG STNR: 222721000896 HRB 178357
+20095 HAMBURG THOMAS MEIER UST-IDNR: DE155617009
+POSTFACH 11 33 37 INFO@SUTORBANK.DE BANKLEITZAHL 202 308 00
+20433 HAMBURG WWW.SUTORBANK.DE BIC CODE: MHSBDEHBXXX
+justTRADE
+Ein Service der Sutor Bank GmbH
+Herr JT Technologies GmbH
+HKZHAy JdjhErwBx Ucbdxw Hamburger Allee 14
+YUedeyuYONSOm. 40 60486 Frankfurt am Main
+83875 EgeCeVjb E-Mail: service@justtrade.com
+Web: www.justtrade.com
+Name des Kunden: mzfjUk OyvNpsdVe yEMGgM
+Depotnummer: 914596827
+WERTPAPIERABRECHNUNG
+Sehr geehrter Herr HXmEKa LfWErqvUL nGFKvP,
+dieses Dokument ist eine Bestätigung der Transaktion, die wir in Ihrem Namen durchgeführt haben.
+Bei Fragen oder im Falle einer fehlerhaften Abrechnung wenden Sie sich bitte an unseren Kundenservice. Sie
+finden die Kontaktdetails im Briefkopf dieses Schreibens.
+Der Gegenwert der Transaktion wird per Valutatag gebucht.
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+Produktbezeichnung - OE Turbo Call auf Rheinmetall AG
+Internationale Wertpapierkennnummer (ISIN): DE000UM1L1X3
+Währung: EUR
+Handels-/Ausführungsplatz: UBSI
+Handelsreferenz: 6afc72dcfd14b856d59ee4f3
+Orderausführung Datum/Zeit: 17 Nov 2026 16:29:32
+Valutatag Datum: 19 Nov 2026
+Transaktionsart: Kauf
+Kurs: €31,4300
+Stück/Nominale: 16,0000
+Kurswert: €502,88
+Orderprovision: €5,41
+Ausgleichszahlung/Rabatt/Zuwendung: - €5,41
+Ausmachender Betrag (einschl. Ausgleichszahlung €502,88
+Dritter):
+SUTOR BANK GmbH TELEFON 040-8090685-0 GESCHÄFTSFÜHRUNG FINANZAMT HAMBURG AMTSGERICHT HAMBURG
+HERMANNSTRASSE 46 TELEFAX 040-8090685-810 ROBERT FREITAG STNR: 222721000896 HRB 178357
+20095 HAMBURG THOMAS MEIER UST-IDNR: DE155617009
+POSTFACH 11 33 37 INFO@SUTORBANK.DE BANKLEITZAHL 202 308 00
+20433 HAMBURG WWW.SUTORBANK.DE BIC CODE: MHSBDEHBXXX
+justTRADE
+Ein Service der Sutor Bank GmbH
+Herr JT Technologies GmbH
+jQSuyF PGRMuIeUQ pqQhxX Hamburger Allee 14
+DpAYRJcdWXmwt. 82 60486 Frankfurt am Main
+95643 XEQLrZuV E-Mail: service@justtrade.com
+Web: www.justtrade.com
+Name des Kunden: TXhlWK YQVwXHeaM KeqRbA
+Depotnummer: 998256882
+WERTPAPIERABRECHNUNG
+Sehr geehrter Herr riCyOu OltjCFsIg omiHgp,
+dieses Dokument ist eine Bestätigung der Transaktion, die wir in Ihrem Namen durchgeführt haben.
+Bei Fragen oder im Falle einer fehlerhaften Abrechnung wenden Sie sich bitte an unseren Kundenservice. Sie
+finden die Kontaktdetails im Briefkopf dieses Schreibens.
+Der Gegenwert der Transaktion wird per Valutatag gebucht.
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+Produktbezeichnung - ServiceNow Inc.
+Internationale Wertpapierkennnummer (ISIN): US81762P1021
+Währung: EUR
+Handels-/Ausführungsplatz: DUSD
+Handelsreferenz: 6ae894ca798ad26624f7f356
+Orderausführung Datum/Zeit: 17 Nov 2026 16:41:21
+Valutatag Datum: 19 Nov 2026
+Transaktionsart: Verkauf
+Kurs: €84,2200
+Stück/Nominale: 7,0000
+Kurswert: €589,54
+Orderprovision: €2,90
+Ausmachender Betrag (einschl. Ausgleichszahlung €586,64
+Dritter):
+Hinweise zur steuerlichen Verrechnung: Vorher Aktuell
+Bruttoertrag: - €71,27
+Aktienverlusttopf: €0,00 €71,27
+Verlusttopf Sonstige: €0,00 €0,00
+Freistellungsauftrag: €0,00 €0,00
+Quellensteuertopf: €0,00 €0,00
+SUTOR BANK GmbH TELEFON 040-8090685-0 GESCHÄFTSFÜHRUNG FINANZAMT HAMBURG AMTSGERICHT HAMBURG
+HERMANNSTRASSE 46 TELEFAX 040-8090685-810 ROBERT FREITAG STNR: 222721000896 HRB 178357
+20095 HAMBURG THOMAS MEIER UST-IDNR: DE155617009
+POSTFACH 11 33 37 INFO@SUTORBANK.DE BANKLEITZAHL 202 308 00
+20433 HAMBURG WWW.SUTORBANK.DE BIC CODE: MHSBDEHBXXX
+justTRADE
+Ein Service der Sutor Bank GmbH
+Herr JT Technologies GmbH
+pedCWT FKmQDTkRM jFZhxq Hamburger Allee 14
+LthCjiWJfIWur. 96 60486 Frankfurt am Main
+54719 vHPnymOu E-Mail: service@justtrade.com
+Web: www.justtrade.com
+Name des Kunden: qfImRd bfCKncooU NDlokJ
+Depotnummer: 192070011
+SUTOR BANK GmbH TELEFON 040-8090685-0 GESCHÄFTSFÜHRUNG FINANZAMT HAMBURG AMTSGERICHT HAMBURG
+HERMANNSTRASSE 46 TELEFAX 040-8090685-810 ROBERT FREITAG STNR: 222721000896 HRB 178357
+20095 HAMBURG THOMAS MEIER UST-IDNR: DE155617009
+POSTFACH 11 33 37 INFO@SUTORBANK.DE BANKLEITZAHL 202 308 00
+20433 HAMBURG WWW.SUTORBANK.DE BIC CODE: MHSBDEHBXXX
+justTRADE
+Ein Service der Sutor Bank GmbH
+Herr JT Technologies GmbH
+LOmteb jDAZyfkuM lyzkyJ Hamburger Allee 14
+oKzCWizccfyKu. 30 60486 Frankfurt am Main
+18684 GySBCHGE E-Mail: service@justtrade.com
+Web: www.justtrade.com
+Name des Kunden: AjREzB wKJAOoIQZ qbkrVU
+Depotnummer: 548225916
+WERTPAPIERABRECHNUNG
+Sehr geehrter Herr vnjPEd XjSrbxrar thsqyd,
+dieses Dokument ist eine Bestätigung der Transaktion, die wir in Ihrem Namen durchgeführt haben.
+Bei Fragen oder im Falle einer fehlerhaften Abrechnung wenden Sie sich bitte an unseren Kundenservice. Sie
+finden die Kontaktdetails im Briefkopf dieses Schreibens.
+Der Gegenwert der Transaktion wird per Valutatag gebucht.
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+Produktbezeichnung - Turbo Call auf SPDR S&P Biotech ETF
+Internationale Wertpapierkennnummer (ISIN): DE000VY4Q9U7
+Währung: EUR
+Handels-/Ausführungsplatz: VONT
+Handelsreferenz: 6acd07443dfe82764d870bbe
+Orderausführung Datum/Zeit: 17 Nov 2026 16:47:43
+Valutatag Datum: 19 Nov 2026
+Transaktionsart: Verkauf
+Kurs: €3,1100
+Stück/Nominale: 123,0000
+Kurswert: €382,53
+Orderprovision: €4,81
+Ausgleichszahlung/Rabatt/Zuwendung: - €4,81
+Ausmachender Betrag (einschl. Ausgleichszahlung €382,53
+Dritter):
+SUTOR BANK GmbH TELEFON 040-8090685-0 GESCHÄFTSFÜHRUNG FINANZAMT HAMBURG AMTSGERICHT HAMBURG
+HERMANNSTRASSE 46 TELEFAX 040-8090685-810 ROBERT FREITAG STNR: 222721000896 HRB 178357
+20095 HAMBURG THOMAS MEIER UST-IDNR: DE155617009
+POSTFACH 11 33 37 INFO@SUTORBANK.DE BANKLEITZAHL 202 308 00
+20433 HAMBURG WWW.SUTORBANK.DE BIC CODE: MHSBDEHBXXX
+justTRADE
+Ein Service der Sutor Bank GmbH
+Herr JT Technologies GmbH
+pghfEY qEYyRmRtf WVHwOC Hamburger Allee 14
+icWZQdTqHMBui. 27 60486 Frankfurt am Main
+18878 VOIwFVOh E-Mail: service@justtrade.com
+Web: www.justtrade.com
+Name des Kunden: xMHWsr KjQXwohRY soyCMl
+Depotnummer: 555581981
+Hinweise zur steuerlichen Verrechnung: Vorher Aktuell
+Bruttoertrag: - €124,23
+Aktienverlusttopf: €71,27 €71,27
+Verlusttopf Sonstige: €0,00 €124,23
+Freistellungsauftrag: €0,00 €0,00
+Quellensteuertopf: €0,00 €0,00
+SUTOR BANK GmbH TELEFON 040-8090685-0 GESCHÄFTSFÜHRUNG FINANZAMT HAMBURG AMTSGERICHT HAMBURG
+HERMANNSTRASSE 46 TELEFAX 040-8090685-810 ROBERT FREITAG STNR: 222721000896 HRB 178357
+20095 HAMBURG THOMAS MEIER UST-IDNR: DE155617009
+POSTFACH 11 33 37 INFO@SUTORBANK.DE BANKLEITZAHL 202 308 00
+20433 HAMBURG WWW.SUTORBANK.DE BIC CODE: MHSBDEHBXXX
+justTRADE
+Ein Service der Sutor Bank GmbH
+Herr JT Technologies GmbH
+XdJjiO adiaVcQNG gBSupn Hamburger Allee 14
+ilXXVcgtPppOc. 25 60486 Frankfurt am Main
+79964 OZZdDVFX E-Mail: service@justtrade.com
+Web: www.justtrade.com
+Name des Kunden: CtWwWx RcSAzxzKj YOPwpr
+Depotnummer: 922642508
+WERTPAPIERABRECHNUNG
+Sehr geehrter Herr QYhLIF NjYzxQePl oBAbAh,
+dieses Dokument ist eine Bestätigung der Transaktion, die wir in Ihrem Namen durchgeführt haben.
+Bei Fragen oder im Falle einer fehlerhaften Abrechnung wenden Sie sich bitte an unseren Kundenservice. Sie
+finden die Kontaktdetails im Briefkopf dieses Schreibens.
+Der Gegenwert der Transaktion wird per Valutatag gebucht.
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+Produktbezeichnung - Alphabet Inc. Class A
+Internationale Wertpapierkennnummer (ISIN): US02079K3059
+Währung: EUR
+Handels-/Ausführungsplatz: XGAT
+Handelsreferenz: 6ae8b424798ad26624f951e1
+Orderausführung Datum/Zeit: 17 Nov 2026 16:47:59
+Valutatag Datum: 19 Nov 2026
+Transaktionsart: Verkauf
+Kurs: €253,7500
+Stück/Nominale: 3,0000
+Kurswert: €761,25
+Orderprovision: €2,90
+Ausgleichszahlung/Rabatt/Zuwendung: - €1,90
+Ausmachender Betrag (einschl. Ausgleichszahlung €760,25
+Dritter):
+SUTOR BANK GmbH TELEFON 040-8090685-0 GESCHÄFTSFÜHRUNG FINANZAMT HAMBURG AMTSGERICHT HAMBURG
+HERMANNSTRASSE 46 TELEFAX 040-8090685-810 ROBERT FREITAG STNR: 222721000896 HRB 178357
+20095 HAMBURG THOMAS MEIER UST-IDNR: DE155617009
+POSTFACH 11 33 37 INFO@SUTORBANK.DE BANKLEITZAHL 202 308 00
+20433 HAMBURG WWW.SUTORBANK.DE BIC CODE: MHSBDEHBXXX
+justTRADE
+Ein Service der Sutor Bank GmbH
+Herr JT Technologies GmbH
+HaoqaZ pxJXnaFHH BykyuF Hamburger Allee 14
+ipKDIPwZGFURJ. 11 60486 Frankfurt am Main
+42461 nZrrlINM E-Mail: service@justtrade.com
+Web: www.justtrade.com
+Name des Kunden: qcxIBX eTXSirAXS LtYigz
+Depotnummer: 819149547
+Hinweise zur steuerlichen Verrechnung: Vorher Aktuell
+Bruttoertrag: €65,75
+Aktienverlusttopf: €71,27 €5,52
+Verlusttopf Sonstige: €124,23 €124,23
+Freistellungsauftrag: €0,00 €0,00
+Quellensteuertopf: €0,00 €0,00
+SUTOR BANK GmbH TELEFON 040-8090685-0 GESCHÄFTSFÜHRUNG FINANZAMT HAMBURG AMTSGERICHT HAMBURG
+HERMANNSTRASSE 46 TELEFAX 040-8090685-810 ROBERT FREITAG STNR: 222721000896 HRB 178357
+20095 HAMBURG THOMAS MEIER UST-IDNR: DE155617009
+POSTFACH 11 33 37 INFO@SUTORBANK.DE BANKLEITZAHL 202 308 00
+20433 HAMBURG WWW.SUTORBANK.DE BIC CODE: MHSBDEHBXXX

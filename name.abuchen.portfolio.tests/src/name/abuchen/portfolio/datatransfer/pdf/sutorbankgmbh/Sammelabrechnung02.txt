@@ -1,0 +1,76 @@
+PDFBox Version: 3.0.8
+Portfolio Performance Version: 0.90.0
+System: macosx | aarch64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+justTRADE
+Ein Service der Sutor Bank GmbH
+Herr JT Technologies GmbH
+VIqGdu NFcdRBADV HUoFnA Hamburger Allee 14
+eHLIzpDktvbzD. 10 60486 Frankfurt am Main
+31027 PDUfnIfG E-Mail: service@justtrade.com
+Web: www.justtrade.com
+Name des Kunden: GEridT JhnRqELoh GwyUTa
+Depotnummer: 929195721
+WERTPAPIERABRECHNUNG
+Sehr geehrter Herr TbhWNM NfIOjxqpJ bXNver,
+dieses Dokument ist eine Bestätigung der Transaktion, die wir in Ihrem Namen durchgeführt haben.
+Bei Fragen oder im Falle einer fehlerhaften Abrechnung wenden Sie sich bitte an unseren Kundenservice. Sie
+finden die Kontaktdetails im Briefkopf dieses Schreibens.
+Der Gegenwert der Transaktion wird per Valutatag gebucht.
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+Produktbezeichnung - OE Turbo Call auf Cloudflare Inc.
+Internationale Wertpapierkennnummer (ISIN): DE000FE3Y020
+Währung: EUR
+Handels-/Ausführungsplatz: XSGA
+Handelsreferenz: 6af19e34775dbf47d9bf601c
+Orderausführung Datum/Zeit: 9 Nov 2026 11:19:32
+Valutatag Datum: 11 Nov 2026
+Transaktionsart: Kauf
+Kurs: €7,9400
+Stück/Nominale: 64,0000
+Kurswert: €508,16
+Orderprovision: €5,44
+Ausgleichszahlung/Rabatt/Zuwendung: - €3,44
+Ausmachender Betrag (einschl. Ausgleichszahlung €510,16
+Dritter):
+SUTOR BANK GmbH TELEFON 040-8090685-0 GESCHÄFTSFÜHRUNG FINANZAMT HAMBURG AMTSGERICHT HAMBURG
+HERMANNSTRASSE 46 TELEFAX 040-8090685-810 ROBERT FREITAG STNR: 222721000896 HRB 178357
+20095 HAMBURG THOMAS MEIER UST-IDNR: DE155617009
+POSTFACH 11 33 37 INFO@SUTORBANK.DE BANKLEITZAHL 202 308 00
+20433 HAMBURG WWW.SUTORBANK.DE BIC CODE: MHSBDEHBXXX
+justTRADE
+Ein Service der Sutor Bank GmbH
+Herr JT Technologies GmbH
+UHufOD HaRMPaGzw frsQIA Hamburger Allee 14
+XZJuUEoHLWzNX. 10 60486 Frankfurt am Main
+44266 jFejmbVg E-Mail: service@justtrade.com
+Web: www.justtrade.com
+Name des Kunden: zTQEWt XfyXNSWdQ CqsYdb
+Depotnummer: 386252372
+WERTPAPIERABRECHNUNG
+Sehr geehrter Herr NurVTp GFnvmVeNL vGCGXj,
+dieses Dokument ist eine Bestätigung der Transaktion, die wir in Ihrem Namen durchgeführt haben.
+Bei Fragen oder im Falle einer fehlerhaften Abrechnung wenden Sie sich bitte an unseren Kundenservice. Sie
+finden die Kontaktdetails im Briefkopf dieses Schreibens.
+Der Gegenwert der Transaktion wird per Valutatag gebucht.
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+Produktbezeichnung - Rheinmetall AG
+Internationale Wertpapierkennnummer (ISIN): DE0007030009
+Währung: EUR
+Handels-/Ausführungsplatz: HAMM
+Handelsreferenz: 6af1c991a926334bb282f233
+Orderausführung Datum/Zeit: 9 Nov 2026 14:24:33
+Valutatag Datum: 11 Nov 2026
+Transaktionsart: Kauf
+Kurs: €823,3000
+Stück/Nominale: 2,0000
+Kurswert: €1.646,60
+Orderprovision: €2,90
+Ausgleichszahlung/Rabatt/Zuwendung: - €1,90
+Ausmachender Betrag (einschl. Ausgleichszahlung €1.647,60
+Dritter):
+SUTOR BANK GmbH TELEFON 040-8090685-0 GESCHÄFTSFÜHRUNG FINANZAMT HAMBURG AMTSGERICHT HAMBURG
+HERMANNSTRASSE 46 TELEFAX 040-8090685-810 ROBERT FREITAG STNR: 222721000896 HRB 178357
+20095 HAMBURG THOMAS MEIER UST-IDNR: DE155617009
+POSTFACH 11 33 37 INFO@SUTORBANK.DE BANKLEITZAHL 202 308 00
+20433 HAMBURG WWW.SUTORBANK.DE BIC CODE: MHSBDEHBXXX
