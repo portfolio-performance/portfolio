@@ -180,10 +180,12 @@ public class SutorBankGmbHPDFExtractor extends AbstractPDFExtractor
                         .oneOf( //
                                         // @formatter:off
                                         // Ausmachender Betrag: €2.083,94
+                                        // Ausmachender Betrag (einschl. Ausgleichszahlung €510,16
+                                        // Dritter):
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("currency", "amount") //
-                                                        .match("^Ausmachender Betrag: (?<currency>\\p{Sc})(?<amount>[\\.,\\d]+)$") //
+                                                        .match("^Ausmachender Betrag(:| \\(einschl\\. Ausgleichszahlung) (?<currency>\\p{Sc})(?<amount>[\\.,\\d]+)$") //
                                                         .assign((t, v) -> {
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                                             t.setAmount(asAmount(v.get("amount")));
@@ -1416,10 +1418,13 @@ public class SutorBankGmbHPDFExtractor extends AbstractPDFExtractor
                         // @formatter:off
                         // Orderprovision: €12,51
                         // Rabatt (inkl. Rückvergütung): - €11,51
+                        //
+                        // Orderprovision: €5,44
+                        // Ausgleichszahlung/Rabatt/Zuwendung: - €3,44
                         // @formatter:on
                         .section("currency", "fee", "discountCurrency", "discount").optional() //
                         .match("Orderprovision: (?<currency>\\p{Sc})(?<fee>[\\.,\\d]+)") //
-                        .match("^Rabatt \\(inkl\\. R.ckverg.tung\\): \\- (?<discountCurrency>\\p{Sc})(?<discount>[\\.,\\d]+)$") //
+                        .match("^(Rabatt \\(inkl\\. R.ckverg.tung\\)|Ausgleichszahlung\\/Rabatt\\/Zuwendung): \\- (?<discountCurrency>\\p{Sc})(?<discount>[\\.,\\d]+)$") //
                         .assign((t, v) -> {
                             var fee = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("fee")));
                             var discount = Money.of(asCurrencyCode(v.get("discountCurrency")), asAmount(v.get("discount")));

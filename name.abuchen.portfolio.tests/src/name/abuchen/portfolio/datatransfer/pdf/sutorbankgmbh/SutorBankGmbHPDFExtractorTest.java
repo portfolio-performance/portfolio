@@ -448,6 +448,54 @@ public class SutorBankGmbHPDFExtractorTest
     }
 
     @Test
+    public void testSammelabrechnung02()
+    {
+        var extractor = new SutorBankGmbHPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Sammelabrechnung02.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(2L));
+        assertThat(countBuySell(results), is(2L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(4));
+        new AssertImportActions().check(results, "EUR");
+
+        // check 1st security
+        assertThat(results, hasItem(security( //
+                        hasIsin("DE000FE3Y020"), hasWkn(null), hasTicker(null), //
+                        hasName("OE Turbo Call auf Cloudflare Inc."), //
+                        hasCurrencyCode("EUR"))));
+
+        // check 2nd security
+        assertThat(results, hasItem(security( //
+                        hasIsin("DE0007030009"), hasWkn(null), hasTicker(null), //
+                        hasName("Rheinmetall AG"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check 1st buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2026-11-09T11:19:32"), hasShares(64.00), //
+                        hasSource("Sammelabrechnung02.txt"), //
+                        hasNote("Handelsreferenz: 6af19e34775dbf47d9bf601c"), //
+                        hasAmount("EUR", 510.16), hasGrossValue("EUR", 508.16), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 5.44 - 3.44))));
+
+        // check 2nd buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2026-11-09T14:24:33"), hasShares(2.00), //
+                        hasSource("Sammelabrechnung02.txt"), //
+                        hasNote("Handelsreferenz: 6af1c991a926334bb282f233"), //
+                        hasAmount("EUR", 1647.60), hasGrossValue("EUR", 1646.60), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 2.90 - 1.90))));
+    }
+
+    @Test
     public void testDividende01()
     {
         var extractor = new SutorBankGmbHPDFExtractor(new Client());
