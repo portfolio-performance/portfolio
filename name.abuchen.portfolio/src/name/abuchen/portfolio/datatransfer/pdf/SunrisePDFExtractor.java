@@ -5,7 +5,6 @@ import static name.abuchen.portfolio.util.TextUtil.trim;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
-import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.datatransfer.ExtractorUtils;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
@@ -14,7 +13,6 @@ import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
-import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
 
 /***
@@ -177,6 +175,9 @@ public class SunrisePDFExtractor extends AbstractPDFExtractor
                             t.setShares(shares.movePointRight(Values.Share.precision()).longValue());
                         })
 
+                        // The date of the income is not imported as ex-date because
+                        // it does not always match the ex-date of the fund.
+
                         // @formatter:off
                         // WKN/ISIN: AT0000A1QA38 Datum des Ertrags: 15.12.2023
                         // @formatter:on
@@ -184,26 +185,17 @@ public class SunrisePDFExtractor extends AbstractPDFExtractor
                         .match("^WKN.*Datum des Ertrags: (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$") //
                         .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
 
+                        // If the tax equals the dividend, the amount paid out is
+                        // zero. The dividend is imported with gross value and tax.
+
                         // @formatter:off
-                        // Ausschüttung gesamt: 10.29
                         //  Zur Auszahlung kommender Betrag: 0.00
                         // @formatter:on
-                        .section("gross", "amount") //
-                        .match("^Aussch.ttung gesamt: (?<gross>[\\.'\\d]+)$") //
+                        .section("amount") //
                         .match("^.*Zur Auszahlung kommender Betrag: (?<amount>[\\.'\\d]+)$") //
                         .assign((t, v) -> {
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(asCurrencyCode(EUR));
-
-                            // @formatter:off
-                            // If the dividend amount correspond to the tax amount to be paid,
-                            // the taxes is recorded in a separate transaction.
-                            // @formatter:on
-                            if (t.getMonetaryAmount().isZero())
-                            {
-                                type.getCurrentContext().putBoolean("noTax", true);
-                                t.setAmount(asAmount(v.get("gross")));
-                            }
                         })
 
                         // @formatter:off
@@ -213,97 +205,9 @@ public class SunrisePDFExtractor extends AbstractPDFExtractor
                         .match("^.* (?<note>Turnus: .*)$") //
                         .assign((t, v) -> t.setNote(trim(v.get("note"))))
 
-                        .wrap(t -> {
-                            type.getCurrentContext().remove("noTax");
-
-                            return new TransactionItem(t);
-                        });
+                        .wrap(TransactionItem::new);
 
         addTaxesSectionsTransaction(pdfTransaction, type);
-        addDividendeTaxBlock(type);
-    }
-
-    private void addDividendeTaxBlock(DocumentType type)
-    {
-        var pdfTransaction = new Transaction<AccountTransaction>();
-
-        var firstRelevantLine = new Block("Aussch.ttungsanzeige");
-        type.addBlock(firstRelevantLine);
-        firstRelevantLine.set(pdfTransaction);
-
-        pdfTransaction //
-
-                        .subject(() -> new AccountTransaction(AccountTransaction.Type.TAXES))
-
-                        // @formatter:off
-                        // Fondsname: Standortfonds Österreich
-                        // WKN/ISIN: AT0000A1QA38 Datum des Ertrags: 15.12.2023
-                        // @formatter:on
-                        .section("name", "isin") //
-                        .match("^Fondsname: (?<name>.*)$") //
-                        .match("^WKN\\/ISIN: (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) Datum des.*$") //
-                        .assign((t, v) -> {
-                            v.put("currency", asCurrencyCode(EUR));
-
-                            t.setSecurity(getOrCreateSecurity(v));
-                        })
-
-                        // @formatter:off
-                        // There is no information about the proportions in the
-                        // documents. In this section we calculate the shares
-                        // for the respective transaction.
-                        // @formatter:on
-
-                        // @formatter:off
-                        // Ausschüttung je Anteil: 2.71
-                        // Ausschüttung gesamt: 17.58
-                        // @formatter:on
-                        .section("amountPerShare", "gross") //
-                        .match("^Aussch.ttung je Anteil: (?<amountPerShare>['\\.\\d]+)$") //
-                        .match("^Aussch.ttung gesamt: (?<gross>[\\.'\\d]+)$") //
-                        .assign((t, v) -> {
-                            var amountPerShare = BigDecimal.valueOf(asAmount(v.get("amountPerShare")));
-                            var gross = BigDecimal.valueOf(asAmount(v.get("gross")));
-
-                            var shares = gross.divide(amountPerShare, Values.Share.precision(), RoundingMode.HALF_UP);
-                            t.setShares(shares.movePointRight(Values.Share.precision()).longValue());
-                        })
-
-                        // @formatter:off
-                        // WKN/ISIN: AT0000A1QA38 Datum des Ertrags: 15.12.2023
-                        // @formatter:on
-                        .section("date") //
-                        .match("^WKN.*Datum des Ertrags: (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$") //
-                        .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
-
-                        // @formatter:off
-                        // Ausschüttung gesamt: 10.29
-                        // Kapitalertragsteuer (KESt) gesamt: 10.29
-                        // @formatter:on
-                        .section("tax", "amount") //
-                        .match("^Kapitalertragsteuer \\(KESt\\) gesamt: (?<tax>[\\.'\\d]+)$") //
-                        .match("^.*Zur Auszahlung kommender Betrag: (?<amount>[\\.'\\d]+)$") //
-                        .assign((t, v) -> {
-                            var tax = Money.of(EUR, asAmount(v.get("tax")));
-                            var amount = Money.of(EUR, asAmount(v.get("amount")));
-
-                            if (amount.isZero())
-                            {
-                                t.setMonetaryAmount(tax);
-                            }
-                            else
-                            {
-                                t.setAmount(0L);
-                                t.setCurrencyCode(asCurrencyCode(EUR));
-                            }
-                        })
-
-                        .wrap(t -> {
-                            if (t.getCurrencyCode() != null && t.getAmount() == 0)
-                                return new SkippedItem(new TransactionItem(t), Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
-
-                            return new TransactionItem(t);
-                        });
     }
 
     private <T extends Transaction<?>> void addTaxesSectionsTransaction(T transaction, DocumentType type)
@@ -323,11 +227,8 @@ public class SunrisePDFExtractor extends AbstractPDFExtractor
                         .section("tax").optional() //
                         .match("^Kapitalertragsteuer \\(KESt\\) gesamt: (?<tax>[\\.'\\d]+)$") //
                         .assign((t, v) -> {
-                            if (!type.getCurrentContext().getBoolean("noTax"))
-                            {
-                                v.put("currency", asCurrencyCode(EUR));
-                                processTaxEntries(t, v, type);
-                            }
+                            v.put("currency", asCurrencyCode(EUR));
+                            processTaxEntries(t, v, type);
                         });
     }
 
