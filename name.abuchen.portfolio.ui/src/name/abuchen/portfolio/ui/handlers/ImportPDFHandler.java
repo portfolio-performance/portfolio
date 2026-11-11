@@ -102,19 +102,31 @@ public class ImportPDFHandler
         return new Experiments().isEnabled(Experiments.Feature.SEP26_IMPORT_PDF_TEXT_FILES);
     }
 
-    public static void runImport(PortfolioPart part, Shell shell, Client client, Account account, Portfolio portfolio)
+    /**
+     * Checks that the client has at least one account and one portfolio as the
+     * imported transactions must be booked into them.
+     */
+    private static boolean checkPrerequisites(Shell shell, Client client)
     {
         if (client.getAccounts().isEmpty())
         {
             MessageDialog.openError(shell, Messages.LabelError, Messages.MsgErrorAccountNotExist);
-            return;
+            return false;
         }
 
         if (client.getPortfolios().isEmpty())
         {
             MessageDialog.openError(shell, Messages.LabelError, Messages.MsgErrorPortfolioNotExist);
-            return;
+            return false;
         }
+
+        return true;
+    }
+
+    public static void runImport(PortfolioPart part, Shell shell, Client client, Account account, Portfolio portfolio)
+    {
+        if (!checkPrerequisites(shell, client))
+            return;
 
         // remember the path for the depot the import was triggered for
         // (portfolio > account)
@@ -187,6 +199,9 @@ public class ImportPDFHandler
     public static void runImportWithFiles(PortfolioPart part, Shell shell, Client client, Account account,
                     Portfolio portfolio, List<File> files)
     {
+        if (!checkPrerequisites(shell, client))
+            return;
+
         runImportWithFiles(part, shell, client, account, portfolio, files, () -> {
         });
     }
