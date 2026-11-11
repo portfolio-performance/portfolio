@@ -593,7 +593,7 @@ public class ScalableCapitalPDFExtractorTest
                         hasSource("Verkauf05.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 289.43), hasGrossValue("EUR", 292.17), //
-                        hasTaxes("EUR", 2.74), hasFees("EUR", 0.00))));
+                        hasTaxes("EUR", 2.40 + 0.13 + 0.21), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -623,7 +623,7 @@ public class ScalableCapitalPDFExtractorTest
 
         // check buy sell transaction
         assertThat(results, hasItem(sale( //
-                        hasDate("2026-01-14T00:00"), hasShares(1327), //
+                        hasDate("2026-01-14T00:00"), hasShares(1327.00), //
                         hasSource("Verkauf06.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 1.33), hasGrossValue("EUR", 1.33), //
@@ -1666,7 +1666,7 @@ public class ScalableCapitalPDFExtractorTest
                         hasSource("Dividende05.txt"), hasNote(null), //
                         hasAmount("EUR", 0.41), hasGrossValue("EUR", 0.56), //
                         hasForexGrossValue("USD", 0.66), //
-                        hasTaxes("EUR", 0.09 + 0.06), hasFees("EUR", 0.00))));
+                        hasTaxes("EUR", 0.09 + 0.05 + 0.01), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -1700,7 +1700,7 @@ public class ScalableCapitalPDFExtractorTest
                         hasShares(0.489446), //
                         hasSource("Dividende05.txt"), hasNote(null), //
                         hasAmount("EUR", 0.41), hasGrossValue("EUR", 0.56), //
-                        hasTaxes("EUR", 0.09 + 0.06), hasFees("EUR", 0.00))));
+                        hasTaxes("EUR", 0.09 + 0.05 + 0.01), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -1806,7 +1806,7 @@ public class ScalableCapitalPDFExtractorTest
                         hasSource("Dividende07.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 0.12), hasGrossValue("EUR", 0.17), //
-                        hasTaxes("EUR", 0.05), hasFees("EUR", 0.00))));
+                        hasTaxes("EUR", 0.03 + 0.02), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -1841,7 +1841,7 @@ public class ScalableCapitalPDFExtractorTest
                         hasSource("Dividende08.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 1.42), hasGrossValue("EUR", 1.93), //
-                        hasTaxes("EUR", (0.29 + 0.22)), hasFees("EUR", 0.00))));
+                        hasTaxes("EUR", 0.29 + 0.19 + 0.01 + 0.02), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -1875,7 +1875,7 @@ public class ScalableCapitalPDFExtractorTest
                         hasShares(6.00), //
                         hasSource("Dividende09.txt"), hasNote(null), //
                         hasAmount("EUR", 3.30), hasGrossValue("EUR", 4.58), //
-                        hasTaxes("EUR", 1.28), hasFees("EUR", 0.00))));
+                        hasTaxes("EUR", 1.13 + 0.06 + 0.09), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -1941,11 +1941,11 @@ public class ScalableCapitalPDFExtractorTest
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
                         hasDate("2026-03-20T00:00"), hasExDate("2026-03-12T00:00"), //
-                        hasShares(1200), //
+                        hasShares(1200.00), //
                         hasSource("Dividende11.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 29.85), hasGrossValue("EUR", 36.60), //
-                        hasTaxes("EUR", 6.75), hasFees("EUR", 0.00))));
+                        hasTaxes("EUR", 6.40 + 0.35), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -1976,11 +1976,11 @@ public class ScalableCapitalPDFExtractorTest
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
                         hasDate("2026-04-28T00:00"), hasExDate("2026-04-24T00:00"), //
-                        hasShares(17), //
+                        hasShares(17.00), //
                         hasSource("Dividende12.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 7.14), hasGrossValue("EUR", 9.69), //
-                        hasTaxes("EUR", 2.55), hasFees("EUR", 0.00))));
+                        hasTaxes("EUR", 2.42 + 0.13), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -2643,7 +2643,7 @@ public class ScalableCapitalPDFExtractorTest
         assertThat(results, hasItem(skippedItem( //
                         Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
                         taxes( //
-                                        hasDate("2026-01-02"), hasShares(430), //
+                                        hasDate("2026-01-02"), hasShares(430.00), //
                                         hasSource("Vorabpauschale05.txt"), //
                                         hasNote(null), //
                                         hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
@@ -2711,7 +2711,7 @@ public class ScalableCapitalPDFExtractorTest
 
         // check taxes transaction
         assertThat(results, hasItem(taxes( //
-                        hasDate("2026-01-02"), hasShares(613), //
+                        hasDate("2026-01-02"), hasShares(613.00), //
                         hasSource("PreliminaryLumpSum01.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 110.11), hasGrossValue("EUR", 110.11), //
