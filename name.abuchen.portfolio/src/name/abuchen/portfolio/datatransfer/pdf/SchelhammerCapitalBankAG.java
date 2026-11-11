@@ -62,7 +62,7 @@ public class SchelhammerCapitalBankAG extends AbstractPDFExtractor
                                                         .attributes("isin", "name", "nameContinued", "currency") //
                                                         .match("^Titel: (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) (?<name>.*)$") //
                                                         .match("^(?<nameContinued>.*)$") //
-                                                        .match("^Kurs: [\\.,\\d]+ (?<currency>[\\w]{3})[\\s]*$") //
+                                                        .match("^Kurs: [\\.,\\d]+ (?<currency>[A-Z]{3})[\\s]*$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))))
 
                         // @formatter:off
@@ -79,7 +79,7 @@ public class SchelhammerCapitalBankAG extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("date", "time") //
-                                                        .match("^Handelszeit: (?<date>[\\d]{1,2}\\.[\\d]{1,2}\\.[\\d]{4}) .* (?<time>[\\d]{2}:[\\d]{2}:[\\d]{2}).*$") //
+                                                        .match("^Handelszeit: (?<date>[\\d]{1,2}\\.[\\d]{1,2}\\.[\\d]{4}) .* (?<time>[\\d]{2}\\:[\\d]{2}\\:[\\d]{2}).*$") //
                                                         .assign((t, v) -> t.setDate(asDate(v.get("date"), v.get("time")))),
                                         // @formatter:off
                                         // Handelszeit: 18.12.2024
@@ -94,7 +94,7 @@ public class SchelhammerCapitalBankAG extends AbstractPDFExtractor
                         // Zu Gunsten IBAN AT18 3222 3274 4871 1501 9.711,19 EUR
                         // @formatter:on
                         .section("amount", "currency") //
-                        .match("^Zu (Lasten|Gunsten) IBAN .* (\\-)?(?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})[\\s]*$") //
+                        .match("^Zu (Lasten|Gunsten) IBAN .* (\\-)?(?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3})[\\s]*$") //
                         .assign((t, v) -> {
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(asAmount(v.get("amount")));
@@ -104,7 +104,7 @@ public class SchelhammerCapitalBankAG extends AbstractPDFExtractor
                         // Auftrags-Nr.: 12345678-8.1.2025
                         // @formatter:on
                         .section("note").optional() //
-                        .match("^(?<note>Auftrags\\-Nr.: .*)$") //
+                        .match("^(?<note>Auftrags\\-Nr\\.: .*)$") //
                         .assign((t, v) -> t.setNote(trim(v.get("note"))))
 
                         .wrap(BuySellEntryItem::new);
@@ -115,7 +115,7 @@ public class SchelhammerCapitalBankAG extends AbstractPDFExtractor
 
     private void addDividendeTransaction()
     {
-        final var type = new DocumentType("Geschäftsart: Ertrag");
+        final var type = new DocumentType("Gesch.ftsart: Ertrag");
         this.addDocumentTyp(type);
 
         var pdfTransaction = new Transaction<AccountTransaction>();
@@ -138,7 +138,7 @@ public class SchelhammerCapitalBankAG extends AbstractPDFExtractor
                                                         .attributes("isin", "name", "nameContinued", "currency") //
                                                         .match("^Titel: (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) (?<name>.*)$") //
                                                         .match("^(?<nameContinued>.*)$") //
-                                                        .match("^Ertrag: [\\.,\\d]+ (?<currency>[\\w]{3})[\\s]*$") //
+                                                        .match("^Ertrag: [\\.,\\d]+ (?<currency>[A-Z]{3})[\\s]*$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))))
 
                         // @formatter:off
@@ -170,7 +170,7 @@ public class SchelhammerCapitalBankAG extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("currency", "amount") //
-                                                        .match("^Zu Gunsten IBAN .* (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})[\\s]*$") //
+                                                        .match("^Zu Gunsten IBAN .* (?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3})[\\s]*$") //
                                                         .assign((t, v) -> {
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                                             t.setAmount(asAmount(v.get("amount")));
@@ -180,7 +180,7 @@ public class SchelhammerCapitalBankAG extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("currency", "amount") //
-                                                        .match("^Zu Gunsten IBAN .* (?<amount>[\\-\\.,\\d]+) (?<currency>[\\w]{3})[\\s]*$") //
+                                                        .match("^Zu Gunsten IBAN .* (?<amount>[\\-\\.,\\d]+) (?<currency>[A-Z]{3})[\\s]*$") //
                                                         .assign((t, v) -> {
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                                             t.setAmount(asAmount(v.get("amount")));
@@ -221,7 +221,6 @@ public class SchelhammerCapitalBankAG extends AbstractPDFExtractor
     private <T extends Transaction<?>> void addFeesSectionsTransaction(T transaction, DocumentType type)
     {
         transaction //
-
 
                         // @formatter:off
                         // Effektenprovision: -0,40 EUR
