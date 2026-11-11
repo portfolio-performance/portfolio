@@ -41,12 +41,12 @@ public class StakeshopPtyLtdPDFExtractor extends AbstractPDFExtractor
 
     private void addBuySellTransaction()
     {
-        DocumentType type = new DocumentType("(BUY|SELL) CONFIRMATION");
+        final var type = new DocumentType("(BUY|SELL) CONFIRMATION");
         this.addDocumentTyp(type);
 
-        Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
+        var pdfTransaction = new Transaction<BuySellEntry>();
 
-        Block firstRelevantLine = new Block("^(BUY|SELL) CONFIRMATION$");
+        var firstRelevantLine = new Block("^(BUY|SELL) CONFIRMATION$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -67,7 +67,7 @@ public class StakeshopPtyLtdPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("tickerSymbol", "currency") //
                         .match("^EFFECTIVE PRICE \\p{Sc}[\\.,\\d]+ TICKER (?<tickerSymbol>[A-Z0-9]{1,6}(?:\\.[A-Z]{1,4})?)\\..*$") //
-                        .match("^VALUE (?<currency>[\\w]{1}\\p{Sc}).*") //
+                        .match("^VALUE (?<currency>[\\w]{1}\\p{Sc}).*$") //
                         .assign((t, v) -> {
                             v.put("name", v.get("tickerSymbol"));
                             t.setSecurity(getOrCreateSecurity(v));
@@ -91,7 +91,7 @@ public class StakeshopPtyLtdPDFExtractor extends AbstractPDFExtractor
                         // AMOUNT DUE & PAYABLE A$10,458.04 Funds have already
                         // @formatter:on
                         .section("currency", "amount") //
-                        .match("^AMOUNT DUE & PAYABLE (?<currency>A\\p{Sc})(?<amount>[\\.,\\d]+).*") //
+                        .match("^AMOUNT DUE & PAYABLE (?<currency>A\\p{Sc})(?<amount>[\\.,\\d]+).*$") //
                         .assign((t, v) -> {
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(asAmount(v.get("amount")));
@@ -100,8 +100,8 @@ public class StakeshopPtyLtdPDFExtractor extends AbstractPDFExtractor
                         // @formatter:off
                         // CONFIRMATION NUMBER 0000001 PID 3556
                         // @formatter:on
-                        .section("note").optional()//
-                        .match("^CONFIRMATION NUMBER (?<note>.*) PID [\\d]+$")
+                        .section("note").optional() //
+                        .match("^CONFIRMATION NUMBER (?<note>.*) PID [\\d]+$") //
                         .assign((t, v) -> t.setNote(trim(v.get("note"))))
 
                         .wrap(BuySellEntryItem::new);
@@ -117,7 +117,7 @@ public class StakeshopPtyLtdPDFExtractor extends AbstractPDFExtractor
                         // BROKERAGE & GST A$3.00 SIDE BUY
                         // @formatter:on
                         .section("fee", "currency").optional() //
-                        .match("^BROKERAGE & GST (?<currency>A\\p{Sc})(?<fee>[\\.,\\d]+) SIDE (BUY|SELL)$")
+                        .match("^BROKERAGE & GST (?<currency>A\\p{Sc})(?<fee>[\\.,\\d]+) SIDE (BUY|SELL)$") //
                         .assign((t, v) -> processFeeEntries(t, v, type));
     }
 
