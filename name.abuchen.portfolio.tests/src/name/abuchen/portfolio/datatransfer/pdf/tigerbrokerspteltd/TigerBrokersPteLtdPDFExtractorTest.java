@@ -1,6 +1,8 @@
 package name.abuchen.portfolio.datatransfer.pdf.tigerbrokerspteltd;
 
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.deposit;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.dividend;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.feeRefund;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasAmount;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasCurrencyCode;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasDate;
@@ -15,7 +17,12 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasSource;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTaxes;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTicker;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasWkn;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.inboundCash;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.inboundDelivery;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.outboundCash;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.purchase;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.removal;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.sale;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.security;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.skippedItem;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.taxRefund;
@@ -1393,5 +1400,196 @@ public class TigerBrokersPteLtdPDFExtractorTest
                                         hasNote("Dividend Accruals"), //
                                         hasAmount("USD", 31.85), hasGrossValue("USD", 37.47), //
                                         hasTaxes("USD", 5.62), hasFees("USD", 0.00)))));
+    }
+
+    @Test
+    public void testAccountStatement13()
+    {
+        var extractor = new TigerBrokersPteLtdPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "AccountStatement13.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(15L));
+        assertThat(countBuySell(results), is(52L));
+        assertThat(countAccountTransactions(results), is(57L));
+        assertThat(countAccountTransfers(results), is(5L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(9L));
+        assertThat(results.size(), is(138));
+        new AssertImportActions().check(results, "SGD", "USD");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin(null), hasWkn(null), hasTicker("U11.SI"), //
+                        hasName("UOB"), //
+                        hasCurrencyCode("SGD"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin(null), hasWkn(null), hasTicker("O"), //
+                        hasName("Realty Income"), //
+                        hasCurrencyCode("USD"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin(null), hasWkn(null), hasTicker("D05.SI"), //
+                        hasName("DBS"), //
+                        hasCurrencyCode("SGD"))));
+
+        // check purchase transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2025-10-16T13:16:02"), hasShares(100.00), //
+                        hasSource("AccountStatement13.txt"), //
+                        hasNote(null), //
+                        hasAmount("SGD", 3453.46), hasGrossValue("SGD", 3450.00), //
+                        hasTaxes("SGD", 0.00), hasFees("SGD", (1.38 + 1.04 + 1.04)))));
+
+        // check purchase transaction (complete trade date above the page break)
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2025-08-07T12:58:58"), hasShares(100.00), //
+                        hasSource("AccountStatement13.txt"), //
+                        hasNote(null), //
+                        hasAmount("SGD", 275.10), hasGrossValue("SGD", 273.00), //
+                        hasTaxes("SGD", 0.00), hasFees("SGD", (0.11 + 0.99 + 1.00)))));
+
+        // check purchase transaction (trade date split into "2025-08" and "-07")
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2025-08-07T14:54:22"), hasShares(700.00), //
+                        hasSource("AccountStatement13.txt"), //
+                        hasNote(null), //
+                        hasAmount("SGD", 1920.75), hasGrossValue("SGD", 1918.00), //
+                        hasTaxes("SGD", 0.00), hasFees("SGD", (0.76 + 0.99 + 1.00)))));
+
+        // check purchase transaction (trade date split into "2025-" and "08-08")
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2025-08-08T14:10:30"), hasShares(1100.00), //
+                        hasSource("AccountStatement13.txt"), //
+                        hasNote(null), //
+                        hasAmount("SGD", 2995.18), hasGrossValue("SGD", 2992.00), //
+                        hasTaxes("SGD", 0.00), hasFees("SGD", (1.19 + 0.99 + 1.00)))));
+
+        // check purchase transaction (trade date split into "20" and "25-08-25")
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2025-08-25T14:44:30"), hasShares(600.00), //
+                        hasSource("AccountStatement13.txt"), //
+                        hasNote(null), //
+                        hasAmount("SGD", 1634.64), hasGrossValue("SGD", 1632.00), //
+                        hasTaxes("SGD", 0.00), hasFees("SGD", (0.65 + 0.99 + 1.00)))));
+
+        // check purchase transaction (trade date split into "2" and "025-08-07")
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2025-08-07T14:32:45"), hasShares(200.00), //
+                        hasSource("AccountStatement13.txt"), //
+                        hasNote(null), //
+                        hasAmount("SGD", 404.15), hasGrossValue("SGD", 402.00), //
+                        hasTaxes("SGD", 0.00), hasFees("SGD", (0.16 + 0.99 + 1.00)))));
+
+        // check purchase transaction (trade date split into "20" and "25-12-01")
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2025-12-01T16:59:08"), hasShares(1000.00), //
+                        hasSource("AccountStatement13.txt"), //
+                        hasNote(null), //
+                        hasAmount("SGD", 2032.80), hasGrossValue("SGD", 2030.00), //
+                        hasTaxes("SGD", 0.00), hasFees("SGD", (0.81 + 0.99 + 1.00)))));
+
+        // check purchase transaction (trade date split into "2025-09" and "-09")
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2025-09-09T13:53:58"), hasShares(115.00), //
+                        hasSource("AccountStatement13.txt"), //
+                        hasNote(null), //
+                        hasAmount("USD", 3873.24), hasGrossValue("USD", 3870.90), //
+                        hasTaxes("USD", 0.00), hasFees("USD", (0.35 + 0.99 + 1.00)))));
+
+        // check sale transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2025-08-25T14:42:32"), hasShares(100.00), //
+                        hasSource("AccountStatement13.txt"), //
+                        hasNote(null), //
+                        hasAmount("SGD", 1675.33), hasGrossValue("SGD", 1678.00), //
+                        hasTaxes("SGD", 0.00), hasFees("SGD", (0.68 + 0.99 + 1.00)))));
+
+        // check deposit and removal transaction
+        assertThat(results, hasItem(deposit(hasDate("2025-08-06"), hasAmount("SGD", 432.18), //
+                        hasSource("AccountStatement13.txt"), hasNote(null))));
+
+        assertThat(results, hasItem(removal(hasDate("2025-08-07"), hasAmount("SGD", 10.00), //
+                        hasSource("AccountStatement13.txt"), hasNote(null))));
+
+        assertThat(results, hasItem(deposit(hasDate("2025-11-05"), hasAmount("SGD", 20000.00), //
+                        hasSource("AccountStatement13.txt"), hasNote(null))));
+
+        // check dividend transaction without withholding tax
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2025-09-04"), hasExDate(null), //
+                        hasShares(2200.00), //
+                        hasSource("AccountStatement13.txt"), //
+                        hasNote(null), //
+                        hasAmount("SGD", 2.05), hasGrossValue("SGD", 2.05), //
+                        hasTaxes("SGD", 0.00), hasFees("SGD", 0.00))));
+
+        // check dividend transaction with withholding tax
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2025-12-15"), hasExDate(null), //
+                        hasShares(652.7321), //
+                        hasSource("AccountStatement13.txt"), //
+                        hasNote(null), //
+                        hasAmount("USD", 158.31), hasGrossValue("USD", 175.91), //
+                        hasTaxes("USD", 17.60), hasFees("USD", 0.00))));
+
+        // check fee refund transaction
+        assertThat(results, hasItem(feeRefund( //
+                        hasDate("2025-10-16"), //
+                        hasSource("AccountStatement13.txt"), //
+                        hasNote("Coupon Rebate"), //
+                        hasAmount("USD", 0.99), hasGrossValue("USD", 0.99), //
+                        hasTaxes("USD", 0.00), hasFees("USD", 0.00))));
+
+        // check currency transfer transaction
+        // "Buy USD.SGD" --> SGD is sold, USD is bought
+        assertThat(results, hasItem(outboundCash( //
+                        hasDate("2025-09-09T13:52:45"), //
+                        hasSource("AccountStatement13.txt"), //
+                        hasNote("USD/SGD 1.28688"), //
+                        hasAmount("SGD", 5000.00))));
+
+        assertThat(results, hasItem(inboundCash( //
+                        hasDate("2025-09-09T13:52:45"), //
+                        hasSource("AccountStatement13.txt"), //
+                        hasNote("USD/SGD 1.28688"), //
+                        hasAmount("USD", 3885.36))));
+
+        // "Sell USD.SGD" --> USD is sold, SGD is bought
+        assertThat(results, hasItem(outboundCash( //
+                        hasDate("2025-10-16T01:14:03"), //
+                        hasSource("AccountStatement13.txt"), //
+                        hasNote("USD/SGD 1.29103"), //
+                        hasAmount("USD", 5000.00))));
+
+        assertThat(results, hasItem(inboundCash( //
+                        hasDate("2025-10-16T01:14:03"), //
+                        hasSource("AccountStatement13.txt"), //
+                        hasNote("USD/SGD 1.29103"), //
+                        hasAmount("SGD", 6455.15))));
+
+        // check inbound delivery transaction
+        assertThat(results, hasItem(inboundDelivery( //
+                        hasDate("2025-09-01T15:38:02"), hasShares(200.00), //
+                        hasSource("AccountStatement13.txt"), //
+                        hasNote("EXTERNAL IN"), //
+                        hasAmount("SGD", 6842.00), hasGrossValue("SGD", 6842.00), //
+                        hasTaxes("SGD", 0.00), hasFees("SGD", 0.00))));
+
+        // check skipped item
+        // "Dividend Accruals" are announced but not paid out yet
+        assertThat(results, hasItem(skippedItem( //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
+                        dividend( //
+                                        hasDate("2025-10-31"), hasExDate(null), //
+                                        hasShares(3000.00), //
+                                        hasSource("AccountStatement13.txt"), //
+                                        hasNote("Dividend Accruals"), //
+                                        hasAmount("SGD", 167.55), hasGrossValue("SGD", 167.55), //
+                                        hasTaxes("SGD", 0.00), hasFees("SGD", 0.00)))));
     }
 }

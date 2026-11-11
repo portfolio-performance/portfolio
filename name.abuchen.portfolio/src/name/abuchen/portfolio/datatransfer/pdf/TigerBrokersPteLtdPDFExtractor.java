@@ -7,7 +7,9 @@ import static name.abuchen.portfolio.util.TextUtil.trim;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -15,14 +17,17 @@ import java.util.Optional;
 import java.util.regex.Pattern;
 
 import name.abuchen.portfolio.Messages;
+import name.abuchen.portfolio.datatransfer.DocumentContext;
 import name.abuchen.portfolio.datatransfer.ExtractorUtils;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
 import name.abuchen.portfolio.model.AccountTransaction;
+import name.abuchen.portfolio.model.AccountTransferEntry;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
+import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
 
@@ -55,6 +60,8 @@ public class TigerBrokersPteLtdPDFExtractor extends AbstractPDFExtractor
 {
     private static final DateTimeFormatter DATEFORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
+    private static final DateTimeFormatter TIMEFORMAT = DateTimeFormatter.ofPattern("HH:mm:ss");
+
     public TigerBrokersPteLtdPDFExtractor(Client client)
     {
         super(client);
@@ -62,6 +69,7 @@ public class TigerBrokersPteLtdPDFExtractor extends AbstractPDFExtractor
         addBankIdentifier("Tiger Brokers (Singapore) PTE.LTD.");
 
         addAccountStatementTransaction();
+        addAccountStatementTransaction_late25();
     }
 
     @Override
@@ -845,6 +853,164 @@ public class TigerBrokersPteLtdPDFExtractor extends AbstractPDFExtractor
                         .wrap(TransactionItem::new);
     }
 
+    /**
+     * @formatter:off
+     * Collects the trade date and time of every trade data line.
+     *
+     * The trade date is searched between the previous and the current trade data
+     * line, for the first trade starting at the header of the trades table. If it
+     * is not printed as a complete date, the PDF to text conversion split it into
+     * two fragments: the beginning stands at the end of the fee line of the trade,
+     * the end on the line directly above.
+     *
+     * 25-08-25
+     * CapLand Ascendas REIT Exchange Fee: -0.65 20
+     * @formatter:on
+     */
+    private void collectTradeDates(DocumentContext context, String[] lines)
+    {
+        var tradeDateListHelper = new TradeDateListHelper();
+        context.putType(tradeDateListHelper);
+
+        var pTradesHeader = Pattern.compile("^Activity Trade Accrued Interest.*$");
+        var pTradeData = Pattern.compile("^.*(SG|US) (SGX|NYSE|ARCA|NASDAQ) (Open|Close) "
+                        + "\\-?[\\.,\\d]+ [\\.,\\d]+ \\-?[\\.,\\d]+ [\\.,\\d]+.*$");
+        var pFullDate = Pattern.compile("^.*?(?<date>[\\d]{4}\\-[\\d]{2}\\-[\\d]{2}).*$");
+        var pFeeLine = Pattern.compile("^.*(Exchange Fee|Settlement Fee): \\-[\\.,\\d]+.*$");
+        var pDateBegin = Pattern.compile("^.* (?<begin>[\\d][\\d\\-]*)$");
+        var pDateEnd = Pattern.compile("^(?<end>[\\d\\-]+)$");
+
+        var previousTradeLine = 0;
+
+        for (var ii = 0; ii < lines.length; ii++)
+        {
+            if (pTradesHeader.matcher(lines[ii]).matches())
+            {
+                previousTradeLine = ii;
+                break;
+            }
+        }
+
+        for (var ii = previousTradeLine; ii < lines.length; ii++)
+        {
+            if (!pTradeData.matcher(lines[ii]).matches())
+                continue;
+
+            String tradeDate = null;
+            var feeLine = -1;
+
+            for (var jj = previousTradeLine; jj <= ii; jj++)
+            {
+                var mFullDate = pFullDate.matcher(lines[jj]);
+                if (tradeDate == null && mFullDate.matches())
+                    tradeDate = mFullDate.group("date");
+
+                if (pFeeLine.matcher(lines[jj]).matches())
+                    feeLine = jj;
+            }
+
+            if (tradeDate == null && feeLine > 0)
+            {
+                var mBegin = pDateBegin.matcher(lines[feeLine]);
+                var mEnd = pDateEnd.matcher(lines[feeLine - 1]);
+
+                if (mBegin.matches() && mEnd.matches())
+                    tradeDate = asValidDate(mBegin.group("begin") + mEnd.group("end"));
+            }
+
+            if (tradeDate != null)
+            {
+                var tradeDateItem = new TradeDateItem();
+                tradeDateItem.lineNo = ii;
+                tradeDateItem.date = tradeDate;
+                tradeDateItem.time = assembleTime(lines, previousTradeLine, ii);
+                tradeDateListHelper.items.add(tradeDateItem);
+            }
+
+            previousTradeLine = ii + 1;
+        }
+    }
+
+    /**
+     * Returns the value if it is a valid date in the format yyyy-MM-dd,
+     * otherwise null.
+     */
+    private String asValidDate(String value)
+    {
+        if (!value.matches("[\\d]{4}\\-[\\d]{2}\\-[\\d]{2}"))
+            return null;
+
+        try
+        {
+            LocalDate.parse(value, DATEFORMAT);
+            return value;
+        }
+        catch (DateTimeParseException e)
+        {
+            return null;
+        }
+    }
+
+    /**
+     * @formatter:off
+     * Re-assembles the trade time. The end of the time is always followed by a
+     * comma and a blank ("12:58:58, US/Eastern"), which distinguishes it from a
+     * thousands separator ("5,018.00"). If that part alone is not a valid time,
+     * the beginning is the last digit group of the following line, because the
+     * PDF to text conversion may split "16:06:34" into "1" and "6:06:34".
+     * @formatter:on
+     */
+    private String assembleTime(String[] lines, int from, int to)
+    {
+        var pTail = Pattern.compile("(?<![\\d:\\.])(?<time>[\\d:]+),(?=\\s|$)");
+        var pFragment = Pattern.compile("[\\d:]+");
+
+        String tail = null;
+        var tailLine = -1;
+
+        for (var ii = from; ii <= to + 1 && ii < lines.length; ii++)
+        {
+            var mTail = pTail.matcher(lines[ii]);
+            while (mTail.find())
+            {
+                tail = mTail.group("time");
+                tailLine = ii;
+            }
+        }
+
+        if (tail == null)
+            return null;
+
+        if (isValidTime(tail))
+            return tail;
+
+        if (tailLine + 1 >= lines.length)
+            return null;
+
+        String head = null;
+        var mFragment = pFragment.matcher(lines[tailLine + 1]);
+        while (mFragment.find())
+            head = mFragment.group();
+
+        if (head != null && isValidTime(head + tail))
+            return head + tail;
+
+        return null;
+    }
+
+    private boolean isValidTime(String value)
+    {
+        try
+        {
+            LocalTime.parse(value, TIMEFORMAT);
+            return true;
+        }
+        catch (DateTimeParseException e)
+        {
+            return false;
+        }
+    }
+
     private void processTradeFee(BuySellEntry t, Map<String, String> v, DocumentType type)
     {
         var fee = Money.of(t.getPortfolioTransaction().getCurrencyCode(), asAmount(v.get("fee")));
@@ -878,7 +1044,9 @@ public class TigerBrokersPteLtdPDFExtractor extends AbstractPDFExtractor
     }
 
     /**
-     * Dividends in the late 2025 layout of the "Activity Statement".
+     * Dividends in the late 2025 layout. Used by both document types, the
+     * layout appears in the "Activity Statement" as well as in the
+     * "Statement Period" documents.
      */
     private void addDividendTransaction_late25(DocumentType type)
     {
@@ -1104,6 +1272,458 @@ public class TigerBrokersPteLtdPDFExtractor extends AbstractPDFExtractor
                         });
     }
 
+    /**
+     * @formatter:off
+     * Late 2025 layout. These documents carry "Statement Period" in the header
+     * instead of "Activity Statement" and contain bookings in more than one
+     * currency. They need their own document type because single fee lines
+     * like "Settlement Fee: -2.70" are indistinguishable from the old layout.
+     * @formatter:on
+     */
+    private void addAccountStatementTransaction_late25()
+    {
+        final var type = new DocumentType("Statement Period", (context, lines) -> {
+            var pSecurity = Pattern.compile("^(?<tickerSymbol>(?!(GST|Net))[A-Z0-9]{1,6}(?:\\.[A-Z]{1,4})?) (?<name>.*) [\\d]$");
+
+            // @formatter:off
+            // Create a helper to store the list of security items found in the document.
+            //
+            // These documents do not contain a "Stock Currency:" line and hold bookings
+            // in more than one currency, therefore no currency is stored here. It is
+            // taken from the respective transaction instead.
+            // @formatter:on
+            var securityListHelper = new SecurityListHelper();
+            context.putType(securityListHelper);
+
+            for (String line : lines)
+            {
+                var mSecurity = pSecurity.matcher(line);
+                if (mSecurity.matches())
+                {
+                    var securityItem = new SecurityItem();
+                    securityItem.tickerSymbol = mSecurity.group("tickerSymbol");
+                    securityItem.name = mSecurity.group("name");
+                    securityListHelper.items.add(securityItem);
+                }
+            }
+
+            collectTradeDates(context, lines);
+        });
+        this.addDocumentTyp(type);
+
+        var buySellBlock_late25 = new Transaction<BuySellEntry>();
+
+        // @formatter:off
+        // Every trade starts with exactly one fee line, therefore this is the only
+        // reliable anchor: the trade date is torn apart by the PDF to text conversion
+        // and is taken from the TradeDateListHelper instead.
+        //
+        // CapLand Ascendas REIT Exchange Fee: -1.98 2025-09-03
+        // 2025-
+        // SG SGX Open 1800 2.75000 4,950.00 0.00 6:06:34, SGD
+        // (A17U.SI) Commission: -1.49 0.00 0.00 1
+        // Platform Fee: -1.49 09-05
+        // GMT+8
+        // @formatter:on
+        var firstRelevantLineForBuySellBlock_late25 = new Block("^.*(Exchange Fee|Settlement Fee): \\-[\\.,\\d]+.*$");
+        type.addBlock(firstRelevantLineForBuySellBlock_late25);
+        firstRelevantLineForBuySellBlock_late25.setMaxSize(10);
+        firstRelevantLineForBuySellBlock_late25.set(buySellBlock_late25);
+
+        buySellBlock_late25 //
+
+                        .subject(() -> new BuySellEntry(PortfolioTransaction.Type.BUY))
+
+                        // @formatter:off
+                        // The document contains SGD and USD bookings, therefore the
+                        // currency is parsed per transaction. It must be set before the
+                        // fee sections are processed.
+                        // @formatter:on
+                        .section("currency") //
+                        .match("^.* (?<currency>[A-Z]{3})$") //
+                        .assign((t, v) -> t.setCurrencyCode(asCurrencyCode(v.get("currency"))))
+
+                        .oneOf( //
+                                        // @formatter:off
+                                        // (N2IU.SI) SG SGX Open 100 1.32000 132.00 0.00 Exchange Fee: -0.05 0.00 0.00 GMT+8 2025- SGD
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("tickerSymbol", "type", "shares", "gross") //
+                                                        .match("^.*\\((?<tickerSymbol>[A-Z0-9]{1,6}(?:\\.[A-Z]{1,4})?)\\).*" //
+                                                                        + "(SG|US) (SGX|NYSE|ARCA|NASDAQ) " //
+                                                                        + "(?<type>Open|Close) " //
+                                                                        + "(?<shares>\\-?[\\.,\\d]+) " //
+                                                                        + "[\\.,\\d]+ " //
+                                                                        + "\\-?(?<gross>[\\.,\\d]+) " //
+                                                                        + "[\\.,\\d]+.*$") //
+                                                        .assign((t, v) -> {
+                                                            var context = type.getCurrentContext();
+
+                                                            var securityItem = context.getType(SecurityListHelper.class).get()
+                                                                            .findItem(v.get("tickerSymbol"));
+
+                                                            securityItem.ifPresent(s -> {
+                                                                v.put("name", s.name);
+                                                                v.put("tickerSymbol", s.tickerSymbol);
+                                                            });
+
+                                                            v.put("currency", t.getPortfolioTransaction().getCurrencyCode());
+                                                            t.setSecurity(getOrCreateSecurity(v));
+
+                                                            // Is type --> "Close" change from BUY to SELL
+                                                            if ("Close".equals(v.get("type")))
+                                                                t.setType(PortfolioTransaction.Type.SELL);
+
+                                                            var tradeDate = context.getType(TradeDateListHelper.class).get()
+                                                                            .findItem(v.getStartLineNumber());
+
+                                                            if (tradeDate.isPresent())
+                                                                t.setDate(asDate(tradeDate.get().date, tradeDate.get().time));
+                                                            else
+                                                                v.skipTransaction(Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
+
+                                                            t.setShares(asShares(v.get("shares")));
+
+                                                            // The amount is stated in gross, the fees are added in wrap()
+                                                            t.setAmount(asAmount(v.get("gross")));
+                                                        }),
+                                        // @formatter:off
+                                        // SG SGX Open 1800 2.75000 4,950.00 0.00 6:06:34, SGD
+                                        // (A17U.SI) Commission: -1.49 0.00 0.00 1
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("type", "shares", "gross", "tickerSymbol") //
+                                                        .match("^.*(SG|US) (SGX|NYSE|ARCA|NASDAQ) " //
+                                                                        + "(?<type>Open|Close) " //
+                                                                        + "(?<shares>\\-?[\\.,\\d]+) " //
+                                                                        + "[\\.,\\d]+ " //
+                                                                        + "\\-?(?<gross>[\\.,\\d]+) " //
+                                                                        + "[\\.,\\d]+.*$") //
+                                                        .match("^.*\\((?<tickerSymbol>[A-Z0-9]{1,6}(?:\\.[A-Z]{1,4})?)\\).*$") //
+                                                        .assign((t, v) -> {
+                                                            var context = type.getCurrentContext();
+
+                                                            var securityItem = context.getType(SecurityListHelper.class).get()
+                                                                            .findItem(v.get("tickerSymbol"));
+
+                                                            securityItem.ifPresent(s -> {
+                                                                v.put("name", s.name);
+                                                                v.put("tickerSymbol", s.tickerSymbol);
+                                                            });
+
+                                                            v.put("currency", t.getPortfolioTransaction().getCurrencyCode());
+                                                            t.setSecurity(getOrCreateSecurity(v));
+
+                                                            // Is type --> "Close" change from BUY to SELL
+                                                            if ("Close".equals(v.get("type")))
+                                                                t.setType(PortfolioTransaction.Type.SELL);
+
+                                                            var tradeDate = context.getType(TradeDateListHelper.class).get()
+                                                                            .findItem(v.getStartLineNumber());
+
+                                                            if (tradeDate.isPresent())
+                                                                t.setDate(asDate(tradeDate.get().date, tradeDate.get().time));
+                                                            else
+                                                                v.skipTransaction(Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
+
+                                                            t.setShares(asShares(v.get("shares")));
+
+                                                            // The amount is stated in gross, the fees are added in wrap()
+                                                            t.setAmount(asAmount(v.get("gross")));
+                                                        }))
+
+                        // @formatter:off
+                        // CapLand Ascendas REIT Exchange Fee: -1.98 2025-09-03
+                        // @formatter:on
+                        .section("fee").optional() //
+                        .match("^.*Exchange Fee: \\-(?<fee>[\\.,\\d]+).*$") //
+                        .assign((t, v) -> processTradeFee(t, v, type))
+
+                        // @formatter:off
+                        // Blackstone Secured Settlement Fee: -1.09 2025-09-29
+                        // @formatter:on
+                        .section("fee").optional() //
+                        .match("^.*Settlement Fee: \\-(?<fee>[\\.,\\d]+).*$") //
+                        .assign((t, v) -> processTradeFee(t, v, type))
+
+                        // @formatter:off
+                        // (A17U.SI) Commission: -1.49 0.00 0.00 1
+                        // @formatter:on
+                        .section("fee").optional() //
+                        .match("^.*Commission: \\-(?<fee>[\\.,\\d]+).*$") //
+                        .assign((t, v) -> processTradeFee(t, v, type))
+
+                        // @formatter:off
+                        // Platform Fee: -1.49 09-05
+                        // @formatter:on
+                        .section("fee").optional() //
+                        .match("^.*Platform Fee: \\-(?<fee>[\\.,\\d]+).*$") //
+                        .assign((t, v) -> processTradeFee(t, v, type))
+
+                        // @formatter:off
+                        // (ARE) Consolidated Audit Trail 10-30
+                        // /Eastern
+                        // Fee: -0.01
+                        // @formatter:on
+                        .section("fee").optional() //
+                        .match("^.*Consolidated Audit Trail.*$") //
+                        .match("^Fee: \\-(?<fee>[\\.,\\d]+)$") //
+                        .assign((t, v) -> processTradeFee(t, v, type))
+
+                        // @formatter:off
+                        // Trading Activity Fee:
+                        // -0.04 2025-10-23
+                        // @formatter:on
+                        .section("fee").optional() //
+                        .match("^.*Trading Activity Fee:.*$") //
+                        .match("^\\-(?<fee>[\\.,\\d]+) .*$") //
+                        .assign((t, v) -> processTradeFee(t, v, type))
+
+                        // @formatter:off
+                        // Realty Income Trading Activity Fee: 2025-10-24
+                        // (O) -0.04
+                        // @formatter:on
+                        .section("fee").optional() //
+                        .match("^.*Trading Activity Fee:.*$") //
+                        .match("^\\([A-Z0-9\\.]+\\) \\-(?<fee>[\\.,\\d]+)$") //
+                        .assign((t, v) -> processTradeFee(t, v, type))
+
+                        // @formatter:off
+                        // Equities US NYSE Close -133 48.42647 -6,440.72 0.00 -0.05 0.00 -1,596.96 22:02:07, US USD
+                        // @formatter:on
+                        .section("fee").optional() //
+                        .match("^.*(Open|Close) \\-?[\\.,\\d]+ [\\.,\\d]+ \\-?[\\.,\\d]+ [\\.,\\d]+ " //
+                                        + "\\-(?<fee>[\\.,\\d]+) [\\.,\\d]+ \\-?[\\.,\\d]+ [\\d]{2}:[\\d]{2}:[\\d]{2}, .*$") //
+                        .assign((t, v) -> processTradeFee(t, v, type))
+
+                        .wrap(t -> {
+                            type.getCurrentContext().removeType(SecurityItem.class);
+
+                            var tx = t.getPortfolioTransaction();
+
+                            if (tx.getCurrencyCode() == null || tx.getDateTime() == null)
+                                return null;
+
+                            // @formatter:off
+                            // The amount is stated in gross. Add the fees for a purchase
+                            // and subtract them for a sale to get the settlement amount.
+                            // @formatter:on
+                            var fees = tx.getUnitSum(Unit.Type.FEE).getAmount();
+
+                            if (tx.getType() == PortfolioTransaction.Type.BUY)
+                                t.setAmount(tx.getAmount() + fees);
+                            else
+                                t.setAmount(tx.getAmount() - fees);
+
+                            if (tx.getAmount() == 0)
+                                return new SkippedItem(new BuySellEntryItem(t), Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
+
+                            return new BuySellEntryItem(t);
+                        });
+
+        var depositRemovalBlock_late25 = new Transaction<AccountTransaction>();
+
+        // @formatter:off
+        // 2025-08-06 Deposit 432.18 SGD
+        // 2025-08-07 Withdrawal -10.00 SGD
+        // @formatter:on
+        var firstRelevantLineForDepositRemovalBlock_late25 = new Block("^[\\d]{4}\\-[\\d]{2}\\-[\\d]{2} (Deposit|Withdrawal) (\\-)?[\\.,\\d]+ [A-Z]{3}$");
+        type.addBlock(firstRelevantLineForDepositRemovalBlock_late25);
+        firstRelevantLineForDepositRemovalBlock_late25.set(depositRemovalBlock_late25);
+
+        depositRemovalBlock_late25 //
+
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.DEPOSIT))
+
+                        .section("date", "type", "amount", "currency") //
+                        .match("^(?<date>[\\d]{4}\\-[\\d]{2}\\-[\\d]{2}) " //
+                                        + "(?<type>Deposit|Withdrawal) " //
+                                        + "(\\-)?(?<amount>[\\.,\\d]+) " //
+                                        + "(?<currency>[A-Z]{3})$") //
+                        .assign((t, v) -> {
+                            // Is type --> "Withdrawal" change from DEPOSIT to REMOVAL
+                            if ("Withdrawal".equals(v.get("type")))
+                                t.setType(AccountTransaction.Type.REMOVAL);
+
+                            t.setDateTime(asDate(v.get("date")));
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                            t.setAmount(asAmount(v.get("amount")));
+                        })
+
+                        .wrap(TransactionItem::new);
+
+        var feesRefundBlock_late25 = new Transaction<AccountTransaction>();
+
+        // @formatter:off
+        // 2025-10-06 Order Rebate 50.00 SGD
+        // 2025-09-09 Coupon Rebate 0.99 USD
+        // @formatter:on
+        var firstRelevantLineForFeesRefundBlock_late25 = new Block("^[\\d]{4}\\-[\\d]{2}\\-[\\d]{2} (Order|Coupon) Rebate [\\.,\\d]+ [A-Z]{3}$");
+        type.addBlock(firstRelevantLineForFeesRefundBlock_late25);
+        firstRelevantLineForFeesRefundBlock_late25.set(feesRefundBlock_late25);
+
+        feesRefundBlock_late25 //
+
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.FEES_REFUND))
+
+                        .section("date", "note", "amount", "currency") //
+                        .match("^(?<date>[\\d]{4}\\-[\\d]{2}\\-[\\d]{2}) " //
+                                        + "(?<note>(Order|Coupon) Rebate) " //
+                                        + "(?<amount>[\\.,\\d]+) " //
+                                        + "(?<currency>[A-Z]{3})$") //
+                        .assign((t, v) -> {
+                            t.setDateTime(asDate(v.get("date")));
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setNote(trim(v.get("note")));
+                        })
+
+                        .wrap(TransactionItem::new);
+
+        var accountTransferBlock_late25 = new Transaction<AccountTransferEntry>();
+
+        // @formatter:off
+        // 2025-09-09
+        // USD.SGD Buy 3,885.3600 1.28688 -5,000.00 2025-09-10 SGD
+        // 13:52:45, US/Eastern
+        // @formatter:on
+        var firstRelevantLineForAccountTransferBlock_late25 = new Block("^[\\d]{4}\\-[\\d]{2}\\-[\\d]{2}$");
+        type.addBlock(firstRelevantLineForAccountTransferBlock_late25);
+        firstRelevantLineForAccountTransferBlock_late25.setMaxSize(3);
+        firstRelevantLineForAccountTransferBlock_late25.set(accountTransferBlock_late25);
+
+        accountTransferBlock_late25 //
+
+                        .subject(AccountTransferEntry::new)
+
+                        .section("date", "baseCurrency", "quoteCurrency", "type", "baseAmount", "exchangeRate",
+                                        "quoteAmount", "time").optional() //
+                        .match("^(?<date>[\\d]{4}\\-[\\d]{2}\\-[\\d]{2})$") //
+                        .match("^(?<baseCurrency>[A-Z]{3})\\.(?<quoteCurrency>[A-Z]{3}) " //
+                                        + "(?<type>Buy|Sell) " //
+                                        + "(\\-)?(?<baseAmount>[\\.,\\d]+) " //
+                                        + "(?<exchangeRate>[\\.,\\d]+) " //
+                                        + "(\\-)?(?<quoteAmount>[\\.,\\d]+) " //
+                                        + "[\\d]{4}\\-[\\d]{2}\\-[\\d]{2} [A-Z]{3}$") //
+                        .match("^(?<time>[\\d]{2}:[\\d]{2}:[\\d]{2}), .*$") //
+                        .assign((t, v) -> {
+                            // @formatter:off
+                            // Buy  --> the quote currency is sold, the base currency is bought
+                            // Sell --> the base currency is sold, the quote currency is bought
+                            // @formatter:on
+                            var sourceCurrency = "Buy".equals(v.get("type")) ? v.get("quoteCurrency") : v.get("baseCurrency");
+                            var targetCurrency = "Buy".equals(v.get("type")) ? v.get("baseCurrency") : v.get("quoteCurrency");
+                            var sourceAmount = "Buy".equals(v.get("type")) ? v.get("quoteAmount") : v.get("baseAmount");
+                            var targetAmount = "Buy".equals(v.get("type")) ? v.get("baseAmount") : v.get("quoteAmount");
+
+                            t.setDate(asDate(v.get("date"), v.get("time")));
+
+                            t.getSourceTransaction().setCurrencyCode(asCurrencyCode(sourceCurrency));
+                            t.getSourceTransaction().setAmount(asAmount(sourceAmount));
+
+                            t.getTargetTransaction().setCurrencyCode(asCurrencyCode(targetCurrency));
+                            t.getTargetTransaction().setAmount(asAmount(targetAmount));
+
+                            var gross = Money.of(asCurrencyCode(sourceCurrency), asAmount(sourceAmount));
+                            var forex = Money.of(asCurrencyCode(targetCurrency), asAmount(targetAmount));
+                            // @formatter:off
+                            // The unit requires forex x exchangeRate == amount. Depending
+                            // on the direction that is either the printed trade price or
+                            // its reciprocal, therefore it is derived from both amounts.
+                            // @formatter:on
+                            var exchangeRate = BigDecimal.valueOf(gross.getAmount())
+                                            .divide(BigDecimal.valueOf(forex.getAmount()), 10, RoundingMode.HALF_UP);
+
+                            t.getSourceTransaction().addUnit(new Unit(Unit.Type.GROSS_VALUE, gross, forex, exchangeRate));
+
+                            t.setNote(v.get("baseCurrency") + "/" + v.get("quoteCurrency") + " " + v.get("exchangeRate"));
+                        })
+
+                        .wrap(t -> {
+                            if (t.getSourceTransaction().getCurrencyCode() == null)
+                                return null;
+
+                            return new AccountTransferItem(t, true);
+                        });
+
+        var deliveryInboundBlock_late25 = new Transaction<PortfolioTransaction>();
+
+        // @formatter:off
+        // DBS
+        // Stock 2025-09-01, 15:38:02, GMT+8 EXTERNAL IN 9999 200 0 34.2100 10,040.00 SGD
+        // (D05.SI)
+        // @formatter:on
+        var firstRelevantLineForDeliveryInboundBlock_late25 = new Block("^(Stock|Fund) [\\d]{4}\\-[\\d]{2}\\-[\\d]{2}, [\\d]{2}:[\\d]{2}:[\\d]{2}, .* EXTERNAL IN .*$");
+        type.addBlock(firstRelevantLineForDeliveryInboundBlock_late25);
+        firstRelevantLineForDeliveryInboundBlock_late25.setMaxSize(2);
+        firstRelevantLineForDeliveryInboundBlock_late25.set(deliveryInboundBlock_late25);
+
+        deliveryInboundBlock_late25 //
+
+                        .subject(() -> new PortfolioTransaction(PortfolioTransaction.Type.DELIVERY_INBOUND))
+
+                        // @formatter:off
+                        // An inbound delivery from another custodian. The book value is
+                        // the cost price times the number of shares, the market value
+                        // column states the value at transfer date instead.
+                        // @formatter:on
+                        .section("date", "time", "note", "shares", "amountPerShare", "currency", "tickerSymbol") //
+                        .match("^(Stock|Fund) (?<date>[\\d]{4}\\-[\\d]{2}\\-[\\d]{2}), (?<time>[\\d]{2}:[\\d]{2}:[\\d]{2}), " //
+                                        + "[^\\s]+ (?<note>EXTERNAL IN) [\\d]+ " //
+                                        + "(?<shares>[\\.,\\d]+) " //
+                                        + "[\\.,\\d]+ " //
+                                        + "(?<amountPerShare>[\\.,\\d]+) " //
+                                        + "[\\.,\\d]+ " //
+                                        + "(?<currency>[A-Z]{3})$") //
+                        .match("^\\((?<tickerSymbol>[A-Z0-9]{1,6}(?:\\.[A-Z]{1,4})?)\\)$") //
+                        .assign((t, v) -> {
+                            var context = type.getCurrentContext();
+
+                            var securityItem = context.getType(SecurityListHelper.class).get()
+                                            .findItem(v.get("tickerSymbol"));
+
+                            securityItem.ifPresent(s -> {
+                                v.put("name", s.name);
+                                v.put("tickerSymbol", s.tickerSymbol);
+                            });
+
+                            t.setSecurity(getOrCreateSecurity(v));
+
+                            t.setDateTime(asDate(v.get("date"), v.get("time")));
+                            t.setShares(asShares(v.get("shares")));
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                            t.setNote(trim(v.get("note")));
+
+                            // @formatter:off
+                            // The market value is stated at transfer date, the book value
+                            // is the cost price times the number of shares.
+                            // @formatter:on
+                            // The cost price has up to four decimals, therefore it is
+                            // rounded only after the multiplication.
+                            var amountPerShare = ExtractorUtils.convertToNumberBigDecimal(v.get("amountPerShare"),
+                                            Values.Share, "en", "US");
+                            var shares = ExtractorUtils.convertToNumberBigDecimal(v.get("shares"), Values.Share, "en",
+                                            "US");
+
+                            t.setAmount(amountPerShare.multiply(shares) //
+                                            .movePointRight(Values.Amount.precision()) //
+                                            .setScale(0, RoundingMode.HALF_UP) //
+                                            .longValue());
+                        })
+
+                        .wrap(t -> {
+                            type.getCurrentContext().removeType(SecurityItem.class);
+
+                            if (t.getCurrencyCode() == null)
+                                return null;
+
+                            return new TransactionItem(t);
+                        });
+
+        addDividendTransaction_late25(type);
+        addDividendAccrualsTransaction_late25(type);
+    }
+
     private <T extends Transaction<?>> void addFeesSectionsTransaction(T transaction, DocumentType type)
     {
         transaction //
@@ -1313,6 +1933,44 @@ public class TigerBrokersPteLtdPDFExtractor extends AbstractPDFExtractor
                     continue;
 
                 return Optional.of(item);
+            }
+
+            return Optional.empty();
+        }
+    }
+
+    /**
+     * @formatter:off
+     * Holds the trade date of every trade found in the document.
+     *
+     * In the late 2025 format the trade date is torn apart by the PDF to text
+     * conversion ("20" + "25-08-25", "2025-08" + "-07"). Re-assembling it with
+     * regular expressions is not possible, therefore the whole trades section is
+     * scanned once and the date is stored per line number of the trade data line.
+     * @formatter:on
+     */
+    private static class TradeDateItem
+    {
+        int lineNo;
+        String date;
+        String time;
+    }
+
+    private static class TradeDateListHelper
+    {
+        private final List<TradeDateItem> items = new ArrayList<>();
+
+        /**
+         * Returns the first trade at or after the given line number. Every trade
+         * starts with exactly one fee line, therefore the block start is never
+         * behind its own data line.
+         */
+        public Optional<TradeDateItem> findItem(int startLineNo)
+        {
+            for (TradeDateItem item : items) // NOSONAR
+            {
+                if (item.lineNo >= startLineNo)
+                    return Optional.of(item);
             }
 
             return Optional.empty();
