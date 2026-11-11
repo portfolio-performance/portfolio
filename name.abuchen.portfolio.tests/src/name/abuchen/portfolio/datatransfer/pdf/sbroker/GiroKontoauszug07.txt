@@ -1,0 +1,98 @@
+```
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.62.1
+-----------------------------------------
+StarMoney 10.05.2023
+Sparkasse Bankleitzahl: 79351730SWIFT-BIC: BYLADEM1HAS
+Ostunterfranken IBAN: DE07793517300000999999 
+Max Mustermann Konto Kontoauszug Seite
+999999 2 1 von 2
+Buch.-Tag Wert Verwendungszweck/Erläuterungen Umsatz (EUR)
+Startsaldo am 12.01.2016 in EUR 3.343,73
+
+14.01 14.01.16 Basis-Lastschrift -5,71
+PayPal Europe S.a.r.l. et C ie S.C.A
+EREF+YYIJ222226J4ZBZQ PP.86 01.PP PAYPAL
+MREF+4CU2224NA7S8W CRED+LU96ZZZ000000000000000
+0058 SVWZ+PP.8601.PP . fuerst-au
+toteile, Ihr Einkauf bei fu erst-autoteile, Artikel-281
+904643711
+
+14.01 14.01.16 Basis-Lastschrift -7,90
+simyo/Telefonica Germany Gm bH + Co. OHG
+EREF+1019352012 MREF+SIMC1409200001033899
+CRED+DE9700000000142462 SVWZ+10193520120163-1622647
+
+15.01 15.01.16 Basis-Lastschrift -29,70
+Telekom Deutschland GmbH
+EREF+Zahlbeleg 302342819706 MREF+DE00020110020000000000
+0000000135421 CRED+DE93ZZZ00000078611
+SVWZ+Rech.Nr. 9175785648 06 0116 Vertragskonto 47805524
+37
+
+22.01 22.01.16 Überweisung -483,99
+Technikdirekt
+EREF+ZZZ1335316399162020045 8
+KREF+P20160121190804 SVWZ+ZZZ1335316399162020045
+8 DATUM 21.01.2016, 20.08 UHR
+1.TAN 408295
+
+25.01 25.01.16 sonstige Buchung -304,02
+KREDITKARTENABRECHNUNG
+22.01.16 5490018130999999
+
+28.01 28.01.16 Lohn, Gehalt, Rente 1.981,40
+ZF FRIEDRICHSHAFEN A
+SVWZ+Lohn/Gehalt 99999999/2 01601
+
+28.01 28.01.16 Zahlungseingang 420,25
+Max Mustermann
+KREF+7289e7af0-1206246-1323 1040-20160128
+SVWZ+Rückzahlung Mustermann R est 1350 Rückzahlung Rest 5
+600
+Endsaldo am 28.01.2016 in EUR 4.914,06
+SPARKASSE OSTUNTERFRANKEN UST ID: DE133906625
+GENEHMIGUNGSFIKTION:
+Sehr geehrte Kundin, sehr geehrter Kunde,
+bitte prüfen Sie die Buchungen und Berechnungen in diesem Kontoauszug.
+Eventuelle Rückfragen besprechen Sie bitte mit Ihrem Kundenberater.
+Einwendungen gegen den Kontoauszug richten Sie bitte unverzüglich an unsere
+Revisionsabteilung. Unsere Anschrift(en) entnehmen Sie bitte unserem Preis-
+und Leistungsverzeichnis.
+Der angegebene Kontostand berücksichtigt nicht die Wertstellung der einzel-
+nen Buchungen. Dies bedeutet, dass der genannte Betrag nicht dem für die
+Zinsrechnung maßgeblichen Kontostand entsprechen muss und bei Verfügungen
+möglicherweise Zinsen für die Inanspruchnahme einer eingeräumten oder gedul-
+StarMoney 10.05.2023
+Sparkasse Bankleitzahl: 79351730SWIFT-BIC: BYLADEM1HAS
+Ostunterfranken IBAN: DE07793517300000999999 
+Max Mustermann Konto Kontoauszug Seite
+999999 2 2 von 2
+deten Kontoüberziehung anfallen können.
+Rechnungsabschlüsse gelten als genehmigt, sofern Sie innerhalb von sechs
+Wochen nach Zugang keine Einwendungen erheben. Einwendungen gegen Rechnungs-
+abschlüsse müssen der Sparkasse schriftlich oder, wenn im Rahmen der Ge-
+schäftsbeziehung der elektronische Kommunikationsweg vereinbart wurde (z.B.
+Online-Banking), auf diesem Wege zugehen. Zur Fristwahrung genügt die recht-
+zeitige Absendung (Nr. 7 Abs. 3 unserer Allgemeinen Geschäftsbedingungen).
+Gutschriften aus eingereichten Schecks, Lastschriften und anderen
+Einzugspapieren erfolgen unter dem Vorbehalt der Einlösung.
+Schecks und andere Einzugspapiere sind erst dann eingelöst, wenn sie nicht
+bis zum Ablauf des übernächsten Bankarbeitstages storniert oder korrigiert
+werden. Diese Papiere sind auch eingelöst, wenn die Sparkasse ihren
+Einlösungswillen schon vorher Dritten gegenüber erkennbar bekundet hat (z.B.
+durch Bezahltmeldung). Für Lastschriften gelten die Einlösungsregeln in
+den hierfür vereinbarten besonderen Bedingungen.
+Sparkontoauszüge heften Sie bitte in Ihr Loseblatt-Sparkassenbuch ein.
+Dieser Kontoauszug gilt im Zusammenhang mit den zugrunde liegenden Verträgen
+laut angegebener Kontonummer als Rechnung im Sinne des UStG.
+Guthaben sind als Einlagen nach Maßgabe des Einlagensicherungsgesetzes
+entschädigungsfähig. Nähere Informationen können dem Informationsbogen
+für den Einleger entnommen werden.
+Unsere für den Geschäftsverkehr mit Ihnen geltenden Allgemeinen Geschäfts-
+bedingungen und besonderen Bedingungen stellen wir Ihnen auf Wunsch gern
+zur Verfügung.
+Mit freundlichen Grüßen
+Ihre Sparkasse
+
+```

@@ -1,0 +1,95 @@
+```
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.62.1
+-----------------------------------------
+StarMoney 09.05.2023
+Sparkasse Bankleitzahl: 79351730SWIFT-BIC: BYLADEM1HAS
+Ostunterfranken IBAN: DE07793517300000999999 
+Max Mustermann Konto Kontoauszug Seite
+999999 11 1 von 3
+Buch.-Tag Wert Verwendungszweck/Erläuterungen Umsatz (EUR)
+Startsaldo am 16.06.2015 in EUR 807,54
+23.06 23.06.15 Barumsatz 500,00
+SB-EINZAHLUNG HOFHEIM02 GA 2082 / 23.06.15 14.28.51
+0000999999 / 1612 /0 / 5
+01.07 01.07.15 Entgeltabrechnung -3,55
+Entgeltabrechnung siehe Anlage
+01.07 01.07.15 Abrechnung 30.06.2015 0,00
+Abrechnung 30.06.2015 siehe Anlage
+Anlage Rechnungsabschluss:
+Abrechnung 30.06.2015
+Information zur Abrechnung
+StarMoney 09.05.2023
+Sparkasse Bankleitzahl: 79351730SWIFT-BIC: BYLADEM1HAS
+Ostunterfranken IBAN: DE07793517300000999999 
+Max Mustermann Konto Kontoauszug Seite
+999999 11 2 von 3
+Entgelte vom 30.05.2015 bis 30.06.2015                               3,55-
+Entgelte / Auslagen                                    3,55-
+--------------
+Abrechnung 30.06.2015                                                3,55-
+Rechnungsnummer: 20150701-BY036-00000953030
+Abrechnung 30.06.2015
+Information zur Abrechnung
+Kontostand am 30.06.2015                                        2.750,88 +
+--------------
+Abrechnungszeitraum vom 01.04.2015 bis 30.06.2015
+Abrechnung 30.06.2015                                                0,00+
+Sollzinssätze am 30.06.2015
+10,7500 v.H. für Dispositionskredit
+(aktuelle Kreditlinie       2.000,00)
+10,7500 v.H. für Kontoüberziehungen
+über die Kreditlinie hinaus
+Die Anpassung des Zinssatzes für Kontoüberziehungen ist abhängig von der
+Entwicklung des "Gleitenden Ein-Jahreszinssatzes für Bundeswertpapiere".
+Kontostand/Rechnungsabschluss am 30.06.2015                     2.750,88 +
+Rechnungsnummer: 20150701-BY036-00000953029
+SPARKASSE OSTUNTERFRANKEN UST ID: DE133906625
+GENEHMIGUNGSFIKTION:
+Sehr geehrte Kundin, sehr geehrter Kunde,
+bitte prüfen Sie die Buchungen und Berechnungen in diesem Kontoauszug.
+Eventuelle Rückfragen besprechen Sie bitte mit Ihrem Kundenberater.
+Einwendungen gegen den Kontoauszug richten Sie bitte unverzüglich an unsere
+Revisionsabteilung. Unsere Anschrift(en) entnehmen Sie bitte unserem Preis-
+und Leistungsverzeichnis.
+Der angegebene Kontostand berücksichtigt nicht die Wertstellung der einzel-
+nen Buchungen. Dies bedeutet, dass der genannte Betrag nicht dem für die
+Zinsrechnung maßgeblichen Kontostand entsprechen muss und bei Verfügungen
+möglicherweise Zinsen für die Inanspruchnahme einer eingeräumten oder gedul-
+deten Kontoüberziehung anfallen können.
+Rechnungsabschlüsse gelten als genehmigt, sofern Sie innerhalb von sechs
+Wochen nach Zugang keine Einwendungen erheben. Einwendungen gegen Rechnungs-
+abschlüsse müssen der Sparkasse schriftlich oder, wenn im Rahmen der Ge-
+schäftsbeziehung der elektronische Kommunikationsweg vereinbart wurde (z.B.
+Online-Banking), auf diesem Wege zugehen. Zur Fristwahrung genügt die recht-
+zeitige Absendung (Nr. 7 Abs. 3 unserer Allgemeinen Geschäftsbedingungen).
+Gutschriften aus eingereichten Schecks, Lastschriften und anderen
+Einzugspapieren erfolgen unter dem Vorbehalt der Einlösung.
+Schecks und andere Einzugspapiere sind erst dann eingelöst, wenn sie nicht
+bis zum Ablauf des übernächsten Bankarbeitstages storniert oder korrigiert
+werden. Diese Papiere sind auch eingelöst, wenn die Sparkasse ihren
+Einlösungswillen schon vorher Dritten gegenüber erkennbar bekundet hat (z.B.
+durch Bezahltmeldung). Für Lastschriften gelten die Einlösungsregeln in
+StarMoney 09.05.2023
+Sparkasse Bankleitzahl: 79351730SWIFT-BIC: BYLADEM1HAS
+Ostunterfranken IBAN: DE07793517300000999999 
+Max Mustermann Konto Kontoauszug Seite
+999999 11 3 von 3
+den hierfür vereinbarten besonderen Bedingungen.
+Sparkontoauszüge heften Sie bitte in Ihr Loseblatt-Sparkassenbuch ein.
+Dieser Kontoauszug gilt im Zusammenhang mit den zugrunde liegenden Verträgen
+laut angegebener Kontonummer als Rechnung im Sinne des UStG.
+Guthaben sind als Einlagen nach Maßgabe des Einlagensicherungsgesetzes
+entschädigungsfähig. Nähere Informationen können dem Informationsbogen
+für den Einleger entnommen werden.
+Unsere für den Geschäftsverkehr mit Ihnen geltenden Allgemeinen Geschäfts-
+bedingungen und besonderen Bedingungen stellen wir Ihnen auf Wunsch gern
+zur Verfügung.
+Mit freundlichen Grüßen
+Ihre Sparkasse
+Mitteilung    1
+Bitte beachten Sie: Guthaben sind als Einlagen nach Maßgabe des Einlagen-
+sicherungsgesetzes entschädigungsfähig. Nähere Informationen können dem
+Informationsbogen für den Einleger entnommen werden.
+
+```

@@ -1,59 +1,59 @@
 PDFBox Version: 1.8.17
-Portfolio Performance Version: 0.67.1
+Portfolio Performance Version: 0.71.2
 -----------------------------------------
-Kreissparkasse Heidenheim · Postfach 1540 · 89505 Heidenheim  Seite 1
-Depotnummer
- 123456754323
- Kundennummer 12345676543
- xxxx xxxxAbrechnungsnr. 123456543
-Herrn Datum 15.12.2023
-xxxx xxxx Ihr Berater Herr xxxx xxxx
-xxxxxxxxx Telefon 07321 344-0000 
-12345 xxxxx Telefax 07321 344-000000 
- 
-   
-Dividendengutschrift
-Nominale Wertpapierbezeichnung ISIN (WKN)
-Stück 47 MICROSOFT CORP. US5949181045 (870747)
-REGISTERED SHARES DL-,00000625
-Zahlbarkeitstag 14.12.2023 Dividende pro Stück 0,75 USD
-Bestandsstichtag 14.11.2023 Herkunftsland USA
-Ex-Tag 15.11.2023 Art der Dividende Quartalsdividende
-Geschäftsjahr 01.07.2022 - 30.06.2023
-Devisenkurs EUR / USD 1,1019
-Devisenkursdatum 15.12.2023
-Dividendengutschrift 35,25 USD 31,99+ EUR
-Umrechnung in EUR 31,99 EUR
-Einbehaltene Quellensteuer 15 % auf 35,25 USD 4,80- EUR
-Anrechenbare Quellensteuer 15 % auf 31,99 EUR 4,80 EUR
-Kapitalertragsteuerpflichtige Dividende 31,99 EUR
-Verrechnete anrechenbare ausländische Quellensteuer
-(Verhältnis 100/25) auf 4,80 EUR 19,20 - EUR
-Berechnungsgrundlage für die Kapitalertragsteuer 12,79 EUR
-Kapitalertragsteuer 24,51 % auf 12,79 EUR 3,13- EUR
-Solidaritätszuschlag 5,5 % auf 3,13 EUR 0,17- EUR
-Kirchensteuer 8 % auf 3,13 EUR 0,25- EUR
-Ausmachender Betrag 23,64+ EUR
-Lagerstelle Clearstream Banking FFM (849000 / 40030000)
-Den Betrag buchen wir mit Wertstellung 18.12.2023 zu Gunsten des Kontos xxxx (IBAN DE11 1111 1111 1111 1111
-11), BLZ 632 500 30 (BIC SOLADES1HDH). 
-Bitte ggf. Rückseite beachten.
-2332.12160100.0000272ER01
-
-Seite 2
-Depotnummer xxxxxxx
-Kundennummer xxxxxx
-Abrechnungsnr. 84953682750
-Datum 15.12.2023
-Keine Steuerbescheinigung. 
-Nachrichtlich die Übersicht Ihrer Verrechnungs- und Steuertopfsalden zum Zeitpunkt der Erstellung der Abrechnung.
-Verrechnungstöpfe 2023 Berechnungsgrundlage
-der gezahlten Steuern
-Euro Aktien Sonstige Sparer- anrechenbare Aktien und Sonstige
-Pauschbetrag Quellensteuer
-Vorher 0,00 0,00 0,00 0,00 789,96
-Ertrag 4,80
-0,00 0,00 0,00 4,80- 12,79
-Nachher 0,00 0,00 0,00 0,00 802,75
-Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
-2332.12160100.0000273ER01
+BELEGDRUCK=J
+ORIGINAL=1
+FAXVERSAND=N
+EMAILVERSAND=N
+Erträgnisgutschrift aus Wertpapieren
+DEPOTNUMMER=711/0703/001
+DEPOTUNTERBEZEICHNUNG=
+VERSANDARTENSCHLUESSEL=0000
+ADRESSZEILE1=Frau
+Ausschüttung für
+ADRESSZEILE2=xxx uZJTyLjA
+01.04.2016 - 31.03.2017
+ADRESSZEILE3=xxx xxx
+Depot-Nr. Abrechnungs-Nr.
+Frau ADRESSZEILE4=21365 FMJssVnZ
+ADRESSZEILE5=
+bbAyikdmh vXRACEzr
+711/0703/001 94535662
+ADRESSZEILE6=
+jUwbUYoJfmcqJh xxx
+BELEGNUMMER=93
+88306 FQACoAHW
+SEITENNUMMER=1
+STEUERERSTATTUNG=N
+Depotinhaber
+xxx hdmfRyIK
+Erträgnisgutschrift
+Wiesbaden, 15.11.2016
+Gattungsbezeichnung ISIN
+iS.EO G.B.C.1.5-10.5y.U.ETF DE Inhaber-Anteile DE000A0H0785
+Nominal Ex-Tag Zahltag Ausschüttungsbetrag pro Stück
+STK 105,000 15.11.2016 15.11.2016 EUR 0,548144
+Wert Betrag zu Ihren Gunsten
+15.11.2016 EUR 41,44
+Ertrag für 2016/17 EUR 57,56
+Hinweise zur steuerlichen Verrechnung: vorher aktuell
+Zinsanteil (Ausschüttung) EUR 57,56
+Aktienverlusttopf EUR 0,00 0,00
+allgemeiner Verlusttopf EUR 0,00 0,00
+Quellensteuertopf EUR 0,00 0,00
+zu versteuern EUR 57,56
+einbehaltene Kapitalertragsteuer EUR 14,08
+einbehaltener Solidaritätszuschlag EUR 0,77
+einbehaltene Kirchensteuer EUR 1,27
+im laufenden Jahr einbehaltene Kapitalertragsteuer EUR 1.902,27
+im laufenden Jahr einbehaltener Solidaritätszuschlag EUR 104,62
+im laufenden Jahr einbehaltene Kirchensteuer EUR 171,20
+Kapitalertragsteuer, Solidaritätszuschlag und ggf. Kirchensteuer nach gemeldetem Kirchensteuersatz verrechnet mit dem
+Finanzamt Wiesbaden, Steuernummer 402/200/0073.
+Steuerlicher Stichtag 15.11.2016
+Jahressteuerbescheinigung folgt
+Verwahrart: Girosammelverwahrung
+Mit freundlichen Grüßen
+S Broker AG & Co. KG
+Dieser Beleg wird maschinell erstellt und daher nicht unterschrieben.
+3.20/ABREEREIERTR/GDBERTRG/000093/151116/005713

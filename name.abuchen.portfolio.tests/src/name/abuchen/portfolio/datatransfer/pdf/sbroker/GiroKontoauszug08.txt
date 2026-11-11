@@ -1,0 +1,184 @@
+```
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.62.1
+-----------------------------------------
+S Sparkasse
+Schweinfurt-Haßberge
+341 00 00 81
+Herrn Ihr Ansprechpartner:
+Max Mustermann Manuel Jahna
+Strasse Kundenberatung Hofheim
+Strasse 7 Marktplatz 7
+99999 Stadt 97461 Hofheim
+Telefon 09521 58-764
+Fax 09521 58-499
+manuel.jahna@sparkasse-sw-has.de
+ 
+ 
+ 
+1. April 2019
+. Kontoauszug 6/2019 Seite 1 von 4
+Giro Sm@rt 190743781, DE34 7935 0101 0190 9999 99
+  
+Datum Wert Erläuterung Betrag Soll EUR Betrag Haben EUR
+ Kontostand am 01.03.2019, Auszug Nr.    5            7.483,71+
+
+04.03.2019 04.03.2019 Überweisung online            3.000,00-
+Max Mustermann
+88000
+DATUM 03.03.2019, 14.41 UHR
+1.TAN 748770
+. 3e22aef0-77999812-14404008-20190303
+
+05.03.2019 05.03.2019 Überweisung online            2.200,00-
+Ingrid Klauser
+DATUM 05.03.2019, 19.05 UHR
+1.TAN 668182
+e6a25a8-266631734-19043602-20190305
+
+18.03.2019 18.03.2019 Bargeldausz.Debitk.GA              750,00-
+GA NR00002015 BLZ79350101 5
+18.03/14.34UHR HOFHEIM02
+
+18.03.2019 18.03.2019 Kartenzahlung               64,71-
+EDEKA FOODSERVICE GMBH+CO.//SCHWEIN
+FURT/DE
+2019-03-15T14:16 Debitk.5 2022-12
+
+18.03.2019 18.03.2019 Überweisung online               25,75-
+Re-In Retail Int. GmbH
+Ref. 2157880514 Kdnr. 428169322
+DATUM 17.03.2019, 21.20 UHR
+1.TAN 364747
+Ref. 2157880514 Kdnr. 428169322
+P20190317201939
+Übertrag:            1.319,59+
+Sparkasse Schweinfurt-Haßberge Anstalt des öffentlichen Rechts Telefon 09721/721-0 www.sparkasse-sw-has.de
+Jägersbrunnen 1-7 HR Nr. A/1124 (AG Schweinfurt) Telefax 09721/721-3229 info@sparkasse-sw-has.de
+97421 Schweinfurt USt-IdNr. DE 133 906 578 BLZ: 793 501 01 BIC: BYLADEM1KSW
+Sparkassen-Finanzgruppe
+0.53.2.3940904 910581.0.10.02 9(F5a5ssung November 2013) - (V1) 
+Finanz Informatik 
+Urheberrechtlich geschützt
+S Sparkasse
+Schweinfurt-Haßberge
+Kontoauszug 6/2019 Seite 2 von 4
+Giro Sm@rt 190743781, DE34 7935 0101 0190 9999 99 Max Mustermann
+Datum Wert Erläuterung Betrag Soll EUR Betrag Haben EUR
+Übertrag:            1.319,59+
+
+22.03.2019 22.03.2019 Bargeldeinzahlung            2.092,00+
+
+1005228550849 PP.9962.PP PAYPAL
+4CU2224VNSRPG
+Gläubiger-ID:
+LU96ZZZ0000000000000000058
+
+28.03.2019 28.03.2019 GutschriftÜberweisung               25,75+
+Re-In Retail Intern. GmbH
+//9118483329/ 25,75 //voelkner-ReIn
+/ 157880514
+0428169322/0006609550/2019
+
+29.03.2019 30.03.2019 Entgeltabrechnung                5,00-
+siehe Anlage Nr. 1
+
+29.03.2019 01.04.2019 Abrechnung 29.03.2019                0,00+
+siehe Anlage Nr. 2
+ Kontostand am 29.03.2019 um 20:01 Uhr            5.489,56+
+Der Kontostand kann Beträge mit späterer Wertstellung enthalten, bitte Hinweise zum Kontoauszug beachten.
+Anzahl Anlagen 2
+Ihr Dispositionskredit EUR: 2.000,00
+Sparkasse Schweinfurt-Haßberge Anstalt des öffentlichen Rechts Telefon 09721/721-0 www.sparkasse-sw-has.de
+Jägersbrunnen 1-7 HR Nr. A/1124 (AG Schweinfurt) Telefax 09721/721-3229 info@sparkasse-sw-has.de
+97421 Schweinfurt USt-IdNr. DE 133 906 578 BLZ: 793 501 01 BIC: BYLADEM1KSW
+Sparkassen-Finanzgruppe
+0.53.2.3940904 910581.0.10.02 9(F5a5ssung November 2013) - (V1) 
+Finanz Informatik 
+Urheberrechtlich geschützt
+S Sparkasse
+Schweinfurt-Haßberge
+Kontoauszug 6/2019 Seite 3 von 4
+Giro Sm@rt 190743781, DE34 7935 0101 0190 9999 99 Max Mustermann
+Entgeltabschluss: Anlage     1
+ 
+Entgelte vom 01.03.2019 bis 29.03.2019                               5,00-
+ 
+Entgelte / Auslagen                                    5,00-
+                                                            --------------
+Abrechnung 29.03.2019                                                5,00-
+Rechnungsnummer: 20190329-BY044-00007262907
+ 
+ 
+Bitte beachten Sie die Hinweise zum Kontoauszug.
+.
+  
+.
+Sparkasse Schweinfurt-Haßberge Anstalt des öffentlichen Rechts Telefon 09721/721-0 www.sparkasse-sw-has.de
+Jägersbrunnen 1-7 HR Nr. A/1124 (AG Schweinfurt) Telefax 09721/721-3229 info@sparkasse-sw-has.de
+97421 Schweinfurt USt-IdNr. DE 133 906 578 BLZ: 793 501 01 BIC: BYLADEM1KSW
+Sparkassen-Finanzgruppe
+0.53.2.3940904 910581.0.10.02 9(F5a5ssung November 2013) - (V1) 
+Finanz Informatik 
+Urheberrechtlich geschützt
+S Sparkasse
+Schweinfurt-Haßberge
+Kontoauszug 6/2019 Seite 4 von 4
+Giro Sm@rt 190743781, DE34 7935 0101 0190 9999 99 Max Mustermann
+Rechnungsabschluss: Anlage     2
+ 
+Kontostand in EUR am 29.03.2019                                 5.489,56 +
+                                                            --------------
+Abrechnungszeitraum vom 01.01.2019 bis 31.03.2019
+Abrechnung 31.03.2019                                                0,00+
+ 
+Sollzinssätze am 30.03.2019
+10,0500 v.H. für eingeräumte Kontoüberziehung
+(aktuell eingeräumte Kontoüberziehung       2.000,00)
+10,0500 v.H. für geduldete Kontoüberziehung
+über die eingeräumte Kontoüberziehung hinaus
+.  
+  Die Anpassungen des Zinssatzes für Kontoüberziehungen sind abhängig von
+der Entwicklung des 3-Monats-Euribor.
+ 
+Kontostand/Rechnungsabschluss in EUR am 29.03.2019              5.489,56 +
+Rechnungsnummer: 20190329-BY044-00007262906
+ 
+Bitte beachten Sie die Hinweise zum Kontoauszug.
+Hinweise zum Kontoauszug:
+.
+Sehr geehrte Kundin, sehr geehrter Kunde,
+bitte prüfen Sie die Buchungen und Berechnungen in diesem Kontoauszug. Eventuelle Rückfragen besprechen Sie bitte mit Ihrem
+Kundenberater.
+l Einwendungen gegen den Kontoauszug richten Sie bitte unverzüglich an unsere Revisionsabteilung. Unsere Anschrift(en)
+entnehmen Sie bitte unserem Preis- und Leistungsverzeichnis.
+l Der angegebene Kontostand berücksichtigt nicht die Wertstellung der einzelnen Buchungen. Dies bedeutet, dass der genannte
+Betrag nicht dem für die Zinsrechnung maßgeblichen Kontostand entsprechen muss und bei Verfügungen möglicherweise
+Zinsen für die Inanspruchnahme einer eingeräumten oder geduldeten Kontoüberziehung anfallen können.
+l Rechnungsabschlüsse gelten als genehmigt, sofern Sie innerhalb von sechs Wochen nach Zugang keine Einwendungen erheben.
+Einwendungen gegen Rechnungsabschlüsse müssen der Sparkasse zugehen. Zur Fristwahrung genügt die rechtzeitige
+Absendung (Nr. 7 Abs. 3 unserer Allgemeinen Geschäftsbedingungen).
+l Gutschriften aus eingereichten Schecks, Lastschriften und anderen Einzugspapieren erfolgen unter dem Vorbehalt der
+Einlösung.
+l Schecks und andere Einzugspapiere sind erst dann eingelöst, wenn sie nicht bis zum Ablauf des übernächsten Bankarbeitstages
+storniert oder korrigiert werden. Diese Papiere sind auch eingelöst, wenn die Sparkasse ihren Einlösungswillen schon vorher
+Dritten gegenüber erkennbar bekundet hat (z. B. durch Bezahltmeldung). Für Lastschriften gelten die Einlösungsregeln in den
+hierfür vereinbarten besonderen Bedingungen.
+l Sparkontoauszüge heften Sie bitte in Ihr Loseblatt-Sparkassenbuch ein.
+l Dieser Kontoauszug gilt im Zusammenhang mit den zugrunde liegenden Verträgen laut angegebener Kontonummer als
+Rechnung im Sinne des UStG.
+l Guthaben sind als Einlagen nach Maßgabe des Einlagensicherungsgesetzes entschädigungsfähig. Nähere Informationen können
+dem "Informationsbogen für den Einleger" entnommen werden.
+Unsere für den Geschäftsverkehr mit Ihnen geltenden Allgemeinen Geschäftsbedingungen und besonderen Bedingungen stellen
+wir Ihnen auf Wunsch gern zur Verfügung.
+Mit freundlichen Grüßen
+Ihre Sparkasse Schweinfurt-Haßberge
+Sparkasse Schweinfurt-Haßberge Anstalt des öffentlichen Rechts Telefon 09721/721-0 www.sparkasse-sw-has.de
+Jägersbrunnen 1-7 HR Nr. A/1124 (AG Schweinfurt) Telefax 09721/721-3229 info@sparkasse-sw-has.de
+97421 Schweinfurt USt-IdNr. DE 133 906 578 BLZ: 793 501 01 BIC: BYLADEM1KSW
+Sparkassen-Finanzgruppe
+0.53.2.3940904 910581.0.10.02 9(F5a5ssung November 2013) - (V1) 
+Finanz Informatik 
+Urheberrechtlich geschützt
+
+```
