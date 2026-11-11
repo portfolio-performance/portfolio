@@ -20,6 +20,8 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.inboundCash;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.outboundCash;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.purchase;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.sale;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.taxRefund;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.taxes;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.withFailureMessage;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransactions;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransfers;
@@ -3578,6 +3580,65 @@ public class IBFlexStatementExtractorTest
                         dividend( //
                                         hasDate("2026-06-16"), hasShares(-8), //
                                         hasAmount("USD", -0.70)))));
+    }
+
+    /// IB books a dividend and its tax in CAD, then reverses both and rebooks
+    /// them in USD. The CAD tax refund and the USD dividend share the report
+    /// date. Each tax must be merged into the dividend of its own currency.
+    @Test
+    public void testDividendRebookedInOtherCurrencyMatchesTaxByCurrency() throws IOException
+    {
+        var extractor = new IBFlexStatementExtractor(new Client());
+        var activityStatement = getClass().getResourceAsStream("testIBFlexStatementFile33.xml");
+        var tempFile = createTempFile(activityStatement);
+        var errors = new ArrayList<Exception>();
+
+        var results = extractor.extract(Collections.singletonList(tempFile), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countAccountTransactions(results), is(10L));
+
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2026-04-15"), hasShares(100), //
+                        hasSecurity(hasIsin("CA8310622037")), //
+                        hasAmount("CAD", 8.42), hasTaxes("CAD", 1.49))));
+
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2026-04-16"), hasShares(100), //
+                        hasSecurity(hasIsin("CA8310622037")), //
+                        hasAmount("USD", 6.12), hasTaxes("USD", 1.08))));
+
+        // The reversal is flagged and its tax refund stays a separate item.
+        assertThat(results, hasItem(withFailureMessage( //
+                        Messages.MsgErrorCashDividendCorrectionUnmatched, //
+                        dividend(hasDate("2026-04-16"), hasAmount("CAD", -9.91)))));
+
+        assertThat(results, hasItem(taxRefund(hasDate("2026-04-16"), hasAmount("CAD", 1.49))));
+        assertThat(results, hasItem(taxes(hasDate("2026-04-16"), hasAmount("USD", 0.54))));
+    }
+
+    /// A tax refund is never merged into a dividend, which would subtract it
+    /// as a tax. It stays a separate item.
+    @Test
+    public void testTaxRefundIsNotMergedIntoDividend() throws IOException
+    {
+        var extractor = new IBFlexStatementExtractor(new Client());
+        var activityStatement = getClass().getResourceAsStream("testIBFlexStatementFile34.xml");
+        var tempFile = createTempFile(activityStatement);
+        var errors = new ArrayList<Exception>();
+
+        var results = extractor.extract(Collections.singletonList(tempFile), errors);
+
+        assertThat(errors, empty());
+        assertThat(countAccountTransactions(results), is(2L));
+
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2026-06-16"), hasShares(100), //
+                        hasSecurity(hasIsin("US0000000001")), //
+                        hasAmount("USD", 10.00), hasTaxes("USD", 0.00))));
+
+        assertThat(results, hasItem(taxRefund(hasDate("2026-06-16"), hasAmount("USD", 1.50))));
     }
 
     @Test
