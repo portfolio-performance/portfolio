@@ -173,16 +173,13 @@ public class StGallerKantonalbankPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2026-04-02"), //
-                        hasExDate("2026-03-20"), //
+                        hasDate("2026-04-02"), hasExDate("2026-03-20"), //
                         hasShares(10000.00), //
                         hasSource("Dividende02.txt"), //
                         hasNote("Referenznummer 1234123419"), //
-                        hasAmount("EUR", 4232.69), //
-                        hasGrossValue("EUR", 5290.86), //
+                        hasAmount("EUR", 4232.69), hasGrossValue("EUR", 5290.86), //
                         hasForexGrossValue("USD", 6218.84), //
-                        hasTaxes("EUR", 1058.17), //
-                        hasFees("EUR", 0.00))));
+                        hasTaxes("EUR", 1058.17), hasFees("EUR", 0.00))));
     }
 
     @Test

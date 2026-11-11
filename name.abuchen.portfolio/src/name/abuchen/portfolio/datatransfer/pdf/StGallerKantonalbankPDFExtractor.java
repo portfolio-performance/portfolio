@@ -210,7 +210,6 @@ public class StGallerKantonalbankPDFExtractor extends AbstractPDFExtractor
                         .subject(() -> new AccountTransaction(AccountTransaction.Type.DIVIDENDS))
 
                         .oneOf( //
-
                                         // @formatter:off
                                         // 10'000 N-Akt Sibanye Stillwater Limited
                                         // Sponsored ADR Repr 4 Shs ADR/ADS
@@ -224,8 +223,7 @@ public class StGallerKantonalbankPDFExtractor extends AbstractPDFExtractor
                                                         .match("^(?<nameContinued>.*)$") //
                                                         .match("^(.*\\s)?Valoren\\-Nr\\.: (?<wkn>[A-Z0-9]{5,9}), ISIN: (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
                                                         .match("^Aussch.ttung: (?<currency>[A-Z]{3}) [\\.'\\d]+$") //
-                                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))) //
-                                        , //
+                                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
                                         // @formatter:off
                                         // 10'000 N-Akt TUI AG Aus Konversion
                                         // Namenaktien Valoren-Nr.: 125205291, ISIN: DE000TUAG505
@@ -241,8 +239,7 @@ public class StGallerKantonalbankPDFExtractor extends AbstractPDFExtractor
                                                         .match("^[\\.'\\d]+ (?<name>.*)$") //
                                                         .match("^(.*\\s)?Valoren\\-Nr\\.: (?<wkn>[A-Z0-9]{5,9}), ISIN: (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
                                                         .match("^Aussch.ttung: (?<currency>[A-Z]{3}) [\\.'\\d]+$") //
-                                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))) //
-                        )
+                                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))))
 
                         // @formatter:off
                         // 10'000 N-Akt TUI AG Aus Konversion
@@ -335,16 +332,15 @@ public class StGallerKantonalbankPDFExtractor extends AbstractPDFExtractor
                                         // Umrechnungskurs EUR/USD 1.175393
                                         // @formatter:on
                                         section -> section //
-                                                        .attributes("withHoldingTax", "currency", "termCurrency",
-                                                                        "baseCurrency", "exchangeRate")
+                                                        .attributes("withHoldingTax", "currency", "termCurrency", //
+                                                                        "baseCurrency", "exchangeRate") //
                                                         .match("^Quellensteuer [\\.,'\\d]+% (?<currency>[A-Z]{3}) (\\-)?(?<withHoldingTax>[\\.'\\d]+)$") //
                                                         .match("^Umrechnungskurs\\s+(?<baseCurrency>[A-Z]{3})\\/(?<termCurrency>[A-Z]{3})\\s+(?<exchangeRate>[\\.'\\d]+)\\s*$") //
                                                         .assign((t, v) -> {
                                                             var rate = asExchangeRate(v);
                                                             type.getCurrentContext().putType(rate);
                                                             processWithHoldingTaxEntries(t, v, "withHoldingTax", type);
-                                                        }) //
-                                        ,
+                                                        }),
                                         // @formatter:off
                                         // Quellensteuer 26.375% EUR 263.75
                                         // Quellensteuer 15% USD 46.13
@@ -353,9 +349,7 @@ public class StGallerKantonalbankPDFExtractor extends AbstractPDFExtractor
                                                         .attributes("withHoldingTax", "currency") //
                                                         .match("^Quellensteuer [\\.,'\\d]+% (?<currency>[A-Z]{3}) (\\-)?(?<withHoldingTax>[\\.'\\d]+)$") //
                                                         .assign((t, v) -> processWithHoldingTaxEntries(t, v,
-                                                                        "withHoldingTax", type)) //
-                        )
-        ;
+                                                                        "withHoldingTax", type)));
     }
 
     private <T extends Transaction<?>> void addFeesSectionsTransaction(T transaction, DocumentType type)
