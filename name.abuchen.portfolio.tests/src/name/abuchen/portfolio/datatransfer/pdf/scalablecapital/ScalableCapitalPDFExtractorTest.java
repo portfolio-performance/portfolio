@@ -590,7 +590,7 @@ public class ScalableCapitalPDFExtractorTest
 
         // check buy sell transaction
         assertThat(results, hasItem(sale( //
-                        hasDate("2026-01-07T00:00"), hasShares(53.928), //
+                        hasDate("2026-01-08T00:00"), hasShares(53.928), //
                         hasSource("Verkauf05.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 289.43), hasGrossValue("EUR", 292.17), //
@@ -624,7 +624,7 @@ public class ScalableCapitalPDFExtractorTest
 
         // check buy sell transaction
         assertThat(results, hasItem(sale( //
-                        hasDate("2026-01-14T00:00"), hasShares(1327.00), //
+                        hasDate("2025-12-31T00:00"), hasShares(1327.00), //
                         hasSource("Verkauf06.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 1.33), hasGrossValue("EUR", 1.33), //

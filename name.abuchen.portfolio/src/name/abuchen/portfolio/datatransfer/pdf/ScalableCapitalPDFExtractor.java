@@ -202,7 +202,7 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("date") //
-                                                        .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} Gutschrift .*$") //
+                                                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) Gutschrift .*$") //
                                                         .assign((t, v) -> {
                                                             t.setDate(asDate(v.get("date")));
 
