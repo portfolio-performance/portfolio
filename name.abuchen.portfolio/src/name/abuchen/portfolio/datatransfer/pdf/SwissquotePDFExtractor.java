@@ -280,6 +280,14 @@ public class SwissquotePDFExtractor extends AbstractPDFExtractor
 
                         .subject(() -> new BuySellEntry(PortfolioTransaction.Type.BUY))
 
+                        // Is type --> "Verkauf" change from BUY to SELL
+                        .section("type").optional() //
+                        .match("^(B.rsentransaktion: )?(?<type>(Kauf|Verkauf)).*$") //
+                        .assign((t, v) -> {
+                            if ("Verkauf".equals(v.get("type")))
+                                t.setType(PortfolioTransaction.Type.SELL);
+                        })
+
                         // @formatter:off
                         // Anzahl Währung Rate
                         // 0.02 BTC 63'643.9
@@ -405,6 +413,13 @@ public class SwissquotePDFExtractor extends AbstractPDFExtractor
                         .match("^Valutadatum (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
                         .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
 
+                        // @formatter:off
+                        // Ausführungsdatum 19.06.2019
+                        // @formatter:on
+                        .section("exDate").optional() //
+                        .match("^Ausf.hrungsdatum (?<exDate>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
+                        .assign((t, v) -> t.setExDate(asDate(v.get("exDate"))))
+
                         .oneOf( //
                                         // @formatter:off
                                         // Total USD 23.88 CHF 21.48
@@ -525,10 +540,7 @@ public class SwissquotePDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("type").optional() //
                         .match("^(?<type>Depotgeb.hren) Unsere Referenz: .*$") //
-                        .assign((t, v) -> {
-                            if ("Depotgebühren".equals(v.get("type")))
-                                t.setType(AccountTransaction.Type.FEES);
-                        })
+                        .assign((t, v) -> t.setType(AccountTransaction.Type.FEES))
 
                         // @formatter:off
                         // Valutadatum 27.10.2022
@@ -653,7 +665,7 @@ public class SwissquotePDFExtractor extends AbstractPDFExtractor
                         .documentRange("baseCurrency") //
                         .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} " //
                                         + "(?<note>Depotgeb.hren) " //
-                                        + "(?<amount>[\\.,\\d]+) " //
+                                        + "(?<amount>[\\.'\\d]+) " //
                                         + "(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) " //
                                         + "(\\-)?[\\.'\\d]+$") //
                         .assign((t, v) -> {
@@ -664,9 +676,10 @@ public class SwissquotePDFExtractor extends AbstractPDFExtractor
                         })
 
                         .wrap(t -> {
-                            if (t.getCurrencyCode() != null && t.getAmount() != 0)
-                                return new TransactionItem(t);
-                            return null;
+                            if (t.getCurrencyCode() != null && t.getAmount() == 0)
+                                return new SkippedItem(new TransactionItem(t), Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
+
+                            return new TransactionItem(t);
                         }));
 
         // @formatter:off
@@ -682,7 +695,7 @@ public class SwissquotePDFExtractor extends AbstractPDFExtractor
                         .documentRange("baseCurrency") //
                         .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} " //
                                         + "(?<note>Sollzinsen) " //
-                                        + "(?<amount>[\\.,\\d]+) " //
+                                        + "(?<amount>[\\.'\\d]+) " //
                                         + "(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) " //
                                         + "(\\-)?[\\.'\\d]+$") //
                         .assign((t, v) -> {
@@ -693,9 +706,10 @@ public class SwissquotePDFExtractor extends AbstractPDFExtractor
                         })
 
                         .wrap(t -> {
-                            if (t.getCurrencyCode() != null && t.getAmount() != 0)
-                                return new TransactionItem(t);
-                            return null;
+                            if (t.getCurrencyCode() != null && t.getAmount() == 0)
+                                return new SkippedItem(new TransactionItem(t), Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
+
+                            return new TransactionItem(t);
                         }));
     }
 

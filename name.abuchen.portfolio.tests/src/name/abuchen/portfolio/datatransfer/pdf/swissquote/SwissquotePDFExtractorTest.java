@@ -934,7 +934,7 @@ public class SwissquotePDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2019-06-27T00:00"), hasExDate(null), //
+                        hasDate("2019-06-27T00:00"), hasExDate("2019-06-19T00:00"), //
                         hasShares(350.00), //
                         hasSource("Dividende01.txt"), //
                         hasNote("Referenz: 32484929"), //
@@ -969,7 +969,7 @@ public class SwissquotePDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2019-06-27T00:00"), hasExDate(null), //
+                        hasDate("2019-06-27T00:00"), hasExDate("2019-06-19T00:00"), //
                         hasShares(350.00), //
                         hasSource("Dividende01.txt"), //
                         hasNote("Referenz: 32484929"), //
@@ -1014,7 +1014,7 @@ public class SwissquotePDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2019-09-20T00:00"), hasExDate(null), //
+                        hasDate("2019-09-20T00:00"), hasExDate("2019-09-18T00:00"), //
                         hasShares(250.00), //
                         hasSource("Dividende02.txt"), //
                         hasNote("Referenz: 32484929"), //
@@ -1051,7 +1051,7 @@ public class SwissquotePDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2021-03-31T00:00"), hasExDate(null), //
+                        hasDate("2021-03-31T00:00"), hasExDate("2021-03-18T00:00"), //
                         hasShares(40.00), //
                         hasSource("Dividende03.txt"), //
                         hasNote("Referenz: 222443221"), //
@@ -1086,7 +1086,7 @@ public class SwissquotePDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2021-03-31T00:00"), hasExDate(null), //
+                        hasDate("2021-03-31T00:00"), hasExDate("2021-03-18T00:00"), //
                         hasShares(40.00), //
                         hasSource("Dividende03.txt"), //
                         hasNote("Referenz: 222443221"), //
@@ -1131,7 +1131,7 @@ public class SwissquotePDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2019-07-01T00:00"), hasExDate(null), //
+                        hasDate("2019-07-01T00:00"), hasExDate("2019-06-27T00:00"), //
                         hasShares(34.00), //
                         hasSource("Dividende04.txt"), //
                         hasNote("Referenz: 32484929"), //
@@ -1168,7 +1168,7 @@ public class SwissquotePDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2023-03-20T00:00"), hasExDate(null), //
+                        hasDate("2023-03-20T00:00"), hasExDate("2023-03-16T00:00"), //
                         hasShares(4.0542), //
                         hasSource("Dividende05.txt"), //
                         hasNote("Referenz: 312345678"), //
@@ -1205,7 +1205,7 @@ public class SwissquotePDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2023-03-29T00:00"), hasExDate(null), //
+                        hasDate("2023-03-29T00:00"), hasExDate("2023-03-16T00:00"), //
                         hasShares(3.553), //
                         hasSource("Dividende06.txt"), //
                         hasNote("Referenz: 123456789"), //
@@ -1240,7 +1240,7 @@ public class SwissquotePDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2023-03-29T00:00"), hasExDate(null), //
+                        hasDate("2023-03-29T00:00"), hasExDate("2023-03-16T00:00"), //
                         hasShares(3.553), //
                         hasSource("Dividende06.txt"), //
                         hasNote("Referenz: 123456789"), //
@@ -1283,7 +1283,7 @@ public class SwissquotePDFExtractorTest
 
         // check dividend transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2023-12-13T00:00"), hasExDate(null), //
+                        hasDate("2023-12-13T00:00"), hasExDate("2023-12-06T00:00"), //
                         hasShares(420.00), //
                         hasSource("Dividende07.txt"), //
                         hasNote("Referenz: 548895976"), //
@@ -1318,7 +1318,7 @@ public class SwissquotePDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2023-12-13T00:00"), hasExDate(null), //
+                        hasDate("2023-12-13T00:00"), hasExDate("2023-12-06T00:00"), //
                         hasShares(420.00), //
                         hasSource("Dividende07.txt"), //
                         hasNote("Referenz: 548895976"), //
@@ -1361,7 +1361,7 @@ public class SwissquotePDFExtractorTest
 
         // check dividend transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2025-02-28T00:00"), hasExDate(null), //
+                        hasDate("2025-02-28T00:00"), hasExDate("2025-02-25T00:00"), //
                         hasShares(281.00), //
                         hasSource("Dividende08.txt"), //
                         hasNote("Referenz: 795604930"), //
@@ -1397,7 +1397,7 @@ public class SwissquotePDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2025-02-28T00:00"), hasExDate(null), //
+                        hasDate("2025-02-28T00:00"), hasExDate("2025-02-25T00:00"), //
                         hasShares(281.00), //
                         hasSource("Dividende08.txt"), //
                         hasNote("Referenz: 795604930"), //
@@ -1440,7 +1440,7 @@ public class SwissquotePDFExtractorTest
 
         // check dividend transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2025-03-03T00:00"), hasExDate(null), //
+                        hasDate("2025-03-03T00:00"), hasExDate("2025-02-24T00:00"), //
                         hasShares(300.00), //
                         hasSource("Dividende09.txt"), //
                         hasNote("Referenz: 532146499"), //
@@ -1476,7 +1476,7 @@ public class SwissquotePDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2025-03-03T00:00"), hasExDate(null), //
+                        hasDate("2025-03-03T00:00"), hasExDate("2025-02-24T00:00"), //
                         hasShares(300.00), //
                         hasSource("Dividende09.txt"), //
                         hasNote("Referenz: 532146499"), //
@@ -1519,7 +1519,7 @@ public class SwissquotePDFExtractorTest
 
         // check dividend transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2025-03-03T00:00"), hasExDate(null), //
+                        hasDate("2025-03-03T00:00"), hasExDate("2025-02-12T00:00"), //
                         hasShares(8.00), //
                         hasSource("Dividende10.txt"), //
                         hasNote("Referenz: 055857024"), //
@@ -1555,7 +1555,7 @@ public class SwissquotePDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2025-03-03T00:00"), hasExDate(null), //
+                        hasDate("2025-03-03T00:00"), hasExDate("2025-02-12T00:00"), //
                         hasShares(8.00), //
                         hasSource("Dividende10.txt"), //
                         hasNote("Referenz: 055857024"), //
@@ -1598,7 +1598,7 @@ public class SwissquotePDFExtractorTest
 
         // check dividend transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2025-03-26T00:00"), hasExDate(null), //
+                        hasDate("2025-03-26T00:00"), hasExDate("2025-03-14T00:00"), //
                         hasShares(29.00), //
                         hasSource("Dividende11.txt"), //
                         hasNote("Referenz: 819926315"), //
@@ -1634,7 +1634,7 @@ public class SwissquotePDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2025-03-26T00:00"), hasExDate(null), //
+                        hasDate("2025-03-26T00:00"), hasExDate("2025-03-14T00:00"), //
                         hasShares(29.00), //
                         hasSource("Dividende11.txt"), //
                         hasNote("Referenz: 819926315"), //
@@ -1676,7 +1676,7 @@ public class SwissquotePDFExtractorTest
 
         // check dividend transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2025-05-14T00:00"), hasExDate(null), //
+                        hasDate("2025-05-14T00:00"), hasExDate("2025-05-08T00:00"), //
                         hasShares(175.00), //
                         hasSource("Dividende12.txt"), //
                         hasNote("Referenz: 847092627"), //
@@ -1713,7 +1713,7 @@ public class SwissquotePDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2025-05-14T00:00"), hasExDate(null), //
+                        hasDate("2025-05-14T00:00"), hasExDate("2025-05-08T00:00"), //
                         hasShares(175.00), //
                         hasSource("Dividende12.txt"), //
                         hasNote("Referenz: 847092627"), //
@@ -1755,7 +1755,7 @@ public class SwissquotePDFExtractorTest
 
         // check dividend transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2022-05-13T00:00"), hasExDate(null), //
+                        hasDate("2022-05-13T00:00"), hasExDate("2022-04-21T00:00"), //
                         hasShares(1000.00), //
                         hasSource("Dividende13.txt"), //
                         hasNote("Referenz: 249975908"), //
@@ -1790,7 +1790,7 @@ public class SwissquotePDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2022-05-13T00:00"), hasExDate(null), //
+                        hasDate("2022-05-13T00:00"), hasExDate("2022-04-21T00:00"), //
                         hasShares(1000.00), //
                         hasSource("Dividende13.txt"), //
                         hasNote("Referenz: 249975908"), //
@@ -1826,7 +1826,7 @@ public class SwissquotePDFExtractorTest
 
         // check dividend transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2026-01-27T00:00"), hasExDate(null), //
+                        hasDate("2026-01-27T00:00"), hasExDate("2026-01-20T00:00"), //
                         hasShares(900.00), //
                         hasSource("Dividende14.txt"), //
                         hasNote("Referenz: 2011421839"), //
@@ -1862,7 +1862,7 @@ public class SwissquotePDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2026-01-27T00:00"), hasExDate(null), //
+                        hasDate("2026-01-27T00:00"), hasExDate("2026-01-20T00:00"), //
                         hasShares(900.00), //
                         hasSource("Dividende14.txt"), //
                         hasNote("Referenz: 2011421839"), //
@@ -1898,7 +1898,7 @@ public class SwissquotePDFExtractorTest
 
         // check dividend transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2026-05-12T00:00"), hasExDate(null), //
+                        hasDate("2026-05-12T00:00"), hasExDate("2026-05-05T00:00"), //
                         hasShares(581.00), //
                         hasSource("Dividende15.txt"), //
                         hasNote("Referenz: 1097680988"), //
@@ -1934,7 +1934,7 @@ public class SwissquotePDFExtractorTest
 
         // check dividend transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2026-05-12T00:00"), hasExDate(null), //
+                        hasDate("2026-05-12T00:00"), hasExDate("2026-05-05T00:00"), //
                         hasShares(581.00), //
                         hasSource("Dividende15.txt"), //
                         hasNote("Referenz: 1097680988"), //
