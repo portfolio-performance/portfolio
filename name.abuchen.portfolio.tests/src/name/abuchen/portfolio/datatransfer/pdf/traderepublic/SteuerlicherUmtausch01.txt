@@ -1,4 +1,3 @@
-```
 PDFBox Version: 1.8.17
 Portfolio Performance Version: 0.67.0
 -----------------------------------------
@@ -27,5 +26,3 @@ Trade Republic Bank GmbH www.traderepublic.com Sitz der Gesellschaft: Berlin Ges
 Brunnenstraße 19-21 service@traderepublic.com AG Charlottenburg HRB 244347 B Andreas Torner
 10119 Berlin USt-ID DE307510626 Gernot Mittendorfer
 ABRE / 07.12.2023 / 74506130 / 07a4-7fa8
-
-```

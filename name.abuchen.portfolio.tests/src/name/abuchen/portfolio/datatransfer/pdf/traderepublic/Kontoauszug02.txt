@@ -1,4 +1,4 @@
-`PDF Autor: ''
+PDF Autor: ''
 PDFBox Version: 1.8.16
 
 TRADE REPUBLIC BANK GMBH KASTANIENALLEE 32 10435 BERLIN
@@ -13,4 +13,4 @@ BUCHUNGSTAG / BUCHUNGSTEXT BETRAG IN EUR
 WERTSTELLUNG
 01.10.2020 Accepted PayIn:DExxxxxxxxxxxxxxxxx3 to 299,96
 01.10.2020 DExxxxxxxxxxxxxxxxxxx7
-01.10.2020 Accepted`
+01.10.2020 Accepted
