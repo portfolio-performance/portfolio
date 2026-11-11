@@ -360,7 +360,7 @@ public class TargobankPDFExtractorTest
                         hasName("UBS AG (London Branch) - FaktS O.End DJIA 34446,1281"), //
                         hasCurrencyCode("EUR"))));
 
-        // check cancellation transaction
+        // check taxes transaction
         assertThat(results, hasItem(withFailureMessage( //
                         Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
                         taxes( //
@@ -783,7 +783,7 @@ public class TargobankPDFExtractorTest
                         hasName("Vang.FTSE Dev.Eur.ex UK U.ETF - Registered Shares EUR Dis. o"), //
                         hasCurrencyCode("EUR"))));
 
-        // check cancellation transaction
+        // check taxes transaction
         assertThat(results, hasItem(withFailureMessage( //
                         Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
                         taxes( //
@@ -830,7 +830,7 @@ public class TargobankPDFExtractorTest
                         hasAmount("EUR", 15.29), hasGrossValue("EUR", 15.29), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
-        // check cancellation transaction
+        // check taxes transaction
         assertThat(results, hasItem(withFailureMessage( //
                         Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
                         taxes( //
@@ -877,7 +877,7 @@ public class TargobankPDFExtractorTest
                         hasAmount("EUR", 15.29), hasGrossValue("EUR", 15.29), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
-        // check cancellation transaction
+        // check taxes transaction
         assertThat(results, hasItem(withFailureMessage( //
                         Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
                         taxes( //
@@ -1228,7 +1228,7 @@ public class TargobankPDFExtractorTest
                         hasName("Aktiengesellschaft AG"), //
                         hasCurrencyCode("EUR"))));
 
-        // check cancellation transaction
+        // check taxes transaction
         assertThat(results, hasItem(withFailureMessage( //
                         Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
                         taxes( //
@@ -1275,7 +1275,7 @@ public class TargobankPDFExtractorTest
                         hasAmount("EUR", 17.90), hasGrossValue("EUR", 17.90), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
-        // check cancellation transaction
+        // check taxes transaction
         assertThat(results, hasItem(withFailureMessage( //
                         Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
                         taxes( //
@@ -1322,7 +1322,7 @@ public class TargobankPDFExtractorTest
                         hasAmount("EUR", 17.90), hasGrossValue("EUR", 17.90), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
-        // check cancellation transaction
+        // check taxes transaction
         assertThat(results, hasItem(withFailureMessage( //
                         Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
                         taxes( //
@@ -1438,7 +1438,7 @@ public class TargobankPDFExtractorTest
                         hasName("Aktiengesellschaft AG"), //
                         hasCurrencyCode("EUR"))));
 
-        // check cancellation transaction
+        // check taxes transaction
         assertThat(results, hasItem(withFailureMessage( //
                         Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
                         taxes( //
@@ -1486,7 +1486,7 @@ public class TargobankPDFExtractorTest
                         hasForexGrossValue("USD", 29.41), //
                         hasTaxes("EUR", 3.67), hasFees("EUR", 0.00))));
 
-        // check cancellation transaction
+        // check taxes transaction
         assertThat(results, hasItem(withFailureMessage( //
                         Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
                         taxes( //
@@ -1541,7 +1541,7 @@ public class TargobankPDFExtractorTest
                             assertThat(s, is(Status.OK_STATUS));
                         }))));
 
-        // check cancellation transaction
+        // check taxes transaction
         assertThat(results, hasItem(withFailureMessage( //
                         Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
                         taxes( //
@@ -1595,7 +1595,7 @@ public class TargobankPDFExtractorTest
                         hasAmount("EUR", 20.82), hasGrossValue("EUR", 20.82 + 3.67), //
                         hasTaxes("EUR", 3.67), hasFees("EUR", 0.00))));
 
-        // check cancellation transaction
+        // check taxes transaction
         assertThat(results, hasItem(withFailureMessage( //
                         Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
                         taxes( //
@@ -1650,7 +1650,7 @@ public class TargobankPDFExtractorTest
                             assertThat(s, is(Status.OK_STATUS));
                         }))));
 
-        // check cancellation transaction
+        // check taxes transaction
         assertThat(results, hasItem(withFailureMessage( //
                         Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
                         taxes( //
@@ -1965,7 +1965,7 @@ public class TargobankPDFExtractorTest
     }
 
     @Test
-    public void testDividende07MitSteuerbehandlungVonDividende03WithSecurityInEUR()
+    public void testDividende07MitSteuerbehandlungVonDividende07WithSecurityInEUR()
     {
         var security = new Security("Northrop Grumman Corp. - Registered Shares DL 1", "EUR");
         security.setIsin("US6668071029");
@@ -2475,7 +2475,7 @@ public class TargobankPDFExtractorTest
                         hasName("APPLE INC. REGISTERED SHARES O.N."), //
                         hasCurrencyCode("EUR"))));
 
-        // check cancellation transaction
+        // check taxes transaction
         assertThat(results, hasItem(withFailureMessage( //
                         Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
                         taxes( //
@@ -2523,7 +2523,7 @@ public class TargobankPDFExtractorTest
                         hasForexGrossValue("USD", 39.75), //
                         hasTaxes("EUR", 4.47), hasFees("EUR", 0.00))));
 
-        // check cancellation transaction
+        // check taxes transaction
         assertThat(results, hasItem(withFailureMessage( //
                         Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
                         taxes( //
@@ -2570,7 +2570,7 @@ public class TargobankPDFExtractorTest
                         hasAmount("EUR", 25.36), hasGrossValue("EUR", 25.36 + 4.47), //
                         hasTaxes("EUR", 4.47), hasFees("EUR", 0.00))));
 
-        // check cancellation transaction
+        // check taxes transaction
         assertThat(results, hasItem(withFailureMessage( //
                         Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
                         taxes( //
