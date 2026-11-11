@@ -120,50 +120,42 @@ public class ScorePriorityIncPDFExtractor extends AbstractPDFExtractor
 
                         .subject(() -> new AccountTransaction(AccountTransaction.Type.DIVIDENDS))
 
-                        .oneOf( //
-                                        // @formatter:off
-                                        // Sep 15 Realty Income C             22 756109104 Dividend 5.18
-                                        //  Sep 15 Nra Withhold: Dividend 756109104 NRA Withhold (1.55)
-                                        //
-                                        // Sep 17 Barrick Gold Co             14 067901108 Dividend 1.26
-                                        // Sep 17 For Sec Withhold: Div   .25000 067901108 Foreign Withholding (0.31)
-                                        // @formatter:on
-                                        section -> section //
-                                                        .attributes("month", "day", "name", "shares", "wkn", "amount", "tax") //
-                                                        .documentContext("year") //
-                                                        .match("^(?<month>[\\w]{3}) (?<day>[\\d]{2}) (?<name>.*) (?<shares>[\\.,\\d]+) (?<wkn>[A-Z0-9]{9}) (Qualified )?Dividend (?<amount>[\\.,\\d]+)$") //
-                                                        .match("^[\\w]{3} [\\d]{2} .* [A-Z0-9]{9} (NRA Withhold|Foreign Withholding) \\((?<tax>[\\.,\\d]+)\\)$") //
-                                                        .assign((t, v) -> {
-                                                            v.put("date", v.get("day") + " " + v.get("month") + " " + v.get("year"));
-                                                            v.put("currency", asCurrencyCode(USD));
+                        // @formatter:off
+                        // Sep 16 Barrick Gold Co             14 067901108 Dividend 1.97
+                        // Sep 15 Tyson Foods Inc              6 902494103 Qualified Dividend 2.67
+                        // @formatter:on
+                        .section("month", "day", "name", "shares", "wkn", "amount") //
+                        .documentContext("year") //
+                        .match("^(?<month>[\\w]{3}) (?<day>[\\d]{2}) (?<name>.*) (?<shares>[\\.,\\d]+) (?<wkn>[A-Z0-9]{9}) (Qualified )?Dividend (?<amount>[\\.,\\d]+)$") //
+                        .assign((t, v) -> {
+                            v.put("date", v.get("day") + " " + v.get("month") + " " + v.get("year"));
+                            v.put("currency", asCurrencyCode(USD));
+                            v.getTransactionContext().putString("wkn", v.get("wkn"));
 
-                                                            t.setDateTime(asDate(v.get("date")));
-                                                            t.setShares(asShares(v.get("shares")));
-                                                            t.setAmount(asAmount(v.get("amount")) - asAmount(v.get("tax")));
-                                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                                                            t.setSecurity(getOrCreateSecurity(v));
+                            t.setDateTime(asDate(v.get("date")));
+                            t.setShares(asShares(v.get("shares")));
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                            t.setSecurity(getOrCreateSecurity(v));
+                        })
 
-                                                            var tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")));
+                        // @formatter:off
+                        // Sep 15 Nra Withhold: Dividend 756109104 NRA Withhold (1.55)
+                        // Sep 17 For Sec Withhold: Div   .25000 067901108 Foreign Withholding (0.31)
+                        // @formatter:on
+                        .section("taxWkn", "tax").optional().multipleTimes() //
+                        .match("^[\\w]{3} [\\d]{2} .* (?<taxWkn>[A-Z0-9]{9}) (NRA Withhold|Foreign Withholding) \\((?<tax>[\\.,\\d]+)\\)$") //
+                        .assign((t, v) -> {
+                            // Only the withholding tax of the same security
+                            // belongs to the dividend
+                            if (v.get("taxWkn").equals(v.getTransactionContext().getString("wkn")))
+                            {
+                                var tax = Money.of(asCurrencyCode(USD), asAmount(v.get("tax")));
 
-                                                            checkAndSetTax(tax, t, type.getCurrentContext());
-                                                        }),
-                                        // @formatter:off
-                                        // Sep 16 Barrick Gold Co             14 067901108 Dividend 1.97
-                                        // @formatter:on
-                                        section -> section //
-                                                        .attributes("month", "day", "name", "shares", "wkn", "amount") //
-                                                        .documentContext("year") //
-                                                        .match("^(?<month>[\\w]{3}) (?<day>[\\d]{2}) (?<name>.*) (?<shares>[\\.,\\d]+) (?<wkn>[A-Z0-9]{9}) (Qualified )?Dividend (?<amount>[\\.,\\d]+)$") //
-                                                        .assign((t, v) -> {
-                                                            v.put("date", v.get("day") + " " + v.get("month") + " " + v.get("year"));
-                                                            v.put("currency", asCurrencyCode(USD));
-
-                                                            t.setDateTime(asDate(v.get("date")));
-                                                            t.setShares(asShares(v.get("shares")));
-                                                            t.setAmount(asAmount(v.get("amount")));
-                                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                                                            t.setSecurity(getOrCreateSecurity(v));
-                                                        }))
+                                t.setAmount(t.getAmount() - tax.getAmount());
+                                checkAndSetTax(tax, t, type.getCurrentContext());
+                            }
+                        })
 
                         .wrap(TransactionItem::new));
 
