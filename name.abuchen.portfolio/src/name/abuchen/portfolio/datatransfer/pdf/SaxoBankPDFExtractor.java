@@ -95,7 +95,7 @@ public class SaxoBankPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("type") //
-                                                        .match("^.*(Quantity|Menge)(?<type>([\\s|\\-]{1,}))[\\.,\\d]+$") //
+                                                        .match("^.*(Quantity|Menge)(?<type>([\\s\\-]+))[\\.,\\d]+$") //
                                                         .assign((t, v) -> {
                                                             if ("-".equals(trim(v.get("type"))))
                                                                 t.setType(PortfolioTransaction.Type.SELL);
@@ -189,7 +189,7 @@ public class SaxoBankPDFExtractor extends AbstractPDFExtractor
                                         //
                                         // Instrument iShares MSCI ACWI USD Acc UCITS ETF Trade time 05-Aug-2025 12:46:23
                                         // ISIN IE00B6R52259 Value Date 07-Aug-2025
-                                        // Symbol Symbol SSAC_CHF:xswx Order ID 5311227095
+                                        // Symbol SSAC_CHF:xswx Order ID 5311227095
                                         // Venue Exchange Price 80,4666 CHF
                                         // @formatter:on
                                         section -> section //
@@ -200,13 +200,12 @@ public class SaxoBankPDFExtractor extends AbstractPDFExtractor
                                                         .match("^.*Traded Value (\\-)?[\\.,'\\d]+ (?<currency>[A-Z]{3})$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
                                         // @formatter:off
-
                                         // ISIN CH0016999846 Value Date 07-Aug-2025
                                         // Symbol CSBGC7:xswx Order ID 5311259140
                                         // Venue Exchange Price 75,19880769 CHF
                                         // @formatter:on
                                         section -> section //
-                                                        .attributes("isin", "tickerSymbol", "currency") ///
+                                                        .attributes("isin", "tickerSymbol", "currency") //
                                                         .match("^ISIN (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) Value.*$") //
                                                         .match("^Symbol (?<tickerSymbol>[A-Z0-9\\._-]{1,10}(?:\\.[A-Z]{1,4})?):.*$") //
                                                         .match("^.*Traded Value (\\-)?[\\.,'\\d]+ (?<currency>[A-Z]{3})$") //
@@ -258,7 +257,7 @@ public class SaxoBankPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("date", "time") //
-                                                        .match("^.*(Handelszeit|Trade time) (?<date>[\\d]{2}\\-[^\\-]+\\-[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}:[\\d]{2})$") //
+                                                        .match("^.*(Handelszeit|Trade time) (?<date>[\\d]{2}\\-[^\\-]+\\-[\\d]{4}) (?<time>[\\d]{2}\\:[\\d]{2}\\:[\\d]{2})$") //
                                                         .assign((t, v) -> t.setDate(asDate(v.get("date"), v.get("time")))))
 
                         .oneOf( //
@@ -351,7 +350,6 @@ public class SaxoBankPDFExtractor extends AbstractPDFExtractor
                                                         .match("^[\\d]+ [\\d]{2}\\-[^\\-]+\\-[\\d]{4} [\\d]{2}\\-[^\\-]+\\-[\\d]{4} \\-(?<note2>[\\.,'\\d]+) [\\.,'\\d]+ [\\.,'\\d]+ \\-[\\.,'\\d]+$") //
                                                         .find("Interest.*") //
                                                         .assign((t, v) -> {
-
                                                             var note = v.get("note1") + " " + trim(v.get("note2")) + " " + t.getPortfolioTransaction().getCurrencyCode();
                                                             t.setNote(concatenate(t.getNote(), note, " | "));
                                                         }))
@@ -508,7 +506,6 @@ public class SaxoBankPDFExtractor extends AbstractPDFExtractor
                                                             t.setAmount(asAmount(v.get("amount")));
                                                         }))
 
-
                         .optionalOneOf( //
                                         // @formatter:off
                                         // Transaction description Event Id 9369584
@@ -520,8 +517,8 @@ public class SaxoBankPDFExtractor extends AbstractPDFExtractor
 
                         .wrap(TransactionItem::new);
 
-                addTaxesSectionsTransaction(pdfTransaction, type);
-                addFeesSectionsTransaction(pdfTransaction, type);
+        addTaxesSectionsTransaction(pdfTransaction, type);
+        addFeesSectionsTransaction(pdfTransaction, type);
     }
 
     private void addInterestTransaction()
@@ -560,8 +557,8 @@ public class SaxoBankPDFExtractor extends AbstractPDFExtractor
 
                         .wrap(TransactionItem::new);
 
-                addTaxesSectionsTransaction(pdfTransaction, type);
-                addFeesSectionsTransaction(pdfTransaction, type);
+        addTaxesSectionsTransaction(pdfTransaction, type);
+        addFeesSectionsTransaction(pdfTransaction, type);
     }
 
     private void addDepositTransaction()
@@ -771,7 +768,7 @@ public class SaxoBankPDFExtractor extends AbstractPDFExtractor
                             var fees = Money.of(v.get("currency"), asAmount(v.get("fee")));
                             var currencyConversionFee = Money.of(v.get("currency"), asAmount(v.get("currencyConversionFee")));
 
-                            // Add currency conversion fee from fees
+                            // Add currency conversion fee to fees
                             fees = fees.add(currencyConversionFee);
 
                             checkAndSetFee(fees, t, type.getCurrentContext());
@@ -818,14 +815,13 @@ public class SaxoBankPDFExtractor extends AbstractPDFExtractor
                         // @formatter:off
                         // Belgium Stock
                         // 47351983134 05-sep-2025 09-sep-2025 -0,10 1,000000 0,00 -0,10
-                        // @formatter: on
+                        // @formatter:on
                         .section("fee").optional() //
                         .documentContext("currency") //
                         .find(".*Stock.*") //
                         .match("^[\\d]+ [\\d]{2}\\-[^\\-]+\\-[\\d]{4} [\\d]{2}\\-[^\\-]+\\-[\\d]{4} \\-(?<fee>[\\.,'\\d]+) [\\.,'\\d]+ [\\.,'\\d]+ \\-[\\.,'\\d]+$") //
                         .assign((t, v) -> processFeeEntries(t, v, type));
     }
-
 
     @Override
     protected long asAmount(String value)
