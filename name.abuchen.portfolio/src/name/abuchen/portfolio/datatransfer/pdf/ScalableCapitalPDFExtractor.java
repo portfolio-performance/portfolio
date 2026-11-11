@@ -750,7 +750,7 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
         type.addBlock(skippedBlock);
         skippedBlock.set(new Transaction<AccountTransaction>()
 
-                        .subject(() -> new AccountTransaction(AccountTransaction.Type.INTEREST))
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.TAXES))
 
                         .section("date", "amount", "currency") //
                         .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) Vorabpauschale " //

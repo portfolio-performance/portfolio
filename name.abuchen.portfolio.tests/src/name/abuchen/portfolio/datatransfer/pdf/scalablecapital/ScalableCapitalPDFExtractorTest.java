@@ -2323,11 +2323,12 @@ public class ScalableCapitalPDFExtractorTest
         // assert transaction (this is present twice)
         assertThat(results, hasItem(skippedItem( //
                         Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
-                        interest( //
+                        taxes( //
                                         hasDate("2026-01-02"), //
                                         hasSource("Kontoauszug04.txt"), //
                                         hasNote(null), //
-                                        hasAmount("EUR", 0.00)))));
+                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
+                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
     }
 
     @Test
