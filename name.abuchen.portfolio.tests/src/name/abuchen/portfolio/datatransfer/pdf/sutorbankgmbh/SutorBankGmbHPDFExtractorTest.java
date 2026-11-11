@@ -2546,7 +2546,7 @@ public class SutorBankGmbHPDFExtractorTest
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // assert transaction
-        assertThat(results, hasItem(removal(hasDate("2023-11-07"), hasAmount("EUR", 0.11), //
+        assertThat(results, hasItem(deposit(hasDate("2023-11-07"), hasAmount("EUR", 0.11), //
                         hasSource("Depotauszug07.txt"), hasNote("Umbuchung Verrechnung Nachlasskapitale"))));
 
         // assert transaction
@@ -2558,7 +2558,7 @@ public class SutorBankGmbHPDFExtractorTest
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // assert transaction
-        assertThat(results, hasItem(removal(hasDate("2023-12-19"), hasAmount("EUR", 500.00), //
+        assertThat(results, hasItem(deposit(hasDate("2023-12-19"), hasAmount("EUR", 500.00), //
                         hasSource("Depotauszug07.txt"), hasNote("DTA von rLXKpwaxL rLXKpwaxL, rLXKpwaxL rLXKpwaxL"))));
     }
 
