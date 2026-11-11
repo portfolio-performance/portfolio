@@ -189,7 +189,14 @@ public class ScorePriorityIncPDFExtractor extends AbstractPDFExtractor
                             t.setSecurity(getOrCreateSecurity(v));
                         })
 
-                        .wrap(TransactionItem::new));
+                        // The security journal (e.g. spin-off) has no value.
+                        // A delivery without value is not supported.
+                        .wrap(t -> {
+                            if (t.getCurrencyCode() != null && t.getAmount() == 0)
+                                return new SkippedItem(new TransactionItem(t), Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
+
+                            return new TransactionItem(t);
+                        }));
 
         // @formatter:off
         // Formatting:

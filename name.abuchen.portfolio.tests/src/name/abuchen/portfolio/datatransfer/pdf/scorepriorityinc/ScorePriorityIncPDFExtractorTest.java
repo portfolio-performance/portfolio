@@ -22,6 +22,7 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.interest;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.purchase;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.sale;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.security;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.skippedItem;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.withFailureMessage;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransactions;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransfers;
@@ -407,10 +408,10 @@ public class ScorePriorityIncPDFExtractorTest
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(7L));
         assertThat(countBuySell(results), is(2L));
-        assertThat(countAccountTransactions(results), is(7L));
+        assertThat(countAccountTransactions(results), is(5L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(1L));
-        assertThat(countSkippedItems(results), is(0L));
+        assertThat(countSkippedItems(results), is(2L));
         assertThat(results.size(), is(16));
         new AssertImportActions().check(results, "USD");
 
@@ -482,20 +483,24 @@ public class ScorePriorityIncPDFExtractorTest
                         hasAmount("USD", 21.35), hasGrossValue("USD", 30.50), //
                         hasTaxes("USD", 9.15), hasFees("USD", 0.00))));
 
-        // check delivery inbound transaction
-        assertThat(results, hasItem(inboundDelivery( //
-                        hasDate("2021-11-05T00:00"), hasShares(5.00), //
-                        hasSource("AccountStatement04.txt"), //
-                        hasNote(null), //
-                        hasAmount("USD", 0.00), hasGrossValue("USD", 0.00), //
-                        hasTaxes("USD", 0.00), hasFees("USD", 0.00))));
+        // check skipped item
+        assertThat(results, hasItem(skippedItem( //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
+                        inboundDelivery( //
+                                        hasDate("2021-11-05T00:00"), hasShares(5.00), //
+                                        hasSource("AccountStatement04.txt"), //
+                                        hasNote(null), //
+                                        hasAmount("USD", 0.00), hasGrossValue("USD", 0.00), //
+                                        hasTaxes("USD", 0.00), hasFees("USD", 0.00)))));
 
-        assertThat(results, hasItem(inboundDelivery( //
-                        hasDate("2021-11-15T00:00"), hasShares(2.00), //
-                        hasSource("AccountStatement04.txt"), //
-                        hasNote(null), //
-                        hasAmount("USD", 0.00), hasGrossValue("USD", 0.00), //
-                        hasTaxes("USD", 0.00), hasFees("USD", 0.00))));
+        assertThat(results, hasItem(skippedItem( //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
+                        inboundDelivery( //
+                                        hasDate("2021-11-15T00:00"), hasShares(2.00), //
+                                        hasSource("AccountStatement04.txt"), //
+                                        hasNote(null), //
+                                        hasAmount("USD", 0.00), hasGrossValue("USD", 0.00), //
+                                        hasTaxes("USD", 0.00), hasFees("USD", 0.00)))));
 
         // check failure message
         assertThat(results, hasItem(withFailureMessage( //
