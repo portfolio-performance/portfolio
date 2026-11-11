@@ -1,5 +1,6 @@
 package name.abuchen.portfolio.datatransfer.pdf.thurgauerkantonalbank;
 
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.check;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasAmount;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasCurrencyCode;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasDate;
@@ -32,10 +33,14 @@ import java.util.List;
 
 import org.junit.Test;
 
+import name.abuchen.portfolio.datatransfer.ImportAction.Status;
 import name.abuchen.portfolio.datatransfer.actions.AssertImportActions;
+import name.abuchen.portfolio.datatransfer.actions.CheckCurrenciesAction;
 import name.abuchen.portfolio.datatransfer.pdf.PDFInputFile;
 import name.abuchen.portfolio.datatransfer.pdf.ThurgauerKantonalbankPDFExtractor;
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.Portfolio;
+import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
 
 @SuppressWarnings("nls")
@@ -108,6 +113,11 @@ public class ThurgauerKantonalbankPDFExtractorTest
                         hasSource("Kauf01.txt"), //
                         hasNote("Referenznummer 1234567890 | Marchzinsen (131 Tage): 648.00 AUD"), //
                         hasAmount("CHF", 23185.11), hasGrossValue("CHF", 23053.23), //
-                        hasTaxes("CHF", 34.58), hasFees("CHF", (92.21 + 5.09)))));
+                        hasTaxes("CHF", 34.58), hasFees("CHF", (92.21 + 5.09)), //
+                        check(tx -> {
+                            var c = new CheckCurrenciesAction();
+                            var s = c.process((PortfolioTransaction) tx, new Portfolio());
+                            assertThat(s, is(Status.OK_STATUS));
+                        }))));
     }
 }
