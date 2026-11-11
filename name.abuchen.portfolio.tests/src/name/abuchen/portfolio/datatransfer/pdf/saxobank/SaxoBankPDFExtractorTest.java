@@ -5,6 +5,7 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.dividend;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasAmount;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasCurrencyCode;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasDate;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasExDate;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasFees;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasForexGrossValue;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasGrossValue;
@@ -981,7 +982,8 @@ public class SaxoBankPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2025-04-30T00:00"), hasShares(604.00), //
+                        hasDate("2025-04-30T00:00"), hasExDate("2025-04-15"), //
+                        hasShares(604.00), //
                         hasSource("Dividende01.txt"), //
                         hasNote("Event Id 9369584"), //
                         hasAmount("USD", 47.69), hasGrossValue("USD", 56.11), //
@@ -1015,7 +1017,8 @@ public class SaxoBankPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2025-05-01T00:00"), hasShares(69.00), //
+                        hasDate("2025-05-01T00:00"), hasExDate("2025-04-11"), //
+                        hasShares(69.00), //
                         hasSource("Dividende02.txt"), //
                         hasNote("Event Id 9369517"), //
                         hasAmount("USD", 6.97), hasGrossValue("USD", 8.20), //
@@ -1049,7 +1052,8 @@ public class SaxoBankPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2025-07-17T00:00"), hasShares(75.00), //
+                        hasDate("2025-07-17T00:00"), hasExDate("2025-07-15"), //
+                        hasShares(75.00), //
                         hasSource("Dividende03.txt"), //
                         hasNote("Event Id 9413396"), //
                         hasAmount("CHF", 12.67), hasGrossValue("CHF", 19.50), //

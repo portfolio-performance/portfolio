@@ -403,6 +403,17 @@ public class SaxoBankPDFExtractor extends AbstractPDFExtractor
                         .match("^.*(?<date>[\\d]{2}\\-[^\\-]+\\-[\\d]{4}) [\\.,'\\d]+ [\\.,'\\d]+ [\\.,'\\d]+$") //
                         .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
 
+                        // @formatter:off
+                        // Booking amount ID Ex date Record Date Posting Date Pay Date Conversion Rate
+                        // 43640515029 15-Apr-2025 15-Apr-2025 02-Apr-2025 30-Apr-2025 56,11 1,000000 56,11
+                        //
+                        // Buchungsbetrag-ID Ex-Tag Record Date Einstellungsdatum Zahltag Umrechnungskurs
+                        // 45865563189 15-Jul-2025 16-Jul-2025 - 17-Jul-2025 19.50 1.000000 19.50
+                        // @formatter:on
+                        .section("exDate").optional() //
+                        .match("^[\\d]+ (?<exDate>[\\d]{2}\\-[^\\-]+\\-[\\d]{4}) .* [\\.,'\\d]+ [\\.,'\\d]+ [\\.,'\\d]+$") //
+                        .assign((t, v) -> t.setExDate(asDate(v.get("exDate"))))
+
                         .oneOf( //
                                         // @formatter:off
                                         // Net Amount - - - - - 47,69 1,000000 47,69
