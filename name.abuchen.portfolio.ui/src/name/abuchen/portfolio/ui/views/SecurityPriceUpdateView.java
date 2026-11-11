@@ -62,6 +62,7 @@ import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport.TouchClientLi
 import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
 import name.abuchen.portfolio.ui.util.viewers.CopyPasteSupport;
 import name.abuchen.portfolio.ui.util.viewers.DateLabelProvider;
+import name.abuchen.portfolio.ui.util.viewers.SafeTableColumnLayout;
 import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
 import name.abuchen.portfolio.ui.util.viewers.ToolTipCustomProviderSupport;
 import name.abuchen.portfolio.ui.views.columns.IsinColumn;
@@ -227,7 +228,7 @@ public class SecurityPriceUpdateView extends AbstractFinanceView implements Pric
     protected Control createBody(Composite parent)
     {
         Composite container = new Composite(parent, SWT.NONE);
-        TableColumnLayout layout = new TableColumnLayout();
+        TableColumnLayout layout = new SafeTableColumnLayout();
         container.setLayout(layout);
 
         securities = new TableViewer(container, SWT.FULL_SELECTION | SWT.MULTI);

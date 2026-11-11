@@ -21,6 +21,7 @@ import name.abuchen.portfolio.money.CurrencyUnit;
  * same classifications in the same order as
  * {@link Taxonomy#getClassifications(InvestmentVehicle)}.
  */
+@SuppressWarnings("nls")
 public class TaxonomyClassificationsTest
 {
     @Test

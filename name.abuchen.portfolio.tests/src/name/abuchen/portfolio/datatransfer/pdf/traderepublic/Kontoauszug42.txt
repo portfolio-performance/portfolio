@@ -1,0 +1,174 @@
+PDFBox Version: 3.0.8
+Portfolio Performance Version: 0.90.0
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+TRADE REPUBLIC BANK GMBH  BRUNNENSTRASSE 19-21  10119 BERLIN
+ZbabnOLGB DMeyB DATUM 01 Okt. 2026 - 31 Okt. 2026
+GjcICUgleShlSCwT 02 IBAN AJ43583055258660847228
+24027 PmXMbNT BIC TRBKDEBBXXX
+KONTOÜBERSICHT
+PRODUKT ANFANGSSALDO ZAHLUNGSEINGANG ZAHLUNGSAUSGANG ENDSALDO
+Cashkonto 102,40 € 1.038,48 € 608,65 € 532,23 €
+UMSATZÜBERSICHT
+DATUM TYP BESCHREIBUNG ZAHLUNGSEINGANG ZAHLUNGSAUSGANG SALDO
+01 Okt. 
+Bonus Saveback cash reward 8,51 € 110,91 €
+2026
+01 Okt. 
+Zinsen Interest payment 2,06 € 112,97 €
+2026
+01 Okt. Incoming transfer from baNZnwaAD fRIUg 
+Überweisung 1.000,00 € 1.112,97 €
+2026 (ad87948068648318709130)
+01 Okt. 
+Kartentransaktion TgWPMlbvDVrdGq 7,50 € 1.105,47 €
+2026
+01 Okt. 
+Kartentransaktion vjZuMa RKpf* N41QY27O4 8,99 € 1.096,48 €
+2026
+01 Okt. 
+Kartentransaktion ABIZdNy PtJBYYQtL RELrI 6,00 € 1.090,48 €
+2026
+02 Okt. 
+Ertrag Cash Dividend for ISIN GI04100ZiW84 3,33 € 1.093,81 €
+2026
+02 Okt. Savings plan execution ig179pcUPs35 rUuWMlA HKJyG JqWEKE 
+Handel 8,51 € 1.085,30 €
+2026 iYKd trQrme GoAZLx UCITS ETF -, quantity: 1.639375
+02 Okt. Savings plan execution lN909FnxvU10 kQTDNFZ ZNwWN pgEdLC 
+Handel 50,00 € 1.035,30 €
+2026 YKuM BxrbUJ ByWIsV UCITS ETF -, quantity: 9.632055
+03 Okt. 
+Kartentransaktion mLfGNKPzi hUgEovO OHG 5,40 € 1.029,90 €
+2026
+03 Okt. 
+Kartentransaktion RwVGCjgce IftiegC OHG 7,87 € 1.022,03 €
+2026
+Trade Republic Bank GmbH www.traderepublic.com Sitz der Gesellschaft: Berlin Geschäftsführer
+Brunnenstraße 19-21 AG Charlottenburg HRB 244347 B Andreas Torner
+10119 Berlin Umsatzsteuer-ID DE307510626 Gernot Mittendorfer
+Christian Hecker
+Thomas Pischke
+Erstellt am 2026-11-01 22:17:36 Europe/Berlin (UTC+01:00) Seite 1 von 4
+TRADE REPUBLIC BANK GMBH BRUNNENSTRASSE 19-21 10119 BERLIN
+DATUM TYP BESCHREIBUNG ZAHLUNGSEINGANG ZAHLUNGSAUSGANG SALDO
+04 Okt. 
+Kartentransaktion fDtpghGKeTBLlQ 4,00 € 1.018,03 €
+2026
+04 Okt. 
+Kartentransaktion HMYNQsLN QTFwtXE ypQZEEAx 37,03 € 981,00 €
+2026
+04 Okt. 
+Kartentransaktion SumUp *Fa PfRrN eCDO 7,00 € 974,00 €
+2026
+04 Okt. 
+Kartentransaktion SumUp *IlyImTSPlWJUxS 7,00 € 967,00 €
+2026
+05 Okt. 
+Kartentransaktion SumUp *tOLufmL BLGPWS 6,00 € 961,00 €
+2026
+05 Okt. 
+Kartentransaktion IYsRRvV cEfvmoQJH FYXrA 6,00 € 955,00 €
+2026
+08 Okt. 
+Kartentransaktion ojnuYsbiV NDFQRXd OHG 8,55 € 946,45 €
+2026
+09 Okt. 
+Kartentransaktion dPAObJ* BT2I55014 36,78 € 909,67 €
+2026
+10 Okt. 
+Kartentransaktion pMVeyHEL oMhVeXI TveseXDl 39,26 € 870,41 €
+2026
+10 Okt. 
+Kartentransaktion ih ThaZtaqr PtZE nFGEs 20,20 € 850,21 €
+2026
+10 Okt. 
+Kartentransaktion mrxOauUfGi 4,99 € 845,22 €
+2026
+14 Okt. 
+Kartentransaktion WX JRne yGpCa DmKSenNo 124,80 € 720,42 €
+2026
+15 Okt. 
+Kartentransaktion ZvbrMOqN xnoBkoL DXkMUiCB 63,34 € 657,08 €
+2026
+18 Okt. 
+Kartentransaktion goEPDcL HaLVFPV 43,17 € 613,91 €
+2026
+22 Okt. 
+Kartentransaktion EdsgTwtmTaWuB wlFkMmR 6,26 € 607,65 €
+2026
+25 Okt. 
+Kartentransaktion lGuzapUX HoujsqD KBFzrOxM 29,61 € 578,04 €
+2026
+26 Okt. 
+Kartentransaktion aZPFiWGC uadlUKQ UxhlwkXO 13,30 € 564,74 €
+2026
+Trade Republic Bank GmbH www.traderepublic.com Sitz der Gesellschaft: Berlin Geschäftsführer
+Brunnenstraße 19-21 AG Charlottenburg HRB 244347 B Andreas Torner
+10119 Berlin Umsatzsteuer-ID DE307510626 Gernot Mittendorfer
+Christian Hecker
+Thomas Pischke
+Erstellt am 2026-11-01 22:17:36 Europe/Berlin (UTC+01:00) Seite 2 von 4
+TRADE REPUBLIC BANK GMBH BRUNNENSTRASSE 19-21 10119 BERLIN
+DATUM TYP BESCHREIBUNG ZAHLUNGSEINGANG ZAHLUNGSAUSGANG SALDO
+28 Okt. 
+Kartentransaktion JlhCbWxyvAmOP ypklCMM 9,54 € 555,20 €
+2026
+28 Okt. 
+Ertrag Cash Dividend for ISIN eC617mTcAs62 21,05 € 576,25 €
+2026
+30 Okt. 
+Ertrag Cash Dividend for ISIN Qs19996Qiu04 3,38 € 579,63 €
+2026
+30 Okt. 
+Kartentransaktion rUnXjU* h56iz3AM5 7,29 € 572,34 €
+2026
+30 Okt. 
+Kartentransaktion UEPGipXZRdrDo IGlkFxE 3,33 € 569,01 €
+2026
+31 Okt. 
+Kartentransaktion VisaBonus-Cashback 0,15 € 569,16 €
+2026
+31 Okt. 
+Kartentransaktion YYNqZWqc pcUoRcb uUpIqqva 18,49 € 550,67 €
+2026
+31 Okt. 
+Kartentransaktion hdLVBlKgD nSNjiTI 9889 13,48 € 537,19 €
+2026
+31 Okt. 
+Kartentransaktion GOuOBwPPwzMzX xFkSCEX 4,96 € 532,23 €
+2026
+BARMITTELÜBERSICHT
+Zum 31 Okt. 2026
+TREUHANDKONTEN SALDO
+Natixis 532,23 €
+GELDMARKTFONDS ISIN STK. / NOMINALE KURS PRO STÜCK KURSWERT IN EUR
+Deutsche Managed Euro Fund II IE000WZK69T5 0,00 1,00 € 0,00 €
+HINWEISE ZUM KONTOAUSZUG
+Bitte überprüfe Deinen Kontoauszug, da Einwendungen unverzüglich geltend gemacht/erhoben werden müssen. Bitte beachte, dass der 
+angegebene Kontostand nicht die Wertstellung der einzelnen Buchungen bzw. Transaktionen berücksichtigt, der genannte Betrag bzw. 
+Nennbetrag also nicht dem für die Zinsrechnung maßgeblichen Kontostand entsprechen muss. Ein Rechnungsabschluss gilt als 
+genehmigt, sofern Du innerhalb von 6 Wochen keine Einwendungen erhebst. Zur Fristwahrung genügt die Einreichung einer Einwendung 
+über unseren Kundenservice (Chat). Alle Chats sind Gegenstand unabhängiger Überprüfungen durch den Bereich Internal Audit. Dieser 
+Kontoauszug gilt im Zusammenhang mit den zugrundeliegenden Verträgen laut angegebener Kontonummer als Rechnung i.S.d. UStG. 
+Trade Republic Bank GmbH www.traderepublic.com Sitz der Gesellschaft: Berlin Geschäftsführer
+Brunnenstraße 19-21 AG Charlottenburg HRB 244347 B Andreas Torner
+10119 Berlin Umsatzsteuer-ID DE307510626 Gernot Mittendorfer
+Christian Hecker
+Thomas Pischke
+Erstellt am 2026-11-01 22:17:36 Europe/Berlin (UTC+01:00) Seite 3 von 4
+TRADE REPUBLIC BANK GMBH BRUNNENSTRASSE 19-21 10119 BERLIN
+Die Guthaben, die bei Treuhandbanken verwahrt werden, sind jeweils bis zu €100.000 von der Einlagensicherung der Treuhandbank 
+gesichert. Die Anteile an qualifizierten Geldmarktfonds (QMMF) sind für den unwahrscheinlichen Fall einer Insolvenz von Trade Republic 
+geschützt. Weitere Informationen zur Sicherung Deiner Gelder findest Du unter https://support.traderepublic.com.
+BESTÄTIGUNG DER GÜLTIGKEIT DES DOKUMENTS
+Als digitaler Dienstleister kommunizieren wir mit unseren Kunden elektronisch statt auf Papier und per Post. Kontoauszüge, Bescheinigungen und andere Dokumente werden 
+daher ausschließlich über die Trade Republic-App erstellt und bereitgestellt. Diese Dokumente sind rechtsgültige, von Trade Republic ausgestellte Originalunterlagen und 
+können Behörden, Finanzinstituten oder anderen Dritten als offizielle Dokumente vorgelegt werden. Trade Republic stellt keine gleichwertigen Versionen dieser Dokumente 
+über andere Kanäle bereit, weder in elektronischer Form noch in gedruckter Form oder per Post.
+Trade Republic Bank GmbH www.traderepublic.com Sitz der Gesellschaft: Berlin Geschäftsführer
+Brunnenstraße 19-21 AG Charlottenburg HRB 244347 B Andreas Torner
+10119 Berlin Umsatzsteuer-ID DE307510626 Gernot Mittendorfer
+Christian Hecker
+Thomas Pischke
+Erstellt am 2026-11-01 22:17:36 Europe/Berlin (UTC+01:00) Seite 4 von 4

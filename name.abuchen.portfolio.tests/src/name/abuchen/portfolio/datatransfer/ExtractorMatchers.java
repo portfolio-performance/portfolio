@@ -137,6 +137,154 @@ public class ExtractorMatchers
         }
     }
 
+    private static class PairedTransactionMatcher extends ExtractorItemMatcher<Transaction>
+    {
+        private final String firstLabel;
+        private final String secondLabel;
+
+        public PairedTransactionMatcher(String label, Function<Extractor.Item, Transaction> transaction,
+                        Matcher<Transaction>[] properties, String firstLabel, String secondLabel)
+        {
+            super(label, transaction, properties);
+            this.firstLabel = firstLabel;
+            this.secondLabel = secondLabel;
+        }
+
+        protected boolean checkMetadata(Transaction first, Transaction second, Description description)
+        {
+            return checkConsistency("date", first.getDateTime(), second.getDateTime(), description) //$NON-NLS-1$
+                            && checkConsistency("note", first.getNote(), second.getNote(), description) //$NON-NLS-1$
+                            && checkConsistency("source", first.getSource(), second.getSource(), description); //$NON-NLS-1$
+        }
+
+        protected boolean checkConsistency(String field, Object firstValue, Object secondValue, Description description)
+        {
+            if (Objects.equals(firstValue, secondValue))
+                return true;
+
+            description.appendText("\n* inconsistent ").appendText(field) //$NON-NLS-1$
+                            .appendText(": ").appendText(firstLabel).appendText(" = ").appendValue(firstValue) //$NON-NLS-1$ //$NON-NLS-2$
+                            .appendText(", ").appendText(secondLabel).appendText(" = ").appendValue(secondValue); //$NON-NLS-1$ //$NON-NLS-2$
+            return false;
+        }
+    }
+
+    private static class BuySellEntryMatcher extends PairedTransactionMatcher
+    {
+        public BuySellEntryMatcher(String label, PortfolioTransaction.Type type, Matcher<Transaction>[] properties)
+        {
+            super(label, item -> item instanceof BuySellEntryItem buysell
+                            && buysell.getSubject() instanceof BuySellEntry entry
+                            && entry.getPortfolioTransaction().getType() == type ? entry.getPortfolioTransaction()
+                                            : null,
+                            properties, "portfolio transaction", "account transaction"); //$NON-NLS-1$ //$NON-NLS-2$
+        }
+
+        @Override
+        protected boolean matchesSafely(Extractor.Item item, Description mismatchDescription)
+        {
+            if (!super.matchesSafely(item, mismatchDescription))
+                return false;
+
+            var entry = (BuySellEntry) item.getSubject();
+            var portfolio = entry.getPortfolioTransaction();
+            var account = entry.getAccountTransaction();
+
+            return checkConsistency("type", AccountTransaction.Type.valueOf(portfolio.getType().name()), //$NON-NLS-1$
+                            account.getType(), mismatchDescription)
+                            && checkConsistency("security", portfolio.getSecurity(), account.getSecurity(), //$NON-NLS-1$
+                                            mismatchDescription)
+                            && checkConsistency("amount", portfolio.getAmount(), account.getAmount(), //$NON-NLS-1$
+                                            mismatchDescription)
+                            && checkConsistency("currency", portfolio.getCurrencyCode(), account.getCurrencyCode(), //$NON-NLS-1$
+                                            mismatchDescription)
+                            && checkMetadata(portfolio, account, mismatchDescription);
+        }
+    }
+
+    /**
+     * Matches a cash transfer item. {@code inbound} only selects which side of
+     * the transfer the property matchers see (target or source). It does not
+     * check the direction of the item: extractors usually create outbound
+     * items, and tests assert both sides of the same item.
+     */
+    private static class AccountTransferMatcher extends PairedTransactionMatcher
+    {
+        public AccountTransferMatcher(boolean inbound, Matcher<Transaction>[] properties)
+        {
+            super("cash transfer", item -> item instanceof AccountTransferItem transfer //$NON-NLS-1$
+                            && transfer.getSubject() instanceof AccountTransferEntry entry
+                                            ? inbound ? entry.getTargetTransaction() : entry.getSourceTransaction()
+                                            : null,
+                            properties, "source transaction", "target transaction"); //$NON-NLS-1$ //$NON-NLS-2$
+        }
+
+        @Override
+        protected boolean matchesSafely(Extractor.Item item, Description description)
+        {
+            if (!super.matchesSafely(item, description))
+                return false;
+
+            var entry = (AccountTransferEntry) item.getSubject();
+            var source = entry.getSourceTransaction();
+            var target = entry.getTargetTransaction();
+
+            if (!checkConsistency("source type", AccountTransaction.Type.TRANSFER_OUT, source.getType(), description) //$NON-NLS-1$
+                            || !checkConsistency("target type", AccountTransaction.Type.TRANSFER_IN, //$NON-NLS-1$
+                                            target.getType(), description)
+                            || !checkMetadata(source, target, description))
+                return false;
+
+            if (Objects.equals(source.getCurrencyCode(), target.getCurrencyCode()))
+                return checkConsistency("amount", source.getAmount(), target.getAmount(), description); //$NON-NLS-1$
+
+            var forex = source.getUnit(Unit.Type.GROSS_VALUE);
+            if (forex.isEmpty())
+            {
+                description.appendText("\n* missing forex unit on source transaction"); //$NON-NLS-1$
+                return false;
+            }
+
+            return checkConsistency("forex amount", source.getMonetaryAmount(), forex.get().getAmount(), description) //$NON-NLS-1$
+                            && checkConsistency("forex target amount", target.getMonetaryAmount(), //$NON-NLS-1$
+                                            forex.get().getForex(), description);
+        }
+    }
+
+    private static class PortfolioTransferMatcher extends PairedTransactionMatcher
+    {
+        public PortfolioTransferMatcher(Matcher<Transaction>[] properties)
+        {
+            super("securityTransfer", item -> item instanceof PortfolioTransferItem transfer //$NON-NLS-1$
+                            && transfer.getSubject() instanceof PortfolioTransferEntry entry
+                                            ? entry.getSourceTransaction()
+                                            : null,
+                            properties, "source transaction", "target transaction"); //$NON-NLS-1$ //$NON-NLS-2$
+        }
+
+        @Override
+        protected boolean matchesSafely(Extractor.Item item, Description description)
+        {
+            if (!super.matchesSafely(item, description))
+                return false;
+
+            var entry = (PortfolioTransferEntry) item.getSubject();
+            var source = entry.getSourceTransaction();
+            var target = entry.getTargetTransaction();
+
+            return checkConsistency("source type", PortfolioTransaction.Type.TRANSFER_OUT, source.getType(), //$NON-NLS-1$
+                            description)
+                            && checkConsistency("target type", PortfolioTransaction.Type.TRANSFER_IN, //$NON-NLS-1$
+                                            target.getType(), description)
+                            && checkMetadata(source, target, description)
+                            && checkConsistency("security", source.getSecurity(), target.getSecurity(), description) //$NON-NLS-1$
+                            && checkConsistency("shares", source.getShares(), target.getShares(), description) //$NON-NLS-1$
+                            && checkConsistency("amount", source.getAmount(), target.getAmount(), description) //$NON-NLS-1$
+                            && checkConsistency("currency", source.getCurrencyCode(), target.getCurrencyCode(), //$NON-NLS-1$
+                                            description);
+        }
+    }
+
     private static class TransactionSecurityMatcher extends TypeSafeDiagnosingMatcher<Transaction>
     {
         private Matcher<Security>[] properties;
@@ -369,47 +517,25 @@ public class ExtractorMatchers
     @SafeVarargs
     public static Matcher<Extractor.Item> inboundCash(Matcher<Transaction>... properties)
     {
-        return new ExtractorItemMatcher<>("cash transfer", //$NON-NLS-1$
-                        item -> item instanceof AccountTransferItem transfer //
-                                        && transfer.getSubject() instanceof AccountTransferEntry entry
-                                                        ? entry.getTargetTransaction()
-                                                        : null, //
-                        properties);
+        return new AccountTransferMatcher(true, properties);
     }
 
     @SafeVarargs
     public static Matcher<Extractor.Item> outboundCash(Matcher<Transaction>... properties)
     {
-        return new ExtractorItemMatcher<>("cash transfer", //$NON-NLS-1$
-                        item -> item instanceof AccountTransferItem transfer //
-                                        && transfer.getSubject() instanceof AccountTransferEntry entry
-                                                        ? entry.getSourceTransaction()
-                                                        : null, //
-                        properties);
+        return new AccountTransferMatcher(false, properties);
     }
 
     @SafeVarargs
     public static Matcher<Extractor.Item> purchase(Matcher<Transaction>... properties)
     {
-        return new ExtractorItemMatcher<>("purchase", //$NON-NLS-1$
-                        item -> item instanceof BuySellEntryItem buysell //
-                                        && buysell.getSubject() instanceof BuySellEntry entry
-                                        && entry.getPortfolioTransaction().getType() == PortfolioTransaction.Type.BUY
-                                                        ? entry.getPortfolioTransaction()
-                                                        : null, //
-                        properties);
+        return new BuySellEntryMatcher("purchase", PortfolioTransaction.Type.BUY, properties); //$NON-NLS-1$
     }
 
     @SafeVarargs
     public static Matcher<Extractor.Item> sale(Matcher<Transaction>... properties)
     {
-        return new ExtractorItemMatcher<>("sale", //$NON-NLS-1$
-                        item -> item instanceof BuySellEntryItem buysell //
-                                        && buysell.getSubject() instanceof BuySellEntry entry
-                                        && entry.getPortfolioTransaction().getType() == PortfolioTransaction.Type.SELL
-                                                        ? entry.getPortfolioTransaction()
-                                                        : null, //
-                        properties);
+        return new BuySellEntryMatcher("sale", PortfolioTransaction.Type.SELL, properties); //$NON-NLS-1$
     }
 
     @SafeVarargs
@@ -435,12 +561,7 @@ public class ExtractorMatchers
     @SafeVarargs
     public static Matcher<Extractor.Item> securityTransfer(Matcher<Transaction>... properties)
     {
-        return new ExtractorItemMatcher<>("securityTransfer", //$NON-NLS-1$
-                        item -> item instanceof PortfolioTransferItem transfer //
-                                        && transfer.getSubject() instanceof PortfolioTransferEntry entry
-                                                        ? entry.getSourceTransaction()
-                                                        : null, //
-                        properties);
+        return new PortfolioTransferMatcher(properties);
     }
 
     @SafeVarargs

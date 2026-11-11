@@ -33,6 +33,7 @@ import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.LogoManager;
 import name.abuchen.portfolio.ui.util.viewers.CopyPasteSupport;
+import name.abuchen.portfolio.ui.util.viewers.SafeTreeColumnLayout;
 import name.abuchen.portfolio.ui.wizards.AbstractWizardPage;
 
 public class ExportSelectionPage extends AbstractWizardPage
@@ -84,7 +85,7 @@ public class ExportSelectionPage extends AbstractWizardPage
 
         Composite treeComposite = new Composite(container, SWT.NONE);
 
-        TreeColumnLayout layout = new TreeColumnLayout();
+        TreeColumnLayout layout = new SafeTreeColumnLayout();
         treeComposite.setLayout(layout);
         treeViewer = new TreeViewer(treeComposite, SWT.BORDER | SWT.SINGLE);
         CopyPasteSupport.enableFor(treeViewer);

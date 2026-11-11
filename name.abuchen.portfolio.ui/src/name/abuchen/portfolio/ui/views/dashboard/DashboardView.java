@@ -461,13 +461,18 @@ public class DashboardView extends AbstractHistoricView
 
         int indexOfSelectedDashboard = Math.max(0, persistedState.getInt(SELECTED_DASHBOARD_KEY));
 
+        // fall back to the first dashboard if the persisted index is out of
+        // range (e.g. the file was closed without saving a newly created
+        // dashboard). Only create a default dashboard if there is none at all.
+        // The tool items are (re-)created by selectDashboard below.
         dashboard = getClient().getDashboards() //
                         .skip(indexOfSelectedDashboard) //
-                        .findFirst().orElseGet(() -> {
+                        .findFirst() //
+                        .or(() -> getClient().getDashboards().findFirst()) //
+                        .orElseGet(() -> {
                             Dashboard newDashboard = createDefaultDashboard();
                             getClient().addDashboard(newDashboard);
                             markDirty();
-                            createDashboardToolItems(getToolBarManager());
                             return newDashboard;
                         });
 

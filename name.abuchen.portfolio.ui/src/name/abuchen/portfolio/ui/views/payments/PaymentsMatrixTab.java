@@ -51,6 +51,7 @@ import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.util.TableViewerCSVExporter;
 import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
 import name.abuchen.portfolio.ui.util.viewers.CopyPasteSupport;
+import name.abuchen.portfolio.ui.util.viewers.SafeTableColumnLayout;
 import name.abuchen.portfolio.ui.views.AccountContextMenu;
 import name.abuchen.portfolio.ui.views.SecurityContextMenu;
 import name.abuchen.portfolio.ui.views.payments.PaymentsViewModel.Line;
@@ -177,7 +178,7 @@ public abstract class PaymentsMatrixTab implements PaymentsTab
         showAverageColumn = preferences.getBoolean(getKeyForShowAverage());
         showOnlyFirstYear = preferences.getBoolean(getKeyForShowOnlyFirstYear());
 
-        tableLayout = new TableColumnLayout();
+        tableLayout = new SafeTableColumnLayout();
         container.setLayout(tableLayout);
 
         tableViewer = new TableViewer(container, SWT.FULL_SELECTION);
