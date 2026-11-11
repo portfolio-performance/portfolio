@@ -496,7 +496,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                         .match("(GESAMT|TOTAL|TOTALE) (?<negative>\\-)[\\.,\\d\\s]+ [A-Z]{3}") //
                         .assign((t, v) -> {
                             if (t.getPortfolioTransaction().getType().isLiquidation())
-                                type.getCurrentContext().putBoolean("negative", true);
+                                v.getTransactionContext().putBoolean("negative", true);
                         })
 
                         .oneOf( //
@@ -516,7 +516,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                                         .match("^(GESAMT|TOTAL|TOTALE) (\\-)?(?<gross>[\\.,\\d\\s]+) (?<grossCurrency>[A-Z]{3})$") //
                                                         .match("^(GESAMT|TOTAL|TOTALE) (\\-)?(?<amount>[\\.,\\d\\s]+) (?<currency>[A-Z]{3})$") //
                                                         .assign((t, v) -> {
-                                                            if (type.getCurrentContext().getBoolean("negative"))
+                                                            if (v.getTransactionContext().getBoolean("negative"))
                                                             {
                                                                 t.setAmount(asAmount(stripBlanks(v.get("gross"))));
                                                                 t.setCurrencyCode(asCurrencyCode(v.get("grossCurrency")));
@@ -853,13 +853,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                             t.setNote(concatenate(t.getNote(), v.get("note2"), " "));
                         })
 
-                        .wrap((t, ctx) -> {
-                            // If we have multiple entries in the document,
-                            // then the "negative" flag must be removed.
-                            type.getCurrentContext().remove("negative");
-
-                            return new BuySellEntryItem(t);
-                        });
+                        .wrap(BuySellEntryItem::new);
 
         addTaxesSectionsTransaction(pdfTransaction, type);
         addFeesSectionsTransaction(pdfTransaction, type);
@@ -996,7 +990,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                         .section("negative").optional() //
                         .match("^(GESAMT|TOTAL|TOTALE) [\\.,\\d]+ [A-Z]{3}$") //
                         .match("^(GESAMT|TOTAL|TOTALE) (?<negative>\\-)[\\.,\\d]+ [A-Z]{3}$") //
-                        .assign((t, v) -> type.getCurrentContext().putBoolean("negative", true))
+                        .assign((t, v) -> v.getTransactionContext().putBoolean("negative", true))
 
                         // @formatter:off
                         // GESAMT -0,66 EUR
@@ -1004,8 +998,8 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                         .section("negative").optional() //
                         .match("^(GESAMT|TOTAL|TOTALE) (?<negative>\\-)[\\.,\\d]+ [A-Z]{3}$") //
                         .assign((t, v) -> {
-                            if (!type.getCurrentContext().getBoolean("negative"))
-                                type.getCurrentContext().putBoolean("negative", true);
+                            if (!v.getTransactionContext().getBoolean("negative"))
+                                v.getTransactionContext().putBoolean("negative", true);
                         })
 
                         // @formatter:off
@@ -1016,18 +1010,14 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                         .section("currency", "amount").optional() //
                         .match("^(Fremdkostenzuschlag|External cost surcharge|Frais externes) \\-(?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
                         .assign((t, v) -> {
-                            if (type.getCurrentContext().getBoolean("negative"))
+                            if (v.getTransactionContext().getBoolean("negative"))
                             {
                                 t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                 t.setAmount(asAmount(v.get("amount")));
                             }
                         })
 
-                        .wrap((t, ctx) -> {
-                            // If we have multiple entries in the document,
-                            // then the "negative" flag must be removed.
-                            type.getCurrentContext().remove("negative");
-
+                        .wrap(t -> {
                             if (t.getCurrencyCode() != null && t.getAmount() != 0)
                                 return new TransactionItem(t);
                             return null;
@@ -5165,7 +5155,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                         .section("fee", "currency").optional() //
                         .match("^Fremdkostenzuschlag \\-(?<fee>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
                         .assign((t, v) -> {
-                            if (!type.getCurrentContext().getBoolean("negative"))
+                            if (!v.getTransactionContext().getBoolean("negative"))
                                 processFeeEntries(t, v, type);
                         })
 
@@ -5176,7 +5166,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                         .section("fee", "currency").optional() //
                         .match("^Abwicklungs(kosten)?pauschale \\-(?<fee>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
                         .assign((t, v) -> {
-                            if (!type.getCurrentContext().getBoolean("negative"))
+                            if (!v.getTransactionContext().getBoolean("negative"))
                                 processFeeEntries(t, v, type);
                         })
 
@@ -5186,7 +5176,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                         .section("fee", "currency").optional() //
                         .match("^Fremde Spesen \\-(?<fee>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
                         .assign((t, v) -> {
-                            if (!type.getCurrentContext().getBoolean("negative"))
+                            if (!v.getTransactionContext().getBoolean("negative"))
                                 processFeeEntries(t, v, type);
                         })
 
@@ -5196,7 +5186,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                         .section("fee", "currency").optional() //
                         .match("^External cost surcharge \\-(?<fee>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
                         .assign((t, v) -> {
-                            if (!type.getCurrentContext().getBoolean("negative"))
+                            if (!v.getTransactionContext().getBoolean("negative"))
                                 processFeeEntries(t, v, type);
                         })
 
@@ -5206,7 +5196,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                         .section("fee", "currency").optional() //
                         .match("^Frais externes \\-(?<fee>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
                         .assign((t, v) -> {
-                            if (!type.getCurrentContext().getBoolean("negative"))
+                            if (!v.getTransactionContext().getBoolean("negative"))
                                 processFeeEntries(t, v, type);
                         })
 
@@ -5216,7 +5206,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                         .section("fee", "currency").optional() //
                         .match("^Supplemento spese di terzi \\-(?<fee>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
                         .assign((t, v) -> {
-                            if (!type.getCurrentContext().getBoolean("negative"))
+                            if (!v.getTransactionContext().getBoolean("negative"))
                                 processFeeEntries(t, v, type);
                         })
 
@@ -5226,7 +5216,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                         .section("fee", "currency").optional() //
                         .match("^Tarifa plana por costes del servicio de ejecuci.n de terceros \\-(?<fee>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
                         .assign((t, v) -> {
-                            if (!type.getCurrentContext().getBoolean("negative"))
+                            if (!v.getTransactionContext().getBoolean("negative"))
                                 processFeeEntries(t, v, type);
                         })
 
@@ -5236,7 +5226,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                         .section("fee", "currency").optional() //
                         .match("^Geb.hr f.r Einzahlung via Lastschrift \\-(?<fee>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
                         .assign((t, v) -> {
-                            if (!type.getCurrentContext().getBoolean("negative"))
+                            if (!v.getTransactionContext().getBoolean("negative"))
                                 processFeeEntries(t, v, type);
                         });
     }
