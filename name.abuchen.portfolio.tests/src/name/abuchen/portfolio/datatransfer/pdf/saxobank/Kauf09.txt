@@ -1,0 +1,52 @@
+PDFBox Version: 3.0.6
+Portfolio Performance Version: 0.81.5
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+CH-21540380 - 21540380
+Bericht zu Trade-Details
+Berichtszeitraum: 10-Mär-2026 - 10-Mär-2026
+Generiert um: 11-Mär-2026 07:04:17 07:04:17 (W. Europe Standard Time)
+CH-21540380 Saxo Bank CH
+Switzerland The Circle 38
+8058 Zürich-Flughafen
+Switzerland
+Saxo Bank CH / The Circle 38 / 8058 Zürich-Flughafen / Switzerland CH-21540380 Berichtszeitraum
+Währung: CHF 10-Mär-2026 - 10-Mär-2026
+Seite 1 von 3 Konten: 80000/200000 Generiert um: 11-Mär-2026
+Trade details, CHF
+Berichtszeitraum
+10-Mär-2026 bis 10-Mär-2026
+ETF
+Vanguard FTSE All-World High Dvd Yield
+Instrument Handelszeit 10-Mär-2026 14:26:26
+UCITS ETF
+ISIN IE00B8GKDB10 Valuta 12-Mär-2026
+Symbol VHYL:xswx Order-ID 5381305526
+Börsenbeschreibung SIX SWISS EXCHANGE (XSWX) Trade-ID 6624692645
+Hauptbörse SIX Swiss Exchange (ETFs) Gehandelter Wert -535.84 CHF
+Handelsplatz Exchange Preis 66.98 CHF
+Ordertyp Limit-Order Menge 8.00
+K/V Kauf Spread-Kosten 0.00 CHF
+Eröffnung/Schluss To-Open Gesamte Trading-Kosten -3.80 CHF
+Saxo is counterparty No
+Buchungsbetrag- Amount Umrechnungskosten Gebuchter Betrag
+Trade-Datum Value Date Umrechnungskurs
+ID CHF CHF CHF
+Schweizerische
+Stempelgebühr 53254877258 10-Mär-2026 12-Mär-2026 -0.80 1.000000 0.00 -0.80
+Ausland
+Provision 53247396918 10-Mär-2026 12-Mär-2026 -3.00 1.000000 0.00 -3.00
+Saxo Bank CH / The Circle 38 / 8058 Zürich-Flughafen / Switzerland CH-21540380 Berichtszeitraum
+Währung: CHF 10-Mär-2026 - 10-Mär-2026
+Seite 2 von 3 Konten: 80000/200000 Generiert um: 11-Mär-2026
+Trade details, CHF
+Berichtszeitraum
+10-Mär-2026 bis 10-Mär-2026
+Buchungsbetrag- Amount Umrechnungskosten Gebuchter Betrag
+Trade-Datum Value Date Umrechnungskurs
+ID CHF CHF CHF
+Aktienbetrag 53252014873 10-Mär-2026 12-Mär-2026 -535.84 1.000000 0.00 -535.84
+Nettobetrag - - - - - 0.00 -539.64
+Saxo Bank CH / The Circle 38 / 8058 Zürich-Flughafen / Switzerland CH-21540380 Berichtszeitraum
+Währung: CHF 10-Mär-2026 - 10-Mär-2026
+Seite 3 von 3 Konten: 80000/200000 Generiert um: 11-Mär-2026

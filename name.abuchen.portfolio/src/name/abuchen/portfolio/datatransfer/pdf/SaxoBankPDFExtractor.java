@@ -54,7 +54,18 @@ public class SaxoBankPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         .section("currency") //
                                         .match("^.*(W.hrung|Currency): (?<currency>[A-Z]{3}).*$") //
-                                        .assign((ctx, v) -> ctx.put("currency", asCurrencyCode(v.get("currency")))));
+                                        .assign((ctx, v) -> ctx.put("currency", asCurrencyCode(v.get("currency"))))
+
+                                        // @formatter:off
+                                        // ETF
+                                        // Vanguard FTSE All-World High Dvd Yield
+                                        // Instrument Handelszeit 10-Mär-2026 14:26:26
+                                        // @formatter:on
+                                        .section("name").optional() //
+                                        .match("^ETF$") //
+                                        .match("^(?<name>.*)$") //
+                                        .match("^Instrument (Handelszeit|Trade time) .*$") //
+                                        .assign((ctx, v) -> ctx.put("name", trim(v.get("name")))));
 
         this.addDocumentTyp(type);
 
@@ -131,6 +142,28 @@ public class SaxoBankPDFExtractor extends AbstractPDFExtractor
                                                         .match("^Symbol (?<tickerSymbol>[A-Z0-9\\._-]{1,10}(?:\\.[A-Z]{1,4})?):.*$") //
                                                         .match("^.* Gehandelter Wert (\\-)?[\\.,'\\d]+ (?<currency>[A-Z]{3})$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
+                                        // @formatter:off
+                                        // ETF
+                                        // Vanguard FTSE All-World High Dvd Yield
+                                        // Instrument Handelszeit 10-Mär-2026 14:26:26
+                                        // UCITS ETF
+                                        // ISIN IE00B8GKDB10 Valuta 12-Mär-2026
+                                        // Symbol VHYL:xswx Order-ID 5381305526
+                                        // Hauptbörse SIX Swiss Exchange (ETFs) Gehandelter Wert -535.84 CHF
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("name1", "isin", "tickerSymbol", "currency") //
+                                                        .documentContext("name") //
+                                                        .match("^Instrument (Handelszeit|Trade time) .*$") //
+                                                        .match("^(?<name1>.*)$") //
+                                                        .match("^ISIN (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) (Valuta|Value).*$") //
+                                                        .match("^Symbol (?<tickerSymbol>[A-Z0-9\\._-]{1,10}(?:\\.[A-Z]{1,4})?):.*$") //
+                                                        .match("^.*(Gehandelter Wert|Traded Value) (\\-)?[\\.,'\\d]+ (?<currency>[A-Z]{3})$") //
+                                                        .assign((t, v) -> {
+                                                            v.put("name", trim(v.get("name")) + " " + trim(v.get("name1")));
+
+                                                            t.setSecurity(getOrCreateSecurity(v));
+                                                        }),
                                         // @formatter:off
                                         // Berichtszeitraum
                                         // 05-Jun-2025 bis 05-Jun-2025
