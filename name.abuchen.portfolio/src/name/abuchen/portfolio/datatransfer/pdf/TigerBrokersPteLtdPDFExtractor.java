@@ -13,6 +13,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.regex.Pattern;
 
+import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.datatransfer.ExtractorUtils;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
@@ -187,10 +188,13 @@ public class TigerBrokersPteLtdPDFExtractor extends AbstractPDFExtractor
                         .wrap(t -> {
                             type.getCurrentContext().removeType(SecurityItem.class);
 
-                            if (t.getPortfolioTransaction().getCurrencyCode() != null && t.getPortfolioTransaction().getAmount() != 0)
-                                return new BuySellEntryItem(t);
+                            if (t.getPortfolioTransaction().getCurrencyCode() == null)
+                                return null;
 
-                            return null;
+                            if (t.getPortfolioTransaction().getAmount() == 0)
+                                return new SkippedItem(new BuySellEntryItem(t), Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
+
+                            return new BuySellEntryItem(t);
                         });
 
         addFeesSectionsTransaction(buyBlock_Format01, type);
@@ -245,10 +249,13 @@ public class TigerBrokersPteLtdPDFExtractor extends AbstractPDFExtractor
                         .wrap(t -> {
                             type.getCurrentContext().removeType(SecurityItem.class);
 
-                            if (t.getPortfolioTransaction().getCurrencyCode() != null && t.getPortfolioTransaction().getAmount() != 0)
-                                return new BuySellEntryItem(t);
+                            if (t.getPortfolioTransaction().getCurrencyCode() == null)
+                                return null;
 
-                            return null;
+                            if (t.getPortfolioTransaction().getAmount() == 0)
+                                return new SkippedItem(new BuySellEntryItem(t), Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
+
+                            return new BuySellEntryItem(t);
                         });
 
         addFeesSectionsTransaction(buyBlock_Format02, type);
@@ -303,10 +310,13 @@ public class TigerBrokersPteLtdPDFExtractor extends AbstractPDFExtractor
                         .wrap(t -> {
                             type.getCurrentContext().removeType(SecurityItem.class);
 
-                            if (t.getPortfolioTransaction().getCurrencyCode() != null && t.getPortfolioTransaction().getAmount() != 0)
-                                return new BuySellEntryItem(t);
+                            if (t.getPortfolioTransaction().getCurrencyCode() == null)
+                                return null;
 
-                            return null;
+                            if (t.getPortfolioTransaction().getAmount() == 0)
+                                return new SkippedItem(new BuySellEntryItem(t), Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
+
+                            return new BuySellEntryItem(t);
                         });
 
         addFeesSectionsTransaction(buyBlock_Format03, type);
@@ -404,10 +414,13 @@ public class TigerBrokersPteLtdPDFExtractor extends AbstractPDFExtractor
                         .wrap(t -> {
                             type.getCurrentContext().removeType(SecurityItem.class);
 
-                            if (t.getPortfolioTransaction().getCurrencyCode() != null && t.getPortfolioTransaction().getAmount() != 0)
-                                return new BuySellEntryItem(t);
+                            if (t.getPortfolioTransaction().getCurrencyCode() == null)
+                                return null;
 
-                            return null;
+                            if (t.getPortfolioTransaction().getAmount() == 0)
+                                return new SkippedItem(new BuySellEntryItem(t), Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
+
+                            return new BuySellEntryItem(t);
                         });
 
         addFeesSectionsTransaction(buyBlock_Format04, type);
@@ -466,10 +479,13 @@ public class TigerBrokersPteLtdPDFExtractor extends AbstractPDFExtractor
                         .wrap(t -> {
                             type.getCurrentContext().removeType(SecurityItem.class);
 
-                            if (t.getPortfolioTransaction().getCurrencyCode() != null && t.getPortfolioTransaction().getAmount() != 0)
-                                return new BuySellEntryItem(t);
+                            if (t.getPortfolioTransaction().getCurrencyCode() == null)
+                                return null;
 
-                            return null;
+                            if (t.getPortfolioTransaction().getAmount() == 0)
+                                return new SkippedItem(new BuySellEntryItem(t), Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
+
+                            return new BuySellEntryItem(t);
                         });
         
         addFeesSectionsTransaction(buyBlock_Format05, type);
@@ -696,6 +712,8 @@ public class TigerBrokersPteLtdPDFExtractor extends AbstractPDFExtractor
                                 return new TransactionItem(t);
                         });
 
+        addDividendAccrualsTransaction_late25(type);
+
         var taxRefundBlock = new Transaction<AccountTransaction>();
 
         // @formatter:off
@@ -748,6 +766,157 @@ public class TigerBrokersPteLtdPDFExtractor extends AbstractPDFExtractor
                         })
 
                         .wrap(TransactionItem::new);
+    }
+
+    private void assignDividend(AccountTransaction t, Map<String, String> v, DocumentType type)
+    {
+        var context = type.getCurrentContext();
+
+        var securityItem = context.getType(SecurityListHelper.class).get().findItem(v.get("tickerSymbol"));
+
+        securityItem.ifPresent(s -> {
+            v.put("name", s.name);
+            v.put("tickerSymbol", s.tickerSymbol);
+        });
+
+        t.setSecurity(getOrCreateSecurity(v));
+
+        t.setDateTime(asDate(v.get("dateYear") + "-" + v.get("dateDay")));
+        t.setShares(asShares(v.get("shares")));
+        t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+        t.setAmount(asAmount(v.get("amount")));
+
+        // Some layouts state the withholding tax within the amount line
+        if (v.get("taxes") != null)
+        {
+            var tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("taxes")));
+            checkAndSetTax(tax, t, context);
+        }
+    }
+
+    /**
+     * "Dividend Accruals" are announced but not paid out yet, there is no
+     * cash flow. They are skipped with a message instead of being dropped
+     * silently.
+     */
+    private void addDividendAccrualsTransaction_late25(DocumentType type)
+    {
+        var dividendAccrualsBlock_late25 = new Transaction<AccountTransaction>();
+
+        var firstRelevantLineForDividendAccrualsBlock_late25 = new Block("^.*Quantity: [\\.,\\d]+$");
+        type.addBlock(firstRelevantLineForDividendAccrualsBlock_late25);
+        firstRelevantLineForDividendAccrualsBlock_late25.setMaxSize(9);
+        firstRelevantLineForDividendAccrualsBlock_late25.set(dividendAccrualsBlock_late25);
+
+        dividendAccrualsBlock_late25 //
+
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.DIVIDENDS))
+
+                        // @formatter:off
+                        // "Dividend Accruals" are announced but not paid out yet, there is
+                        // no cash flow. They are skipped with a message instead of being
+                        // dropped silently.
+                        // @formatter:on
+                        .optionalOneOf( //
+                                        // @formatter:off
+                                        // Quantity: 3000
+                                        // 2025-10- Frasers Cpt Tr Dividend Accruals
+                                        // Stock Gross Rate: 0.055850 167.55 0 167.55 SGD
+                                        // 31 (J69U.SI) Reinvestment Increase
+                                        // /Share
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("shares", "dateYear", "grossAmount", "amount",
+                                                                        "currency", "dateDay", "tickerSymbol") //
+                                                        .match("^.*Quantity: (?<shares>[\\.,\\d]+)$") //
+                                                        .match("^(?<dateYear>[\\d]{4}\\-[\\d]{2})\\- .*Dividend Accruals.*$") //
+                                                        .match("^.* Gross Rate: [\\.,\\d]+ (\\-)?(?<grossAmount>[\\.,\\d]+) [\\.,\\d]+ (\\-)?(?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
+                                                        .match("^(?<dateDay>[\\d]{2}) \\((?<tickerSymbol>[A-Z0-9]{1,6}(?:\\.[A-Z]{1,4})?)\\).*$") //
+                                                        .assign((t, v) -> assignDividend(t, v, type)),
+                                        // @formatter:off
+                                        // Blackstone Secured Lending Quantity: 1033
+                                        // 2025-12- Dividend Accruals Dividend tax:
+                                        // Stock Fund Gross Rate: 0.770000 795.41 0 715.87 USD
+                                        // 31 Increase 79.54
+                                        // (BXSL) /Share
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("shares", "dateYear", "grossAmount", "amount",
+                                                                        "currency", "dateDay", "tickerSymbol") //
+                                                        .match("^.*Quantity: (?<shares>[\\.,\\d]+)$") //
+                                                        .match("^(?<dateYear>[\\d]{4}\\-[\\d]{2})\\- .*Dividend Accruals.*$") //
+                                                        .match("^.* Gross Rate: [\\.,\\d]+ (\\-)?(?<grossAmount>[\\.,\\d]+) [\\.,\\d]+ (\\-)?(?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
+                                                        .match("^(?<dateDay>[\\d]{2}).*$") //
+                                                        .match("^\\((?<tickerSymbol>[A-Z0-9]{1,6}(?:\\.[A-Z]{1,4})?)\\) \\/Share$") //
+                                                        .assign((t, v) -> assignDividend(t, v, type)),
+                                        // @formatter:off
+                                        // Vanguard Total World Stock Quantity: 72
+                                        // 2024-12-
+                                        // Stock ETF Gross Rate: 0.88 Dividend Accruals Increase 63.17 0 Dividend tax: 9.48 53.69 USD
+                                        // 20
+                                        // (VT) /Share
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("shares", "dateYear", "grossAmount", "taxes",
+                                                                        "amount", "currency", "dateDay", "tickerSymbol") //
+                                                        .match("^.*Quantity: (?<shares>[\\.,\\d]+)$") //
+                                                        .match("^(?<dateYear>[\\d]{4}\\-[\\d]{2})\\-( .*)?$") //
+                                                        .match("^.* Gross Rate: [\\.,\\d]+ Dividend Accruals (Increase|Reduction) (\\-)?(?<grossAmount>[\\.,\\d]+) [\\.,\\d]+ Dividend tax: (?<taxes>[\\.,\\d]+) (?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
+                                                        .match("^(?<dateDay>[\\d]{2})$") //
+                                                        .match("^\\((?<tickerSymbol>[A-Z0-9]{1,6}(?:\\.[A-Z]{1,4})?)\\) \\/Share$") //
+                                                        .assign((t, v) -> assignDividend(t, v, type)),
+                                        // @formatter:off
+                                        // Quantity: 25
+                                        // 2024-12- Vanguard S&P 500 ETF
+                                        // Stock Gross Rate: 1.74 Dividend Accruals Increase 43.46 0 Dividend tax: 6.52 36.94 USD
+                                        // 23 (VOO)
+                                        // /Share
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("shares", "dateYear", "grossAmount", "taxes",
+                                                                        "amount", "currency", "dateDay", "tickerSymbol") //
+                                                        .match("^.*Quantity: (?<shares>[\\.,\\d]+)$") //
+                                                        .match("^(?<dateYear>[\\d]{4}\\-[\\d]{2})\\-( .*)?$") //
+                                                        .match("^.* Gross Rate: [\\.,\\d]+ Dividend Accruals (Increase|Reduction) (\\-)?(?<grossAmount>[\\.,\\d]+) [\\.,\\d]+ Dividend tax: (?<taxes>[\\.,\\d]+) (?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
+                                                        .match("^(?<dateDay>[\\d]{2}) \\((?<tickerSymbol>[A-Z0-9]{1,6}(?:\\.[A-Z]{1,4})?)\\)$") //
+                                                        .match("^\\/Share$") //
+                                                        .assign((t, v) -> assignDividend(t, v, type)))
+
+                        // @formatter:off
+                        // The withholding tax is stated at the end of the day line and is
+                        // present for USD dividends only.
+                        //
+                        // 15 (O) 17.60
+                        // 24 Reinvestment 28.26
+                        // @formatter:on
+                        .section("taxes").optional() //
+                        .match("^[\\d]{2} (.* )?(?<taxes>[\\d]+\\.[\\d]{2})$") //
+                        .assign((t, v) -> {
+                            if (t.getCurrencyCode() == null)
+                                return;
+
+                            var tax = Money.of(t.getCurrencyCode(), asAmount(v.get("taxes")));
+                            checkAndSetTax(tax, t, type.getCurrentContext());
+                        })
+
+                        // @formatter:off
+                        // Set a note so that the reason for skipping is visible in the
+                        // import dialog and in the note column.
+                        //
+                        // 2025-10- Frasers Cpt Tr Dividend Accruals
+                        // @formatter:on
+                        .section("note").optional() //
+                        .match("^.*(?<note>Dividend Accruals).*$") //
+                        .assign((t, v) -> t.setNote(trim(v.get("note"))))
+
+                        .wrap(t -> {
+                            type.getCurrentContext().removeType(SecurityItem.class);
+
+                            if (t.getDateTime() == null)
+                                return null;
+
+                            return new SkippedItem(new TransactionItem(t), Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
+                        });
     }
 
     private <T extends Transaction<?>> void addFeesSectionsTransaction(T transaction, DocumentType type)
