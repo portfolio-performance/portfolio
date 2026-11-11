@@ -1,0 +1,83 @@
+PDFBox Version: 3.0.8
+Portfolio Performance Version: 0.88.0
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+NAME DES KUNDEN KUNDEN-ID
+JDx UVgmyZ LihoBpr 13371012
+Handelsbestätigung
+Generiert von Trading 212 EU GmbH am 5. Oktober 2026 um 16:44(UTC).
+Auftragsdetails
+Wertpapier Veea
+Symbol VEEA
+ISIN US6934892059
+Art Market
+Anweisung Verkaufen
+Status Ausgeführt
+Auftrags-ID-Nr. 58419963102
+Ausführungsdetails
+Ausführungsnummer 58419963104
+Ausführungszeitpunkt 05 Okt 2026, 16:41:38 (UTC)
+Sitzung Reguläre Zeiten
+Ausführungsplatzes OTC
+Anzahl 20
+Ausführungskurs 4,99 $
+Wert 99,80 $
+Wechselkurs 1,12046704
+Erhaltener Betrag
+Verkaufserlös vor Steuern 88,94 €
+FX Gebühr -0,13 €
+Gebühren der Handelsplattform &
+-
+Steuern
+Steuern -0,21 €
+Gesamtbetrag 88,73 €
+Trading 212 handelt bei allen Geschäften als Auftraggeber oder Vermittler und auf reiner Ausführungsbasis.
+Die an einer Börse getätigten Anlagegeschäfte folgen dem Standardabwicklungszyklus für Aktien: Abschlusstag plus zwei Tage (T+2), auch wenn dieser Zeitraum aus
+betrieblichen Gründen gelegentlich verlängert werden kann.
+Trading 212 ist ein Handelsname von Trading 212 EU GmbH. Trading 212 EU GmbH ist in Deutschland registriert (Firmennummer 101710). Eingetragene Adresse: Bahnstraße
+47, 40878 Ratingen, Deutschland. Trading 212 EU GmbH ist von der BaFin autorisiert und reguliert (Lizenznummer 10109603). Geschäftsführer: Rafael Neustadt, Andreas
+Hana. 1/3
+NAME DES KUNDEN KUNDEN-ID
+Jih zViuXD YhmRISe 56044367
+Rendite
+Verkaufserlös vor Steuern 88,94 €
+Kosten -88,14 €
+Rendite 0,80 €
+Trading 212 handelt bei allen Geschäften als Auftraggeber oder Vermittler und auf reiner Ausführungsbasis.
+Die an einer Börse getätigten Anlagegeschäfte folgen dem Standardabwicklungszyklus für Aktien: Abschlusstag plus zwei Tage (T+2), auch wenn dieser Zeitraum aus
+betrieblichen Gründen gelegentlich verlängert werden kann.
+Trading 212 ist ein Handelsname von Trading 212 EU GmbH. Trading 212 EU GmbH ist in Deutschland registriert (Firmennummer 101710). Eingetragene Adresse: Bahnstraße
+47, 40878 Ratingen, Deutschland. Trading 212 EU GmbH ist von der BaFin autorisiert und reguliert (Lizenznummer 10109603). Geschäftsführer: Rafael Neustadt, Andreas
+Hana. 2/3
+NAME DES KUNDEN KUNDEN-ID
+veX lKxbsC QXrPeqw 97861429
+Glossar
+ISIN
+Ein eindeutiger Code, der zur internationalen Identifizierung eines bestimmten Finanzinstruments (z. B. einer Aktie oder eines ETF)
+verwendet wird.
+Auftrags-ID-Nr.
+Die Identifikationsnummer des gesamten Auftrags. Ein Auftrag kann mehrere Ausführungen haben.
+Ausführungsnummer
+Eine eindeutige Kennung für eine bestimmte Ausführung innerhalb eines Auftrags.
+Wert
+Der gesamte Wert des Trades/der Position, wobei die Quantität mit dem Ausführungspreis multipliziert wird.
+Sitzung
+Die Sitzung, in der der Handel ausgeführt wurde, so dass Kunden zwischen Aufträgen während der Hauptzeiten, der verlängerten
+(vor- und nachbörslichen) und der Über-Nacht-Handelszeiten unterscheiden können.
+Wechselkurs
+Der zum Zeitpunkt der Trade-Ausführung geltende Wechselkurs.
+Gebühren der Handelsplattform & Steuern
+Alle von den Behörden auferlegten obligatorischen Gebühren , darunter Stempelgebühren, Finanztransaktionssteuern, PTM-
+Abgaben, FINRA-Gebühren, SEC-Gebühren und Quellensteuern.
+Steuern
+Der Gesamtbetrag der auf Ihr Konto anfallenden Steuern, einschließlich Abgeltungssteuer, Solidaritätszuschlag und ggf.
+Kirchensteuer.
+Rendite
+Die Gesamtrendite aus der geschlossenen Position, berechnet durch den Vergleich des insgesamt erhaltenen Betrags mit den
+ursprünglichen Investitionskosten, nach Berücksichtigung aller Gebühren.
+Trading 212 handelt bei allen Geschäften als Auftraggeber oder Vermittler und auf reiner Ausführungsbasis.
+Die an einer Börse getätigten Anlagegeschäfte folgen dem Standardabwicklungszyklus für Aktien: Abschlusstag plus zwei Tage (T+2), auch wenn dieser Zeitraum aus
+betrieblichen Gründen gelegentlich verlängert werden kann.
+Trading 212 ist ein Handelsname von Trading 212 EU GmbH. Trading 212 EU GmbH ist in Deutschland registriert (Firmennummer 101710). Eingetragene Adresse: Bahnstraße
+47, 40878 Ratingen, Deutschland. Trading 212 EU GmbH ist von der BaFin autorisiert und reguliert (Lizenznummer 10109603). Geschäftsführer: Rafael Neustadt, Andreas
+Hana. 3/3
