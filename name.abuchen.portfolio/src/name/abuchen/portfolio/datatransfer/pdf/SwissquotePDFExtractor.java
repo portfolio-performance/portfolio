@@ -48,9 +48,6 @@ public class SwissquotePDFExtractor extends AbstractPDFExtractor
         return "Swissquote Bank AG / Swissquote Bank Europe SA / Yuh (powered by Swissquote Bank AG)";
     }
 
-    record Data(String currency) {
-    }
-
     private void addBuySellTransaction()
     {
         final var type = new DocumentType("((B.rsen|Derivate)transaktion: |Stock-Exchange Transaction: )?(Kauf|Verkauf|Sell|Buy)", //
@@ -91,7 +88,7 @@ public class SwissquotePDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("name", "currency") //
-                                                        .find("Bezeichnung Anzahl Kontraktw.hrung Preis")
+                                                        .find("Bezeichnung Anzahl Kontraktw.hrung Preis") //
                                                         .match("^(?<name>.*) [\\.'\\d]+ (?<currency>[A-Z]{3}) [\\.'\\d]+$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
                                         // @formatter:off
@@ -221,7 +218,6 @@ public class SwissquotePDFExtractor extends AbstractPDFExtractor
                             {
                                 exchangeRate = BigDecimal.ONE.divide(exchangeRate, 10, RoundingMode.HALF_DOWN);
                             }
-                            type.getCurrentContext().put("exchangeRate", exchangeRate.toPlainString());
 
                             var gross = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("gross")));
                             var fxGross = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxGross")));
@@ -240,7 +236,6 @@ public class SwissquotePDFExtractor extends AbstractPDFExtractor
                                 catch (IllegalArgumentException e)
                                 {
                                     exchangeRate = BigDecimal.valueOf(((double) gross.getAmount()) / fxGross.getAmount());
-                                    type.getCurrentContext().put("exchangeRate", exchangeRate.toPlainString());
 
                                     t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.GROSS_VALUE, gross, fxGross, exchangeRate));
                                 }
@@ -291,7 +286,7 @@ public class SwissquotePDFExtractor extends AbstractPDFExtractor
                         // Bruttobetrag USD  1'272.88
                         // @formatter:on
                         .section("name", "currency") //
-                        .find("Anzahl W.hrung Rate")
+                        .find("Anzahl W.hrung Rate") //
                         .match("^[\\.'\\d]+ (?<name>[A-Z0-9]{1,5}(?:[\\-\\/][A-Z0-9]{1,5})?) [\\.'\\d]+$") //
                         .match("^Bruttobetrag (?<currency>[A-Z]{3})[\\s]{1,}[\\.'\\d]+$") //
                         .assign((t, v) -> {
@@ -305,7 +300,7 @@ public class SwissquotePDFExtractor extends AbstractPDFExtractor
                         // 0.02 BTC 63'643.9
                         // @formatter:on
                         .section("shares") //
-                        .find("Anzahl W.hrung Rate")
+                        .find("Anzahl W.hrung Rate") //
                         .match("^(?<shares>[\\.'\\d]+) [A-Z0-9]{1,5}(?:[\\-\\/][A-Z0-9]{1,5})? [\\.'\\d]+$") //
                         .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
@@ -850,7 +845,7 @@ public class SwissquotePDFExtractor extends AbstractPDFExtractor
                         // QQQ APR24 447C 1.00 USD -
                         // @formatter:on
                         .section("name", "currency") //
-                        .find("Bezeichnung Anzahl Kontraktw.hrung Preis")
+                        .find("Bezeichnung Anzahl Kontraktw.hrung Preis") //
                         .match("^(?<name>.*) [\\.'\\d]+ (?<currency>[A-Z]{3}) \\-$") //
                         .assign((t, v) -> {
                             v.markAsFailure(Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
