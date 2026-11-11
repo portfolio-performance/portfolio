@@ -1,5 +1,6 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
+import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetFee;
 import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetTax;
 import static name.abuchen.portfolio.util.TextUtil.trim;
 
@@ -490,6 +491,81 @@ public class TigerBrokersPteLtdPDFExtractor extends AbstractPDFExtractor
         
         addFeesSectionsTransaction(buyBlock_Format05, type);
 
+        var buyBlock_Format06 = new Transaction<BuySellEntry>();
+
+        // @formatter:off
+        // Vanguard Total World Stock Commission: 2025-04-08
+        // ETF US ARCA Open 1 106.43000 106.43 0.00 -0.99 2025-
+        // Platform Fee: 0.00 0.00 11:28:50, US USD
+        // 04-09
+        // (VT) -1.00 /Eastern
+        // @formatter:on
+        var firstRelevantLineForBuyBlock_Format06 = new Block("^.* Commission: [\\d]{4}\\-[\\d]{2}\\-[\\d]{2}$");
+        type.addBlock(firstRelevantLineForBuyBlock_Format06);
+        firstRelevantLineForBuyBlock_Format06.setMaxSize(5);
+        firstRelevantLineForBuyBlock_Format06.set(buyBlock_Format06);
+
+        buyBlock_Format06 //
+
+                        .subject(() -> new BuySellEntry(PortfolioTransaction.Type.BUY))
+
+                        .section("date", "shares", "gross", "fee1", "time", "currency", "tickerSymbol", "fee2") //
+                        .match("^.* Commission: (?<date>[\\d]{4}\\-[\\d]{2}\\-[\\d]{2})$") //
+                        .match("^.* Open " //
+                                        + "(?<shares>[\\.,\\d]+) " //
+                                        + "[\\.,\\d]+ " //
+                                        + "(?<gross>[\\.,\\d]+) " //
+                                        + "[\\.,\\d]+ " //
+                                        + "\\-(?<fee1>[\\.,\\d]+) [\\d]{4}\\-$") //
+                        .match("^Platform Fee: [\\.,\\d]+ [\\.,\\d]+ (?<time>[\\d]{2}:[\\d]{2}:[\\d]{2}), .* (?<currency>[A-Z]{3})$") //
+                        .match("^\\((?<tickerSymbol>[A-Z0-9]{1,6}(?:\\.[A-Z]{1,4})?)\\) \\-(?<fee2>[\\.,\\d]+) .*$") //
+                        .assign((t, v) -> {
+                            var context = type.getCurrentContext();
+
+                            var securityItem = context.getType(SecurityListHelper.class).get()
+                                            .findItem(v.get("tickerSymbol"));
+
+                            securityItem.ifPresent(s -> {
+                                v.put("name", s.name);
+                                v.put("tickerSymbol", s.tickerSymbol);
+                            });
+
+                            t.setSecurity(getOrCreateSecurity(v));
+
+                            t.setDate(asDate(v.get("date"), v.get("time")));
+                            t.setShares(asShares(v.get("shares")));
+
+                            // The amount is stated in gross
+                            t.setAmount(asAmount(v.get("gross")) + asAmount(v.get("fee1")) + asAmount(v.get("fee2")));
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                        })
+
+                        // @formatter:off
+                        // ETF US ARCA Open 1 106.43000 106.43 0.00 -0.99 2025-
+                        // @formatter:on
+                        .section("fee").optional() //
+                        .match("^.* Open [\\.,\\d]+ [\\.,\\d]+ [\\.,\\d]+ [\\.,\\d]+ \\-(?<fee>[\\.,\\d]+) [\\d]{4}\\-$") //
+                        .assign((t, v) -> processTradeFee(t, v, type))
+
+                        // @formatter:off
+                        // (VT) -1.00 /Eastern
+                        // @formatter:on
+                        .section("fee").optional() //
+                        .match("^\\([A-Z0-9]{1,6}(?:\\.[A-Z]{1,4})?\\) \\-(?<fee>[\\.,\\d]+) .*$") //
+                        .assign((t, v) -> processTradeFee(t, v, type))
+
+                        .wrap(t -> {
+                            type.getCurrentContext().removeType(SecurityItem.class);
+
+                            if (t.getPortfolioTransaction().getCurrencyCode() == null)
+                                return null;
+
+                            if (t.getPortfolioTransaction().getAmount() == 0)
+                                return new SkippedItem(new BuySellEntryItem(t), Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
+
+                            return new BuySellEntryItem(t);
+                        });
+
         var dividendBlock = new Transaction<AccountTransaction>();
 
         // @formatter:off
@@ -712,6 +788,7 @@ public class TigerBrokersPteLtdPDFExtractor extends AbstractPDFExtractor
                                 return new TransactionItem(t);
                         });
 
+        addDividendTransaction_late25(type);
         addDividendAccrualsTransaction_late25(type);
 
         var taxRefundBlock = new Transaction<AccountTransaction>();
@@ -768,6 +845,12 @@ public class TigerBrokersPteLtdPDFExtractor extends AbstractPDFExtractor
                         .wrap(TransactionItem::new);
     }
 
+    private void processTradeFee(BuySellEntry t, Map<String, String> v, DocumentType type)
+    {
+        var fee = Money.of(t.getPortfolioTransaction().getCurrencyCode(), asAmount(v.get("fee")));
+        checkAndSetFee(fee, t, type.getCurrentContext());
+    }
+
     private void assignDividend(AccountTransaction t, Map<String, String> v, DocumentType type)
     {
         var context = type.getCurrentContext();
@@ -792,6 +875,108 @@ public class TigerBrokersPteLtdPDFExtractor extends AbstractPDFExtractor
             var tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("taxes")));
             checkAndSetTax(tax, t, context);
         }
+    }
+
+    /**
+     * Dividends in the late 2025 layout of the "Activity Statement".
+     */
+    private void addDividendTransaction_late25(DocumentType type)
+    {
+        var dividendBlock_late25 = new Transaction<AccountTransaction>();
+
+        var firstRelevantLineForDividendBlock_late25 = new Block("^.*Quantity: [\\.,\\d]+$");
+        type.addBlock(firstRelevantLineForDividendBlock_late25);
+        firstRelevantLineForDividendBlock_late25.setMaxSize(9);
+        firstRelevantLineForDividendBlock_late25.set(dividendBlock_late25);
+
+        dividendBlock_late25 //
+
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.DIVIDENDS))
+
+                        .optionalOneOf( //
+                                        // @formatter:off
+                                        // Quantity: 2200
+                                        // 2025-09- CapLand Ascendas REIT
+                                        // Stock Gross Rate: 0.000930 Paid 2.05 0 2.05 SGD
+                                        // 04 (A17U.SI) Reinvestment
+                                        // /Share
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("shares", "dateYear", "grossAmount", "amount",
+                                                                        "currency", "dateDay", "tickerSymbol") //
+                                                        .match("^.*Quantity: (?<shares>[\\.,\\d]+)$") //
+                                                        .match("^(?<dateYear>[\\d]{4}\\-[\\d]{2})\\- .*$") //
+                                                        .match("^.* Gross Rate: [\\.,\\d]+ Paid (?<grossAmount>[\\.,\\d]+) [\\.,\\d]+ (?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
+                                                        .match("^(?<dateDay>[\\d]{2}) \\((?<tickerSymbol>[A-Z0-9]{1,6}(?:\\.[A-Z]{1,4})?)\\).*$") //
+                                                        .assign((t, v) -> assignDividend(t, v, type)),
+                                        // @formatter:off
+                                        // Blackstone Secured Lending Quantity: 367
+                                        // 2025-10- Dividend tax:
+                                        // Stock Fund Gross Rate: 0.770000 Paid 282.59 0 254.33 USD
+                                        // 24 Reinvestment 28.26
+                                        // (BXSL) /Share
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("shares", "dateYear", "grossAmount", "amount",
+                                                                        "currency", "dateDay", "tickerSymbol") //
+                                                        .match("^.*Quantity: (?<shares>[\\.,\\d]+)$") //
+                                                        .match("^(?<dateYear>[\\d]{4}\\-[\\d]{2})\\- .*$") //
+                                                        .match("^.* Gross Rate: [\\.,\\d]+ Paid (?<grossAmount>[\\.,\\d]+) [\\.,\\d]+ (?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
+                                                        .match("^(?<dateDay>[\\d]{2}).*$") //
+                                                        .match("^\\((?<tickerSymbol>[A-Z0-9]{1,6}(?:\\.[A-Z]{1,4})?)\\) \\/Share$") //
+                                                        .assign((t, v) -> assignDividend(t, v, type)),
+                                        // @formatter:off
+                                        // Quantity: 200
+                                        // Gross Rate: 0.600000
+                                        // 2025-11- Stock DBS /Share Paid 120.00 0 120.00 SGD
+                                        // 24 (D05.SI) Reinvestment
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("shares", "dateYear", "grossAmount", "amount",
+                                                                        "currency", "dateDay", "tickerSymbol") //
+                                                        .match("^.*Quantity: (?<shares>[\\.,\\d]+)$") //
+                                                        .match("^(?<dateYear>[\\d]{4}\\-[\\d]{2})\\- .* Paid (?<grossAmount>[\\.,\\d]+) [\\.,\\d]+ (?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
+                                                        .match("^(?<dateDay>[\\d]{2}) \\((?<tickerSymbol>[A-Z0-9]{1,6}(?:\\.[A-Z]{1,4})?)\\).*$") //
+                                                        .assign((t, v) -> assignDividend(t, v, type)),
+                                        // @formatter:off
+                                        // Quantity: 2200
+                                        // 2025-09- CapLand Ascendas REIT
+                                        // 04 Stock (A17U.SI) Reinvestment Gross Rate: 0.009050 Paid 19.91 0 19.91 SGD
+                                        // /Share
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("shares", "dateYear", "dateDay", "tickerSymbol",
+                                                                        "grossAmount", "amount", "currency") //
+                                                        .match("^.*Quantity: (?<shares>[\\.,\\d]+)$") //
+                                                        .match("^(?<dateYear>[\\d]{4}\\-[\\d]{2})\\- .*$") //
+                                                        .match("^(?<dateDay>[\\d]{2}) .*\\((?<tickerSymbol>[A-Z0-9]{1,6}(?:\\.[A-Z]{1,4})?)\\).* Gross Rate: [\\.,\\d]+ Paid (?<grossAmount>[\\.,\\d]+) [\\.,\\d]+ (?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
+                                                        .assign((t, v) -> assignDividend(t, v, type)))
+
+                        // @formatter:off
+                        // The withholding tax is stated at the end of the day line and is
+                        // present for USD dividends only.
+                        //
+                        // 15 (O) 17.60
+                        // 24 Reinvestment 28.26
+                        // @formatter:on
+                        .section("taxes").optional() //
+                        .match("^[\\d]{2} (.* )?(?<taxes>[\\d]+\\.[\\d]{2})$") //
+                        .assign((t, v) -> {
+                            if (t.getCurrencyCode() == null)
+                                return;
+
+                            var tax = Money.of(t.getCurrencyCode(), asAmount(v.get("taxes")));
+                            checkAndSetTax(tax, t, type.getCurrentContext());
+                        })
+
+                        .wrap(t -> {
+                            type.getCurrentContext().removeType(SecurityItem.class);
+
+                            if (t.getDateTime() == null)
+                                return null;
+
+                            return new TransactionItem(t);
+                        });
     }
 
     /**
