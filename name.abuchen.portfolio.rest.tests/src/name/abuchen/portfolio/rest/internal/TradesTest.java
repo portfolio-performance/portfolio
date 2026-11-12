@@ -831,9 +831,50 @@ public class TradesTest
     }
 
     /**
-     * The ordinal of a key is written with ASCII digits whatever the default
-     * locale: with native digits the cursor would not read back, and paging
-     * would stop after the first page.
+     * Reported in review: two lots that agree in every paging field - the same
+     * instrument, portfolio, start, shares and amount - were told apart only by
+     * their order, so removing one renumbered the other under a cursor that had
+     * passed it. They are now told apart by the id of the transaction that
+     * opens them: the remaining one is still on the next page, exactly once.
+     */
+    @Test
+    public void testIdenticalLotsKeepTheirPlaceWhenASiblingIsRemoved()
+    {
+        var client = new Client();
+        var security = new SecurityBuilder().addPrice("2026-01-02", Values.Quote.factorize(100)).addTo(client);
+        security.setName("ACME");
+        var account = new AccountBuilder().deposit_("2026-01-01", Values.Amount.factorize(20000)).addTo(client);
+        new PortfolioBuilder(account) //
+                        .buy(security, "2026-01-02", Values.Share.factorize(10), Values.Amount.factorize(1000)) //
+                        .buy(security, "2026-01-02", Values.Share.factorize(10), Values.Amount.factorize(1000)) //
+                        .addTo(client);
+        var portfolio = client.getPortfolios().get(0);
+
+        var first = TradesHandler.list(client, new ExchangeRateProviderFactory(client), null, null, "per-lot", null,
+                        null, null, null, null, "", "1").getAsJsonObject();
+        assertThat(first.get("items").getAsJsonArray().size(), is(1));
+        var cursor = first.getAsJsonObject("page").get("nextCursor").getAsString();
+
+        // the two keys are equal apart from the id of the opening transaction,
+        // so the first page holds the lot with the smaller id - and that is the
+        // one removed here, the case the old order-number tail renumbered
+        var gone = portfolio.getTransactions().stream() //
+                        .filter(t -> t.getSecurity() == security)
+                        .min(Comparator.comparing(Transaction::getUUID)) //
+                        .orElseThrow();
+        portfolio.deleteTransaction(gone, client);
+
+        var next = TradesHandler.list(client, new ExchangeRateProviderFactory(client), null, null, "per-lot", null,
+                        null, null, null, null, cursor, "1").getAsJsonObject();
+        var items = next.get("items").getAsJsonArray();
+        assertThat(items.size(), is(1));
+        assertThat(items.get(0).getAsJsonObject().get("status").getAsString(), is("open"));
+    }
+
+    /**
+     * A key is written with ASCII digits whatever the default locale: with
+     * native digits the cursor would not read back, and paging would stop
+     * after the first page.
      */
     @Test
     public void testPagingWorksWhateverTheDefaultLocale()

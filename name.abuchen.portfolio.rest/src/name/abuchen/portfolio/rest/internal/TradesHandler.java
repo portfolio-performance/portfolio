@@ -5,6 +5,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Locale;
@@ -16,6 +17,7 @@ import com.google.gson.JsonElement;
 
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.CostMethod;
+import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.TaxesAndFees;
@@ -292,18 +294,22 @@ public final class TradesHandler
 
     /**
      * What the trades are paged by: instrument, start, investment account, the
-     * real transaction that closes it, and the shares and native amount of the
-     * transaction that opens it - none of which an edit elsewhere in the file
-     * changes. The collector splits a lot sold in parts into copies with fresh
-     * ids, so the opening transaction's id cannot be part of the key, but its
-     * shares and amount can. Only lots that agree on all of it are numbered,
-     * in the collector's order, which is the same for the same file; removing
-     * one of those renumbers the ones after it.
+     * real transaction that closes it, and the shares, native amount and
+     * identity of the transaction that opens it - none of which an edit
+     * elsewhere in the file changes. A transaction written in the file is
+     * identified by its id, so removing one of several alike lots cannot
+     * renumber the others away from a cursor that has passed them. The
+     * collector splits a lot sold in parts into copies that are no transaction
+     * of the file and get a fresh random id every run: only those - and only
+     * among copies that agree on everything else - are still numbered by order,
+     * which renumbers the ones after a copy that was removed.
      */
     /* package */ static Map<Trade, String> keys(List<Trade> trades)
     {
         var keys = new IdentityHashMap<Trade, String>();
         var seen = new HashMap<String, Integer>();
+        var written = new HashMap<Portfolio, Set<String>>();
+
         for (var trade : trades)
         {
             var closing = trade.getRealClosingTransaction().map(PortfolioTransaction::getUUID).orElse(""); //$NON-NLS-1$
@@ -312,9 +318,17 @@ public final class TradesHandler
             var base = trade.getSecurity().getUUID() + '|' + SORTABLE.format(trade.getStart()) + '|'
                             + trade.getPortfolio().getUUID() + '|' + closing + '|' + opening.getShares() + '|'
                             + amount.getCurrencyCode() + ' ' + amount.getAmount();
-            var ordinal = seen.merge(base, 1, Integer::sum);
-            // Locale.ROOT: digits that sort and parse the same everywhere
-            keys.put(trade, base + '|' + String.format(Locale.ROOT, "%04d", ordinal)); //$NON-NLS-1$
+
+            var ids = written.computeIfAbsent(trade.getPortfolio(), p -> {
+                var uuids = new HashSet<String>();
+                p.getTransactions().forEach(t -> uuids.add(t.getUUID()));
+                return uuids;
+            });
+
+            var tail = ids.contains(opening.getUUID()) ? opening.getUUID()
+                            // Locale.ROOT: digits that sort and parse the same everywhere
+                            : String.format(Locale.ROOT, "%04d", seen.merge(base, 1, Integer::sum)); //$NON-NLS-1$
+            keys.put(trade, base + '|' + tail);
         }
         return keys;
     }
