@@ -1,0 +1,23 @@
+pp-cli info: File version, supported version ceiling, format, base currency and entity counts.
+
+Usage: pp-cli info [options]
+
+Options:
+  Global options (pp-cli --help): --file <path>, --format <format> (json), --verbose
+
+Response data: Facts about the client file.
+  fileVersion (integer) Version of the file as read.
+  maxSupportedVersion (integer) Newest file version this CLI supports; newer files are refused.
+  format (string, one of xml, xml-id-references, xml-zip, binary, xml-aes256, xml-aes128, binary-aes256, binary-aes128) Detected file format.
+  baseCurrency (string) ISO currency code of the file's base currency.
+  counts (object) Number of entities in the file.
+    instruments (integer) Instruments.
+    investmentAccounts (integer) Investment accounts.
+    cashAccounts (integer) Cash accounts.
+    transactions (integer) Transaction records.
+    taxonomies (integer) Taxonomies.
+  pinnedUpstreamTag (string) Upstream release the bundled core is built from.
+
+Response meta: fileVersion, asOf
+
+Error codes (meanings: pp-cli --help): unexpected-argument, unknown-option, option-value-required, invalid-option-value, file-required, file-not-found, file-unreadable, file-version-unsupported, password-required, incorrect-password, internal-error

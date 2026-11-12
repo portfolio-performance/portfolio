@@ -55,3 +55,17 @@ mvn -f portfolio-app/pom.xml verify -Plocal-dev \
 - Use `var` keyword for local variables where type is obvious
 - Do NOT auto-format PDF extractor files — use `@formatter:off` / `@formatter:on` where formatting is intentional; otherwise carefully insert code manually preserving existing alignment
 - Do not reformat code unrelated to your change
+
+## Agent skills
+
+### Issue tracker
+
+Issues live as local markdown files under `.scratch/<feature>/`. See `docs/agents/issue-tracker.md`.
+
+### Triage labels
+
+Default triage roles, with `wontfix` mapped to the repo's existing `wont_fix` label. See `docs/agents/triage-labels.md`.
+
+### Domain docs
+
+Single-context layout: one `GLOSSARY.md` and `docs/adr/` at the repo root. See `docs/agents/domain.md`.

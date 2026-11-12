@@ -1,0 +1,23 @@
+pp-cli apply operation instrument.update: Updates an instrument by UUID. Only the fields present change; null or an empty string clears an optional field. The currency can't change once the instrument has transactions.
+
+Input: one element of "operations" in the batch given with --input. Fields of the instrument; they match the instruments output.
+  operation (string, one of instrument.update) Operation name.
+  name (string, optional) Instrument name; never empty.
+  currencyCode (string or null, optional) ISO currency code; null for an index. An add that omits it gets EUR.
+  isin (string or null, optional) ISIN: valid and not used by another instrument.
+  tickerSymbol (string or null, optional) Ticker symbol.
+  wkn (string or null, optional) WKN.
+  note (string or null, optional) Note.
+  retired (boolean, optional) Whether the instrument is retired.
+  uuid (string) UUID of the instrument.
+
+Failure codes (failures[].code of validation-failed):
+  reference-not-found  No entity of the expected kind matches the reference.
+  unknown-field  The object has no such field.
+  required  A required field is missing or empty.
+  invalid-type  A field has the wrong JSON type.
+  duplicate-target  An earlier operation changes the entity.
+  invalid-currency  Not a known ISO currency code.
+  invalid-isin  Not a valid ISIN.
+  duplicate-isin  Another instrument has the ISIN.
+  currency-immutable  The currency can't change: there are transactions.

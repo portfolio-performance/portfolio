@@ -1,0 +1,25 @@
+pp-cli cash-accounts: Cash accounts: UUID, name, currency, note and retired flag, sorted by name (default) or updatedAt, then UUID; --order desc reverses.
+
+Usage: pp-cli cash-accounts [options]
+
+Options:
+  --limit <n>  Maximum number of items to return. (integer 1 to 1000, default 200)
+  --offset <n>  Number of items to skip; continue with nextOffset of the previous page. (integer at least 0, default 0)
+  --sort <field>  Field to sort by. (one of name, updatedAt, default name)
+  --order <asc|desc>  Direction of the sort. desc reverses the whole order, ties by id included. (one of asc, desc, default asc)
+  Global options (pp-cli --help): --file <path>, --format <format> (json, table), --verbose
+
+Response data: A page of the list.
+  items (array of object) The items of this page.
+    uuid (string) Canonical UUID.
+    name (string) Account name; empty if the file has none.
+    currencyCode (string) ISO currency code of the account.
+    note (string, optional) Note, if set.
+    retired (boolean) Whether the account is retired.
+    updatedAt (string, optional) When the entity last changed in the file, as an ISO-8601 UTC instant to the second, for example 2026-10-24T15:04:57Z. Absent if the file has none.
+  total (integer) Number of items in the whole list.
+  nextOffset (integer, optional) Offset of the next page. Absent on the last page.
+
+Response meta: fileVersion, asOf, limit, offset, sort, order
+
+Error codes (meanings: pp-cli --help): unexpected-argument, unknown-option, option-value-required, invalid-option-value, file-required, file-not-found, file-unreadable, file-version-unsupported, password-required, incorrect-password, internal-error

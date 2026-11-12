@@ -1,0 +1,57 @@
+pp-cli apply: Applies a batch of write operations atomically; see the operations list. Writes by default, keeping the file's format, after saving a backup in a backups folder next to it (--backup-dir, --keep). A write is refused, with nothing changed, if it would introduce a consistency issue that core's checker did not already find, if the file changed on disk since it was read, or on macOS if the file is open in another program (unless --force). On any validation failure nothing is written and every failure is reported with operationIndex, field, code and message.
+
+Usage: pp-cli apply --input <file|-> [options]
+
+Options:
+  --input <file|->  JSON document {"operations": [...]} to apply: a file, or - for stdin. If stdin carries the batch, give the password of an encrypted file through PP_PASSWORD. (required)
+  --dry-run  Validate the batch and report the changes and the would-be backup path without writing any file, backup or lock. (switch, default off)
+  --backup-dir <path>  Folder for the backup of the original file. Default: a backups folder next to the client file. Created if missing.
+  --keep <n>  How many of the newest pp-cli backups of this file to keep in the backup folder; older ones are deleted after a successful write. 0 keeps all. Only backups named like the ones pp-cli writes are ever deleted; the app's own .backup file is never touched. (integer 0 to 2147483647, default 20)
+  --force  Write even if the file seems to be open in another program. Only macOS can tell: pp-cli asks lsof, and without --force refuses a file that is open. (switch, default off)
+  Global options (pp-cli --help): --file <path>, --format <format> (json), --verbose
+
+Operations (pp-cli apply --help <operation> shows the input schema and failure codes of one):
+  instrument.add             Adds an instrument.
+  instrument.update          Updates an instrument by UUID.
+  cash-account.add           Adds a cash account.
+  cash-account.update        Updates a cash account by UUID.
+  investment-account.add     Adds an investment account.
+  investment-account.update  Updates an investment account by UUID.
+  transaction.add            Adds a transaction in the shape the transactions output uses.
+  transaction.update         Changes a whole transaction record, found by the UUID of either of its sides.
+  transaction.delete         Deletes a whole transaction record, both sides, found by the UUID of either of its sides.
+  taxonomy.assign            Replaces the complete assignment of one instrument within one existing taxonomy.
+
+Response data: The outcome of the batch.
+  results (array of object) One result per operation, in order.
+    operationIndex (integer) Position in the batch, from 0.
+    operation (string) Operation name.
+    created (array of object) Entities the operation created.
+      entity (string, one of instrument, cash-account, investment-account, transaction, taxonomy-assignment) Kind of entity.
+      uuid (string) UUID of the entity.
+      before (object, any members, optional) The changed fields as they were, or for a deleted entity all its fields; absent for a created entity. A field that was unset is null.
+      after (object, any members) A created entity's fields that are set, or an updated entity's changed fields as they are now; a cleared field is null. Empty for a deleted entity.
+    updated (array of object) Entities the operation changed.
+      entity (string, one of instrument, cash-account, investment-account, transaction, taxonomy-assignment) Kind of entity.
+      uuid (string) UUID of the entity.
+      before (object, any members, optional) The changed fields as they were, or for a deleted entity all its fields; absent for a created entity. A field that was unset is null.
+      after (object, any members) A created entity's fields that are set, or an updated entity's changed fields as they are now; a cleared field is null. Empty for a deleted entity.
+    deleted (array of object) Entities the operation deleted.
+      entity (string, one of instrument, cash-account, investment-account, transaction, taxonomy-assignment) Kind of entity.
+      uuid (string) UUID of the entity.
+      before (object, any members, optional) The changed fields as they were, or for a deleted entity all its fields; absent for a created entity. A field that was unset is null.
+      after (object, any members) A created entity's fields that are set, or an updated entity's changed fields as they are now; a cleared field is null. Empty for a deleted entity.
+
+Response meta: fileVersionBefore, fileVersionAfter, asOf, dryRun, backupPath
+
+Warnings:
+  file-migrated  The file was written by an older version and is saved at the current file version, which an older desktop app can no longer open. With --dry-run this is what a write would do.
+  consistency-issues-preexisting  Core's consistency checker found issues in the file that the change did not cause, listed in issues; the write went ahead.
+  file-open-in-app  The file seemed to be open in another program, probably the app, and was written because of --force.
+
+Error codes (meanings: pp-cli --help): unexpected-argument, unknown-option, option-value-required, option-required, invalid-option-value, file-required, file-not-found, file-unreadable, file-version-unsupported, password-required, incorrect-password, input-unreadable, invalid-input, validation-failed, consistency-check-failed, file-open-in-app, file-locked, file-changed, write-failed, internal-error
+
+Failure codes (failures[].code of validation-failed) of the batch:
+  invalid-operation  An operation is not a JSON object.
+  unknown-operation  The operation member is missing or names no operation.
+  Those of each operation: pp-cli apply --help <operation>.

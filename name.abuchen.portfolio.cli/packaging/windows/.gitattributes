@@ -1,0 +1,3 @@
+# the launcher must keep CRLF for cmd and the shim LF for sh
+pp-cli text eol=lf
+pp-cli.cmd text eol=crlf

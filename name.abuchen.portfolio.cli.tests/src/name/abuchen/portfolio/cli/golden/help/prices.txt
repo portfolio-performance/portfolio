@@ -1,0 +1,34 @@
+pp-cli prices: Price history of one instrument by date, ascending unless --order desc, within an optional date range, with its latest price.
+
+Usage: pp-cli prices --instrument <ref> [options]
+
+Options:
+  --instrument <ref>  Instrument to read. (required)
+  --from <yyyy-MM-dd>  First day of the history, inclusive. Without it the history has no lower bound.
+  --to <yyyy-MM-dd>  Last day of the history, inclusive. Defaults to today.
+  --limit <n>  Maximum number of items to return. (integer 1 to 1000, default 200)
+  --offset <n>  Number of items to skip; continue with nextOffset of the previous page. (integer at least 0, default 0)
+  --sort <field>  Field to sort by. (one of date, default date)
+  --order <asc|desc>  Direction of the sort. desc reverses the whole order, ties by id included. (one of asc, desc, default asc)
+  Global options (pp-cli --help): --file <path>, --format <format> (json), --verbose
+
+Response data: The price history of one instrument.
+  items (array of object) The items of this page.
+    date (string) ISO 8601 date of the price.
+    value (number) Price per share as a decimal, in the currency of the instrument. The currency may be a minor currency unit, such as ILA (1/100 ILS) or GBX (1/100 GBP); the figure is then in that unit. This command does not convert: holdings has the market value in the reporting currency in converted.
+  total (integer) Number of items in the whole list.
+  nextOffset (integer, optional) Offset of the next page. Absent on the last page.
+  instrument (object) The instrument the reference resolved to.
+    uuid (string) Canonical UUID.
+    name (string) Instrument name; empty if the file has none.
+    currencyCode (string, optional) ISO currency code; absent for indices. Minor units: as above.
+  latest (object, optional) The price valuation uses today: the feed's latest price when it is current, otherwise the last stored price. Absent if no price is dated on or before today. Independent of from and to.
+    date (string) ISO 8601 date of the price.
+    value (number) Price per share as a decimal, in the currency of the instrument. Minor units: as above.
+
+Response meta: fileVersion, asOf, limit, offset, sort, order, to; optional: from
+
+Warnings:
+  stale-price  The latest price is more than 7 days old. Not emitted for retired instruments, instruments with a manual quote feed or instruments without a price.
+
+Error codes (meanings: pp-cli --help): unexpected-argument, unknown-option, option-value-required, option-required, invalid-option-value, invalid-date-range, file-required, file-not-found, file-unreadable, file-version-unsupported, password-required, incorrect-password, reference-not-found, reference-ambiguous, internal-error
