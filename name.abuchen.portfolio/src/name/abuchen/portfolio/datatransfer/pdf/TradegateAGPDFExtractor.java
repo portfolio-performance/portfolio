@@ -56,7 +56,7 @@ public class TradegateAGPDFExtractor extends AbstractPDFExtractor
                         .section("type").optional() //
                         .match("^Orderart (?<type>(Kauf|Verkauf)).*$") //
                         .assign((t, v) -> {
-                            if ("Verkauf".equals(v.get("type"))) //
+                            if ("Verkauf".equals(v.get("type")))
                                 t.setType(PortfolioTransaction.Type.SELL);
                         })
 
@@ -78,7 +78,7 @@ public class TradegateAGPDFExtractor extends AbstractPDFExtractor
                         .match("^Ausf.hrungskurs [\\.,\\d]+ (?<currency>[A-Z]{3})$") //
                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
-                        .oneOf(
+                        .oneOf( //
                                         // @formatter:off
                                         // Daraus ergibt sich ein Mischkurs von 19,3500 EUR für insgesamt 1.560 Stück.
                                         // @formatter:on
@@ -86,22 +86,19 @@ public class TradegateAGPDFExtractor extends AbstractPDFExtractor
                                                         .attributes("shares") //
                                                         .match("^Daraus ergibt sich ein Mischkurs von [\\.,\\d]+ [A-Z]{3} f.r insgesamt (?<shares>[\\.,\\d]+) St.ck\\.$") //
                                                         .assign((t, v) -> t.setShares(asShares(v.get("shares")))),
-
                                         // @formatter:off
                                         // Stück ausgeführt 3
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("shares") //
                                                         .match("^St.ck .* (?<shares>[\\.,\\d]+)$") //
-                                                        .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
-
-                        )
+                                                        .assign((t, v) -> t.setShares(asShares(v.get("shares")))))
 
                         // @formatter:off
                         // Handelstag/-zeit 04.06.2024 11:04:53
                         // @formatter:on
                         .section("date", "time") //
-                        .match("^Handelstag\\/\\-zeit (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}:[\\d]{2}).*$") //
+                        .match("^Handelstag\\/\\-zeit (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<time>[\\d]{2}\\:[\\d]{2}\\:[\\d]{2}).*$") //
                         .assign((t, v) -> t.setDate(asDate(v.get("date"), v.get("time"))))
 
                         // @formatter:off
@@ -118,7 +115,7 @@ public class TradegateAGPDFExtractor extends AbstractPDFExtractor
                         // 12345 Investcity Order-/Ref.nr. 9876543
                         // @formatter:on
                         .section("note").optional() //
-                        .match("^.*(?<note>Order\\-\\/Ref\\.nr\\..*)$")
+                        .match("^.*(?<note>Order\\-\\/Ref\\.nr\\..*)$") //
                         .assign((t, v) -> t.setNote(trim(v.get("note"))))
 
                         // @formatter:off
@@ -182,6 +179,13 @@ public class TradegateAGPDFExtractor extends AbstractPDFExtractor
                         .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
 
                         // @formatter:off
+                        // Ex-Datum 13.06.2024
+                        // @formatter:on
+                        .section("exDate").optional() //
+                        .match("^Ex\\-Datum (?<exDate>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$") //
+                        .assign((t, v) -> t.setExDate(asDate(v.get("exDate"))))
+
+                        // @formatter:off
                         // Ausmachender Betrag 7,16 EUR
                         // @formatter:on
                         .section("amount", "currency") //
@@ -212,7 +216,7 @@ public class TradegateAGPDFExtractor extends AbstractPDFExtractor
                         // 12345 Investcity Order-/Ref.nr. 9876543
                         // @formatter:on
                         .section("note").optional() //
-                        .match("^.*(?<note>Order\\-\\/Ref\\.nr\\. .*)$")
+                        .match("^.*(?<note>Order\\-\\/Ref\\.nr\\. .*)$") //
                         .assign((t, v) -> t.setNote(trim(v.get("note"))))
 
                         .conclude(ExtractorUtils.fixGrossValueA())
@@ -279,7 +283,7 @@ public class TradegateAGPDFExtractor extends AbstractPDFExtractor
                         // xtmJChhUdfJIJPk 9 d Order-/Ref.nr. 11522032
                         // @formatter:on
                         .section("note").optional() //
-                        .match("^.*(?<note>Order\\-\\/Ref\\.nr\\. .*)$")
+                        .match("^.*(?<note>Order\\-\\/Ref\\.nr\\. .*)$") //
                         .assign((t, v) -> t.setNote(trim(v.get("note"))))
 
                         .wrap(t -> {
@@ -335,7 +339,7 @@ public class TradegateAGPDFExtractor extends AbstractPDFExtractor
                         // xtmJChhUdfJIJPk 9 d Order-/Ref.nr. 11522032
                         // @formatter:on
                         .section("note").optional() //
-                        .match("^.*(?<note>Order\\-\\/Ref\\.nr\\. .*)$")
+                        .match("^.*(?<note>Order\\-\\/Ref\\.nr\\. .*)$") //
                         .assign((t, v) -> t.setNote(trim(v.get("note"))))
 
                         // @formatter:off
@@ -385,7 +389,7 @@ public class TradegateAGPDFExtractor extends AbstractPDFExtractor
     {
         final var type = new DocumentType("Kontoauszug", //
                         documentContext -> documentContext //
-                        // @formatter:off
+                                        // @formatter:off
                                         // Alter Kontostand per 30.11.2024 95,23 EUR
                                         // @formatter:on
                                         .section("currency") //

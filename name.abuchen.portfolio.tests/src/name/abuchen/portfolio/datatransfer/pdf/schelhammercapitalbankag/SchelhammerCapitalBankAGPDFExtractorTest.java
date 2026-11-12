@@ -246,6 +246,6 @@ public class SchelhammerCapitalBankAGPDFExtractorTest
                         hasSource("Dividende03.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 0.00), hasGrossValue("EUR", 234.06), //
-                        hasTaxes("EUR", 234.06), hasFees("EUR", 0.00))));
+                        hasTaxes("EUR", 214.29 + 19.77), hasFees("EUR", 0.00))));
     }
 }
