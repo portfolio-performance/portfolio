@@ -27,8 +27,8 @@ import com.google.gson.JsonObject;
  * <p/>
  * A paged list is in an order of keys that an edit elsewhere does not change:
  * an instrument's uuid; a trade's instrument uuid, start, investment account,
- * closing transaction and the shares and amount of its opening transaction.
- * Every item of a page carries its {@code cursor}, and
+ * closing transaction, and the shares, amount and id of its opening
+ * transaction. Every item of a page carries its {@code cursor}, and
  * {@code page.nextCursor} is the cursor of the page's last item - or
  * {@code null} on the last page. The next page holds the items after that key.
  * An item added or removed between two pages therefore does not shift the
@@ -36,9 +36,9 @@ import com.google.gson.JsonObject;
  * whole walk through it comes exactly once. An item added before the cursor
  * comes only with a new walk from the first page; a trade whose start,
  * investment account or closing transaction changes gets a new key and may
- * then come twice or not at all. Lots that agree in all of these are told apart
- * only by an ordinal of their order: when one of them is removed between two
- * pages, the next one may be left out of the walk.
+ * then come twice or not at all. Trades opened by the same file's transactions
+ * are told apart by the id of that transaction, so alike lots keep their
+ * places when one of them is removed between two pages.
  * <p/>
  * A cursor is good only for the list it came from: it carries a short hash of
  * the scope - the file, for trades of one instrument that instrument, and the
@@ -60,6 +60,11 @@ public record Paging(boolean given, String scope, String after, Integer limit)
     /** the whole list, as when neither parameter is sent */
     public static final Paging ALL = new Paging(false, null, null, null);
 
+    /** one id, as {@code java.util.UUID} writes it - in whatever hex case the file kept */
+    private static final String UUIDS = "[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}"; //$NON-NLS-1$
+
+    private static final String VERSION = "v2"; //$NON-NLS-1$
+
     /**
      * Which list a cursor belongs to, so that one list's cursor is refused by
      * another - and what a key of it looks like, so that a cursor this API did
@@ -68,13 +73,17 @@ public record Paging(boolean given, String scope, String after, Integer limit)
     public enum Kind
     {
         /** an instrument's uuid */
-        INSTRUMENTS("i", Pattern.compile("[^\\p{Cntrl}|]{1,200}")), //$NON-NLS-1$ //$NON-NLS-2$
+        INSTRUMENTS("i", Pattern.compile(UUIDS)), //$NON-NLS-1$
         /**
          * instrument | start | investment account | closing transaction |
-         * shares | currency and amount of the opening transaction | ordinal
+         * shares | currency and amount | id of the transaction that opens the
+         * trade, or a running number for the collector's copies of a lot sold
+         * in parts
          */
-        TRADES("t", Pattern.compile("[^\\p{Cntrl}|]{1,200}\\|\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\|" //$NON-NLS-1$ //$NON-NLS-2$
-                        + "[^\\p{Cntrl}|]{1,200}\\|[^\\p{Cntrl}|]{0,200}\\|-?\\d{1,19}\\|[A-Z]{3} -?\\d{1,19}\\|\\d{4,}")); //$NON-NLS-1$
+        TRADES("t", Pattern.compile(UUIDS + "\\|" //$NON-NLS-1$
+                        + "\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\|" //$NON-NLS-1$
+                        + UUIDS + "\\|(" + UUIDS + ")?\\|" //$NON-NLS-1$ //$NON-NLS-2$
+                        + "-?\\d{1,19}\\|[A-Z]{3} -?\\d{1,19}\\|(" + UUIDS + "|\\d{4,})")); //$NON-NLS-1$
 
         private final String tag;
         private final Pattern key;
@@ -85,9 +94,6 @@ public record Paging(boolean given, String scope, String after, Integer limit)
             this.key = key;
         }
     }
-
-
-    private static final String VERSION = "v1"; //$NON-NLS-1$
 
     /**
      * The paging a request asked for. An empty {@code cursor} asks for the

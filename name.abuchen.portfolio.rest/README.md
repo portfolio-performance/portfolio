@@ -128,12 +128,13 @@ response to them carries `page` — `limit` (or `null`), `total` and `nextCursor
 page) — and a `cursor` on every item. An empty `cursor` asks for the first page; a page continues
 after the key of the cursor it was given. Paged, a list is in an order of keys that an edit
 elsewhere does not change — instruments by `uuid`; trades by instrument, start, investment account,
-closing transaction and the shares and amount of the opening transaction — so an item added or
+closing transaction and the shares, amount and id of the opening transaction — so an item added or
 removed between two pages does not shift the others: every item that stays in the list for the
 whole walk comes exactly once. An item added before the cursor comes only with a new walk from the
 first page, and a trade whose start, investment account or closing transaction changes gets a new
-key. Lots that agree in all of these are told apart only by their order: when one of them is removed
-between two pages, the next one may be left out of the walk. A cursor is good only for its own list — the same file, for one instrument's trades that
+key. Trades opened by transactions of the file are told apart by the id of that transaction, so
+removing one of several alike lots cannot hide the others from a cursor that has passed them. A
+cursor is good only for its own list — the same file, for one instrument's trades that
 instrument, and the same filters (`query`; `status`, `grouping`, `from`, `to`) — and is refused as
 `invalid-value` otherwise. REST never truncates.
 

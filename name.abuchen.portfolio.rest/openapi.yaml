@@ -1797,16 +1797,17 @@ components:
         `cursor` or `limit`. A paged list is in an order of keys that an edit
         elsewhere in the file does not change: instruments by `uuid`; trades by
         instrument, start, investment account, closing transaction and the
-        shares and amount of the opening transaction. A page continues after
-        the key of its cursor, so an item added or removed between two pages
-        does not shift the others: every item that stays in the list for the
-        whole walk comes exactly once. An item added before the cursor comes
+        shares, amount and id of the opening transaction. A page continues
+        after the key of its cursor, so an item added or removed between two
+        pages does not shift the others: every item that stays in the list for
+        the whole walk comes exactly once. An item added before the cursor comes
         only with a new walk from the first page; a trade whose start,
         investment account or closing transaction changes gets a new key, and
-        may then come twice or not at all. Lots that agree in all of these are
-        told apart only by their order: when one of them is removed between two
-        pages, the next one may be left out of the walk. For trades, `fxWarnings` and
-        `warnings` describe the whole list, not only the page.
+        may then come twice or not at all. Trades opened by transactions of the
+        file are told apart by the id of that transaction, so removing one of
+        several alike lots cannot hide the others from a cursor that has passed
+        them. For trades, `fxWarnings`, `fxStaleRates` and `warnings` describe
+        the whole list, not only the page.
       required: [limit, total, nextCursor]
       properties:
         limit:

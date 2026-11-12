@@ -186,11 +186,13 @@ public class ReadEndpointsTest
             assertThat(e.getErrors().get(1).field(), is("cursor"));
         }
 
-        // a trade cursor is no instrument cursor
+        // a trade cursor is no instrument cursor, even a well-formed one
         try
         {
-            SecuritiesHandler.list(client, null,
-                            Paging.encode(Paging.Kind.TRADES, Paging.scopeHash("file=|query="), "x"), null);
+            SecuritiesHandler.list(client, null, Paging.encode(Paging.Kind.TRADES,
+                            Paging.scopeHash("file=|query="),
+                            "00000000-0000-0000-0000-000000000000|2026-01-02T00:00:00|00000000-0000-0000-0000-000000000001" //$NON-NLS-1$
+                                            + "||100000000|EUR 100000|00000000-0000-0000-0000-000000000002"), null); //$NON-NLS-1$
             Assert.fail("expected ApiException");
         }
         catch (ApiException e)
@@ -245,11 +247,11 @@ public class ReadEndpointsTest
         var client = new Client();
         new SecurityBuilder().addTo(client).setName("ACME");
 
-        var prefix = ("v1:i:" + Paging.scopeHash("file=|query=") + ":").getBytes(StandardCharsets.UTF_8);
+        var prefix = ("v2:i:" + Paging.scopeHash("file=|query=") + ":").getBytes(StandardCharsets.UTF_8);
         var notUtf8 = Arrays.copyOf(prefix, prefix.length + 2);
         notUtf8[prefix.length] = (byte) 0xC3;
         notUtf8[prefix.length + 1] = (byte) 0x28;
-        var withControl = ("v1:i:" + Paging.scopeHash("file=|query=") + ":a\u0000b").getBytes(StandardCharsets.UTF_8);
+        var withControl = ("v2:i:" + Paging.scopeHash("file=|query=") + ":a\u0000b").getBytes(StandardCharsets.UTF_8);
 
         for (var bytes : List.of(notUtf8, withControl, prefix))
         {
