@@ -32,6 +32,9 @@ var width = pp.getInitialWidth(),
 var x = d3.scale.linear()
     .range([0, 2 * Math.PI]);
 
+// start at 3 o'clock to match the donut chart (pie.html)
+var rotation = Math.PI / 2;
+
 var y = d3.scale.linear()
     .range([0, radius]);
 
@@ -50,8 +53,8 @@ var partition = d3.layout.partition()
     .value(function(d) { return 1; });
 
 var arc = d3.svg.arc()
-    .startAngle(function(d) { return Math.max(0, Math.min(2 * Math.PI, x(d.x))); })
-    .endAngle(function(d) { return Math.max(0, Math.min(2 * Math.PI, x(d.x + d.dx))); })
+    .startAngle(function(d) { return Math.max(0, Math.min(2 * Math.PI, x(d.x))) + rotation; })
+    .endAngle(function(d) { return Math.max(0, Math.min(2 * Math.PI, x(d.x + d.dx))) + rotation; })
     .innerRadius(function(d) { return Math.max(0, y(d.y)); })
     .outerRadius(function(d) { return Math.max(0, y(d.y + d.dy)); });
 
@@ -85,11 +88,11 @@ var flare = {
         return brightness(d3.rgb(d.color)) < 125 ? "#eee" : "#000";
       })
       .attr("text-anchor", function(d) {
-        return x(d.x + d.dx / 2) > Math.PI ? "end" : "start";
+        return labelAngle(d) > 90 ? "end" : "start";
       })
       .attr("dy", ".2em")
       .attr("transform", function(d) {
-        var angle = x(d.x + d.dx / 2) * 180 / Math.PI - 90;
+        var angle = labelAngle(d);
         return "rotate(" + angle + ")translate(" + (y(d.y) + 5) + ")rotate(" + (angle > 90 ? -180 : 0) + ")";
       })
       .on("click", this.click)
@@ -125,12 +128,12 @@ var flare = {
       .duration(1000)
       .attrTween("text-anchor", function(d) {
           return function() {
-            return x(d.x + d.dx / 2) > Math.PI ? "end" : "start";
+            return labelAngle(d) > 90 ? "end" : "start";
           };
       })
       .attrTween("transform", function(d) {
           return function() {
-            var angle = x(d.x + d.dx / 2) * 180 / Math.PI - 90;
+            var angle = labelAngle(d);
             return "rotate(" + angle + ")translate(" + (y(d.y) + 5) + ")rotate(" + (angle > 90 ? -180 : 0) + ")";
           };
         })
@@ -180,6 +183,14 @@ function cropped(d) {
     return d.name;
   else
     return d.name.substring(0, available) + "...";
+}
+
+// rotation (in degrees) of the label of d: -90 is 12 o'clock, above 90 is the left half
+function labelAngle(d) {
+  var a = (x(d.x + d.dx / 2) + rotation) % (2 * Math.PI);
+  if (a < 0)
+    a += 2 * Math.PI;
+  return a * 180 / Math.PI - 90;
 }
 
 function isBigEnough(d) {
