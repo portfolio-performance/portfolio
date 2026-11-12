@@ -103,7 +103,7 @@ public class ImportIBHandler
             Dialog dialog = new ImportWizardDialog(Display.getDefault().getActiveShell(), wizard);
             dialog.open();
         }
-        catch (IllegalArgumentException e)
+        catch (RuntimeException e)
         {
             PortfolioPlugin.log(e);
             MessageDialog.openError(shell, Messages.LabelError, e.getMessage());

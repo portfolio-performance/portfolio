@@ -196,6 +196,21 @@ public class IBFlexStatementExtractor implements Extractor
     {
     }
 
+    /**
+     * Key to match a dividend with its taxes. The currency is part of the key
+     * because IB may book a dividend and its withholding tax in one currency,
+     * then reverse both and rebook them in another currency. The tax refund of
+     * the reversal and the rebooked dividend then share date and security.
+     */
+    private static record DividendTaxKey(LocalDate date, Security security, String currencyCode)
+    {
+        static DividendTaxKey of(Item item)
+        {
+            return new DividendTaxKey(item.getDate().toLocalDate(), item.getSecurity(),
+                            ((AccountTransaction) item.getSubject()).getCurrencyCode());
+        }
+    }
+
     public Client getClient()
     {
         return client;
@@ -1463,13 +1478,14 @@ public class IBFlexStatementExtractor implements Extractor
     public void postProcessing(List<Item> items)
     {
         // Filter transactions by taxes treatment's
+        //
+        // Tax refunds are left out: merging one into a dividend would
+        // subtract it as a tax. They are imported as separate items.
         List<Item> taxesTreatmentList = items.stream() //
                         .filter(TransactionItem.class::isInstance)
                         .filter(i -> i.getSubject() instanceof AccountTransaction) //
-                        .filter(i -> {
-                            var type = ((AccountTransaction) i.getSubject()).getType(); //
-                            return type == AccountTransaction.Type.TAXES || type == AccountTransaction.Type.TAX_REFUND; //
-                        }) //
+                        .filter(i -> AccountTransaction.Type.TAXES //
+                                        .equals(((AccountTransaction) i.getSubject()).getType())) //
                         .toList();
 
         // Filter transactions by dividend transactions
@@ -1519,11 +1535,11 @@ public class IBFlexStatementExtractor implements Extractor
 
     /**
      * @formatter:off
-     * Matches transactions and taxes treatment's, ensuring unique pairs based on date and security.
+     * Matches transactions and taxes treatment's, ensuring unique pairs based on date, security and currency.
      *
-     * This method matches transactions and taxes treatment's by creating a Pair consisting of the transaction's
-     * date and security. It uses a Set called 'keys' to prevent duplicates based on these Pair keys,
-     * ensuring that the same combination of date and security is not processed multiple times.
+     * This method matches transactions and taxes treatment's by creating a key consisting of the transaction's
+     * date, security and currency. It uses a Set called 'keys' to prevent duplicates based on these keys,
+     * ensuring that the same combination of date, security and currency is not processed multiple times.
      * Duplicate transactions for the same security on the same day are avoided.
      *
      * @param transactionList      A list of transactions to be matched.
@@ -1534,13 +1550,13 @@ public class IBFlexStatementExtractor implements Extractor
     private Collection<TransactionTaxesPair> matchTransactionPair(List<Item> transactionList, List<Item> taxesTreatmentList)
     {
         // Use a Set to prevent duplicates
-        Set<Pair<LocalDate, Security>> keys = new HashSet<>();
-        Map<Pair<LocalDate, Security>, TransactionTaxesPair> pairs = new HashMap<>();
+        Set<DividendTaxKey> keys = new HashSet<>();
+        Map<DividendTaxKey, TransactionTaxesPair> pairs = new HashMap<>();
 
         // Match identified transactions and taxes treatment's
         transactionList.forEach( //
                         transaction -> {
-                            var key = new Pair<>(transaction.getDate().toLocalDate(), transaction.getSecurity());
+                            var key = DividendTaxKey.of(transaction);
 
                             // Prevent duplicates
                             if (keys.add(key))
@@ -1555,8 +1571,8 @@ public class IBFlexStatementExtractor implements Extractor
                             if (tax.getSecurity() == null)
                                 return;
 
-                            // Create a key based on the taxes treatment date and security
-                            var key = new Pair<>(tax.getDate().toLocalDate(), tax.getSecurity());
+                            // Create a key based on the taxes treatment date, security and currency
+                            var key = DividendTaxKey.of(tax);
 
                             // Retrieve the TransactionTaxesPair associated with this key, if it exists
                             var pair = pairs.get(key);
