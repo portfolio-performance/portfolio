@@ -1,5 +1,6 @@
 package name.abuchen.portfolio.rest.internal;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.Comparator;
@@ -21,10 +22,14 @@ import name.abuchen.portfolio.money.ExchangeRateTimeSeries;
  * Every conversion the core performs goes through
  * {@link CurrencyConverter#getRate}: the default {@code convert} methods, a
  * transaction's {@code getMonetaryAmount(converter)}, a unit sum, a valuation
- * at the market price. A converter wrapped here asks, for exactly the pair and
- * the date it is asked for, whether the converter will fall back: the pair has
- * no series at all (the factory substitutes a placeholder that answers 1), or
- * the series answers nothing for that date. Whether a series answers depends on
+ * at the market price. A converter wrapped here converts first and asks, for
+ * exactly the pair and the date it was asked for, whether that conversion
+ * fell back: the pair has no series at all (the factory substitutes a
+ * placeholder that answers 1), or the series answers nothing for that date.
+ * The rate that came back from the conversion is the witness - a quote edited
+ * between the conversion and this question can name neither a fallback that
+ * was not one nor hide a conversion that reached the report at face value.
+ * Whether a series answers depends on
  * the date - a series built from an exchange-rate security has no rate on a day
  * whose quote is zero - so the question cannot be asked once, afterwards, for
  * another date.
@@ -116,26 +121,54 @@ public final class ConversionRecorder
         return stale.values().stream().sorted(STALE_ORDER).toList();
     }
 
-    private void check(String base, String term, LocalDate date)
+    /**
+     * Whether the conversion that answered with {@code used} fell back, asked
+     * while that rate is still in hand: the converter substitutes a rate of 1
+     * where it has nothing, so a returned 1 is what says the money reached the
+     * report at face value, and the factory then tells the two cases apart.
+     * Asked the other way round - the series read first, converted from after
+     * - a quote edited in between could hide a fallback or invent one for
+     * money that was converted.
+     */
+    private void check(String base, String term, LocalDate date, ExchangeRate used)
     {
         // no shortcut for a pair that fell back once already: on another date
         // it may convert at a stale rate, and that is a finding of its own
         var pair = new Pair(base, term);
 
-        // the same two cases in which CurrencyConverterImpl substitutes a rate of 1
-        if (!factory.hasTimeSeries(base, term))
+        if (used == null || used.getValue().compareTo(BigDecimal.ONE) == 0)
         {
-            fallbacks.putIfAbsent(pair, new FxWarnings.Warning(base, term, FxWarnings.NO_SERIES));
+            // the same two cases in which CurrencyConverterImpl substitutes a rate of 1
+            if (!factory.hasTimeSeries(base, term))
+            {
+                fallbacks.putIfAbsent(pair, new FxWarnings.Warning(base, term, FxWarnings.NO_SERIES));
+                return;
+            }
+
+            var rateNow = factory.getTimeSeries(base, term).lookupRate(date);
+            if (rateNow.isEmpty())
+            {
+                fallbacks.putIfAbsent(pair, new FxWarnings.Warning(base, term, FxWarnings.NO_RATE));
+                return;
+            }
+
+            // the conversion came at 1:1 although the series answers another rate
+            // now - the quote it used is gone again, and the money reached the
+            // report at face value whatever the series answers since
+            if (rateNow.get().getValue().compareTo(BigDecimal.ONE) != 0)
+                fallbacks.putIfAbsent(pair, new FxWarnings.Warning(base, term, FxWarnings.NO_RATE));
             return;
         }
+
+        // converted at a real rate: how old that rate was remains to be seen -
+        // a series that answers nothing any more has nothing to say about it
+        if (!factory.hasTimeSeries(base, term))
+            return;
 
         var series = factory.getTimeSeries(base, term);
         var rate = series.lookupRate(date);
         if (rate.isEmpty())
-        {
-            fallbacks.putIfAbsent(pair, new FxWarnings.Warning(base, term, FxWarnings.NO_RATE));
-            return;
-        }
+            return; // the quote went out of reach after the conversion - it was used
 
         // a rate dated after the date - the first quote answering an earlier
         // day - is the other inaccuracy, deliberately not reported
@@ -204,9 +237,14 @@ public final class ConversionRecorder
         public ExchangeRate getRate(LocalDate date, String currencyCode)
         {
             var term = delegate.getTermCurrency();
-            if (!term.equals(currencyCode))
-                check(currencyCode, term, date);
-            return delegate.getRate(date, currencyCode);
+            if (term.equals(currencyCode))
+                return delegate.getRate(date, currencyCode);
+
+            // convert first: the rate that comes back is the witness of what the
+            // series answered when the money moved, and the question is asked of it
+            var used = delegate.getRate(date, currencyCode);
+            check(currencyCode, term, date, used);
+            return used;
         }
 
         @Override

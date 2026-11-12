@@ -5,6 +5,7 @@ import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.is;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 import org.junit.Test;
@@ -15,6 +16,7 @@ import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.CurrencyConverterImpl;
 import name.abuchen.portfolio.money.CurrencyUnit;
+import name.abuchen.portfolio.money.ExchangeRate;
 import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
@@ -79,6 +81,50 @@ public class ConversionRecorderTest
         converter(conversions, client, CurrencyUnit.EUR).convert(DATE, Money.of("ARS", Values.Amount.factorize(10)));
 
         assertThat(conversions.fallbacks(), contains(new FxWarnings.Warning("ARS", "EUR", "no-rate")));
+    }
+
+    /**
+     * Reported in review: the question is asked after the conversion, of the
+     * rate it actually came back with. Money that reached the report at face
+     * value is named although the series answers another rate by the time the
+     * question is reached - and money that was converted is not blamed on a
+     * series that stopped answering since.
+     */
+    @Test
+    public void testTheRateTheConversionUsedIsTheWitness()
+    {
+        var client = new Client();
+        var rates = rates();
+        rates.addPrice(new SecurityPrice(LocalDate.of(2026, 1, 2), Values.Quote.factorize(965)));
+        client.addSecurity(rates);
+        var conversions = recorder(client);
+
+        // the series answers 965 at the date, yet the conversion came back at 1:1
+        var faceValue = conversions
+                        .wrap(new CurrencyConverterImpl(new ExchangeRateProviderFactory(client), CurrencyUnit.EUR)
+                        {
+                            @Override
+                            public ExchangeRate getRate(LocalDate date, String currencyCode)
+                            {
+                                return new ExchangeRate(date, BigDecimal.ONE);
+                            }
+                        });
+        faceValue.getRate(DATE, "ARS");
+        assertThat(conversions.fallbacks(), contains(new FxWarnings.Warning("ARS", "EUR", "no-rate")));
+
+        // the series answers nothing any more, yet the conversion came at a real rate
+        var gone = new Client();
+        var quiet = recorder(gone);
+        var converted = quiet.wrap(new CurrencyConverterImpl(new ExchangeRateProviderFactory(gone), CurrencyUnit.EUR)
+        {
+            @Override
+            public ExchangeRate getRate(LocalDate date, String currencyCode)
+            {
+                return new ExchangeRate(date, BigDecimal.valueOf(1234.5));
+            }
+        });
+        converted.getRate(DATE, "ARS");
+        assertThat(quiet.fallbacks(), is(empty()));
     }
 
     /**
