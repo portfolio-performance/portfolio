@@ -3,6 +3,7 @@ package name.abuchen.portfolio.rest.internal.mcp;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.notNullValue;
 
 import java.net.URI;
@@ -129,6 +130,18 @@ public class McpEndpointTest
         assertThat(text(result), containsString("Preferences"));
     }
 
+    /** a token that is presented but not accepted is told apart from a missing one */
+    @Test
+    public void testToolCallWithAWrongTokenNamesTheToken() throws Exception
+    {
+        var response = rpc("not-the-token", call("pp_list_files", "{}"));
+
+        var result = body(response).getAsJsonObject().getAsJsonObject("result");
+        assertThat(result.get("isError").getAsBoolean(), is(true));
+        assertThat(text(result), containsString("is not accepted"));
+        assertThat(text(result), containsString("reasonCode: invalid-token"));
+    }
+
     @Test
     public void testToolCallWithATokenReachesTheRoute() throws Exception
     {
@@ -205,10 +218,17 @@ public class McpEndpointTest
     @Test
     public void testAMalformedBodyIsRefusedOnTheWire() throws Exception
     {
-        var response = rpc(null, "{not json");
+        var response = rpc(null, "{\"jsonrpc\": broken");
 
         assertThat(response.statusCode(), is(400));
-        assertThat(body(response).getAsJsonObject().getAsJsonObject("error").get("code").getAsInt(), is(-32700));
+        var error = body(response).getAsJsonObject().getAsJsonObject("error");
+        assertThat(error.get("code").getAsInt(), is(-32700));
+
+        // Gson ends a syntax error with advice to parse leniently and a link; a
+        // caller told that would try to accept the broken body
+        assertThat(error.get("message").getAsString(), containsString("at line 1 column 13"));
+        assertThat(error.get("message").getAsString(), not(containsString("setStrictness")));
+        assertThat(error.get("message").getAsString(), not(containsString("github.com")));
     }
 
     /**
@@ -242,6 +262,22 @@ public class McpEndpointTest
     {
         var response = rpc(null, "{\"jsonrpc\":\"2.0\",\"method\":123}");
 
+        var reply = body(response).getAsJsonObject();
+        assertThat(reply.get("id").isJsonNull(), is(true));
+        assertThat(reply.getAsJsonObject("error").get("code").getAsInt(), is(-32600));
+    }
+
+    /**
+     * Reported in review: a notification that carries a result or an error is
+     * no notification but a message built wrongly, and is told so rather than
+     * accepted with 202.
+     */
+    @Test
+    public void testANotificationWithAResultIsAnsweredAsMalformed() throws Exception
+    {
+        var response = rpc(null, "{\"jsonrpc\":\"2.0\",\"method\":\"notifications/initialized\",\"result\":{}}");
+
+        assertThat(response.statusCode(), is(200));
         var reply = body(response).getAsJsonObject();
         assertThat(reply.get("id").isJsonNull(), is(true));
         assertThat(reply.getAsJsonObject("error").get("code").getAsInt(), is(-32600));
@@ -289,6 +325,122 @@ public class McpEndpointTest
         assertThat(replies.size(), is(2));
         assertThat(replies.get(0).getAsJsonObject().has("result"), is(true));
         assertThat(replies.get(1).getAsJsonObject().getAsJsonObject("error").get("code").getAsInt(), is(-32600));
+    }
+
+    /** the cap exists because one body can hold the two worker threads hostage */
+    @Test
+    public void testABatchOfThirtyTwoIsAnsweredAndThirtyThreeIsNot() throws Exception
+    {
+        var exactly = batch(32);
+        assertThat(body(rpc(null, exactly)).getAsJsonArray().size(), is(32));
+
+        var response = rpc(null, batch(33));
+        assertThat(response.statusCode(), is(200));
+        var reply = body(response).getAsJsonObject();
+        assertThat(reply.getAsJsonObject("error").get("code").getAsInt(), is(-32600));
+        assertThat(reply.getAsJsonObject("error").get("message").getAsString(), containsString("must not exceed 32"));
+    }
+
+    /** a request that carries a `result` is a reply wearing a method, not a request */
+    @Test
+    public void testARequestThatCarriesAResultIsInvalid() throws Exception
+    {
+        var response = rpc(null, "{\"jsonrpc\":\"2.0\",\"id\":7,\"method\":\"ping\",\"result\":{\"pong\":true}}");
+
+        var reply = body(response).getAsJsonObject();
+        assertThat(reply.getAsJsonObject("error").get("code").getAsInt(), is(-32600));
+        assertThat(reply.getAsJsonObject("error").get("message").getAsString(), containsString("not \"result\""));
+        // a batch is only readable if every refusal names the message it belongs to
+        assertThat(reply.get("id").getAsInt(), is(7));
+    }
+
+    /**
+     * JSON-RPC ids are strings or numbers. An object, an array or a boolean cannot
+     * be echoed as one, and a reply that carries it back is a reply no client can
+     * match to its request.
+     */
+    @Test
+    public void testAnIdThatIsNotAStringOrNumberIsInvalid() throws Exception
+    {
+        for (var id : List.of("{}", "[]", "true", "[1,2]", "{\"a\":1}"))
+        {
+            var response = rpc(null, "{\"jsonrpc\":\"2.0\",\"id\":" + id + ",\"method\":\"ping\"}");
+
+            var reply = body(response).getAsJsonObject();
+            assertThat(reply.getAsJsonObject("error").get("code").getAsInt(), is(-32600));
+            assertThat(reply.getAsJsonObject("error").get("message").getAsString(),
+                            containsString("\"id\" must be a string or a number"));
+            assertThat(reply.get("id").isJsonNull(), is(true));
+        }
+    }
+
+    /** a notification omits `id`; sending `null` is neither, and answering it would echo nothing */
+    @Test
+    public void testANullIdIsInvalidRatherThanANotification() throws Exception
+    {
+        var response = rpc(null, "{\"jsonrpc\":\"2.0\",\"id\":null,\"method\":\"ping\"}");
+
+        assertThat(body(response).getAsJsonObject().getAsJsonObject("error").get("code").getAsInt(), is(-32600));
+        assertThat(body(response).getAsJsonObject().getAsJsonObject("error").get("message").getAsString(),
+                        containsString("\"id\" must be a string or a number"));
+    }
+
+    /** the parser recurses per level, so a deeply nested body is refused rather than overflowing the stack */
+    @Test
+    public void testADeeplyNestedMessageIsAParseError() throws Exception
+    {
+        var nested = "[".repeat(10_000) + "]".repeat(10_000);
+        var response = rpc(null, "{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"ping\",\"params\":{\"a\":" + nested + "}}");
+
+        assertThat(response.statusCode(), is(400));
+        var error = body(response).getAsJsonObject().getAsJsonObject("error");
+        assertThat(error.get("code").getAsInt(), is(-32700));
+        assertThat(error.get("message").getAsString(), containsString("nested more than 64 levels"));
+    }
+
+    /** the limit counts containers: 64 levels hold a value, 65 empty ones do not */
+    @Test
+    public void testTheNestingLimitCountsContainers() throws Exception
+    {
+        // the message object is the first level, "params" the second
+        var inside = "[".repeat(62) + "1" + "]".repeat(62);
+        var fits = rpc(null, "{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"ping\",\"params\":{\"a\":" + inside + "}}");
+        assertThat(fits.statusCode(), is(200));
+
+        var deeper = "[".repeat(63) + "]".repeat(63);
+        var refused = rpc(null, "{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"ping\",\"params\":{\"a\":" + deeper + "}}");
+        assertThat(refused.statusCode(), is(400));
+        assertThat(body(refused).getAsJsonObject().getAsJsonObject("error").get("code").getAsInt(), is(-32700));
+    }
+
+    /**
+     * A duplicate key silently keeps whichever value Gson happened to take last,
+     * so a body that says `"id":1,"id":2` is a malformed message, not a choice we
+     * should quietly make for the client.
+     */
+    @Test
+    public void testADuplicateKeyIsRefusedAsAParseError() throws Exception
+    {
+        var response = rpc(null, "{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"ping\",\"id\":2}");
+
+        assertThat(response.statusCode(), is(400));
+        assertThat(body(response).getAsJsonObject().getAsJsonObject("error").get("code").getAsInt(), is(-32700));
+    }
+
+    /**
+     * Reported in review: a raw control character inside a string is malformed
+     * JSON (RFC 8259), not text - written as an escape, the same character is
+     * fine.
+     */
+    @Test
+    public void testARawControlCharacterInAStringIsAParseError() throws Exception
+    {
+        var raw = rpc(null, "{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"ping\",\"params\":{\"a\":\"x\u0001y\"}}");
+        assertThat(raw.statusCode(), is(400));
+        assertThat(body(raw).getAsJsonObject().getAsJsonObject("error").get("code").getAsInt(), is(-32700));
+
+        var escaped = rpc(null, "{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"ping\",\"params\":{\"a\":\"x\\u0001y\"}}");
+        assertThat(escaped.statusCode(), is(200));
     }
 
     @Test
@@ -348,6 +500,30 @@ public class McpEndpointTest
 
         var rejection = RejectedConnections.last().orElseThrow();
         assertThat(rejection.tokenPresented(), is(false));
+        assertThat(rejection.reason(), is(RejectedConnections.Reason.NO_HEADER));
+    }
+
+    /**
+     * A header that carries some other scheme is a different fault from no header,
+     * and the preference page has to say which - "you forgot the header" is a
+     * misdiagnosis of a connector that sent one.
+     */
+    @Test
+    public void testAToolCallWithTheWrongSchemeIsRecordedAsSuch() throws Exception
+    {
+        var response = send(HttpRequest.newBuilder(uri()).header("Authorization", "Token abc")
+                        .POST(HttpRequest.BodyPublishers.ofString(call("pp_list_files", "{}"))));
+        // a tool call is refused inside the result, as without a token
+        assertThat(response.statusCode(), is(200));
+
+        var rejection = RejectedConnections.last().orElseThrow();
+        assertThat(rejection.path(), is("/mcp"));
+        assertThat(rejection.tokenPresented(), is(false));
+        assertThat(rejection.reason(), is(RejectedConnections.Reason.NO_BEARER_SCHEME));
+
+        var result = body(response).getAsJsonObject().getAsJsonObject("result");
+        assertThat(result.get("isError").getAsBoolean(), is(true));
+        assertThat(text(result), containsString("does not carry a bearer token"));
     }
 
     /**
@@ -397,6 +573,19 @@ public class McpEndpointTest
     {
         return "{\"jsonrpc\":\"2.0\",\"id\":9,\"method\":\"tools/call\",\"params\":{\"name\":\"" + tool
                         + "\",\"arguments\":" + arguments + "}}";
+    }
+
+    /** a batch of n pings, numbered from 1 */
+    private static String batch(int n)
+    {
+        var messages = new StringBuilder("[");
+        for (int ii = 1; ii <= n; ii++)
+        {
+            if (ii > 1)
+                messages.append(",");
+            messages.append("{\"jsonrpc\":\"2.0\",\"id\":").append(ii).append(",\"method\":\"ping\"}");
+        }
+        return messages.append("]").toString();
     }
 
     private HttpResponse<String> rpc(String token, String body) throws Exception

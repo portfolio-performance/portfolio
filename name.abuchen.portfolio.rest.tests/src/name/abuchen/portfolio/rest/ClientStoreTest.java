@@ -8,10 +8,17 @@ import static org.hamcrest.Matchers.nullValue;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.attribute.AclEntry;
+import java.nio.file.attribute.AclEntryPermission;
+import java.nio.file.attribute.AclEntryType;
+import java.nio.file.attribute.AclFileAttributeView;
+import java.nio.file.attribute.PosixFileAttributeView;
 import java.nio.file.attribute.PosixFilePermissions;
 import java.time.Instant;
+import java.util.List;
 import java.util.UUID;
 
+import org.junit.Assume;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -77,6 +84,35 @@ public class ClientStoreTest
         }
     }
 
+    /**
+     * Without POSIX permissions the ACL keeps the file private. Replacing the
+     * file must not swap it for the wider one a new file inherits from the
+     * directory (Windows; skipped where the file system has no ACLs).
+     */
+    @Test
+    public void testAReplacedClientFileKeepsItsAclWithoutPosix() throws Exception
+    {
+        var store = newStore();
+        store.addPersistentClient("Claude Code");
+
+        var file = dir().resolve("api-clients.json");
+        var view = Files.getFileAttributeView(file, AclFileAttributeView.class);
+        Assume.assumeTrue("no ACLs without POSIX permissions here", //
+                        view != null && Files.getFileAttributeView(file, PosixFileAttributeView.class) == null);
+
+        // the owner alone, nothing inherited
+        var ownerOnly = List.of(AclEntry.newBuilder().setType(AclEntryType.ALLOW) //
+                        .setPrincipal(Files.getOwner(file)) //
+                        .setPermissions(AclEntryPermission.values()) //
+                        .build());
+        view.setAcl(ownerOnly);
+
+        store.addPersistentClient("Codex");
+
+        assertThat(Files.readString(file).contains("Codex"), is(true));
+        assertThat(Files.getFileAttributeView(file, AclFileAttributeView.class).getAcl(), is(ownerOnly));
+    }
+
     @Test
     public void testSessionTokenNeverTouchesDiskAndDiesWithTheStore()
     {
@@ -111,7 +147,8 @@ public class ClientStoreTest
         var store = newStore();
         var token = store.addSessionClient("Claude Code");
 
-        store.revoke(store.listClients().get(0).id());
+        // nothing persistent to remove, so this is a complete revocation
+        assertThat(store.revoke(store.listClients().get(0).id()), is(true));
 
         assertThat(store.authenticate(token).isPresent(), is(false));
     }
@@ -151,6 +188,39 @@ public class ClientStoreTest
     }
 
     /**
+     * The name is shown in the approval dialog, and whoever asks for access
+     * chooses it: a right-to-left override, a zero-width character or a line
+     * separator must not be able to make it read as another client's name.
+     */
+    @Test
+    public void testInvisibleCharactersAreStrippedFromTheName()
+    {
+        assertThat(ClientStore.sanitizeName("Claude\u202E edoC"), is("Claude edoC"));
+        assertThat(ClientStore.sanitizeName("Cla\u200Bude\u2066 Code\u2069"), is("Claude Code"));
+        assertThat(ClientStore.sanitizeName("Claude\u2028Code\u2029"), is("ClaudeCode"));
+        assertThat(ClientStore.sanitizeName("Büro-PC ✓"), is("Büro-PC ✓"));
+    }
+
+    /**
+     * The file is replaced in one step, so a crash while writing leaves the
+     * previous one intact, and no temporary file is left behind.
+     */
+    @Test
+    public void testSavingLeavesNoTemporaryFile() throws Exception
+    {
+        var store = newStore();
+        var first = store.addPersistentClient("First");
+        store.addPersistentClient("Second");
+
+        try (var files = Files.list(dir()))
+        {
+            assertThat(files.map(p -> p.getFileName().toString()).toList(), is(List.of("api-clients.json")));
+        }
+        assertThat(newStore().authenticate(first).isPresent(), is(true));
+        assertThat(newStore().listClients().size(), is(2));
+    }
+
+    /**
      * The revoke handle exposed to the UI must be an opaque identity of its
      * own, not the token's hash — otherwise the UI is coupled to the hashing
      * scheme. It must also be stable across a reload.
@@ -182,6 +252,499 @@ public class ClientStoreTest
             // expected: nothing left after sanitization
         }
         assertThat(store.listClients(), hasSize(0));
+    }
+
+    /**
+     * A client file that cannot be written makes this token one that outlives
+     * nothing: it works now and disappears at the next restart, exactly like a
+     * session client. Saying so is what lets the UI call it session-only instead
+     * of presenting it as a permanent client that is silently not on disk.
+     */
+    @Test
+    public void testUnwritableClientFileMarksTheTokenAsSessionOnly() throws Exception
+    {
+        Files.createDirectories(dir().resolve("api-clients.json")); // a directory where a file belongs
+
+        var store = newStore();
+        var token = store.addPersistentClient("Claude Code");
+
+        assertThat(store.authenticate(token).isPresent(), is(true));
+        assertThat(store.listClients().get(0).session(), is(true));
+        assertThat(store.survivesRestart(token), is(false));
+
+        // revoking it is complete, because nothing was ever written
+        assertThat(store.revoke(store.listClients().get(0).id()), is(true));
+        assertThat(store.authenticate(token).isPresent(), is(false));
+    }
+
+    /**
+     * A revocation whose write failed is not a completed one. The client is gone
+     * for this session, but the file still holds the token, so it authenticates
+     * again after a restart - and the UI has to be able to tell the user that.
+     */
+    @Test
+    public void testOnlyAWrittenPersistentClientSurvivesARestart()
+    {
+        var store = newStore();
+        var persistent = store.addPersistentClient("Claude Code");
+        var session = store.addSessionClient("Script");
+
+        assertThat(store.survivesRestart(persistent), is(true));
+        assertThat(store.survivesRestart(session), is(false));
+        assertThat(store.survivesRestart("not-a-token"), is(false));
+    }
+
+    @Test
+    public void testRevokeThatCouldNotBeWrittenReportsTheFailure() throws Exception
+    {
+        var store = newStore();
+        var token = store.addPersistentClient("Claude Code");
+        var id = store.listClients().get(0).id();
+        assertThat(store.listClients().get(0).session(), is(false));
+
+        Files.delete(dir().resolve("api-clients.json"));
+        Files.createDirectories(dir().resolve("api-clients.json"));
+
+        assertThat(store.revoke(id), is(false));
+        assertThat(store.authenticate(token).isPresent(), is(false));
+        assertThat(store.listClients(), hasSize(0));
+    }
+
+    /**
+     * Reported in review: a revoke the file did not take is written by a
+     * later authentication - also one with the revoked token, which is the
+     * client most likely to keep calling - at most once a minute.
+     */
+    @Test
+    public void testARevokeThatCouldNotBeWrittenIsWrittenLater() throws Exception
+    {
+        var store = newStore();
+        var token = store.addPersistentClient("Claude Code");
+        var id = store.listClients().get(0).id();
+        var file = dir().resolve("api-clients.json");
+        var content = Files.readString(file);
+
+        Files.delete(file);
+        Files.createDirectories(file);
+        assertThat(store.revoke(id), is(false));
+
+        Files.delete(file);
+        Files.writeString(file, content);
+
+        // within the minute after the failed write: not tried yet
+        now = Instant.parse("2026-07-20T10:00:30Z");
+        assertThat(store.authenticate(token).isPresent(), is(false));
+        assertThat(newStore().listClients(), hasSize(1));
+
+        now = Instant.parse("2026-07-20T10:01:00Z");
+        assertThat(store.authenticate(token).isPresent(), is(false));
+        assertThat(newStore().listClients(), hasSize(0));
+        assertThat(newStore().authenticate(token).isPresent(), is(false));
+    }
+
+    /**
+     * Reported in review: a pending revoke is written by any authentication -
+     * also a session client's, whose own use is never written.
+     */
+    @Test
+    public void testAPendingRevokeIsWrittenByASessionClientsAuthentication() throws Exception
+    {
+        var store = newStore();
+        store.addPersistentClient("Claude Code");
+        var id = store.listClients().get(0).id();
+        var file = dir().resolve("api-clients.json");
+        var content = Files.readString(file);
+
+        Files.delete(file);
+        Files.createDirectories(file);
+        assertThat(store.revoke(id), is(false));
+
+        Files.delete(file);
+        Files.writeString(file, content);
+        var sessionToken = store.addSessionClient("Script");
+
+        now = Instant.parse("2026-07-20T10:01:00Z");
+        assertThat(store.authenticate(sessionToken).isPresent(), is(true));
+        assertThat(newStore().listClients(), hasSize(0));
+    }
+
+    /**
+     * Reported in review: a clock set back behind the failed write does not
+     * hold off the next attempt until it catches up again.
+     */
+    @Test
+    public void testAClockSetBackDoesNotDelayTheRetry() throws Exception
+    {
+        var store = newStore();
+        var token = store.addPersistentClient("Claude Code");
+        var id = store.listClients().get(0).id();
+        var file = dir().resolve("api-clients.json");
+        var content = Files.readString(file);
+
+        Files.delete(file);
+        Files.createDirectories(file);
+        assertThat(store.revoke(id), is(false));
+
+        Files.delete(file);
+        Files.writeString(file, content);
+
+        now = Instant.parse("2026-07-20T09:30:00Z");
+        assertThat(store.authenticate(token).isPresent(), is(false));
+        assertThat(newStore().listClients(), hasSize(0));
+    }
+
+    /**
+     * Reported in review: the time of a use is taken as written only when the
+     * write worked; a failed one is tried again a minute later, not a minute
+     * after the last use that was written.
+     */
+    @Test
+    public void testAFailedWriteOfTheLastUseIsTriedAgain() throws Exception
+    {
+        var store = newStore();
+        var token = store.addPersistentClient("Claude Code");
+        var file = dir().resolve("api-clients.json");
+        var content = Files.readString(file);
+
+        Files.delete(file);
+        Files.createDirectories(file);
+        now = Instant.parse("2026-07-20T10:02:00Z");
+        assertThat(store.authenticate(token).isPresent(), is(true));
+
+        Files.delete(file);
+        Files.writeString(file, content);
+
+        now = Instant.parse("2026-07-20T10:02:30Z");
+        store.authenticate(token);
+        assertThat(newStore().listClients().get(0).lastUsed(), is(nullValue()));
+
+        now = Instant.parse("2026-07-20T10:03:00Z");
+        store.authenticate(token);
+        assertThat(newStore().listClients().get(0).lastUsed(), is(Instant.parse("2026-07-20T10:03:00Z")));
+    }
+
+    /**
+     * Reported in review: a client written while the file could be written
+     * keeps authenticating, and stays persistent, when a later write of its
+     * last use fails.
+     */
+    @Test
+    public void testAPersistedClientStillAuthenticatesWhenItsFileBecomesUnwritable() throws Exception
+    {
+        var store = newStore();
+        var token = store.addPersistentClient("Claude Code");
+
+        Files.delete(dir().resolve("api-clients.json"));
+        Files.createDirectories(dir().resolve("api-clients.json")); // a directory where a file belongs
+
+        assertThat(store.authenticate(token).isPresent(), is(true));
+        assertThat(store.listClients().get(0).session(), is(false));
+    }
+
+    /**
+     * Reported in review: a client file that is a link is written through,
+     * as writing in place did. Replacing the link would leave the linked file
+     * with the clients it had - a revoked one among them.
+     */
+    @Test
+    public void testALinkedClientFileIsWrittenThrough() throws Exception
+    {
+        var real = Files.createDirectories(dir().resolve("elsewhere")).resolve("clients.json");
+        Files.writeString(real, "{\"clients\":[]}");
+        var link = dir().resolve("api-clients.json");
+        try
+        {
+            Files.createSymbolicLink(link, real);
+        }
+        catch (UnsupportedOperationException | java.io.IOException e)
+        {
+            Assume.assumeNoException("no symbolic links here", e);
+        }
+
+        Object identity = null;
+        try
+        {
+            identity = Files.getAttribute(real, "unix:ino");
+        }
+        catch (UnsupportedOperationException | IllegalArgumentException e)
+        {
+            // no Unix file attributes: only the identity check below is left out
+        }
+
+        // readable by others before: the write through makes it owner-only
+        var posix = true;
+        try
+        {
+            Files.setPosixFilePermissions(real, PosixFilePermissions.fromString("rw-r--r--"));
+        }
+        catch (UnsupportedOperationException e)
+        {
+            posix = false;
+        }
+
+        var store = newStore();
+        var token = store.addPersistentClient("Claude Code");
+        assertThat(Files.isSymbolicLink(link), is(true));
+        assertThat(Files.readString(real).contains("Claude Code"), is(true));
+        if (posix)
+            assertThat(Files.getPosixFilePermissions(real), is(PosixFilePermissions.fromString("rw-------")));
+        assertThat(newStore().authenticate(token).isPresent(), is(true));
+
+        assertThat(store.revoke(store.listClients().get(0).id()), is(true));
+        assertThat(Files.isSymbolicLink(link), is(true));
+        assertThat(Files.readString(real).contains("Claude Code"), is(false));
+        assertThat(newStore().authenticate(token).isPresent(), is(false));
+        // the backup the write in place took first is gone once the write worked
+        assertThat(Files.exists(dir().resolve("api-clients.json.bak")), is(false));
+
+        // written in place, not replaced: the linked file keeps its identity
+        if (identity != null)
+            assertThat(Files.getAttribute(real, "unix:ino"), is(identity));
+    }
+
+    /**
+     * Reported in review: a client file with a further hard link is written in
+     * place, so that the other name does not keep the old clients - a revoked
+     * one among them.
+     */
+    @Test
+    public void testAHardLinkedClientFileIsWrittenUnderEveryName() throws Exception
+    {
+        var store = newStore();
+        var token = store.addPersistentClient("Claude Code");
+        var other = dir().resolve("clients-copy.json");
+        try
+        {
+            Files.createLink(other, dir().resolve("api-clients.json"));
+        }
+        catch (UnsupportedOperationException | java.io.IOException e)
+        {
+            Assume.assumeNoException("no hard links here", e);
+        }
+
+        assertThat(store.revoke(store.listClients().get(0).id()), is(true));
+        assertThat(Files.readString(other).contains("Claude Code"), is(false));
+        assertThat(newStore().authenticate(token).isPresent(), is(false));
+    }
+
+    /**
+     * Reported in review: a directory that takes no new file takes no backup
+     * either, so the client file is not written in place there - a crash could
+     * leave it cut short with nothing to complete it from. The save fails, the
+     * file stays as it was, and the revoke says so. Cannot be arranged for a
+     * user who may write everywhere.
+     */
+    @Test
+    public void testAClientFileInADirectoryThatTakesNoBackupIsNotWritten() throws Exception
+    {
+        var store = newStore();
+        var token = store.addPersistentClient("Claude Code");
+        var dir = dir();
+        var before = Files.readString(dir.resolve("api-clients.json"));
+        try
+        {
+            Files.setPosixFilePermissions(dir, PosixFilePermissions.fromString("r-x------"));
+        }
+        catch (UnsupportedOperationException e)
+        {
+            Assume.assumeNoException("no POSIX permissions here", e);
+        }
+        try
+        {
+            Assume.assumeTrue("this user may write to any directory", !Files.isWritable(dir));
+
+            assertThat(store.revoke(store.listClients().get(0).id()), is(false));
+            assertThat(Files.readString(dir.resolve("api-clients.json")), is(before));
+        }
+        finally
+        {
+            Files.setPosixFilePermissions(dir, PosixFilePermissions.fromString("rwx------"));
+        }
+        // nothing was written: the token still works after a restart, as the
+        // revoke said it might
+        assertThat(newStore().authenticate(token).isPresent(), is(true));
+    }
+
+    /**
+     * Reported in review: an in-place write that is cut short leaves the
+     * client file empty or broken. The content it was writing is in the backup,
+     * so the next start takes the clients from there - and writes the file
+     * again with a later request.
+     */
+    @Test
+    public void testAClientFileCutShortIsCompletedFromTheBackup() throws Exception
+    {
+        var source = newStore();
+        source.addPersistentClient("Claude Code");
+        var intended = Files.readString(dir().resolve("api-clients.json"));
+
+        for (var cut : List.of("{\"clients\":[{\"id\":", "", "  \n"))
+        {
+            writeStore(cut);
+            Files.writeString(dir().resolve("api-clients.json.bak"), intended);
+
+            var store = newStore();
+            assertThat(cut, store.listClients(), hasSize(1));
+            assertThat(store.listClients().get(0).name(), is("Claude Code"));
+
+            // the next request writes the file again, and the backup goes
+            store.authenticate("a-token-nobody-has");
+            assertThat(Files.readString(dir().resolve("api-clients.json")), is(intended));
+            assertThat(Files.exists(dir().resolve("api-clients.json.bak")), is(false));
+        }
+    }
+
+    /**
+     * A backup beside a client file that reads well is left over from a write
+     * that finished: the file decides.
+     */
+    @Test
+    public void testAClientFileThatReadsWellIsNotReplacedByTheBackup() throws Exception
+    {
+        var store = newStore();
+        store.addPersistentClient("In the file");
+        var inFile = Files.readString(dir().resolve("api-clients.json"));
+        store.addPersistentClient("Only in the backup");
+        Files.writeString(dir().resolve("api-clients.json.bak"), Files.readString(dir().resolve("api-clients.json")));
+        writeStore(inFile);
+
+        var names = newStore().listClients().stream().map(ClientStore.ApiClient::name).toList();
+        assertThat(names, is(List.of("In the file")));
+    }
+
+    /**
+     * A file of a later version, or one that cannot be read, is no write of
+     * ours cut short: a backup does not replace it, and it is not written over.
+     */
+    @Test
+    public void testAForeignClientFileIsNotReplacedByTheBackup() throws Exception
+    {
+        var foreign = "{\"tokens\":[{\"value\":\"a-token-a-later-version-understands\"}]}";
+        writeStore(foreign);
+        var other = new ClientStore(Files.createDirectories(dir().resolve("other")), () -> now);
+        other.addPersistentClient("Claude Code");
+        Files.copy(dir().resolve("other").resolve("api-clients.json"), dir().resolve("api-clients.json.bak"));
+
+        var store = newStore();
+        assertThat(store.listClients(), hasSize(0));
+        store.addPersistentClient("New");
+        assertThat(Files.readString(dir().resolve("api-clients.json")), is(foreign));
+    }
+
+    /**
+     * Reported in review: the content of an in-place write is in the backup
+     * before the client file is touched. When the write of the file itself
+     * fails, the new client may come back at the next start - so it is kept as
+     * persistent and unconfirmed, and a revoke writes the file rather than
+     * taking a session client's shortcut. Cannot be arranged for a user who may
+     * write everywhere.
+     */
+    @Test
+    public void testAFailedInPlaceWriteLeavesItsContentInTheBackup() throws Exception
+    {
+        var real = Files.createDirectories(dir().resolve("elsewhere")).resolve("clients.json");
+        Files.writeString(real, "{\"clients\":[]}");
+        var link = dir().resolve("api-clients.json");
+        try
+        {
+            Files.createSymbolicLink(link, real);
+            Files.setPosixFilePermissions(real, PosixFilePermissions.fromString("r--------"));
+        }
+        catch (UnsupportedOperationException | java.io.IOException e)
+        {
+            Assume.assumeNoException("no symbolic links or POSIX permissions here", e);
+        }
+
+        try
+        {
+            Assume.assumeTrue("this user may write to anything", !Files.isWritable(real));
+
+            var store = newStore();
+            var token = store.addPersistentClient("Claude Code");
+
+            assertThat(Files.readString(dir().resolve("api-clients.json.bak")).contains("Claude Code"), is(true));
+            assertThat(store.survivesRestart(token), is(false));
+            // persistent, unconfirmed: the revoke has to reach the file, and cannot
+            assertThat(store.revoke(store.listClients().get(0).id()), is(false));
+        }
+        finally
+        {
+            Files.setPosixFilePermissions(real, PosixFilePermissions.fromString("rw-------"));
+        }
+    }
+
+    /**
+     * Reported in review: a save that failed while the client file cannot even
+     * be read proves nothing about the file. The new client is kept as
+     * persistent, so that its revoke writes the file and says when that fails,
+     * rather than reporting a session client's revoke as done. Cannot be
+     * arranged for a user who may read and write everywhere.
+     */
+    @Test
+    public void testAFailedSaveWithAnUnreadableFileKeepsTheClientPersistent() throws Exception
+    {
+        var store = newStore();
+        store.addPersistentClient("Existing");
+        var file = dir().resolve("api-clients.json");
+        var dir = dir();
+        try
+        {
+            Files.setPosixFilePermissions(file, PosixFilePermissions.fromString("---------"));
+            Files.setPosixFilePermissions(dir, PosixFilePermissions.fromString("r-x------"));
+        }
+        catch (UnsupportedOperationException e)
+        {
+            Assume.assumeNoException("no POSIX permissions here", e);
+        }
+        try
+        {
+            Assume.assumeTrue("this user may read and write anything",
+                            !Files.isWritable(dir) && !Files.isReadable(file));
+
+            var token = store.addPersistentClient("Claude Code");
+            assertThat(store.authenticate(token).isPresent(), is(true));
+            // unwritten: listed as session-only until a write works
+            assertThat(store.authenticate(token).get().session(), is(true));
+            // not known to be in the file: not reported as surviving a restart
+            assertThat(store.survivesRestart(token), is(false));
+
+            // the file may hold it, and the write still fails: not reported as done
+            var id = store.listClients().stream().filter(c -> c.name().equals("Claude Code")).findFirst()
+                            .orElseThrow().id();
+            assertThat(store.revoke(id), is(false));
+        }
+        finally
+        {
+            Files.setPosixFilePermissions(dir, PosixFilePermissions.fromString("rwx------"));
+            Files.setPosixFilePermissions(file, PosixFilePermissions.fromString("rw-------"));
+        }
+    }
+
+    /**
+     * Reported in review: a link whose target does not exist yet is written
+     * through as well - the target is created, the link stays.
+     */
+    @Test
+    public void testADanglingLinkIsWrittenThrough() throws Exception
+    {
+        var real = dir().resolve("elsewhere").resolve("clients.json");
+        var link = dir().resolve("api-clients.json");
+        try
+        {
+            Files.createSymbolicLink(link, real);
+        }
+        catch (UnsupportedOperationException | java.io.IOException e)
+        {
+            Assume.assumeNoException("no symbolic links here", e);
+        }
+
+        var store = newStore();
+        var token = store.addPersistentClient("Claude Code");
+
+        assertThat(store.listClients().get(0).session(), is(false));
+        assertThat(Files.isSymbolicLink(link), is(true));
+        assertThat(Files.readString(real).contains("Claude Code"), is(true));
+        assertThat(newStore().authenticate(token).isPresent(), is(true));
     }
 
     private void writeStore(String content) throws Exception
@@ -241,6 +804,188 @@ public class ClientStoreTest
         var clients = newStore().listClients();
         assertThat(clients, hasSize(1));
         assertThat(clients.get(0).name(), is("Good"));
+    }
+
+    /**
+     * An entry this version cannot parse may be one a later version reads. It
+     * does not authenticate here, but a save writes it back as it was.
+     */
+    @Test
+    public void testAnEntryThatDoesNotParseIsKeptOnSave() throws Exception
+    {
+        var bad = "{\"id\":\"b\",\"name\":\"Later\",\"created\":\"2026-07-20T10:00:00Z\",\"tokenDigest\":\"x\"}";
+        writeStore("{\"clients\":[" + bad + "]}");
+
+        var store = newStore();
+        assertThat(store.listClients(), hasSize(0));
+        store.addPersistentClient("Other");
+
+        var content = Files.readString(dir().resolve("api-clients.json"));
+        // the whole entry, as it was - not only the field this version does not know
+        assertThat(content.contains(bad), is(true));
+        assertThat(newStore().listClients(), hasSize(1));
+    }
+
+    /** the temporary file a save writes through is gone once the save is done */
+    @Test
+    public void testASaveLeavesNoTemporaryFile() throws Exception
+    {
+        newStore().addPersistentClient("Claude Code");
+
+        try (var files = Files.list(dir()))
+        {
+            assertThat(files.map(f -> f.getFileName().toString()).toList(), is(List.of("api-clients.json")));
+        }
+    }
+
+    /**
+     * A file whose shape this version does not recognise is not an empty file.
+     * Reading it as one, and then saving what this version holds, would delete
+     * tokens that still exist - so the content stays exactly as it is.
+     */
+    @Test
+    public void testUnrecognisedContentIsNeverOverwritten() throws Exception
+    {
+        var foreign = "{\"tokens\":[{\"value\":\"a-token-a-later-version-understands\"}]}";
+        writeStore(foreign);
+
+        var store = newStore();
+        var token = store.addPersistentClient("Claude Code");
+
+        assertThat(Files.readString(dir().resolve("api-clients.json")), is(foreign));
+        assertThat(store.listClients(), hasSize(1)); // usable in this run
+        assertThat(store.authenticate(token).isPresent(), is(true));
+        assertThat(store.listClients().get(0).session(), is(true));
+        assertThat(store.survivesRestart(token), is(false));
+        assertThat(newStore().listClients(), hasSize(0)); // nothing was written over the old content
+    }
+
+    /** an empty file holds nothing to protect: it reads as no clients and is written as usual */
+    @Test
+    public void testAnEmptyFileIsAnEmptyClientList() throws Exception
+    {
+        writeStore("  \n");
+
+        var store = newStore();
+        assertThat(store.listClients(), hasSize(0));
+        store.addPersistentClient("Claude Code");
+
+        assertThat(newStore().listClients(), hasSize(1));
+    }
+
+    /** the same holds for content that is not parseable at all */
+    @Test
+    public void testUnparseableContentIsNeverOverwritten() throws Exception
+    {
+        writeStore("{ clients: [");
+
+        newStore().addPersistentClient("Claude Code");
+
+        assertThat(Files.readString(dir().resolve("api-clients.json")), is("{ clients: ["));
+    }
+
+    /**
+     * Reported in review: a file protected as unreadable since it was loaded is
+     * never written, so it cannot hold a client added since - that client is a
+     * session client at once, not one waiting for a write that never comes.
+     */
+    @Test
+    public void testAClientAddedOverAProtectedFileIsASessionClient() throws Exception
+    {
+        var existing = newStore().addPersistentClient("Existing");
+        var file = dir().resolve("api-clients.json");
+        try
+        {
+            Files.setPosixFilePermissions(file, PosixFilePermissions.fromString("---------"));
+        }
+        catch (UnsupportedOperationException e)
+        {
+            Assume.assumeNoException("no POSIX permissions here", e);
+        }
+        try
+        {
+            Assume.assumeTrue("this user may read anything", !Files.isReadable(file));
+
+            // the file cannot be read as the store loads it: protected from then on
+            var store = newStore();
+            var token = store.addPersistentClient("Claude Code");
+
+            assertThat(store.authenticate(token).isPresent(), is(true));
+            assertThat(store.listClients().get(0).session(), is(true));
+            assertThat(store.survivesRestart(token), is(false));
+            // nothing was written, so the revoke is complete
+            assertThat(store.revoke(store.listClients().get(0).id()), is(true));
+        }
+        finally
+        {
+            Files.setPosixFilePermissions(file, PosixFilePermissions.fromString("rw-------"));
+        }
+
+        // the protected file was left as it was
+        assertThat(newStore().authenticate(existing).isPresent(), is(true));
+    }
+
+    /**
+     * Reported in review: a failed write may have cut the earlier clients from
+     * the file. A client that then becomes session-only leaves the store
+     * unsaved, so that a later request - also its own - writes the file again.
+     * Cannot be arranged for a user who may write everywhere.
+     */
+    @Test
+    public void testAFileCutShortIsWrittenAgainAfterAClientBecameSessionOnly() throws Exception
+    {
+        var store = newStore();
+        var existing = store.addPersistentClient("Existing");
+        var file = dir().resolve("api-clients.json");
+        var dir = dir();
+
+        // cut short by a write that failed halfway, and no longer replaceable
+        Files.writeString(file, "{\"clients\":[");
+        try
+        {
+            Files.setPosixFilePermissions(file, PosixFilePermissions.fromString("r--------"));
+            Files.setPosixFilePermissions(dir, PosixFilePermissions.fromString("r-x------"));
+        }
+        catch (UnsupportedOperationException e)
+        {
+            Assume.assumeNoException("no POSIX permissions here", e);
+        }
+
+        String token;
+        try
+        {
+            Assume.assumeTrue("this user may write to anything", !Files.isWritable(dir) && !Files.isWritable(file));
+
+            token = store.addPersistentClient("Claude Code");
+            assertThat(store.survivesRestart(token), is(false));
+        }
+        finally
+        {
+            Files.setPosixFilePermissions(dir, PosixFilePermissions.fromString("rwx------"));
+            Files.setPosixFilePermissions(file, PosixFilePermissions.fromString("rw-------"));
+        }
+
+        // the next request after the retry interval - the session client's own - writes the file again
+        now = now.plusSeconds(61);
+        assertThat(store.authenticate(token).isPresent(), is(true));
+        assertThat(newStore().authenticate(existing).isPresent(), is(true));
+    }
+
+    /**
+     * A client file this version cannot read or write must not turn a token that
+     * works into a failed request: authentication runs on an HTTP worker, after
+     * the token has already been accepted.
+     */
+    @Test
+    public void testAnUnwritableClientFileDoesNotBreakAuthentication() throws Exception
+    {
+        Files.createDirectories(dir().resolve("api-clients.json")); // a directory where a file belongs
+
+        var store = newStore();
+        var token = store.addPersistentClient("Claude Code");
+
+        assertThat(store.authenticate(token).isPresent(), is(true));
+        assertThat(store.authenticate(token).get().name(), is("Claude Code"));
     }
 
     @Test

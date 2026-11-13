@@ -175,8 +175,9 @@ public class FileAccessRegistry
     {
         var enabled = all().stream().filter(FileAccess::enabled).toList();
 
+        // a UUID is case-insensitive on input (RFC 9562), as aliases already are
         for (FileAccess access : enabled)
-            if (access.uuid().equals(idOrAlias))
+            if (access.uuid() != null && access.uuid().equalsIgnoreCase(idOrAlias))
                 return new Resolution.Match(access);
 
         var byAlias = enabled.stream().filter(a -> a.alias() != null && a.alias().equalsIgnoreCase(idOrAlias)).toList();
