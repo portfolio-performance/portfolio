@@ -35,7 +35,7 @@ public class ColoredLabel extends Canvas // NOSONAR
 
     public ColoredLabel(Composite parent, int style)
     {
-        super(parent, SWT.NONE);
+        super(parent, style | SWT.DOUBLE_BUFFERED);
 
         this.textStyle = style;
 
@@ -55,11 +55,15 @@ public class ColoredLabel extends Canvas // NOSONAR
     public void setTextColor(Color color)
     {
         this.textColor = color;
+        if (!isDisposed())
+            redraw();
     }
 
     public void setBackdropColor(Color color)
     {
         this.backdropColor = color;
+        if (!isDisposed())
+            redraw();
     }
 
     public void setSecondaryTriangleColor(Color color)
