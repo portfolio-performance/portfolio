@@ -402,6 +402,80 @@ public class BoursoBankPDFExtractorTest
     }
 
     @Test
+    public void testCompteAChat09()
+    {
+        var extractor = new BoursoBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "AChat09.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("LU0056508442"), hasWkn(null), hasTicker(null), //
+                        hasName("BRGF WLD TECHNO.A2 USD C.2DEC"), //
+                        hasCurrencyCode("USD"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2021-05-10T00:00"), hasShares(200.00), //
+                        hasSource("AChat09.txt"), //
+                        hasNote("Référence : 042136509589"), //
+                        hasAmount("EUR", 12306.33), hasGrossValue("EUR", 12306.33), //
+                        hasForexGrossValue("USD", 14902.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testCompteAChat09WithSecurityInEUR()
+    {
+        var security = new Security("BRGF WLD TECHNO.A2 USD C.2DEC", "EUR");
+        security.setIsin("LU0056508442");
+
+        var client = new Client();
+        client.addSecurity(security);
+
+        var extractor = new BoursoBankPDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "AChat09.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, "EUR");
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2021-05-10T00:00"), hasShares(200.00), //
+                        hasSource("AChat09.txt"), //
+                        hasNote("Référence : 042136509589"), //
+                        hasAmount("EUR", 12306.33), hasGrossValue("EUR", 12306.33), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00), //
+                        check(tx -> {
+                            var c = new CheckCurrenciesAction();
+                            var s = c.process((PortfolioTransaction) tx, new Portfolio());
+                            assertThat(s, is(Status.OK_STATUS));
+                        }))));
+    }
+
+    @Test
     public void testCompteVente01()
     {
         var extractor = new BoursoBankPDFExtractor(new Client());
@@ -430,7 +504,7 @@ public class BoursoBankPDFExtractorTest
         assertThat(results, hasItem(sale( //
                         hasDate("2023-09-29T12:36:04"), hasShares(42.00), //
                         hasSource("Vente01.txt"), //
-                        hasNote("à cours limiteCours demandé : 20,5500 EUR | Référence : 493029272303"), //
+                        hasNote("à cours limite | Référence : 493029272303"), //
                         hasAmount("EUR", 858.78), hasGrossValue("EUR", 863.10), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 4.32))));
     }
@@ -570,6 +644,80 @@ public class BoursoBankPDFExtractorTest
                         hasNote("à cours limite | Référence : 09R241107U2540"), //
                         hasAmount("EUR", 2215.40), hasGrossValue("EUR", 2222.35), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 6.95), //
+                        check(tx -> {
+                            var c = new CheckCurrenciesAction();
+                            var s = c.process((PortfolioTransaction) tx, new Portfolio());
+                            assertThat(s, is(Status.OK_STATUS));
+                        }))));
+    }
+
+    @Test
+    public void testCompteVente05()
+    {
+        var extractor = new BoursoBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Vente05.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("LU0056508442"), hasWkn(null), hasTicker(null), //
+                        hasName("BRGF WLD TECHNO.A2 USD C.2DEC"), //
+                        hasCurrencyCode("USD"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2025-03-07T00:00"), hasShares(207.00), //
+                        hasSource("Vente05.txt"), //
+                        hasNote("Référence : 042143617212"), //
+                        hasAmount("EUR", 16570.69), hasGrossValue("EUR", 16570.69), //
+                        hasForexGrossValue("USD", 17967.60), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testCompteVente05WithSecurityInEUR()
+    {
+        var security = new Security("BRGF WLD TECHNO.A2 USD C.2DEC", "EUR");
+        security.setIsin("LU0056508442");
+
+        var client = new Client();
+        client.addSecurity(security);
+
+        var extractor = new BoursoBankPDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Vente05.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, "EUR");
+
+        // check buy sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2025-03-07T00:00"), hasShares(207.00), //
+                        hasSource("Vente05.txt"), //
+                        hasNote("Référence : 042143617212"), //
+                        hasAmount("EUR", 16570.69), hasGrossValue("EUR", 16570.69), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00), //
                         check(tx -> {
                             var c = new CheckCurrenciesAction();
                             var s = c.process((PortfolioTransaction) tx, new Portfolio());
