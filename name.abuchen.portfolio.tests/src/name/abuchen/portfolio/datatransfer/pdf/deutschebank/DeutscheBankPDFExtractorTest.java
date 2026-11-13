@@ -3,6 +3,7 @@ package name.abuchen.portfolio.datatransfer.pdf.deutschebank;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.check;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.deposit;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.dividend;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.fee;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasAmount;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasCurrencyCode;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasDate;
@@ -35,19 +36,13 @@ import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.collection.IsEmptyCollection.empty;
-import static org.junit.Assert.assertNull;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Test;
 
 import name.abuchen.portfolio.Messages;
-import name.abuchen.portfolio.datatransfer.Extractor.BuySellEntryItem;
-import name.abuchen.portfolio.datatransfer.Extractor.SecurityItem;
-import name.abuchen.portfolio.datatransfer.Extractor.SkippedItem;
-import name.abuchen.portfolio.datatransfer.Extractor.TransactionItem;
 import name.abuchen.portfolio.datatransfer.ImportAction.Status;
 import name.abuchen.portfolio.datatransfer.actions.AssertImportActions;
 import name.abuchen.portfolio.datatransfer.actions.CheckCurrenciesAction;
@@ -55,13 +50,8 @@ import name.abuchen.portfolio.datatransfer.pdf.DeutscheBankPDFExtractor;
 import name.abuchen.portfolio.datatransfer.pdf.PDFInputFile;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
-import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
-import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
-import name.abuchen.portfolio.model.Transaction.Unit;
-import name.abuchen.portfolio.money.Money;
-import name.abuchen.portfolio.money.Values;
 
 @SuppressWarnings("nls")
 public class DeutscheBankPDFExtractorTest
@@ -94,7 +84,7 @@ public class DeutscheBankPDFExtractorTest
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
                         hasDate("2014-12-15"), hasExDate("2014-12-04"), //
-                        hasShares(380), //
+                        hasShares(380.00), //
                         hasSource("Dividende01.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 64.88), hasGrossValue("EUR", 87.13), //
@@ -131,7 +121,7 @@ public class DeutscheBankPDFExtractorTest
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
                         hasDate("2014-12-15"), hasExDate("2014-12-04"), //
-                        hasShares(380), //
+                        hasShares(380.00), //
                         hasSource("Dividende01.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 64.88), hasGrossValue("EUR", 87.13), //
@@ -166,7 +156,7 @@ public class DeutscheBankPDFExtractorTest
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
                         hasDate("2014-12-15"), hasExDate(null), //
-                        hasShares(123), //
+                        hasShares(123.00), //
                         hasSource("Dividende02.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 14.95), hasGrossValue("EUR", 20.22), //
@@ -201,7 +191,7 @@ public class DeutscheBankPDFExtractorTest
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
                         hasDate("2015-03-24T00:00"), hasExDate(null), //
-                        hasShares(123), //
+                        hasShares(123.00), //
                         hasSource("Dividende03.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 16.17), hasGrossValue("EUR", 19.51), //
@@ -238,7 +228,7 @@ public class DeutscheBankPDFExtractorTest
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
                         hasDate("2015-03-24T00:00"), hasExDate(null), //
-                        hasShares(123), //
+                        hasShares(123.00), //
                         hasSource("Dividende03.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 16.17), hasGrossValue("EUR", 19.51), //
@@ -280,7 +270,7 @@ public class DeutscheBankPDFExtractorTest
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
                         hasDate("2019-05-31T00:00"), hasExDate(null), //
-                        hasShares(1014), //
+                        hasShares(1014.00), //
                         hasSource("Dividende04.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 297.61), hasGrossValue("EUR", 297.61), //
@@ -315,7 +305,7 @@ public class DeutscheBankPDFExtractorTest
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
                         hasDate("2021-11-26T00:00"), hasExDate(null), //
-                        hasShares(175), //
+                        hasShares(175.00), //
                         hasSource("Dividende05.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 275.80), hasGrossValue("EUR", 343.00), //
@@ -350,7 +340,7 @@ public class DeutscheBankPDFExtractorTest
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
                         hasDate("2021-12-31T00:00"), hasExDate(null), //
-                        hasShares(2000), //
+                        hasShares(2000.00), //
                         hasSource("Dividende06.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 544.56), hasGrossValue("EUR", 677.27), //
@@ -569,9 +559,10 @@ public class DeutscheBankPDFExtractorTest
         assertThat(results, hasItem(dividend( //
                         hasDate("2025-12-10T00:00"), hasExDate("2025-11-19T00:00"), //
                         hasShares(100.00), //
-                        hasSource("Dividende11.txt"), hasNote(null), hasAmount("USD", 18.62), //
-                        hasGrossValue("USD", 25.00), hasTaxes("USD", 3.75 + 2.50 + 0.13), //
-                        hasFees("USD", 0.00))));
+                        hasSource("Dividende11.txt"), //
+                        hasNote(null), //
+                        hasAmount("USD", 18.62), hasGrossValue("USD", 25.00), //
+                        hasTaxes("USD", 3.75 + 2.50 + 0.13), hasFees("USD", 0.00))));
     }
 
     @Test
@@ -698,34 +689,18 @@ public class DeutscheBankPDFExtractorTest
         new AssertImportActions().check(results, "EUR");
 
         // check security
-        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security.getIsin(), is("DE000BASF111"));
-        assertThat(security.getWkn(), is("BASF11"));
-        assertNull(security.getTickerSymbol());
-        assertThat(security.getName(), is("BASF SE"));
-        assertThat(security.getCurrencyCode(), is("EUR"));
+        assertThat(results, hasItem(security( //
+                        hasIsin("DE000BASF111"), hasWkn("BASF11"), hasTicker(null), //
+                        hasName("BASF SE"), //
+                        hasCurrencyCode("EUR"))));
 
         // check buy sell transaction
-        var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2015-04-02T09:04")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(36)));
-        assertThat(entry.getSource(), is("Kauf02.txt"));
-        assertThat(entry.getNote(), is("Belegnummer 1234567890 / 123456"));
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(3524.98))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(3513.60))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(8.78 + 2.00 + 0.60))));
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2015-04-02T09:04"), hasShares(36.00), //
+                        hasSource("Kauf02.txt"), //
+                        hasNote("Belegnummer 1234567890 / 123456"), //
+                        hasAmount("EUR", 3524.98), hasGrossValue("EUR", 3513.60), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 8.78 + 2.00 + 0.60))));
     }
 
     @Test
@@ -754,25 +729,12 @@ public class DeutscheBankPDFExtractorTest
                         hasCurrencyCode("EUR"))));
 
         // check buy sell transaction
-        var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2019-08-20T00:00")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(5.5791)));
-        assertThat(entry.getSource(), is("Kauf03.txt"));
-        assertThat(entry.getNote(), is("Belegnummer 1694278628 / 24281"));
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(300.00))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(300.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2019-08-20T00:00"), hasShares(5.5791), //
+                        hasSource("Kauf03.txt"), //
+                        hasNote("Belegnummer 1694278628 / 24281"), //
+                        hasAmount("EUR", 300.00), hasGrossValue("EUR", 300.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -801,25 +763,12 @@ public class DeutscheBankPDFExtractorTest
                         hasCurrencyCode("EUR"))));
 
         // check buy sell transaction
-        var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-08-20T09:04")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1.4353)));
-        assertThat(entry.getSource(), is("Kauf04.txt"));
-        assertThat(entry.getNote(), is("Belegnummer 1111111111 / 1111111"));
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(100.95))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(100.95))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2021-08-20T09:04"), hasShares(1.4353), //
+                        hasSource("Kauf04.txt"), //
+                        hasNote("Belegnummer 1111111111 / 1111111"), //
+                        hasAmount("EUR", 100.95), hasGrossValue("EUR", 100.95), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -848,25 +797,12 @@ public class DeutscheBankPDFExtractorTest
                         hasCurrencyCode("EUR"))));
 
         // check buy sell transaction
-        var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-12-20T09:09")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(4.9672)));
-        assertThat(entry.getSource(), is("Kauf05.txt"));
-        assertNull(entry.getNote());
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(250.05))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(250.05))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2021-12-20T09:09"), hasShares(4.9672), //
+                        hasSource("Kauf05.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 250.05), hasGrossValue("EUR", 250.05), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -895,25 +831,12 @@ public class DeutscheBankPDFExtractorTest
                         hasCurrencyCode("EUR"))));
 
         // check buy sell transaction
-        var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-12-20T09:04")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(4.8634)));
-        assertThat(entry.getSource(), is("Kauf06.txt"));
-        assertNull(entry.getNote());
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(250.25))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(250.25))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2021-12-20T09:04"), hasShares(4.8634), //
+                        hasSource("Kauf06.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 250.25), hasGrossValue("EUR", 250.25), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -1242,34 +1165,18 @@ public class DeutscheBankPDFExtractorTest
         new AssertImportActions().check(results, "EUR");
 
         // check security
-        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security.getIsin(), is("DE000BASF111"));
-        assertThat(security.getWkn(), is("BASF11"));
-        assertNull(security.getTickerSymbol());
-        assertThat(security.getName(), is("BASF SE"));
-        assertThat(security.getCurrencyCode(), is("EUR"));
+        assertThat(results, hasItem(security( //
+                        hasIsin("DE000BASF111"), hasWkn("BASF11"), hasTicker(null), //
+                        hasName("BASF SE"), //
+                        hasCurrencyCode("EUR"))));
 
         // check buy sell transaction
-        var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2015-04-02T09:04")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(61)));
-        assertThat(entry.getSource(), is("Verkauf01.txt"));
-        assertThat(entry.getNote(), is("Belegnummer 1234567890 / 123456"));
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(2074.71))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(2216.14))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(122.94 + 6.76 + 1.23))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(7.90 + 2.00 + 0.60))));
+        assertThat(results, hasItem(sale( //
+                        hasDate("2015-04-02T09:04"), hasShares(61.00), //
+                        hasSource("Verkauf01.txt"), //
+                        hasNote("Belegnummer 1234567890 / 123456"), //
+                        hasAmount("EUR", 2074.71), hasGrossValue("EUR", 2216.14), //
+                        hasTaxes("EUR", 122.94 + 6.76 + 1.23), hasFees("EUR", 7.90 + 2.00 + 0.60))));
     }
 
     @Test
@@ -1299,7 +1206,7 @@ public class DeutscheBankPDFExtractorTest
 
         // check buy sell transaction
         assertThat(results, hasItem(sale( //
-                        hasDate("2015-01-28T09:00"), hasShares(8), //
+                        hasDate("2015-01-28T09:00"), hasShares(8.00), //
                         hasSource("Verkauf02.txt"), //
                         hasNote("Belegnummer 1234567890 / 123456"), //
                         hasAmount("EUR", 453.66), hasGrossValue("EUR", 464.16), //
@@ -1326,34 +1233,18 @@ public class DeutscheBankPDFExtractorTest
         new AssertImportActions().check(results, "EUR");
 
         // check security
-        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security.getIsin(), is("DE000BASF111"));
-        assertThat(security.getWkn(), is("BASF11"));
-        assertNull(security.getTickerSymbol());
-        assertThat(security.getName(), is("BASF SE"));
-        assertThat(security.getCurrencyCode(), is("EUR"));
+        assertThat(results, hasItem(security( //
+                        hasIsin("DE000BASF111"), hasWkn("BASF11"), hasTicker(null), //
+                        hasName("BASF SE"), //
+                        hasCurrencyCode("EUR"))));
 
         // check buy sell transaction
-        var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2017-02-16T15:28")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(100)));
-        assertThat(entry.getSource(), is("Verkauf03.txt"));
-        assertThat(entry.getNote(), is("Belegnummer 1202359588 / 831475"));
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(4753.16))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(4774.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(11.94 + 3.50 + 5.40))));
+        assertThat(results, hasItem(sale( //
+                        hasDate("2017-02-16T15:28"), hasShares(100.00), //
+                        hasSource("Verkauf03.txt"), //
+                        hasNote("Belegnummer 1202359588 / 831475"), //
+                        hasAmount("EUR", 4753.16), hasGrossValue("EUR", 4774.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 11.94 + 3.50 + 5.40))));
     }
 
     @Test
@@ -1376,34 +1267,18 @@ public class DeutscheBankPDFExtractorTest
         new AssertImportActions().check(results, "EUR");
 
         // check security
-        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security.getIsin(), is("DE0007448508"));
-        assertThat(security.getWkn(), is("744850"));
-        assertNull(security.getTickerSymbol());
-        assertThat(security.getName(), is("IVU TRAFFIC TECHNOLOGIES AG INH.AKT. O.N."));
-        assertThat(security.getCurrencyCode(), is("EUR"));
+        assertThat(results, hasItem(security( //
+                        hasIsin("DE0007448508"), hasWkn("744850"), hasTicker(null), //
+                        hasName("IVU TRAFFIC TECHNOLOGIES AG INH.AKT. O.N."), //
+                        hasCurrencyCode("EUR"))));
 
         // check buy sell transaction
-        var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-07-07T09:05")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1870)));
-        assertThat(entry.getSource(), is("Verkauf04.txt"));
-        assertNull(entry.getNote());
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("EUR", Values.Amount.factorize(27613.77))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of("EUR", Values.Amount.factorize(27676.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("EUR", Values.Amount.factorize(58.90 + 2.00 + 1.33))));
+        assertThat(results, hasItem(sale( //
+                        hasDate("2022-07-07T09:05"), hasShares(1870.00), //
+                        hasSource("Verkauf04.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 27613.77), hasGrossValue("EUR", 27676.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 58.90 + 2.00 + 1.33))));
     }
 
     @Test
@@ -1433,7 +1308,7 @@ public class DeutscheBankPDFExtractorTest
 
         // check buy sell transaction
         assertThat(results, hasItem(sale( //
-                        hasDate("2026-02-24T08:02:00"), hasShares(8000), //
+                        hasDate("2026-02-24T08:02:00"), hasShares(8000.00), //
                         hasSource("Verkauf05.txt"), //
                         hasNote("Belegnummer 6978580640 / 890153444"), //
                         hasAmount("EUR", 7185.60), hasGrossValue("EUR", 8200.00), //
@@ -1575,35 +1450,35 @@ public class DeutscheBankPDFExtractorTest
         
         // check transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2019-08-01"), hasShares(0.1028), //
+                        hasDate("2019-08-01T00:00"), hasShares(0.1028), //
                         hasSource("Sparplan02.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 25.00), hasGrossValue("EUR", 25.00), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.0))));
 
         assertThat(results, hasItem(purchase( //
-                        hasDate("2019-09-02"), hasShares(0.1042), //
+                        hasDate("2019-09-02T00:00"), hasShares(0.1042), //
                         hasSource("Sparplan02.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 25.00), hasGrossValue("EUR", 25.00), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.0))));
 
         assertThat(results, hasItem(purchase( //
-                        hasDate("2019-10-01"), hasShares(0.1017), //
+                        hasDate("2019-10-01T00:00"), hasShares(0.1017), //
                         hasSource("Sparplan02.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 25.00), hasGrossValue("EUR", 25.00), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.0))));
 
         assertThat(results, hasItem(purchase( //
-                        hasDate("2019-11-01"), hasShares(0.1008), //
+                        hasDate("2019-11-01T00:00"), hasShares(0.1008), //
                         hasSource("Sparplan02.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 25.00), hasGrossValue("EUR", 25.00), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.0))));
 
         assertThat(results, hasItem(purchase( //
-                        hasDate("2019-12-02"), hasShares(0.0972), //
+                        hasDate("2019-12-02T00:00"), hasShares(0.0972), //
                         hasSource("Sparplan02.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 25.00), hasGrossValue("EUR", 25.00), //
@@ -1629,11 +1504,6 @@ public class DeutscheBankPDFExtractorTest
         assertThat(results.size(), is(32));
         new AssertImportActions().check(results, "EUR");
 
-        // check transaction
-        // get transactions
-        var iter = results.stream().filter(TransactionItem.class::isInstance).iterator();
-        assertThat(results.stream().filter(TransactionItem.class::isInstance).count(), is(32L));
-
         // assert transaction
         assertThat(results, hasItem(removal( //
                         hasDate("2020-11-02"), //
@@ -1641,275 +1511,113 @@ public class DeutscheBankPDFExtractorTest
                         hasNote("Dauerauftrag an Mustermann, Max"), //
                         hasAmount("EUR", 40.00))));
 
-        var item = iter.next();
-        item = iter.next();
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2020-11-02"), hasAmount("EUR", 1000.00), //
+                        hasSource("GiroKontoauszug01.txt"), hasNote("Dauerauftrag an Mustermann, Max"))));
 
         // assert transaction
-        var transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-11-02T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(1000.00))));
-        assertThat(transaction.getSource(), is("GiroKontoauszug01.txt"));
-        assertThat(transaction.getNote(), is("Dauerauftrag an Mustermann, Max"));
-
-        item = iter.next();
+        assertThat(results, hasItem(removal(hasDate("2020-11-02"), hasAmount("EUR", 14.00), //
+                        hasSource("GiroKontoauszug01.txt"), hasNote("Überweisung an Mustermann, Max"))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-11-02T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(14.00))));
-        assertThat(transaction.getSource(), is("GiroKontoauszug01.txt"));
-        assertThat(transaction.getNote(), is("Überweisung an Mustermann, Max"));
-
-        item = iter.next();
+        assertThat(results, hasItem(removal(hasDate("2020-11-02"), hasAmount("EUR", 14.40), //
+                        hasSource("GiroKontoauszug01.txt"), hasNote("Kartenzahlung"))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-11-02T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(14.40))));
-        assertThat(transaction.getSource(), is("GiroKontoauszug01.txt"));
-        assertThat(transaction.getNote(), is("Kartenzahlung"));
-
-        item = iter.next();
+        assertThat(results, hasItem(removal(hasDate("2020-11-02"), hasAmount("EUR", 46.50), //
+                        hasSource("GiroKontoauszug01.txt"), hasNote("Kartenzahlung"))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-11-02T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(46.50))));
-        assertThat(transaction.getSource(), is("GiroKontoauszug01.txt"));
-        assertThat(transaction.getNote(), is("Kartenzahlung"));
-
-        item = iter.next();
+        assertThat(results, hasItem(removal(hasDate("2020-11-03"), hasAmount("EUR", 50.00), //
+                        hasSource("GiroKontoauszug01.txt"), hasNote("Dauerauftrag an Mustermann, Max"))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-11-03T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(50.00))));
-        assertThat(transaction.getSource(), is("GiroKontoauszug01.txt"));
-        assertThat(transaction.getNote(), is("Dauerauftrag an Mustermann, Max"));
-
-        item = iter.next();
+        assertThat(results, hasItem(removal(hasDate("2020-11-05"), hasAmount("EUR", 4.34), //
+                        hasSource("GiroKontoauszug01.txt"), hasNote("Kartenzahlung"))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-11-05T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(4.34))));
-        assertThat(transaction.getSource(), is("GiroKontoauszug01.txt"));
-        assertThat(transaction.getNote(), is("Kartenzahlung"));
-
-        item = iter.next();
+        assertThat(results, hasItem(deposit(hasDate("2020-11-06"), hasAmount("EUR", 562.00), //
+                        hasSource("GiroKontoauszug01.txt"), hasNote("Überweisung von Unser Sparverein"))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-11-06T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(562.00))));
-        assertThat(transaction.getSource(), is("GiroKontoauszug01.txt"));
-        assertThat(transaction.getNote(), is("Überweisung von Unser Sparverein"));
-
-        item = iter.next();
+        assertThat(results, hasItem(removal(hasDate("2020-11-06"), hasAmount("EUR", 5.33), //
+                        hasSource("GiroKontoauszug01.txt"), hasNote("Kartenzahlung"))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-11-06T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(5.33))));
-        assertThat(transaction.getSource(), is("GiroKontoauszug01.txt"));
-        assertThat(transaction.getNote(), is("Kartenzahlung"));
-
-        item = iter.next();
+        assertThat(results, hasItem(removal(hasDate("2020-11-06"), hasAmount("EUR", 100.00), //
+                        hasSource("GiroKontoauszug01.txt"), hasNote("Bargeldauszahlung GAA"))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-11-06T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(100.00))));
-        assertThat(transaction.getSource(), is("GiroKontoauszug01.txt"));
-        assertThat(transaction.getNote(), is("Bargeldauszahlung GAA"));
-
-        item = iter.next();
+        assertThat(results, hasItem(removal(hasDate("2020-11-12"), hasAmount("EUR", 7.16), //
+                        hasSource("GiroKontoauszug01.txt"), hasNote("Kartenzahlung"))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-11-12T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(7.16))));
-        assertThat(transaction.getSource(), is("GiroKontoauszug01.txt"));
-        assertThat(transaction.getNote(), is("Kartenzahlung"));
-
-        item = iter.next();
+        assertThat(results, hasItem(removal(hasDate("2020-11-12"), hasAmount("EUR", 26.39), //
+                        hasSource("GiroKontoauszug01.txt"), hasNote("Kartenzahlung"))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-11-12T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(26.39))));
-        assertThat(transaction.getSource(), is("GiroKontoauszug01.txt"));
-        assertThat(transaction.getNote(), is("Kartenzahlung"));
-
-        item = iter.next();
+        assertThat(results, hasItem(removal(hasDate("2020-11-13"), hasAmount("EUR", 100.00), //
+                        hasSource("GiroKontoauszug01.txt"), hasNote(""))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-11-13T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(100.00))));
-        assertThat(transaction.getSource(), is("GiroKontoauszug01.txt"));
-
-        item = iter.next();
+        assertThat(results, hasItem(removal(hasDate("2020-11-13"), hasAmount("EUR", 1.59), //
+                        hasSource("GiroKontoauszug01.txt"), hasNote("AMAZON PAYMENTS EUROPE S.C.A."))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-11-13T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(1.59))));
-        assertThat(transaction.getSource(), is("GiroKontoauszug01.txt"));
-        assertThat(transaction.getNote(), is("AMAZON PAYMENTS EUROPE S.C.A."));
-
-        item = iter.next();
+        assertThat(results, hasItem(removal(hasDate("2020-11-13"), hasAmount("EUR", 14.69), //
+                        hasSource("GiroKontoauszug01.txt"), hasNote("Kartenzahlung"))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-11-13T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(14.69))));
-        assertThat(transaction.getSource(), is("GiroKontoauszug01.txt"));
-        assertThat(transaction.getNote(), is("Kartenzahlung"));
-
-        item = iter.next();
+        assertThat(results, hasItem(removal(hasDate("2020-11-13"), hasAmount("EUR", 29.90), //
+                        hasSource("GiroKontoauszug01.txt"), hasNote("Kartenzahlung"))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-11-13T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(29.90))));
-        assertThat(transaction.getSource(), is("GiroKontoauszug01.txt"));
-        assertThat(transaction.getNote(), is("Kartenzahlung"));
-
-        item = iter.next();
+        assertThat(results, hasItem(removal(hasDate("2020-11-13"), hasAmount("EUR", 15.98), //
+                        hasSource("GiroKontoauszug01.txt"), hasNote("2104 ERNSTINGS FAM. Stadt"))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-11-13T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(15.98))));
-        assertThat(transaction.getSource(), is("GiroKontoauszug01.txt"));
-        assertThat(transaction.getNote(), is("2104 ERNSTINGS FAM. Stadt"));
-
-        item = iter.next();
+        assertThat(results, hasItem(removal(hasDate("2020-11-13"), hasAmount("EUR", 34.09), //
+                        hasSource("GiroKontoauszug01.txt"), hasNote("H+M 382 SAGT VIELEN DANK"))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-11-13T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(34.09))));
-        assertThat(transaction.getSource(), is("GiroKontoauszug01.txt"));
-        assertThat(transaction.getNote(), is("H+M 382 SAGT VIELEN DANK"));
-
-        item = iter.next();
+        assertThat(results, hasItem(deposit(hasDate("2020-11-16"), hasAmount("EUR", 9.99), //
+                        hasSource("GiroKontoauszug01.txt"), hasNote("Überweisung von 2104 ERNSTINGS FAM. Stadt"))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-11-16T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(9.99))));
-        assertThat(transaction.getSource(), is("GiroKontoauszug01.txt"));
-        assertThat(transaction.getNote(), is("Überweisung von 2104 ERNSTINGS FAM. Stadt"));
-
-        item = iter.next();
+        assertThat(results, hasItem(removal(hasDate("2020-11-16"), hasAmount("EUR", 69.32), //
+                        hasSource("GiroKontoauszug01.txt"), hasNote("Kartenzahlung"))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-11-16T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(69.32))));
-        assertThat(transaction.getSource(), is("GiroKontoauszug01.txt"));
-        assertThat(transaction.getNote(), is("Kartenzahlung"));
-
-        item = iter.next();
+        assertThat(results, hasItem(removal(hasDate("2020-11-16"), hasAmount("EUR", 14.61), //
+                        hasSource("GiroKontoauszug01.txt"), hasNote("Kartenzahlung"))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-11-16T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(14.61))));
-        assertThat(transaction.getSource(), is("GiroKontoauszug01.txt"));
-        assertThat(transaction.getNote(), is("Kartenzahlung"));
-
-        item = iter.next();
+        assertThat(results, hasItem(removal(hasDate("2020-11-19"), hasAmount("EUR", 33.99), //
+                        hasSource("GiroKontoauszug01.txt"), hasNote("AMAZON DIGITAL GERMANY GMBH"))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-11-19T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(33.99))));
-        assertThat(transaction.getSource(), is("GiroKontoauszug01.txt"));
-        assertThat(transaction.getNote(), is("AMAZON DIGITAL GERMANY GMBH"));
-
-        item = iter.next();
+        assertThat(results, hasItem(removal(hasDate("2020-11-23"), hasAmount("EUR", 3.89), //
+                        hasSource("GiroKontoauszug01.txt"), hasNote("AMAZON DIGITAL GERMANY GMBH"))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-11-23T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(3.89))));
-        assertThat(transaction.getSource(), is("GiroKontoauszug01.txt"));
-        assertThat(transaction.getNote(), is("AMAZON DIGITAL GERMANY GMBH"));
-
-        item = iter.next();
+        assertThat(results, hasItem(removal(hasDate("2020-11-23"), hasAmount("EUR", 34.39), //
+                        hasSource("GiroKontoauszug01.txt"), hasNote("AMAZON PAYMENTS EUROPE S.C.A."))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-11-23T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(34.39))));
-        assertThat(transaction.getSource(), is("GiroKontoauszug01.txt"));
-        assertThat(transaction.getNote(), is("AMAZON PAYMENTS EUROPE S.C.A."));
-
-        item = iter.next();
+        assertThat(results, hasItem(removal(hasDate("2020-11-23"), hasAmount("EUR", 53.11), //
+                        hasSource("GiroKontoauszug01.txt"), hasNote("Kartenzahlung"))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-11-23T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(53.11))));
-        assertThat(transaction.getSource(), is("GiroKontoauszug01.txt"));
-        assertThat(transaction.getNote(), is("Kartenzahlung"));
-
-        item = iter.next();
+        assertThat(results, hasItem(removal(hasDate("2020-11-24"), hasAmount("EUR", 29.24), //
+                        hasSource("GiroKontoauszug01.txt"), hasNote("AMAZON EU S.A R.L., NIEDERLASSUNG"))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-11-24T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(29.24))));
-        assertThat(transaction.getSource(), is("GiroKontoauszug01.txt"));
-        assertThat(transaction.getNote(), is("AMAZON EU S.A R.L., NIEDERLASSUNG"));
-
-        item = iter.next();
+        assertThat(results, hasItem(deposit(hasDate("2020-11-27"), hasAmount("EUR", 2222.22), //
+                        hasSource("GiroKontoauszug01.txt"), hasNote("Überweisung von Die Firma GmbH"))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-11-27T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(2222.22))));
-        assertThat(transaction.getSource(), is("GiroKontoauszug01.txt"));
-        assertThat(transaction.getNote(), is("Überweisung von Die Firma GmbH"));
-
-        item = iter.next();
-
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-11-27T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(11.80))));
-        assertThat(transaction.getSource(), is("GiroKontoauszug01.txt"));
-        assertThat(transaction.getNote(), is("Kartenzahlung"));
+        assertThat(results, hasItem(removal(hasDate("2020-11-27"), hasAmount("EUR", 11.80), //
+                        hasSource("GiroKontoauszug01.txt"), hasNote("Kartenzahlung"))));
 
         // assert transaction
         assertThat(results, hasItem(deposit( //
@@ -1918,36 +1626,17 @@ public class DeutscheBankPDFExtractorTest
                         hasNote("Überweisung von Max Mustermann"), //
                         hasAmount("EUR", 80.00))));
 
-        item = iter.next();
-        item = iter.next();
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2020-11-30"), hasAmount("EUR", 2.05), //
+                        hasSource("GiroKontoauszug01.txt"), hasNote("Kartenzahlung"))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-11-30T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(2.05))));
-        assertThat(transaction.getSource(), is("GiroKontoauszug01.txt"));
-        assertThat(transaction.getNote(), is("Kartenzahlung"));
-
-        item = iter.next();
+        assertThat(results, hasItem(removal(hasDate("2020-11-30"), hasAmount("EUR", 10.38), //
+                        hasSource("GiroKontoauszug01.txt"), hasNote("Kartenzahlung"))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-11-30T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(10.38))));
-        assertThat(transaction.getSource(), is("GiroKontoauszug01.txt"));
-        assertThat(transaction.getNote(), is("Kartenzahlung"));
-
-        item = iter.next();
-
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-11-30T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(55.46))));
-        assertThat(transaction.getSource(), is("GiroKontoauszug01.txt"));
-        assertThat(transaction.getNote(), is("Kartenzahlung"));
+        assertThat(results, hasItem(removal(hasDate("2020-11-30"), hasAmount("EUR", 55.46), //
+                        hasSource("GiroKontoauszug01.txt"), hasNote("Kartenzahlung"))));
     }
 
     @Test
@@ -1969,497 +1658,207 @@ public class DeutscheBankPDFExtractorTest
         assertThat(results.size(), is(49));
         new AssertImportActions().check(results, "EUR");
 
-        // check transaction
-        // get transactions
-        var iter = results.stream().filter(TransactionItem.class::isInstance).iterator();
-        assertThat(results.stream().filter(TransactionItem.class::isInstance).count(), is(48L));
-
-        var item = iter.next();
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2020-12-01"), hasAmount("EUR", 293.00), //
+                        hasSource("GiroKontoauszug02.txt"), hasNote("Überweisung von Landeshauptstadt Stadt Stadtverwaltung"))));
 
         // assert transaction
-        var transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-12-01T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(293.00))));
-        assertThat(transaction.getSource(), is("GiroKontoauszug02.txt"));
-        assertThat(transaction.getNote(), is("Überweisung von Landeshauptstadt Stadt Stadtverwaltung"));
-
-        item = iter.next();
+        assertThat(results, hasItem(removal(hasDate("2020-12-01"), hasAmount("EUR", 40.00), //
+                        hasSource("GiroKontoauszug02.txt"), hasNote("Dauerauftrag an Mustermann, Max"))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-12-01T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(40.00))));
-        assertThat(transaction.getSource(), is("GiroKontoauszug02.txt"));
-        assertThat(transaction.getNote(), is("Dauerauftrag an Mustermann, Max"));
-
-        item = iter.next();
+        assertThat(results, hasItem(removal(hasDate("2020-12-01"), hasAmount("EUR", 29.24), //
+                        hasSource("GiroKontoauszug02.txt"), hasNote("AMAZON EU S.A R.L., NIEDERLASSUNG"))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-12-01T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(29.24))));
-        assertThat(transaction.getSource(), is("GiroKontoauszug02.txt"));
-        assertThat(transaction.getNote(), is("AMAZON EU S.A R.L., NIEDERLASSUNG"));
-
-        item = iter.next();
+        assertThat(results, hasItem(removal(hasDate("2020-12-01"), hasAmount("EUR", 39.99), //
+                        hasSource("GiroKontoauszug02.txt"), hasNote("AMAZON PAYMENTS EUROPE S.C.A."))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-12-01T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(39.99))));
-        assertThat(transaction.getSource(), is("GiroKontoauszug02.txt"));
-        assertThat(transaction.getNote(), is("AMAZON PAYMENTS EUROPE S.C.A."));
-
-        item = iter.next();
+        assertThat(results, hasItem(removal(hasDate("2020-12-02"), hasAmount("EUR", 1000.00), //
+                        hasSource("GiroKontoauszug02.txt"), hasNote("Dauerauftrag an Mustermann, Max"))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-12-02T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(1000.00))));
-        assertThat(transaction.getSource(), is("GiroKontoauszug02.txt"));
-        assertThat(transaction.getNote(), is("Dauerauftrag an Mustermann, Max"));
-
-        item = iter.next();
+        assertThat(results, hasItem(removal(hasDate("2020-12-03"), hasAmount("EUR", 50.00), //
+                        hasSource("GiroKontoauszug02.txt"), hasNote("Dauerauftrag an Mustermann, Max"))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-12-03T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(50.00))));
-        assertThat(transaction.getSource(), is("GiroKontoauszug02.txt"));
-        assertThat(transaction.getNote(), is("Dauerauftrag an Mustermann, Max"));
-
-        item = iter.next();
+        assertThat(results, hasItem(removal(hasDate("2020-12-03"), hasAmount("EUR", 0.57), //
+                        hasSource("GiroKontoauszug02.txt"), hasNote("Kartenzahlung"))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-12-03T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(0.57))));
-        assertThat(transaction.getSource(), is("GiroKontoauszug02.txt"));
-        assertThat(transaction.getNote(), is("Kartenzahlung"));
-
-        item = iter.next();
+        assertThat(results, hasItem(removal(hasDate("2020-12-03"), hasAmount("EUR", 34.82), //
+                        hasSource("GiroKontoauszug02.txt"), hasNote("Kartenzahlung"))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-12-03T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(34.82))));
-        assertThat(transaction.getSource(), is("GiroKontoauszug02.txt"));
-        assertThat(transaction.getNote(), is("Kartenzahlung"));
-
-        item = iter.next();
+        assertThat(results, hasItem(removal(hasDate("2020-12-03"), hasAmount("EUR", 50.00), //
+                        hasSource("GiroKontoauszug02.txt"), hasNote("Bargeldauszahlung GAA"))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-12-03T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(50.00))));
-        assertThat(transaction.getSource(), is("GiroKontoauszug02.txt"));
-        assertThat(transaction.getNote(), is("Bargeldauszahlung GAA"));
-
-        item = iter.next();
+        assertThat(results, hasItem(deposit(hasDate("2020-12-04"), hasAmount("EUR", 344.00), //
+                        hasSource("GiroKontoauszug02.txt"), hasNote("Überweisung von Max Mustermann"))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-12-04T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(344.00))));
-        assertThat(transaction.getSource(), is("GiroKontoauszug02.txt"));
-        assertThat(transaction.getNote(), is("Überweisung von Max Mustermann"));
-
-        item = iter.next();
+        assertThat(results, hasItem(removal(hasDate("2020-12-04"), hasAmount("EUR", 39.99), //
+                        hasSource("GiroKontoauszug02.txt"), hasNote("AMAZON PAYMENTS EUROPE S.C.A."))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-12-04T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(39.99))));
-        assertThat(transaction.getSource(), is("GiroKontoauszug02.txt"));
-        assertThat(transaction.getNote(), is("AMAZON PAYMENTS EUROPE S.C.A."));
-
-        item = iter.next();
+        assertThat(results, hasItem(deposit(hasDate("2020-12-07"), hasAmount("EUR", 562.00), //
+                        hasSource("GiroKontoauszug02.txt"), hasNote("Überweisung von Unser Sparverein"))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-12-07T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(562.00))));
-        assertThat(transaction.getSource(), is("GiroKontoauszug02.txt"));
-        assertThat(transaction.getNote(), is("Überweisung von Unser Sparverein"));
-
-        item = iter.next();
+        assertThat(results, hasItem(removal(hasDate("2020-12-07"), hasAmount("EUR", 150.12), //
+                        hasSource("GiroKontoauszug02.txt"), hasNote("AMAZON EU S.A R.L., NIEDERLASSUNG"))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-12-07T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(150.12))));
-        assertThat(transaction.getSource(), is("GiroKontoauszug02.txt"));
-        assertThat(transaction.getNote(), is("AMAZON EU S.A R.L., NIEDERLASSUNG"));
-
-        item = iter.next();
+        assertThat(results, hasItem(removal(hasDate("2020-12-07"), hasAmount("EUR", 14.44), //
+                        hasSource("GiroKontoauszug02.txt"), hasNote("Kartenzahlung"))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-12-07T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(14.44))));
-        assertThat(transaction.getSource(), is("GiroKontoauszug02.txt"));
-        assertThat(transaction.getNote(), is("Kartenzahlung"));
-
-        item = iter.next();
+        assertThat(results, hasItem(removal(hasDate("2020-12-07"), hasAmount("EUR", 50.01), //
+                        hasSource("GiroKontoauszug02.txt"), hasNote("Kartenzahlung"))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-12-07T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(50.01))));
-        assertThat(transaction.getSource(), is("GiroKontoauszug02.txt"));
-        assertThat(transaction.getNote(), is("Kartenzahlung"));
-
-        item = iter.next();
+        assertThat(results, hasItem(removal(hasDate("2020-12-08"), hasAmount("EUR", 45.26), //
+                        hasSource("GiroKontoauszug02.txt"), hasNote("Kartenzahlung"))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-12-08T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(45.26))));
-        assertThat(transaction.getSource(), is("GiroKontoauszug02.txt"));
-        assertThat(transaction.getNote(), is("Kartenzahlung"));
-
-        item = iter.next();
+        assertThat(results, hasItem(removal(hasDate("2020-12-09"), hasAmount("EUR", 16.87), //
+                        hasSource("GiroKontoauszug02.txt"), hasNote("Kartenzahlung"))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-12-09T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(16.87))));
-        assertThat(transaction.getSource(), is("GiroKontoauszug02.txt"));
-        assertThat(transaction.getNote(), is("Kartenzahlung"));
-
-        item = iter.next();
+        assertThat(results, hasItem(removal(hasDate("2020-12-09"), hasAmount("EUR", 38.78), //
+                        hasSource("GiroKontoauszug02.txt"), hasNote("H+M 382 SAGT VIELEN DANK"))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-12-09T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(38.78))));
-        assertThat(transaction.getSource(), is("GiroKontoauszug02.txt"));
-        assertThat(transaction.getNote(), is("H+M 382 SAGT VIELEN DANK"));
-
-        item = iter.next();
+        assertThat(results, hasItem(removal(hasDate("2020-12-10"), hasAmount("EUR", 34.95), //
+                        hasSource("GiroKontoauszug02.txt"), hasNote("Kartenzahlung"))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-12-10T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(34.95))));
-        assertThat(transaction.getSource(), is("GiroKontoauszug02.txt"));
-        assertThat(transaction.getNote(), is("Kartenzahlung"));
-
-        item = iter.next();
+        assertThat(results, hasItem(removal(hasDate("2020-12-10"), hasAmount("EUR", 37.40), //
+                        hasSource("GiroKontoauszug02.txt"), hasNote("Kartenzahlung"))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-12-10T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(37.40))));
-        assertThat(transaction.getSource(), is("GiroKontoauszug02.txt"));
-        assertThat(transaction.getNote(), is("Kartenzahlung"));
-
-        item = iter.next();
+        assertThat(results, hasItem(deposit(hasDate("2020-12-14"), hasAmount("EUR", 150.12), //
+                        hasSource("GiroKontoauszug02.txt"), hasNote("Überweisung von AMAZON EU S.A R.L., NIEDERLASSUNG"))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-12-14T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(150.12))));
-        assertThat(transaction.getSource(), is("GiroKontoauszug02.txt"));
-        assertThat(transaction.getNote(), is("Überweisung von AMAZON EU S.A R.L., NIEDERLASSUNG"));
-
-        item = iter.next();
+        assertThat(results, hasItem(removal(hasDate("2020-12-14"), hasAmount("EUR", 36.28), //
+                        hasSource("GiroKontoauszug02.txt"), hasNote("Kartenzahlung"))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-12-14T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(36.28))));
-        assertThat(transaction.getSource(), is("GiroKontoauszug02.txt"));
-        assertThat(transaction.getNote(), is("Kartenzahlung"));
-
-        item = iter.next();
+        assertThat(results, hasItem(removal(hasDate("2020-12-15"), hasAmount("EUR", 6.36), //
+                        hasSource("GiroKontoauszug02.txt"), hasNote("AMAZON PAYMENTS EUROPE S.C.A."))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-12-15T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(6.36))));
-        assertThat(transaction.getSource(), is("GiroKontoauszug02.txt"));
-        assertThat(transaction.getNote(), is("AMAZON PAYMENTS EUROPE S.C.A."));
-
-        item = iter.next();
+        assertThat(results, hasItem(removal(hasDate("2020-12-15"), hasAmount("EUR", 14.99), //
+                        hasSource("GiroKontoauszug02.txt"), hasNote("AMAZON EU S.A R.L., NIEDERLASSUNG"))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-12-15T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(14.99))));
-        assertThat(transaction.getSource(), is("GiroKontoauszug02.txt"));
-        assertThat(transaction.getNote(), is("AMAZON EU S.A R.L., NIEDERLASSUNG"));
-
-        item = iter.next();
+        assertThat(results, hasItem(removal(hasDate("2020-12-15"), hasAmount("EUR", 15.14), //
+                        hasSource("GiroKontoauszug02.txt"), hasNote("PayPal (Europe) S.a.r.l. et Cie., S.C.A."))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-12-15T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(15.14))));
-        assertThat(transaction.getSource(), is("GiroKontoauszug02.txt"));
-        assertThat(transaction.getNote(), is("PayPal (Europe) S.a.r.l. et Cie., S.C.A."));
-
-        item = iter.next();
+        assertThat(results, hasItem(removal(hasDate("2020-12-15"), hasAmount("EUR", 43.47), //
+                        hasSource("GiroKontoauszug02.txt"), hasNote("PayPal (Europe) S.a.r.l. et Cie., S.C.A."))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-12-15T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(43.47))));
-        assertThat(transaction.getSource(), is("GiroKontoauszug02.txt"));
-        assertThat(transaction.getNote(), is("PayPal (Europe) S.a.r.l. et Cie., S.C.A."));
-
-        item = iter.next();
+        assertThat(results, hasItem(removal(hasDate("2020-12-15"), hasAmount("EUR", 21.94), //
+                        hasSource("GiroKontoauszug02.txt"), hasNote("Kartenzahlung"))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-12-15T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(21.94))));
-        assertThat(transaction.getSource(), is("GiroKontoauszug02.txt"));
-        assertThat(transaction.getNote(), is("Kartenzahlung"));
-
-        item = iter.next();
+        assertThat(results, hasItem(removal(hasDate("2020-12-15"), hasAmount("EUR", 41.50), //
+                        hasSource("GiroKontoauszug02.txt"), hasNote("Kartenzahlung"))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-12-15T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(41.50))));
-        assertThat(transaction.getSource(), is("GiroKontoauszug02.txt"));
-        assertThat(transaction.getNote(), is("Kartenzahlung"));
-
-        item = iter.next();
+        assertThat(results, hasItem(removal(hasDate("2020-12-17"), hasAmount("EUR", 21.99), //
+                        hasSource("GiroKontoauszug02.txt"), hasNote("AMAZON PAYMENTS EUROPE S.C.A."))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-12-17T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(21.99))));
-        assertThat(transaction.getSource(), is("GiroKontoauszug02.txt"));
-        assertThat(transaction.getNote(), is("AMAZON PAYMENTS EUROPE S.C.A."));
-
-        item = iter.next();
+        assertThat(results, hasItem(removal(hasDate("2020-12-18"), hasAmount("EUR", 10.99), //
+                        hasSource("GiroKontoauszug02.txt"), hasNote("AMAZON PAYMENTS EUROPE S.C.A."))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-12-18T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(10.99))));
-        assertThat(transaction.getSource(), is("GiroKontoauszug02.txt"));
-        assertThat(transaction.getNote(), is("AMAZON PAYMENTS EUROPE S.C.A."));
-
-        item = iter.next();
+        assertThat(results, hasItem(removal(hasDate("2020-12-18"), hasAmount("EUR", 15.99), //
+                        hasSource("GiroKontoauszug02.txt"), hasNote("AMAZON PAYMENTS EUROPE S.C.A."))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-12-18T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(15.99))));
-        assertThat(transaction.getSource(), is("GiroKontoauszug02.txt"));
-        assertThat(transaction.getNote(), is("AMAZON PAYMENTS EUROPE S.C.A."));
-
-        item = iter.next();
+        assertThat(results, hasItem(deposit(hasDate("2020-12-21"), hasAmount("EUR", 5.00), //
+                        hasSource("GiroKontoauszug02.txt"), hasNote("Überweisung von PayPal (Europe) S.a.r.l. et Cie., S.C.A."))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-12-21T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(5.00))));
-        assertThat(transaction.getSource(), is("GiroKontoauszug02.txt"));
-        assertThat(transaction.getNote(), is("Überweisung von PayPal (Europe) S.a.r.l. et Cie., S.C.A."));
-
-        item = iter.next();
+        assertThat(results, hasItem(deposit(hasDate("2020-12-21"), hasAmount("EUR", 2222.22), //
+                        hasSource("GiroKontoauszug02.txt"), hasNote("Überweisung von Die Firma GmbH"))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-12-21T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(2222.22))));
-        assertThat(transaction.getSource(), is("GiroKontoauszug02.txt"));
-        assertThat(transaction.getNote(), is("Überweisung von Die Firma GmbH"));
-
-        item = iter.next();
+        assertThat(results, hasItem(removal(hasDate("2020-12-21"), hasAmount("EUR", 13.85), //
+                        hasSource("GiroKontoauszug02.txt"), hasNote("Kartenzahlung"))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-12-21T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(13.85))));
-        assertThat(transaction.getSource(), is("GiroKontoauszug02.txt"));
-        assertThat(transaction.getNote(), is("Kartenzahlung"));
-
-        item = iter.next();
+        assertThat(results, hasItem(removal(hasDate("2020-12-21"), hasAmount("EUR", 23.50), //
+                        hasSource("GiroKontoauszug02.txt"), hasNote("Überweisung an Max Mustermann"))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-12-21T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(23.50))));
-        assertThat(transaction.getSource(), is("GiroKontoauszug02.txt"));
-        assertThat(transaction.getNote(), is("Überweisung an Max Mustermann"));
-
-        item = iter.next();
+        assertThat(results, hasItem(removal(hasDate("2020-12-21"), hasAmount("EUR", 26.10), //
+                        hasSource("GiroKontoauszug02.txt"), hasNote("Kartenzahlung"))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-12-21T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(26.10))));
-        assertThat(transaction.getSource(), is("GiroKontoauszug02.txt"));
-        assertThat(transaction.getNote(), is("Kartenzahlung"));
-
-        item = iter.next();
+        assertThat(results, hasItem(removal(hasDate("2020-12-21"), hasAmount("EUR", 56.14), //
+                        hasSource("GiroKontoauszug02.txt"), hasNote("Kartenzahlung"))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-12-21T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(56.14))));
-        assertThat(transaction.getSource(), is("GiroKontoauszug02.txt"));
-        assertThat(transaction.getNote(), is("Kartenzahlung"));
-
-        item = iter.next();
+        assertThat(results, hasItem(removal(hasDate("2020-12-22"), hasAmount("EUR", 14.29), //
+                        hasSource("GiroKontoauszug02.txt"), hasNote("Kartenzahlung"))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-12-22T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(14.29))));
-        assertThat(transaction.getSource(), is("GiroKontoauszug02.txt"));
-        assertThat(transaction.getNote(), is("Kartenzahlung"));
-
-        item = iter.next();
+        assertThat(results, hasItem(removal(hasDate("2020-12-22"), hasAmount("EUR", 10.11), //
+                        hasSource("GiroKontoauszug02.txt"), hasNote("ROSSMANN VIELEN DANK"))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-12-22T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(10.11))));
-        assertThat(transaction.getSource(), is("GiroKontoauszug02.txt"));
-        assertThat(transaction.getNote(), is("ROSSMANN VIELEN DANK"));
-
-        item = iter.next();
+        assertThat(results, hasItem(removal(hasDate("2020-12-23"), hasAmount("EUR", 47.86), //
+                        hasSource("GiroKontoauszug02.txt"), hasNote("Kartenzahlung"))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-12-23T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(47.86))));
-        assertThat(transaction.getSource(), is("GiroKontoauszug02.txt"));
-        assertThat(transaction.getNote(), is("Kartenzahlung"));
-
-        item = iter.next();
+        assertThat(results, hasItem(removal(hasDate("2020-12-24"), hasAmount("EUR", 8.45), //
+                        hasSource("GiroKontoauszug02.txt"), hasNote("AMAZON EU S.A R.L., NIEDERLASSUNG"))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-12-24T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(8.45))));
-        assertThat(transaction.getSource(), is("GiroKontoauszug02.txt"));
-        assertThat(transaction.getNote(), is("AMAZON EU S.A R.L., NIEDERLASSUNG"));
-
-        item = iter.next();
+        assertThat(results, hasItem(removal(hasDate("2020-12-28"), hasAmount("EUR", 31.79), //
+                        hasSource("GiroKontoauszug02.txt"), hasNote("Überweisung an Max Mustermann"))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-12-28T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(31.79))));
-        assertThat(transaction.getSource(), is("GiroKontoauszug02.txt"));
-        assertThat(transaction.getNote(), is("Überweisung an Max Mustermann"));
-
-        item = iter.next();
+        assertThat(results, hasItem(removal(hasDate("2020-12-29"), hasAmount("EUR", 500.00), //
+                        hasSource("GiroKontoauszug02.txt"), hasNote(""))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-12-29T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(500.00))));
-        assertThat(transaction.getSource(), is("GiroKontoauszug02.txt"));
-
-        item = iter.next();
+        assertThat(results, hasItem(removal(hasDate("2020-12-29"), hasAmount("EUR", 8.74), //
+                        hasSource("GiroKontoauszug02.txt"), hasNote("PayPal (Europe) S.a.r.l. et Cie., S.C.A."))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-12-29T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(8.74))));
-        assertThat(transaction.getSource(), is("GiroKontoauszug02.txt"));
-        assertThat(transaction.getNote(), is("PayPal (Europe) S.a.r.l. et Cie., S.C.A."));
-
-        item = iter.next();
+        assertThat(results, hasItem(removal(hasDate("2020-12-29"), hasAmount("EUR", 31.19), //
+                        hasSource("GiroKontoauszug02.txt"), hasNote("AMAZON PAYMENTS EUROPE S.C.A."))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-12-29T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(31.19))));
-        assertThat(transaction.getSource(), is("GiroKontoauszug02.txt"));
-        assertThat(transaction.getNote(), is("AMAZON PAYMENTS EUROPE S.C.A."));
-
-        item = iter.next();
+        assertThat(results, hasItem(removal(hasDate("2020-12-29"), hasAmount("EUR", 27.96), //
+                        hasSource("GiroKontoauszug02.txt"), hasNote("Kartenzahlung"))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-12-29T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(27.96))));
-        assertThat(transaction.getSource(), is("GiroKontoauszug02.txt"));
-        assertThat(transaction.getNote(), is("Kartenzahlung"));
+        assertThat(results, hasItem(deposit(hasDate("2020-12-30"), hasAmount("EUR", 309.00), //
+                        hasSource("GiroKontoauszug02.txt"), hasNote("Überweisung von Landeshauptstadt Stadt Stadtverwaltung"))));
 
-        item = iter.next();
+        // check fee transaction
+        assertThat(results, hasItem(fee( //
+                        hasDate("2020-12-31"), //
+                        hasSource("GiroKontoauszug02.txt"), //
+                        hasNote("Saldo der Abschlussposten"), //
+                        hasAmount("EUR", 13.47), hasGrossValue("EUR", 13.47), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-12-30T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(309.00))));
-        assertThat(transaction.getSource(), is("GiroKontoauszug02.txt"));
-        assertThat(transaction.getNote(), is("Überweisung von Landeshauptstadt Stadt Stadtverwaltung"));
-
-        item = iter.next();
-
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-12-31T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(13.47))));
-        assertThat(transaction.getSource(), is("GiroKontoauszug02.txt"));
-        assertThat(transaction.getNote(), is("Saldo der Abschlussposten"));
-
-        // assert skipped item
-        var skipped = (SkippedItem) results.stream().filter(SkippedItem.class::isInstance).findFirst().get();
-        assertThat(skipped.getSkipReason(), is(Messages.MsgErrorTransactionSkipIfDetailsMissing));
-        assertThat(skipped.getDate(), is(LocalDateTime.parse("2020-12-31T00:00")));
-        assertThat(skipped.getAmount(), is(Money.of("EUR", Values.Amount.factorize(13.47))));
-        assertThat(skipped.getTypeInformation(), is(AccountTransaction.Type.REMOVAL.toString()));
-        assertThat(skipped.getSubject().getNote(), is("GiroKontoauszug02.txt"));
+        // check skipped item
+        assertThat(results, hasItem(skippedItem( //
+                        Messages.MsgErrorTransactionSkipIfDetailsMissing, //
+                        removal(hasDate("2020-12-31"), hasAmount("EUR", 13.47), //
+                                        hasSource("GiroKontoauszug02.txt"), hasNote("")))));
     }
 
     @Test
@@ -2481,308 +1880,125 @@ public class DeutscheBankPDFExtractorTest
         assertThat(results.size(), is(30));
         new AssertImportActions().check(results, "EUR");
 
-        // check transaction
-        // get transactions
-
-        var iter = results.stream().filter(TransactionItem.class::isInstance).iterator();
-        var item = iter.next();
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2021-01-04"), hasAmount("EUR", 250.00), //
+                        hasSource("GiroKontoauszug03.txt"), hasNote(""))));
 
         // assert transaction
-        var transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-01-04T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(250.00))));
-        assertThat(transaction.getSource(), is("GiroKontoauszug03.txt"));
-
-        item = iter.next();
+        assertThat(results, hasItem(removal(hasDate("2021-01-04"), hasAmount("EUR", 40.00), //
+                        hasSource("GiroKontoauszug03.txt"), hasNote("Dauerauftrag an Mustermann, Max"))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-01-04T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(40.00))));
-        assertThat(transaction.getSource(), is("GiroKontoauszug03.txt"));
-        assertThat(transaction.getNote(), is("Dauerauftrag an Mustermann, Max"));
-
-        item = iter.next();
+        assertThat(results, hasItem(removal(hasDate("2021-01-04"), hasAmount("EUR", 50.00), //
+                        hasSource("GiroKontoauszug03.txt"), hasNote("Dauerauftrag an Mustermann, Max"))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-01-04T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(50.00))));
-        assertThat(transaction.getSource(), is("GiroKontoauszug03.txt"));
-        assertThat(transaction.getNote(), is("Dauerauftrag an Mustermann, Max"));
-
-        item = iter.next();
+        assertThat(results, hasItem(removal(hasDate("2021-01-04"), hasAmount("EUR", 1000.00), //
+                        hasSource("GiroKontoauszug03.txt"), hasNote("Dauerauftrag an Mustermann, Max"))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-01-04T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(1000.00))));
-        assertThat(transaction.getSource(), is("GiroKontoauszug03.txt"));
-        assertThat(transaction.getNote(), is("Dauerauftrag an Mustermann, Max"));
-
-        item = iter.next();
+        assertThat(results, hasItem(removal(hasDate("2021-01-05"), hasAmount("EUR", 11.30), //
+                        hasSource("GiroKontoauszug03.txt"), hasNote("PayPal (Europe) S.a.r.l. et Cie., S.C.A."))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-01-05T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(11.30))));
-        assertThat(transaction.getSource(), is("GiroKontoauszug03.txt"));
-        assertThat(transaction.getNote(), is("PayPal (Europe) S.a.r.l. et Cie., S.C.A."));
-
-        item = iter.next();
+        assertThat(results, hasItem(removal(hasDate("2021-01-05"), hasAmount("EUR", 2.09), //
+                        hasSource("GiroKontoauszug03.txt"), hasNote("Kartenzahlung"))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-01-05T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(2.09))));
-        assertThat(transaction.getSource(), is("GiroKontoauszug03.txt"));
-        assertThat(transaction.getNote(), is("Kartenzahlung"));
-
-        item = iter.next();
+        assertThat(results, hasItem(deposit(hasDate("2021-01-05"), hasAmount("EUR", 365.00), //
+                        hasSource("GiroKontoauszug03.txt"), hasNote("Echtzeitüberweisung von Max Mustermann"))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-01-05T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(365.00))));
-        assertThat(transaction.getSource(), is("GiroKontoauszug03.txt"));
-        assertThat(transaction.getNote(), is("Echtzeitüberweisung von Max Mustermann"));
-
-        item = iter.next();
+        assertThat(results, hasItem(removal(hasDate("2021-01-07"), hasAmount("EUR", 69.00), //
+                        hasSource("GiroKontoauszug03.txt"), hasNote("AMAZON EU S.A R.L., NIEDERLASSUNG"))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-01-07T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(69.00))));
-        assertThat(transaction.getSource(), is("GiroKontoauszug03.txt"));
-        assertThat(transaction.getNote(), is("AMAZON EU S.A R.L., NIEDERLASSUNG"));
-
-        item = iter.next();
+        assertThat(results, hasItem(deposit(hasDate("2021-01-11"), hasAmount("EUR", 438.00), //
+                        hasSource("GiroKontoauszug03.txt"), hasNote("Überweisung von Unser Sparverein"))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-01-11T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(438.00))));
-        assertThat(transaction.getSource(), is("GiroKontoauszug03.txt"));
-        assertThat(transaction.getNote(), is("Überweisung von Unser Sparverein"));
-
-        item = iter.next();
+        assertThat(results, hasItem(removal(hasDate("2021-01-11"), hasAmount("EUR", 29.24), //
+                        hasSource("GiroKontoauszug03.txt"), hasNote("Kartenzahlung"))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-01-11T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(29.24))));
-        assertThat(transaction.getSource(), is("GiroKontoauszug03.txt"));
-        assertThat(transaction.getNote(), is("Kartenzahlung"));
-
-        item = iter.next();
+        assertThat(results, hasItem(deposit(hasDate("2021-01-14"), hasAmount("EUR", 12.49), //
+                        hasSource("GiroKontoauszug03.txt"), hasNote("Überweisung von AMAZON PAYMENTS EUROPE S.C.A."))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-01-14T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(12.49))));
-        assertThat(transaction.getSource(), is("GiroKontoauszug03.txt"));
-        assertThat(transaction.getNote(), is("Überweisung von AMAZON PAYMENTS EUROPE S.C.A."));
-
-        item = iter.next();
+        assertThat(results, hasItem(removal(hasDate("2021-01-14"), hasAmount("EUR", 7.99), //
+                        hasSource("GiroKontoauszug03.txt"), hasNote("NETFLIX INTERNATIONAL B.V."))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-01-14T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(7.99))));
-        assertThat(transaction.getSource(), is("GiroKontoauszug03.txt"));
-        assertThat(transaction.getNote(), is("NETFLIX INTERNATIONAL B.V."));
-
-        item = iter.next();
+        assertThat(results, hasItem(removal(hasDate("2021-01-14"), hasAmount("EUR", 16.80), //
+                        hasSource("GiroKontoauszug03.txt"), hasNote("PayPal (Europe) S.a.r.l. et Cie., S.C.A."))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-01-14T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(16.80))));
-        assertThat(transaction.getSource(), is("GiroKontoauszug03.txt"));
-        assertThat(transaction.getNote(), is("PayPal (Europe) S.a.r.l. et Cie., S.C.A."));
-
-        item = iter.next();
+        assertThat(results, hasItem(removal(hasDate("2021-01-18"), hasAmount("EUR", 25.46), //
+                        hasSource("GiroKontoauszug03.txt"), hasNote("Kartenzahlung"))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-01-18T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(25.46))));
-        assertThat(transaction.getSource(), is("GiroKontoauszug03.txt"));
-        assertThat(transaction.getNote(), is("Kartenzahlung"));
-
-        item = iter.next();
+        assertThat(results, hasItem(removal(hasDate("2021-01-19"), hasAmount("EUR", 14.90), //
+                        hasSource("GiroKontoauszug03.txt"), hasNote("AMAZON PAYMENTS EUROPE S.C.A."))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-01-19T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(14.90))));
-        assertThat(transaction.getSource(), is("GiroKontoauszug03.txt"));
-        assertThat(transaction.getNote(), is("AMAZON PAYMENTS EUROPE S.C.A."));
-
-        item = iter.next();
+        assertThat(results, hasItem(removal(hasDate("2021-01-19"), hasAmount("EUR", 28.61), //
+                        hasSource("GiroKontoauszug03.txt"), hasNote("AMAZON PAYMENTS EUROPE S.C.A."))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-01-19T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(28.61))));
-        assertThat(transaction.getSource(), is("GiroKontoauszug03.txt"));
-        assertThat(transaction.getNote(), is("AMAZON PAYMENTS EUROPE S.C.A."));
-
-        item = iter.next();
+        assertThat(results, hasItem(removal(hasDate("2021-01-20"), hasAmount("EUR", 34.99), //
+                        hasSource("GiroKontoauszug03.txt"), hasNote("AMAZON PAYMENTS EUROPE S.C.A."))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-01-20T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(34.99))));
-        assertThat(transaction.getSource(), is("GiroKontoauszug03.txt"));
-        assertThat(transaction.getNote(), is("AMAZON PAYMENTS EUROPE S.C.A."));
-
-        item = iter.next();
+        assertThat(results, hasItem(removal(hasDate("2021-01-20"), hasAmount("EUR", 39.18), //
+                        hasSource("GiroKontoauszug03.txt"), hasNote("Kartenzahlung"))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-01-20T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(39.18))));
-        assertThat(transaction.getSource(), is("GiroKontoauszug03.txt"));
-        assertThat(transaction.getNote(), is("Kartenzahlung"));
-
-        item = iter.next();
+        assertThat(results, hasItem(removal(hasDate("2021-01-21"), hasAmount("EUR", 4.79), //
+                        hasSource("GiroKontoauszug03.txt"), hasNote("ROSSMANN VIELEN DANK"))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-01-21T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(4.79))));
-        assertThat(transaction.getSource(), is("GiroKontoauszug03.txt"));
-        assertThat(transaction.getNote(), is("ROSSMANN VIELEN DANK"));
-
-        item = iter.next();
+        assertThat(results, hasItem(removal(hasDate("2021-01-25"), hasAmount("EUR", 29.85), //
+                        hasSource("GiroKontoauszug03.txt"), hasNote("AMAZON PAYMENTS EUROPE S.C.A."))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-01-25T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(29.85))));
-        assertThat(transaction.getSource(), is("GiroKontoauszug03.txt"));
-        assertThat(transaction.getNote(), is("AMAZON PAYMENTS EUROPE S.C.A."));
-
-        item = iter.next();
+        assertThat(results, hasItem(removal(hasDate("2021-01-25"), hasAmount("EUR", 37.99), //
+                        hasSource("GiroKontoauszug03.txt"), hasNote("AMAZON PAYMENTS EUROPE S.C.A."))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-01-25T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(37.99))));
-        assertThat(transaction.getSource(), is("GiroKontoauszug03.txt"));
-        assertThat(transaction.getNote(), is("AMAZON PAYMENTS EUROPE S.C.A."));
-
-        item = iter.next();
+        assertThat(results, hasItem(removal(hasDate("2021-01-25"), hasAmount("EUR", 48.01), //
+                        hasSource("GiroKontoauszug03.txt"), hasNote("Kartenzahlung"))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-01-25T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(48.01))));
-        assertThat(transaction.getSource(), is("GiroKontoauszug03.txt"));
-        assertThat(transaction.getNote(), is("Kartenzahlung"));
-
-        item = iter.next();
+        assertThat(results, hasItem(removal(hasDate("2021-01-25"), hasAmount("EUR", 140.00), //
+                        hasSource("GiroKontoauszug03.txt"), hasNote("Überweisung an Rundfunk ARD, ZDF, DRadio"))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-01-25T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(140.00))));
-        assertThat(transaction.getSource(), is("GiroKontoauszug03.txt"));
-        assertThat(transaction.getNote(), is("Überweisung an Rundfunk ARD, ZDF, DRadio"));
-
-        item = iter.next();
+        assertThat(results, hasItem(removal(hasDate("2021-01-25"), hasAmount("EUR", 365.00), //
+                        hasSource("GiroKontoauszug03.txt"), hasNote("Überweisung an Max Mustermann"))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-01-25T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(365.00))));
-        assertThat(transaction.getSource(), is("GiroKontoauszug03.txt"));
-        assertThat(transaction.getNote(), is("Überweisung an Max Mustermann"));
-
-        item = iter.next();
+        assertThat(results, hasItem(removal(hasDate("2021-01-26"), hasAmount("EUR", 118.00), //
+                        hasSource("GiroKontoauszug03.txt"), hasNote("Überweisung an Max Mustermann"))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-01-26T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(118.00))));
-        assertThat(transaction.getSource(), is("GiroKontoauszug03.txt"));
-        assertThat(transaction.getNote(), is("Überweisung an Max Mustermann"));
-
-        item = iter.next();
+        assertThat(results, hasItem(removal(hasDate("2021-01-27"), hasAmount("EUR", 41.00), //
+                        hasSource("GiroKontoauszug03.txt"), hasNote("Kartenzahlung"))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-01-27T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(41.00))));
-        assertThat(transaction.getSource(), is("GiroKontoauszug03.txt"));
-        assertThat(transaction.getNote(), is("Kartenzahlung"));
-
-        item = iter.next();
+        assertThat(results, hasItem(deposit(hasDate("2021-01-28"), hasAmount("EUR", 2222.22), //
+                        hasSource("GiroKontoauszug03.txt"), hasNote("Überweisung von Die Firma GmbH"))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-01-28T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(2222.22))));
-        assertThat(transaction.getSource(), is("GiroKontoauszug03.txt"));
-        assertThat(transaction.getNote(), is("Überweisung von Die Firma GmbH"));
-
-        item = iter.next();
+        assertThat(results, hasItem(deposit(hasDate("2021-01-29"), hasAmount("EUR", 309.00), //
+                        hasSource("GiroKontoauszug03.txt"), hasNote("Überweisung von Landeshauptstadt Stadt Stadtverwaltung"))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-01-29T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(309.00))));
-        assertThat(transaction.getSource(), is("GiroKontoauszug03.txt"));
-        assertThat(transaction.getNote(), is("Überweisung von Landeshauptstadt Stadt Stadtverwaltung"));
-
-        item = iter.next();
+        assertThat(results, hasItem(removal(hasDate("2021-01-29"), hasAmount("EUR", 9.00), //
+                        hasSource("GiroKontoauszug03.txt"), hasNote("Vodafone GmbH"))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-01-29T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(9.00))));
-        assertThat(transaction.getSource(), is("GiroKontoauszug03.txt"));
-        assertThat(transaction.getNote(), is("Vodafone GmbH"));
-
-        item = iter.next();
-
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-01-29T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(44.49))));
-        assertThat(transaction.getSource(), is("GiroKontoauszug03.txt"));
-        assertThat(transaction.getNote(), is("Kartenzahlung"));
+        assertThat(results, hasItem(removal(hasDate("2021-01-29"), hasAmount("EUR", 44.49), //
+                        hasSource("GiroKontoauszug03.txt"), hasNote("Kartenzahlung"))));
     }
 
     @Test
@@ -2804,279 +2020,113 @@ public class DeutscheBankPDFExtractorTest
         assertThat(results.size(), is(27));
         new AssertImportActions().check(results, "EUR");
 
-        // check transaction
-        // get transactions
-        var iter = results.stream().filter(TransactionItem.class::isInstance).iterator();
-        assertThat(results.stream().filter(TransactionItem.class::isInstance).count(), is(27L));
-
-        var item = iter.next();
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2021-02-01"), hasAmount("EUR", 300.00), //
+                        hasSource("GiroKontoauszug04.txt"), hasNote(""))));
 
         // assert transaction
-        var transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-02-01T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(300.00))));
-        assertThat(transaction.getSource(), is("GiroKontoauszug04.txt"));
-
-        item = iter.next();
+        assertThat(results, hasItem(removal(hasDate("2021-02-01"), hasAmount("EUR", 40.00), //
+                        hasSource("GiroKontoauszug04.txt"), hasNote("Dauerauftrag an Mustermann, Max"))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-02-01T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(40.00))));
-        assertThat(transaction.getSource(), is("GiroKontoauszug04.txt"));
-        assertThat(transaction.getNote(), is("Dauerauftrag an Mustermann, Max"));
-
-        item = iter.next();
+        assertThat(results, hasItem(removal(hasDate("2021-02-01"), hasAmount("EUR", 74.94), //
+                        hasSource("GiroKontoauszug04.txt"), hasNote("Überweisung an QVC Handel S.a.r.l und Co. KG"))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-02-01T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(74.94))));
-        assertThat(transaction.getSource(), is("GiroKontoauszug04.txt"));
-        assertThat(transaction.getNote(), is("Überweisung an QVC Handel S.a.r.l und Co. KG"));
-
-        item = iter.next();
+        assertThat(results, hasItem(removal(hasDate("2021-02-02"), hasAmount("EUR", 1000.00), //
+                        hasSource("GiroKontoauszug04.txt"), hasNote("Dauerauftrag an Mustermann, Max"))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-02-02T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(1000.00))));
-        assertThat(transaction.getSource(), is("GiroKontoauszug04.txt"));
-        assertThat(transaction.getNote(), is("Dauerauftrag an Mustermann, Max"));
-
-        item = iter.next();
+        assertThat(results, hasItem(removal(hasDate("2021-02-02"), hasAmount("EUR", 12.55), //
+                        hasSource("GiroKontoauszug04.txt"), hasNote("PayPal (Europe) S.a.r.l. et Cie., S.C.A."))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-02-02T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(12.55))));
-        assertThat(transaction.getSource(), is("GiroKontoauszug04.txt"));
-        assertThat(transaction.getNote(), is("PayPal (Europe) S.a.r.l. et Cie., S.C.A."));
-
-        item = iter.next();
+        assertThat(results, hasItem(deposit(hasDate("2021-02-03"), hasAmount("EUR", 20.00), //
+                        hasSource("GiroKontoauszug04.txt"), hasNote("Überweisung von AMAZON PAYMENTS EUROPE S.C.A."))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-02-03T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(20.00))));
-        assertThat(transaction.getSource(), is("GiroKontoauszug04.txt"));
-        assertThat(transaction.getNote(), is("Überweisung von AMAZON PAYMENTS EUROPE S.C.A."));
-
-        item = iter.next();
+        assertThat(results, hasItem(deposit(hasDate("2021-02-03"), hasAmount("EUR", 29.85), //
+                        hasSource("GiroKontoauszug04.txt"), hasNote("Überweisung von AMAZON PAYMENTS EUROPE S.C.A."))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-02-03T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(29.85))));
-        assertThat(transaction.getSource(), is("GiroKontoauszug04.txt"));
-        assertThat(transaction.getNote(), is("Überweisung von AMAZON PAYMENTS EUROPE S.C.A."));
-
-        item = iter.next();
+        assertThat(results, hasItem(deposit(hasDate("2021-02-03"), hasAmount("EUR", 365.00), //
+                        hasSource("GiroKontoauszug04.txt"), hasNote("Überweisung von Max Mustermann"))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-02-03T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(365.00))));
-        assertThat(transaction.getSource(), is("GiroKontoauszug04.txt"));
-        assertThat(transaction.getNote(), is("Überweisung von Max Mustermann"));
-
-        item = iter.next();
+        assertThat(results, hasItem(removal(hasDate("2021-02-03"), hasAmount("EUR", 50.00), //
+                        hasSource("GiroKontoauszug04.txt"), hasNote("Dauerauftrag an Mustermann, Max"))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-02-03T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(50.00))));
-        assertThat(transaction.getSource(), is("GiroKontoauszug04.txt"));
-        assertThat(transaction.getNote(), is("Dauerauftrag an Mustermann, Max"));
-
-        item = iter.next();
+        assertThat(results, hasItem(removal(hasDate("2021-02-03"), hasAmount("EUR", 43.57), //
+                        hasSource("GiroKontoauszug04.txt"), hasNote("Kartenzahlung"))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-02-03T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(43.57))));
-        assertThat(transaction.getSource(), is("GiroKontoauszug04.txt"));
-        assertThat(transaction.getNote(), is("Kartenzahlung"));
-
-        item = iter.next();
+        assertThat(results, hasItem(removal(hasDate("2021-02-04"), hasAmount("EUR", 11.72), //
+                        hasSource("GiroKontoauszug04.txt"), hasNote("Kartenzahlung"))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-02-04T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(11.72))));
-        assertThat(transaction.getSource(), is("GiroKontoauszug04.txt"));
-        assertThat(transaction.getNote(), is("Kartenzahlung"));
-
-        item = iter.next();
+        assertThat(results, hasItem(removal(hasDate("2021-02-05"), hasAmount("EUR", 31.66), //
+                        hasSource("GiroKontoauszug04.txt"), hasNote("Kartenzahlung"))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-02-05T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(31.66))));
-        assertThat(transaction.getSource(), is("GiroKontoauszug04.txt"));
-        assertThat(transaction.getNote(), is("Kartenzahlung"));
-
-        item = iter.next();
+        assertThat(results, hasItem(removal(hasDate("2021-02-08"), hasAmount("EUR", 365.00), //
+                        hasSource("GiroKontoauszug04.txt"), hasNote("Überweisung an Mustermann, Max"))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-02-08T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(365.00))));
-        assertThat(transaction.getSource(), is("GiroKontoauszug04.txt"));
-        assertThat(transaction.getNote(), is("Überweisung an Mustermann, Max"));
-
-        item = iter.next();
+        assertThat(results, hasItem(deposit(hasDate("2021-02-09"), hasAmount("EUR", 438.00), //
+                        hasSource("GiroKontoauszug04.txt"), hasNote("Überweisung von Unser Sparverein"))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-02-09T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(438.00))));
-        assertThat(transaction.getSource(), is("GiroKontoauszug04.txt"));
-        assertThat(transaction.getNote(), is("Überweisung von Unser Sparverein"));
-
-        item = iter.next();
+        assertThat(results, hasItem(removal(hasDate("2021-02-09"), hasAmount("EUR", 5.17), //
+                        hasSource("GiroKontoauszug04.txt"), hasNote("Kartenzahlung"))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-02-09T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(5.17))));
-        assertThat(transaction.getSource(), is("GiroKontoauszug04.txt"));
-        assertThat(transaction.getNote(), is("Kartenzahlung"));
-
-        item = iter.next();
+        assertThat(results, hasItem(removal(hasDate("2021-02-10"), hasAmount("EUR", 58.62), //
+                        hasSource("GiroKontoauszug04.txt"), hasNote("Kartenzahlung"))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-02-10T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(58.62))));
-        assertThat(transaction.getSource(), is("GiroKontoauszug04.txt"));
-        assertThat(transaction.getNote(), is("Kartenzahlung"));
-
-        item = iter.next();
+        assertThat(results, hasItem(deposit(hasDate("2021-02-15"), hasAmount("EUR", 406.00), //
+                        hasSource("GiroKontoauszug04.txt"), hasNote("Überweisung von Unser Sparverein"))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-02-15T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(406.00))));
-        assertThat(transaction.getSource(), is("GiroKontoauszug04.txt"));
-        assertThat(transaction.getNote(), is("Überweisung von Unser Sparverein"));
-
-        item = iter.next();
+        assertThat(results, hasItem(removal(hasDate("2021-02-15"), hasAmount("EUR", 7.99), //
+                        hasSource("GiroKontoauszug04.txt"), hasNote("NETFLIX INTERNATIONAL B.V."))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-02-15T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(7.99))));
-        assertThat(transaction.getSource(), is("GiroKontoauszug04.txt"));
-        assertThat(transaction.getNote(), is("NETFLIX INTERNATIONAL B.V."));
-
-        item = iter.next();
+        assertThat(results, hasItem(removal(hasDate("2021-02-15"), hasAmount("EUR", 25.98), //
+                        hasSource("GiroKontoauszug04.txt"), hasNote("Kartenzahlung"))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-02-15T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(25.98))));
-        assertThat(transaction.getSource(), is("GiroKontoauszug04.txt"));
-        assertThat(transaction.getNote(), is("Kartenzahlung"));
-
-        item = iter.next();
+        assertThat(results, hasItem(removal(hasDate("2021-02-15"), hasAmount("EUR", 75.46), //
+                        hasSource("GiroKontoauszug04.txt"), hasNote("Kartenzahlung"))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-02-15T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(75.46))));
-        assertThat(transaction.getSource(), is("GiroKontoauszug04.txt"));
-        assertThat(transaction.getNote(), is("Kartenzahlung"));
-
-        item = iter.next();
+        assertThat(results, hasItem(removal(hasDate("2021-02-16"), hasAmount("EUR", 17.90), //
+                        hasSource("GiroKontoauszug04.txt"), hasNote("PayPal (Europe) S.a.r.l. et Cie., S.C.A."))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-02-16T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(17.90))));
-        assertThat(transaction.getSource(), is("GiroKontoauszug04.txt"));
-        assertThat(transaction.getNote(), is("PayPal (Europe) S.a.r.l. et Cie., S.C.A."));
-
-        item = iter.next();
+        assertThat(results, hasItem(removal(hasDate("2021-02-18"), hasAmount("EUR", 29.10), //
+                        hasSource("GiroKontoauszug04.txt"), hasNote("Kartenzahlung"))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-02-18T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(29.10))));
-        assertThat(transaction.getSource(), is("GiroKontoauszug04.txt"));
-        assertThat(transaction.getNote(), is("Kartenzahlung"));
-
-        item = iter.next();
+        assertThat(results, hasItem(removal(hasDate("2021-02-19"), hasAmount("EUR", 365.00), //
+                        hasSource("GiroKontoauszug04.txt"), hasNote("Überweisung an Mustermann, Max"))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-02-19T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(365.00))));
-        assertThat(transaction.getSource(), is("GiroKontoauszug04.txt"));
-        assertThat(transaction.getNote(), is("Überweisung an Mustermann, Max"));
-
-        item = iter.next();
+        assertThat(results, hasItem(removal(hasDate("2021-02-23"), hasAmount("EUR", 25.61), //
+                        hasSource("GiroKontoauszug04.txt"), hasNote("Kartenzahlung"))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-02-23T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(25.61))));
-        assertThat(transaction.getSource(), is("GiroKontoauszug04.txt"));
-        assertThat(transaction.getNote(), is("Kartenzahlung"));
-
-        item = iter.next();
+        assertThat(results, hasItem(deposit(hasDate("2021-02-25"), hasAmount("EUR", 7665.83), //
+                        hasSource("GiroKontoauszug04.txt"), hasNote("Überweisung von Die Firma GmbH"))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-02-25T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(7665.83))));
-        assertThat(transaction.getSource(), is("GiroKontoauszug04.txt"));
-        assertThat(transaction.getNote(), is("Überweisung von Die Firma GmbH"));
-
-        item = iter.next();
+        assertThat(results, hasItem(removal(hasDate("2021-02-25"), hasAmount("EUR", 22.49), //
+                        hasSource("GiroKontoauszug04.txt"), hasNote("AMAZON EU S.A R.L., NIEDERLASSUNG"))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-02-25T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(22.49))));
-        assertThat(transaction.getSource(), is("GiroKontoauszug04.txt"));
-        assertThat(transaction.getNote(), is("AMAZON EU S.A R.L., NIEDERLASSUNG"));
-
-        item = iter.next();
-
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-02-26T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(309.00))));
-        assertThat(transaction.getSource(), is("GiroKontoauszug04.txt"));
-        assertThat(transaction.getNote(), is("Überweisung von Landeshauptstadt Stadt Stadtverwaltung"));
+        assertThat(results, hasItem(deposit(hasDate("2021-02-26"), hasAmount("EUR", 309.00), //
+                        hasSource("GiroKontoauszug04.txt"), hasNote("Überweisung von Landeshauptstadt Stadt Stadtverwaltung"))));
     }
 
     @Test
@@ -3096,6 +2146,13 @@ public class DeutscheBankPDFExtractorTest
         assertThat(countItemsWithFailureMessage(results), is(0L));
         assertThat(countSkippedItems(results), is(1L));
         assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, "EUR");
+
+        // check skipped item
+        assertThat(results, hasItem(skippedItem( //
+                        Messages.MsgErrorTransactionSkipIfDetailsMissing, //
+                        removal(hasDate("2023-06-02"), hasAmount("EUR", 1073.65), //
+                                        hasSource("GiroKontoauszug05.txt"), hasNote("")))));
     }
 
     @Test
@@ -3121,6 +2178,17 @@ public class DeutscheBankPDFExtractorTest
         assertThat(results, hasItem(removal(hasDate("2023-08-14"), hasAmount("EUR", 1000.00), //
                         hasSource("GiroKontoauszug06.txt"), hasNote("Überweisung an Max Mustermann"))));
 
+        // check skipped item
+        assertThat(results, hasItem(skippedItem( //
+                        Messages.MsgErrorTransactionSkipIfDetailsMissing, //
+                        deposit(hasDate("2023-08-16"), hasAmount("EUR", 33.23), //
+                                        hasSource("GiroKontoauszug06.txt"), hasNote("")))));
+
+        // check skipped item
+        assertThat(results, hasItem(skippedItem( //
+                        Messages.MsgErrorTransactionSkipIfDetailsMissing, //
+                        deposit(hasDate("2023-08-31"), hasAmount("EUR", 74.49), //
+                                        hasSource("GiroKontoauszug06.txt"), hasNote("")))));
     }
 
     @Test
@@ -3140,6 +2208,31 @@ public class DeutscheBankPDFExtractorTest
         assertThat(countItemsWithFailureMessage(results), is(0L));
         assertThat(countSkippedItems(results), is(4L));
         assertThat(results.size(), is(4));
+        new AssertImportActions().check(results, "EUR");
+
+        // check skipped item
+        assertThat(results, hasItem(skippedItem( //
+                        Messages.MsgErrorTransactionSkipIfDetailsMissing, //
+                        removal(hasDate("2024-10-03"), hasAmount("EUR", 44.99), //
+                                        hasSource("GiroKontoauszug07.txt"), hasNote("")))));
+
+        // check skipped item
+        assertThat(results, hasItem(skippedItem( //
+                        Messages.MsgErrorTransactionSkipIfDetailsMissing, //
+                        removal(hasDate("2024-10-03"), hasAmount("EUR", 44.99), //
+                                        hasSource("GiroKontoauszug07.txt"), hasNote("")))));
+
+        // check skipped item
+        assertThat(results, hasItem(skippedItem( //
+                        Messages.MsgErrorTransactionSkipIfDetailsMissing, //
+                        removal(hasDate("2024-10-04"), hasAmount("EUR", 45.00), //
+                                        hasSource("GiroKontoauszug07.txt"), hasNote("")))));
+
+        // check skipped item
+        assertThat(results, hasItem(skippedItem( //
+                        Messages.MsgErrorTransactionSkipIfDetailsMissing, //
+                        removal(hasDate("2024-10-04"), hasAmount("EUR", 45.00), //
+                                        hasSource("GiroKontoauszug07.txt"), hasNote("")))));
     }
 
     @Test
@@ -3159,6 +2252,13 @@ public class DeutscheBankPDFExtractorTest
         assertThat(countItemsWithFailureMessage(results), is(0L));
         assertThat(countSkippedItems(results), is(1L));
         assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, "USD");
+
+        // check skipped item
+        assertThat(results, hasItem(skippedItem( //
+                        Messages.MsgErrorTransactionSkipIfDetailsMissing, //
+                        deposit(hasDate("2025-10-01"), hasAmount("USD", 7.87), //
+                                        hasSource("GiroKontoauszug08.txt"), hasNote("")))));
     }
 
     @Test
@@ -3211,6 +2311,24 @@ public class DeutscheBankPDFExtractorTest
         // assert transaction
         assertThat(results, hasItem(deposit(hasDate("2025-10-15"), hasAmount("EUR", 600.00), //
                         hasSource("GiroKontoauszug10.txt"), hasNote("Überweisung von Dr. ICcCbCKba zlKgUWI NwzaZJPVb"))));
+
+        // check skipped item
+        assertThat(results, hasItem(skippedItem( //
+                        Messages.MsgErrorTransactionSkipIfDetailsMissing, //
+                        removal(hasDate("2025-10-22"), hasAmount("EUR", 200.00), //
+                                        hasSource("GiroKontoauszug10.txt"), hasNote("")))));
+
+        // check skipped item
+        assertThat(results, hasItem(skippedItem( //
+                        Messages.MsgErrorTransactionSkipIfDetailsMissing, //
+                        removal(hasDate("2025-10-22"), hasAmount("EUR", 300.00), //
+                                        hasSource("GiroKontoauszug10.txt"), hasNote("")))));
+
+        // check skipped item
+        assertThat(results, hasItem(skippedItem( //
+                        Messages.MsgErrorTransactionSkipIfDetailsMissing, //
+                        removal(hasDate("2025-10-22"), hasAmount("EUR", 500.01), //
+                                        hasSource("GiroKontoauszug10.txt"), hasNote("")))));
     }
 
     @Test
@@ -3264,7 +2382,7 @@ public class DeutscheBankPDFExtractorTest
 
         // check taxes transaction
         assertThat(results, hasItem(taxes( //
-                        hasDate("2026-01-02T00:00"), hasShares(300), //
+                        hasDate("2026-01-02T00:00"), hasShares(300.00), //
                         hasSource("Vorabpauschale01.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 8.87), hasGrossValue("EUR", 8.87), //
@@ -3299,7 +2417,7 @@ public class DeutscheBankPDFExtractorTest
         // check skipped item
         assertThat(results, hasItem(skippedItem( //
                         Messages.MsgErrorTransactionTypeNotSupportedOrRequired, taxes( //
-                                        hasDate("2026-01-15"), hasShares(120), //
+                                        hasDate("2026-01-15"), hasShares(120.00), //
                                         hasSource("Vorabpauschale02.txt"), //
                                         hasNote(null), //
                                         hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
