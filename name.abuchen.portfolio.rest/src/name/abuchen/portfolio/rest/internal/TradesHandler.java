@@ -87,19 +87,32 @@ public final class TradesHandler
         return new Params(status, grouping, costMethod, taxesAndFees, currency, LocalDate.now());
     }
 
-    /* package */ record Collected(List<Trade> trades, List<Warning> warnings)
+    /**
+     * @param trades
+     *            the trades of the answer, after the filters
+     * @param left
+     *            the trades the collector matched that the filters leave out:
+     *            computed all the same, for the conversions on the way
+     */
+    /* package */ record Collected(List<Trade> trades, List<Trade> left, List<Warning> warnings,
+                    ConversionRecorder conversions)
     {
     }
 
     private static Collected collect(Client client, ExchangeRateProviderFactory factory, List<Security> securities,
                     Params params)
     {
-        var converter = new CurrencyConverterImpl(factory, params.currency());
+        // records what computing the trades converted at 1:1 - for every trade of these
+        // instruments, including those a status filter leaves out of the answer,
+        // because the collector has to match all of them
+        var conversions = new ConversionRecorder(factory);
+        var converter = conversions.wrap(new CurrencyConverterImpl(factory, params.currency()));
 
         // moving-average costs share one snapshot cache per request
         var snapshotCache = new SnapshotCache();
 
         var trades = new ArrayList<Trade>();
+        var left = new ArrayList<Trade>();
         var warnings = new ArrayList<Warning>();
 
         // the collector keeps no state between securities
@@ -113,6 +126,8 @@ public final class TradesHandler
                 {
                     if (params.status().contains(TradeStatus.of(trade)))
                         trades.add(trade);
+                    else
+                        left.add(trade);
                 }
             }
             catch (TradeCollectorException e)
@@ -124,7 +139,7 @@ public final class TradesHandler
         // stable sort keeps the collector's order within one security
         trades.sort(Comparator.comparing(t -> t.getSecurity().getName(), TextUtil::compare));
 
-        return new Collected(trades, warnings);
+        return new Collected(trades, left, warnings, conversions);
     }
 
     private static Warning warning(Security security, TradeCollectorException e)
@@ -148,11 +163,21 @@ public final class TradesHandler
         for (var trade : collected.trades())
             items.add(EntityJson.toJson(trade, params));
 
+        // a trade's moving-average cost is computed as it is rendered and may
+        // convert its fees on the way: a trade the filters leave out is
+        // computed too, so that fxWarnings and fxStaleRates cover every trade
+        // matched, as they say - the result is not part of the answer
+        for (var trade : collected.left())
+            EntityJson.toJson(trade, params);
+
         var warnings = new JsonArray();
         for (var warning : collected.warnings())
             warnings.add(EntityJson.toJson(warning));
 
         var json = EntityJson.tradesContext(params);
+        // after the items: a trade's figures may be computed as it is rendered,
+        // and every fallback on the way has to be seen first
+        FxWarnings.attach(json, collected.conversions());
         // always present so clients can detect partial success
         json.add("warnings", warnings); //$NON-NLS-1$
         json.add("items", items); //$NON-NLS-1$
