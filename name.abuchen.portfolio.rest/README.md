@@ -36,11 +36,15 @@ curl -s -X POST -d '{"clientName": "My Script"}' http://127.0.0.1:5712/v1/auth/r
 
 # 2. the user approves or declines inside Portfolio Performance; poll every 1–2s
 curl -s http://127.0.0.1:5712/v1/auth/requests/<id>
-# → {"status": "pending"} … then {"status": "approved", "token": "…"}
+# → {"status": "pending"} … then {"status": "approved", "token": "…", "persistent": true}
 ```
 
 The approval prompt offers **Allow for this session** (the token dies when the application quits),
 **Always allow** (persistent), and **Decline**. The token is delivered **exactly once** — store it.
+`persistent` says whether the token is confirmed to survive a restart: `false` for a session grant,
+and also for an always-allow grant the application could not confirm in its client file. That one
+may still work after a restart — the file may already hold it, or a later write may add it — so
+look it up on the preference page and revoke it there before pairing again.
 A request expires after 2 minutes; only one may be pending at a time, and a decline imposes a
 cool-down (both reported `429` with `Retry-After`). Every `401` names the pairing endpoint in its
 `pairingEndpoint` field, so the flow is discoverable at runtime.
@@ -48,7 +52,23 @@ cool-down (both reported `429` with `Retry-After`). Every `401` names the pairin
 The preference page lists all authorized clients with their last use, lets the user **revoke** each
 individually (effective immediately), and can mint a token manually via **Add client** — the path
 for headless setups where nobody watches the screen. Tokens are stored hashed; a lost token cannot
-be re-displayed, only replaced.
+be re-displayed, only replaced. When the client file cannot be written as a client is revoked, the
+page says so: the revocation holds for this run and is written with a later request once the file
+can be written again, tried at most once a minute. The client file is replaced in one step where
+the file system can move a file over it atomically, so a crash cannot leave it half written; where
+it cannot, a plain move replaces it, which gives no such guarantee. Three cases are written in place
+instead, keeping every name the file has (and, without POSIX permissions, its ACL): a client file
+that is a symbolic link (its target is written; a target that does not exist yet is created), one
+with further hard links, and one whose replace is refused (on Windows, a file another program holds
+open). Such a write first puts the new content into `api-clients.json.bak` beside the client file,
+on disk and replaced in one step; a crash that leaves the client file empty or cut short is
+completed from it at the next start, a revocation included. Where that file cannot be written - in
+a directory that refuses a new file, say - nothing is written, and the save is reported as failed.
+On POSIX a replaced file is
+owner-only; one written in place is made owner-only where its permissions may be changed - a link
+target owned by someone else keeps its own, and that is logged. Without POSIX permissions a
+replaced file takes over the ACL of the previous one, or is written in place where that fails. Windows does not tell whether a file has further hard links, so
+there such a file is replaced and the other names keep the previous content.
 
 ## Talking to it
 
@@ -69,17 +89,57 @@ operations above as named tools. Point a client at `http://127.0.0.1:5712/mcp` a
 `Authorization: Bearer …` header — **Add client** assembles both, at the one moment the token
 exists. Same switch, same port, same tokens; there is nothing extra to install.
 
-- **No session.** No `Mcp-Session-Id` is issued, responses are plain `application/json`, and `GET`
-  and `DELETE` answer `405` — an SSE stream would park one of the server's two worker threads, which
-  is the reason ADR 0002 already rejected long-polling.
+- **A tool call is streamed when the client takes a stream.** With `Accept: text/event-stream` a
+  `tools/call` is answered as an event stream: `notifications/progress` while it waits for the UI
+  thread, for a calculation slot or for the calculation — if the call carries a
+  `_meta.progressToken` — a `: keepalive` comment every 15 seconds in any case, and the result as
+  the last event. Everything else, and a client that accepts only JSON, gets `application/json`.
+  A client that stops reading a stream holds its request for up to 10 minutes — the JDK's response
+  time limit — not for the 30 seconds after which a plain answer is given up.
+  `GET` answers `405`: the server has nothing to say unasked.
+- **A session is optional.** `initialize` returns an `Mcp-Session-Id`. With it, a
+  `notifications/cancelled` stops the streamed call it names: a call still waiting for the UI
+  thread or for a slot never runs — a write the client no longer wants is not applied — and the
+  per-instrument calculations stop before the next instrument; the engines below cannot be
+  interrupted, so a single long calculation inside them still runs to its end. Only a streamed call
+  can be cancelled: one answered as JSON runs to its end, its answer being all the client gets. Two
+  calls running in one session cannot share an id. A client that hangs up on a stream counts as
+  having cancelled. `DELETE /mcp` ends the session. `initialize` must not be part of a batch. A
+  request without a session id is served as before and only cannot be cancelled; one with an id the
+  server does not know — the application was restarted — is answered `404`, the protocol's signal
+  to initialize again.
 - **Authorisation is per JSON-RPC method.** `initialize`, `tools/list` and `ping` answer without a
   token; `tools/call` requires one and, lacking it, returns HTTP 200 with `isError: true`. A `401`
   is invisible in a chat client's UI, so the refusal has to reach the chat. `/.well-known/*` answers
   `404`: there is no authorization server here.
+- **A tool result is compact; its values are the REST API's.** Not one number is rounded or
+  recomputed, but the shape is cut down for a model: `items` becomes a table (`columns` once, then
+  one array per row, nested groups as dotted columns such as `gains.realizedCapitalGains`); an
+  amount in the `reportingCurrency` is a bare number, while one in another currency - or a column
+  holding even one such amount - keeps a `<column>.currency` beside it, and a `price` always keeps
+  its currency; a holding's four price-age fields become one `priceNote`, present only for a stale
+  or a hand-maintained price; the file list drops `id` (always `use` again) and `path`; in a table
+  of 20 rows or more, the fields only one row in ten or fewer has move into one column `more` - an
+  object per row, or `null`. Each result says in a line what applies to it, and only what applies:
+  the `null` line only where a `null` is sent.
+- **A list too large for one result comes back as its first page.** The instruments and the trades
+  take `cursor` and `limit`; when the whole list does not fit, the result holds as many whole items
+  as do, a `page` (`limit`, `total`, `nextCursor`) and a line before the items naming the `cursor`
+  to ask for next. Over MCP the lists are always in the order paging uses — instruments by `uuid` —
+  so that any page can be continued. Any other result cut to fit ends after a whole row, and says so.
+- **One result holds at most 100,000 characters** — under Claude Desktop's measured 150,000. A
+  client that keeps less, such as Claude Code (25,000 tokens), cuts a larger result blindly; set the
+  limit below what it keeps, and the server sends a page or a marked cut instead:
+  `-Dname.abuchen.portfolio.rest.mcpMaxResultChars=45000` in `PortfolioPerformance.ini` after
+  `-vmargs`, from 10,000 to 150,000, read when the server starts.
 - **Deliberately outside `/v1`,** because MCP negotiates its own version, and therefore outside the
   additive-only promise.
 - **The last refused connection is shown on the preference page.** A client with a wrong token never
   becomes an entry in the client list and reports nothing itself.
+- **Keep the connector name short — 27 characters at most.** Some clients, Claude among them, cap a
+  tool's full name at 64 characters, counting a prefix made from the name you give the connector:
+  `mcp__<name>__pp_list_instrument_performance`, whose tool part is the longest at 30 characters.
+  `portfolio-performance` fits; a longer name gets tool names truncated and suffixed with a hash.
 
 The tools themselves — names, descriptions, `inputSchema`, annotations — are `mcp-tools.json` in
 this bundle. See [For contributors](#for-contributors) before editing a word of it.
@@ -102,19 +162,33 @@ named by the `referenceCashAccount` field.
 ## Endpoints
 
 All list responses are an envelope — `{"items": [...]}`, never a bare array — so that fields beside
-`items` can be added later without breaking clients. A list response is always complete: v1 has no
-pagination and will not start truncating results. Any later paging must be opt-in by the caller.
+`items` can be added later without breaking clients. A list response is complete unless the caller
+asks for a page: `cursor` and `limit` on the instruments and the trades are opt-in, and only a
+response to them carries `page` — `limit` (or `null`), `total` and `nextCursor` (`null` on the last
+page) — and a `cursor` on every item. An empty `cursor` asks for the first page; a page continues
+after the key of the cursor it was given. Paged, a list is in an order of keys that an edit
+elsewhere does not change — instruments by `uuid`; trades by instrument, start, investment account,
+closing transaction and the shares, amount and id of the opening transaction — so an item added or
+removed between two pages does not shift the others: every item that stays in the list for the
+whole walk comes exactly once. An item added before the cursor comes only with a new walk from the
+first page, and a trade whose start, investment account or closing transaction changes gets a new
+key. Trades opened by transactions of the file are told apart by the id of that transaction, so
+removing one of several alike lots cannot hide the others from a cursor that has passed them. A
+cursor is good only for its own list — the same file, for one instrument's trades that
+instrument, and the same filters (`query`; `status`, `grouping`, `from`, `to`) — and is refused as
+`invalid-value` otherwise. REST never truncates.
 
 ### `GET /v1/files` — the files you may address
 
 ```json
 {"items": [
-  {"id": "5f3c…", "alias": "main", "label": "portfolio.xml", "path": "/Users/me/portfolio.xml"}
+  {"id": "5f3c…", "use": "5f3c…", "alias": "main", "label": "portfolio.xml", "path": "/Users/me/portfolio.xml"}
 ]}
 ```
 
-Lists only files that are open *and* enabled. Address a file by its `id` or its `alias` in the
-`{file}` segment below. Check `path` if it matters to your script which file it is writing to: the
+Lists only files that are open *and* enabled. `use` is the value to send in the `{file}` segment
+below; it is always the `id`, because the user can rename an alias at any time. An `alias` is
+accepted as well, which is handy in a hand-written script. Check `path` if it matters to your script which file it is writing to: the
 identity is keyed by path, so a *different* file copied over an enabled path inherits that path's
 identity and enablement.
 
@@ -125,7 +199,18 @@ identity and enablement.
  "isin": "US0378331005", "wkn": "865985", "tickerSymbol": "AAPL", "note": "…"}
 ```
 
-`isin`, `wkn`, `tickerSymbol` and `note` are omitted when not set.
+`isin`, `wkn`, `tickerSymbol` and `note` are omitted when not set, and a blank value counts as not
+set — for `note` on cash and investment accounts too. A value that is set is returned as stored.
+
+`?query=` narrows the list to the instruments it finds: a name that contains it, or an ISIN, WKN or
+ticker symbol equal to it — ignoring case and surrounding whitespace. A large file holds more
+instruments than one MCP answer carries, so this is how a client gets from a name to a `uuid`. A
+blank `query` is a `400`. `?cursor=` and `?limit=` return one page of the list, in the order of the
+`uuid`; without them the list is in the file's order.
+
+The trades (`GET .../trades`, `GET .../instruments/{uuid}/trades`) take the same `cursor` and
+`limit`; their `fxWarnings` and `warnings` describe the whole list, whichever page is asked for —
+also the trades `status`, `from` and `to` leave out, which the collector matches all the same.
 
 ### `PATCH /v1/files/{file}/instruments/{uuid}`
 
@@ -144,14 +229,23 @@ UI's own rule), and `attributes` — a nested merge patch over the custom attrib
 attribute id (`null` clears one; see `openapi.yaml`). Everything else — prices, quote feeds,
 events — is read-only in v1.
 
+An `isin` is checked as the application's ISIN column checks it — twelve characters and a matching
+check digit after trimming, or `422 invalid-isin`; a blank value clears it like `null`.
+
 Any field that is unknown or not writable is a **422, never a silent no-op**: a typo must not look
 like success. All violations come back at once so you can fix them in one round-trip.
+
+A patch that only restates values the instrument already has changes nothing and does not mark the
+file dirty. The response header `X-Portfolio-Changed: true|false` says which of the two happened —
+for this patch only: `false` does not mean the file has no unsaved changes, which earlier edits may
+have left.
 
 ### `DELETE /v1/files/{file}/instruments/{uuid}`
 
 `204 No Content` on success. **409** if transactions or investment plans reference the instrument —
 deleting it in the application would cascade into transaction history, which the API refuses to do
-on a client's behalf. Watchlist and taxonomy membership do not block the delete.
+on a client's behalf. Watchlist and taxonomy membership do not block the delete. Over MCP the
+result names what was removed: `pp_delete_instrument` reads the instrument before deleting it.
 
 ### `GET /v1/files/{file}/cash-accounts[/{uuid}]`
 
@@ -205,8 +299,12 @@ save.
 | 423 | `user-interaction` | a dialog is open in the app — **retry**, see `Retry-After` |
 | 429 | `pairing-pending` | another pairing request awaits the user — retry after `Retry-After` |
 | 429 | `pairing-cooldown` | a pairing request was declined — retry after `Retry-After` |
+| 503 | `ui-busy` | the app's UI thread did not take the request on in time; it was not executed (or it was a read) — **retry**, see `Retry-After` |
+| 503 | `ui-request-underway` | a write was already running on the UI thread and will finish — **do not retry**, read the state back |
+| 503 | `calculation-timeout` | a calculation did not finish in time — ask a smaller question (shorter interval, one instrument) |
+| 503 | `server-busy` | more requests in flight than the server serves at once, or no calculation slot came free in time — retry after `Retry-After` |
 
-Two of these regularly surprise clients:
+Three of these regularly surprise clients:
 
 **404 does not mean "does not exist."** A file that exists but is not enabled answers exactly like a
 file that does not exist. That is deliberate: the token must not let a client enumerate files the
@@ -216,6 +314,45 @@ user did not share.
 than silently clobbered by whatever the dialog writes back on OK. Reads still work. Respect
 `Retry-After` and try again.
 
+**503 says different things.** The API hands every read and write of the model to the UI thread
+and waits for it with a deadline (10 seconds); a calculation resolves its file there the same way,
+then computes off it (see below). Whether the request ran is decided on the UI
+thread itself, so the answer is exact: for a write, `ui-busy` means the UI thread had not started it
+when the wait expired — it is refused, will never run, nothing changed, and `Retry-After` is safe to
+honour. `ui-request-underway` means a write was already running — it will complete, so there is
+no `Retry-After` and sending it again would apply the same change twice. Read the state back
+with the tool that lists or describes what the call changes, and report what is actually there.
+A read that was already running is answered `ui-busy` as well: it changes nothing, and sending it
+again is the only way to get the answer that was thrown away.
+
+Calculations (holdings, performance, trades) run off the UI thread with their own deadline (120
+seconds). `calculation-timeout` means the answer did not come in time; the same question would take
+just as long again, so narrow it. The engines cannot be interrupted, so a calculation past its
+deadline still runs to its end — and keeps its calculation slot until it does.
+
+By default, two calculations run at once — on a machine with at least three processors; with one
+or two, one does. One that finds every slot taken waits for a free one, first come first served, for up to 30
+seconds; at most two per slot may wait. `server-busy` means more requests are in
+flight than the server serves at once, the queue is full, or no slot came free in time; no work was
+started, so retrying after `Retry-After` is cheap.
+
+The number of slots can be raised from 1 to 8 with a system property in `PortfolioPerformance.ini`,
+after `-vmargs`; it is read when the server first starts, and a restart of the server keeps the
+slots, as calculations still running hold them:
+
+```
+-Dname.abuchen.portfolio.rest.calculationSlots=4
+```
+
+At most the number of processors less one is used, so that one stays free for the user interface,
+but always at least one — on a single processor none stays free. A number outside 1 to 8 is logged
+and replaced by the nearer bound, anything else by the default. The server then serves three
+requests per slot plus six more at once (12 with the default on three or more processors, 9 with
+one or two), so that every running and waiting calculation has
+room and the cheap calls still get through. Each calculation holds a whole file's daily valuation in
+memory, so raise the number only when several questions are really asked at the same time — one
+calculation does not get faster.
+
 ## Computed collections
 
 Some collections are not stored in the file but computed per request — `trades` is the first. Two
@@ -223,7 +360,8 @@ rules apply to all of them.
 
 **They have no ids.** A computed item gets no `uuid`, and there is no `…/trades/{id}`: an id minted
 per request would not survive the next one. Address such an item by the filter that produced it
-(`GET .../instruments/{uuid}/trades?status=closed`). Ordering carries the weight identity otherwise
+(`GET .../instruments/{uuid}/trades?status=closed`, or `?from=2025-01-01&to=2025-12-31` for the
+trades held at some point of a period). Ordering carries the weight identity otherwise
 would, so these collections sort stably — repeated identical requests return identical lists.
 
 **They can half succeed.** Where the computation runs over independent units and can fail on some of
@@ -233,6 +371,20 @@ hundred, and `problem+json` stays reserved for a *total* failure — a response 
 a result, never both. `warnings` is always present, empty when nothing failed, so that "nothing went
 wrong" is distinguishable from "this endpoint cannot report problems". **A client that ignores
 `warnings` reads a partial list as a complete one.**
+
+**A trade can count transactions booked ahead.** Trades are matched over every transaction, as in
+the application's trades view, while an open trade is valued at the price of `valuationDate`. A trade
+with transactions dated after it — a savings plan booked ahead — carries
+`transactionsAfterValuationDate`: its shares and values are those after the last of them, not the
+position held today, which `GET .../holdings` gives.
+
+**An old exchange rate is named.** Every computed report carries `fxStaleRates` beside `fxWarnings`:
+the pairs it converted at a rate more than seven days older than the conversion date (or than today,
+for a later date), with the oldest `rateDate` and the largest `daysOld` of those stale conversions
+— for a pair reached through a third currency (USD to CHF through EUR), the oldest of its steps. A series that stopped being published
+goes on answering with its last rate, and the currency effect is then frozen rather than measured.
+It is a real rate, not a 1:1 fallback, so that conversion is no `fxWarnings` entry; the same pair
+still is one when another of its conversions fell back.
 
 ## Query parameters are strict
 
@@ -326,6 +478,21 @@ endpoint takes none, so a new endpoint is strict without doing anything. Documen
 `openapi.yaml` in the same change, and give the operation a `400` response — every endpoint can
 now return one. `OpenApiSpecDriftTest` fails if any of that drifts apart, and `McpToolsDriftTest`
 fails until the new route either has a tool or is listed as one that deliberately has none.
+
+`Router.match` answers with the **most specific** route of the ones that match, not the first
+registered: a route with fewer placeholders wins. A literal segment therefore reserves a name for
+free — `GET /v1/files/{file}/instruments/attribute-types` is never answered by
+`GET /v1/files/{file}/instruments/{uuid}` with `attribute-types` taken as a uuid, whichever is
+added first. Registration order only breaks a tie between routes of equal specificity, so adding an
+endpoint does not silently re-route an existing one.
+
+Paths are normalized before routing and before the bearer check, and both see the same result:
+repeated leading slashes collapse into one and trailing slashes are dropped, so `/v1/files/` is the
+same route as `/v1/files`, and `/mcp/` is exempt from the bearer check exactly like `/mcp`. An empty
+segment in the middle (`/v1//files`) stays unmatched. `Authorization` is read case-insensitively
+(`bearer …` is accepted); a header that carries a token under a different scheme is refused as a
+wrong scheme rather than as a missing token, and the preference page says which of the two
+happened.
 
 The drift tests compare the specification with the code; the `openapi-compat` Maven profile
 compares it with the published contract. It runs [oasdiff](https://github.com/oasdiff/oasdiff)
