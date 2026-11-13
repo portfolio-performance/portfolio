@@ -28,6 +28,8 @@ import org.eclipse.jface.viewers.ComboViewer;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.ColorDialog;
 import org.eclipse.swt.widgets.Composite;
@@ -276,11 +278,6 @@ public final class ThemePreferencePage extends PreferencePage
             button.setSelection(ValueColorScheme.STANDARD_SCHEME.equals(scheme.getIdentifier()));
         }
 
-        ValueColorScheme.setCustomPositiveColor(null);
-        ValueColorScheme.setCustomNegativeColor(null);
-        if (engine != null && ValueColorScheme.getCustomScheme() != null)
-            engine.applyStyles(ValueColorScheme.getCustomScheme(), false);
-
         pendingCustomPositive = "";
         pendingCustomNegative = "";
 
@@ -292,19 +289,8 @@ public final class ThemePreferencePage extends PreferencePage
     @Override
     public boolean performCancel()
     {
-        if (pendingCustomPositive != null || pendingCustomNegative != null)
-        {
-            String savedPos = getPreferenceStore()
-                            .getString(UIConstants.Preferences.VALUE_COLOR_SCHEME_CUSTOM_POSITIVE);
-            String savedNeg = getPreferenceStore()
-                            .getString(UIConstants.Preferences.VALUE_COLOR_SCHEME_CUSTOM_NEGATIVE);
-            ValueColorScheme.setCustomPositiveColor(savedPos);
-            ValueColorScheme.setCustomNegativeColor(savedNeg);
-            if ((savedPos == null || savedPos.isBlank() || savedNeg == null || savedNeg.isBlank()) && engine != null)
-                engine.applyStyles(ValueColorScheme.getCustomScheme(), false);
-            pendingCustomPositive = null;
-            pendingCustomNegative = null;
-        }
+        pendingCustomPositive = null;
+        pendingCustomNegative = null;
 
         return super.performCancel();
     }
@@ -375,6 +361,28 @@ public final class ThemePreferencePage extends PreferencePage
         }
     }
 
+    private Color getCustomPositiveColor(ValueColorScheme scheme)
+    {
+        if (pendingCustomPositive != null)
+        {
+            if (pendingCustomPositive.isEmpty())
+                return scheme.defaultPositiveForeground();
+            return Colors.getColor(ColorConversion.hex2RGBA(pendingCustomPositive).rgb);
+        }
+        return scheme.positiveForeground();
+    }
+
+    private Color getCustomNegativeColor(ValueColorScheme scheme)
+    {
+        if (pendingCustomNegative != null)
+        {
+            if (pendingCustomNegative.isEmpty())
+                return scheme.defaultNegativeForeground();
+            return Colors.getColor(ColorConversion.hex2RGBA(pendingCustomNegative).rgb);
+        }
+        return scheme.negativeForeground();
+    }
+
     private Button createSchemeOption(Composite parent, ValueColorScheme scheme)
     {
         var radioButton = new Button(parent, SWT.RADIO);
@@ -389,6 +397,14 @@ public final class ThemePreferencePage extends PreferencePage
         GridLayoutFactory.fillDefaults().numColumns(isCustom ? 6 : 4).margins(20, 5).spacing(10, 5)
                         .applyTo(previewComposite);
         GridDataFactory.fillDefaults().span(2, 1).grab(true, false).applyTo(previewComposite);
+
+        var customArrows = new Image[2];
+        previewComposite.addDisposeListener(e -> {
+            if (customArrows[0] != null && !customArrows[0].isDisposed())
+                customArrows[0].dispose();
+            if (customArrows[1] != null && !customArrows[1].isDisposed())
+                customArrows[1].dispose();
+        });
 
         // Positive
         var positiveArrowLabel = new Label(previewComposite, SWT.NONE);
@@ -426,13 +442,35 @@ public final class ThemePreferencePage extends PreferencePage
             var previewBackground = Colors.theme().defaultBackground();
             previewComposite.setBackground(previewBackground);
             positiveArrowLabel.setBackground(previewBackground);
-            positiveArrowLabel.setImage(scheme.upArrow());
             negativeArrowLabel.setBackground(previewBackground);
-            negativeArrowLabel.setImage(scheme.downArrow());
             positiveLabel.setBackdropColor(previewBackground);
-            positiveLabel.setTextColor(scheme.positiveForeground());
             negativeLabel.setBackdropColor(previewBackground);
-            negativeLabel.setTextColor(scheme.negativeForeground());
+
+            if (isCustom)
+            {
+                var posColor = getCustomPositiveColor(scheme);
+                var negColor = getCustomNegativeColor(scheme);
+                positiveLabel.setTextColor(posColor);
+                negativeLabel.setTextColor(negColor);
+
+                if (customArrows[0] != null && !customArrows[0].isDisposed())
+                    customArrows[0].dispose();
+                customArrows[0] = ValueColorScheme.createArrowImage(posColor, true);
+                positiveArrowLabel.setImage(customArrows[0]);
+
+                if (customArrows[1] != null && !customArrows[1].isDisposed())
+                    customArrows[1].dispose();
+                customArrows[1] = ValueColorScheme.createArrowImage(negColor, false);
+                negativeArrowLabel.setImage(customArrows[1]);
+            }
+            else
+            {
+                positiveArrowLabel.setImage(scheme.upArrow());
+                negativeArrowLabel.setImage(scheme.downArrow());
+                positiveLabel.setTextColor(scheme.positiveForeground());
+                negativeLabel.setTextColor(scheme.negativeForeground());
+            }
+
             positiveLabel.redraw();
             negativeLabel.redraw();
             positiveArrowLabel.redraw();
@@ -446,12 +484,11 @@ public final class ThemePreferencePage extends PreferencePage
         {
             choosePosBtn.addListener(SWT.Selection, e -> {
                 var dialog = new ColorDialog(parent.getShell());
-                dialog.setRGB(scheme.positiveForeground().getRGB());
+                dialog.setRGB(getCustomPositiveColor(scheme).getRGB());
                 var rgb = dialog.open();
                 if (rgb != null)
                 {
                     pendingCustomPositive = ColorConversion.toHex(rgb);
-                    ValueColorScheme.setCustomPositiveColor(pendingCustomPositive);
                     radioButton.setSelection(true);
                     for (var btn : valueColorSchemeOptions)
                         btn.setSelection(btn == radioButton);
@@ -461,12 +498,11 @@ public final class ThemePreferencePage extends PreferencePage
 
             chooseNegBtn.addListener(SWT.Selection, e -> {
                 var dialog = new ColorDialog(parent.getShell());
-                dialog.setRGB(scheme.negativeForeground().getRGB());
+                dialog.setRGB(getCustomNegativeColor(scheme).getRGB());
                 var rgb = dialog.open();
                 if (rgb != null)
                 {
                     pendingCustomNegative = ColorConversion.toHex(rgb);
-                    ValueColorScheme.setCustomNegativeColor(pendingCustomNegative);
                     radioButton.setSelection(true);
                     for (var btn : valueColorSchemeOptions)
                         btn.setSelection(btn == radioButton);

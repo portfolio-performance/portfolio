@@ -61,6 +61,8 @@ public final class ValueColorScheme
         var custom = new ValueColorScheme(CUSTOM_SCHEME, Messages.ValueColorSchemeCustom);
         custom.setPositiveForeground(ColorConversion.hex2RGBA("#007A00")); //$NON-NLS-1$
         custom.setNegativeForeground(ColorConversion.hex2RGBA("#C62828")); //$NON-NLS-1$
+        custom.defaultPositiveForeground = custom.positiveForeground;
+        custom.defaultNegativeForeground = custom.negativeForeground;
 
         schemes = List.of(standard, blueOrange, asia, vivid, custom);
         currentScheme = standard;
@@ -71,6 +73,8 @@ public final class ValueColorScheme
 
     private Color positiveForeground;
     private Color negativeForeground;
+    private Color defaultPositiveForeground;
+    private Color defaultNegativeForeground;
     private Image upArrow;
     private Image downArrow;
     private boolean hasCustomPositive;
@@ -107,6 +111,16 @@ public final class ValueColorScheme
         return positiveForeground;
     }
 
+    public Color defaultPositiveForeground()
+    {
+        return defaultPositiveForeground != null ? defaultPositiveForeground : positiveForeground;
+    }
+
+    public void setDefaultPositiveForeground(RGBA color)
+    {
+        this.defaultPositiveForeground = Colors.getColor(color.rgb);
+    }
+
     public void setPositiveForeground(RGBA color)
     {
         this.positiveForeground = Colors.getColor(color.rgb);
@@ -117,6 +131,16 @@ public final class ValueColorScheme
     public Color negativeForeground()
     {
         return negativeForeground;
+    }
+
+    public Color defaultNegativeForeground()
+    {
+        return defaultNegativeForeground != null ? defaultNegativeForeground : negativeForeground;
+    }
+
+    public void setDefaultNegativeForeground(RGBA color)
+    {
+        this.defaultNegativeForeground = Colors.getColor(color.rgb);
     }
 
     public void setNegativeForeground(RGBA color)
@@ -206,7 +230,7 @@ public final class ValueColorScheme
         return true;
     }
 
-    private static Image createArrowImage(Color color, boolean up)
+    public static Image createArrowImage(Color color, boolean up)
     {
         var display = Display.getCurrent() != null ? Display.getCurrent() : Display.getDefault();
         if (display == null || color == null || color.isDisposed())
