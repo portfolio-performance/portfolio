@@ -55,9 +55,9 @@ public class InstrumentChangeCaptureTest
         var security = new SecurityBuilder().addTo(client);
         security.setIsin(null); // SecurityBuilder sets a default ISIN; clear it to test the unset case
 
-        var result = SecuritiesHandler.patch(client, security.getUUID(), json("{\"isin\":\"DE0001234567\"}"));
+        var result = SecuritiesHandler.patch(client, security.getUUID(), json("{\"isin\":\"DE0005557508\"}"));
 
-        assertThat(result.changes(), contains(new Change("isin", null, "DE0001234567")));
+        assertThat(result.changes(), contains(new Change("isin", null, "DE0005557508")));
     }
 
     @Test

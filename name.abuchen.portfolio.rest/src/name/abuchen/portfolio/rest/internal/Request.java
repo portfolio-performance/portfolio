@@ -3,25 +3,44 @@ package name.abuchen.portfolio.rest.internal;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.TreeMap;
 
 /**
  * One request as a handler sees it.
  * <p/>
- * The last two components exist for {@code /mcp} alone, which ADR 0005 lets
- * through with or without a token because it decides authorisation per JSON-RPC
- * method. A handler that has to report who was refused, and whether they
- * offered a token at all, needs both facts carried to it. Every {@code /v1}
- * route is unreachable without a valid token, so it only ever sees VALID.
+ * {@code authorization} and {@code userAgent} exist for {@code /mcp} alone,
+ * which ADR 0005 lets through with or without a token because it decides
+ * authorisation per JSON-RPC method. A handler that has to report who was
+ * refused, and whether they offered a token at all, needs both facts carried to
+ * it. Every {@code /v1} route is unreachable without a valid token, so it only
+ * ever sees VALID.
+ * <p/>
+ * {@code headers} likewise carries only what {@code /mcp} reads - whether the
+ * client accepts a stream, and which session it belongs to - with lower-case
+ * names. {@code progress} is what the request reports while it runs, and how it
+ * learns that the caller gave up; {@link Progress#NONE} for every REST request.
  */
 public record Request(String method, String path, Map<String, String> pathParams, Map<String, String> queryParams,
-                byte[] body, Authorization authorization, String userAgent)
+                byte[] body, Authorization authorization, String userAgent, Map<String, String> headers,
+                Progress progress)
 {
-    /** the preference page says which: "you forgot the header" and "your token is wrong" differ */
+    public Request(String method, String path, Map<String, String> pathParams, Map<String, String> queryParams,
+                    byte[] body, Authorization authorization, String userAgent)
+    {
+        this(method, path, pathParams, queryParams, body, authorization, userAgent, Map.of(), Progress.NONE);
+    }
+
+    /**
+     * The preference page says which: "you forgot the header", "that is not a
+     * bearer header" and "your token is wrong" are three different faults, and
+     * telling the first two apart is the only way a misconfigured connector can
+     * be diagnosed from the application.
+     */
     public enum Authorization
     {
-        VALID, INVALID, MISSING
+        VALID, INVALID, WRONG_SCHEME, MISSING
     }
 
     public Request(String method, String path, Map<String, String> pathParams, Map<String, String> queryParams,
@@ -38,6 +57,19 @@ public record Request(String method, String path, Map<String, String> pathParams
     public boolean authenticated()
     {
         return authorization == Authorization.VALID;
+    }
+
+    /** a header as {@code /mcp} reads it, by its lower-case name; null if absent */
+    public String header(String name)
+    {
+        return headers.get(name.toLowerCase(Locale.ROOT));
+    }
+
+    /** the same request, reporting to that progress */
+    public Request withProgress(Progress newProgress)
+    {
+        return new Request(method, path, pathParams, queryParams, body, authorization, userAgent, headers,
+                        newProgress);
     }
 
     public String pathParam(String name)
