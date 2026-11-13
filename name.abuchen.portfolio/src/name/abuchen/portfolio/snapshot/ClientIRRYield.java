@@ -10,6 +10,7 @@ import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.AccountTransaction.Type;
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.FundTransferEntry;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Transaction;
@@ -71,6 +72,11 @@ public class ClientIRRYield
                                         break;
                                     case BUY:
                                     case SELL:
+                                        break;
+                                    case FUND_TRANSFER_IN:
+                                    case FUND_TRANSFER_OUT:
+                                        if (!((FundTransferEntry) t.getCrossEntry()).isInternalTo(client))
+                                            transactions.add(t);
                                         break;
                                     default:
                                         throw new UnsupportedOperationException();
@@ -142,7 +148,8 @@ public class ClientIRRYield
             {
                 long amount = converter.convert(t.getDateTime(), t.getMonetaryAmount()).getAmount();
                 if (pt.getType() == PortfolioTransaction.Type.DELIVERY_INBOUND
-                                || pt.getType() == PortfolioTransaction.Type.TRANSFER_IN)
+                                || pt.getType() == PortfolioTransaction.Type.TRANSFER_IN
+                                || pt.getType() == PortfolioTransaction.Type.FUND_TRANSFER_IN)
                     amount = -amount;
                 values.add(amount / Values.Amount.divider());
             }

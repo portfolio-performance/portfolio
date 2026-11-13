@@ -24,6 +24,10 @@ public class PortfolioTransaction extends Transaction
         TRANSFER_IN(true),
         /** Records the transfer of assets to another portfolio. */
         TRANSFER_OUT(false),
+        /** Records the tax-neutral transfer of assets into another fund. */
+        FUND_TRANSFER_IN(true),
+        /** Records the tax-neutral transfer of assets out of a fund. */
+        FUND_TRANSFER_OUT(false),
         /** Records the transfer of assets into the portfolio. */
         DELIVERY_INBOUND(true),
         /** Records the transfer of assets out of a portfolio. */

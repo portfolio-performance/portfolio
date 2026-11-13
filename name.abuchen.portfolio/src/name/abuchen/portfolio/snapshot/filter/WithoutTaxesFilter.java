@@ -8,6 +8,7 @@ import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.AccountTransferEntry;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.FundTransferEntry;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.PortfolioTransferEntry;
@@ -71,6 +72,16 @@ public class WithoutTaxesFilter implements ClientFilter
                                     portfolio2pseudo.get(t.getCrossEntry().getCrossOwner(t)), pseudoPortfolio);
                     break;
                 case TRANSFER_OUT:
+                    break;
+                case FUND_TRANSFER_IN:
+                    FundTransferEntry entry = (FundTransferEntry) t.getCrossEntry();
+                    // Fund transfers have no tax units, but they still need a
+                    // copied cross entry so carried lots keep the filtered
+                    // read-only portfolios as their transaction owners.
+                    ClientFilterHelper.recreateFundTransfer(entry, portfolio2pseudo.get(entry.getSourcePortfolio()),
+                                    pseudoPortfolio);
+                    break;
+                case FUND_TRANSFER_OUT:
                     break;
                 default:
                     throw new UnsupportedOperationException();

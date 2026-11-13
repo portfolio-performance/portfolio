@@ -17,6 +17,7 @@ import name.abuchen.portfolio.ui.dialogs.palette.CommandPalettePopup.ElementProv
 import name.abuchen.portfolio.ui.dialogs.transactions.AbstractTransactionDialog;
 import name.abuchen.portfolio.ui.dialogs.transactions.AccountTransactionDialog;
 import name.abuchen.portfolio.ui.dialogs.transactions.AccountTransferDialog;
+import name.abuchen.portfolio.ui.dialogs.transactions.FundTransferDialog;
 import name.abuchen.portfolio.ui.dialogs.transactions.OpenDialogAction;
 import name.abuchen.portfolio.ui.dialogs.transactions.SecurityTransactionDialog;
 import name.abuchen.portfolio.ui.dialogs.transactions.SecurityTransferDialog;
@@ -57,6 +58,9 @@ import name.abuchen.portfolio.ui.selection.SelectionService;
 
         private boolean isTransactionWithSecurity()
         {
+            if (dialog == FundTransferDialog.class)
+                return true;
+
             if (transaction instanceof PortfolioTransaction.Type)
                 return true;
 
@@ -135,6 +139,10 @@ import name.abuchen.portfolio.ui.selection.SelectionService;
             elements.add(new AccountTransactionElement(SecurityTransferDialog.class, Messages.LabelSecurityTransfer,
                             selection));
         }
+
+        // Fund transfers can be intra-portfolio; keep them available even when
+        // there is only one securities account.
+        elements.add(new AccountTransactionElement(FundTransferDialog.class, Messages.LabelFundTransfer, selection));
 
         if (part.getClient().getActiveAccounts().size() > 1)
         {

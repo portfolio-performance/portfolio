@@ -9,6 +9,7 @@ import java.util.List;
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.FundTransferEntry;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.model.Transaction.Unit.Type;
@@ -196,6 +197,16 @@ import name.abuchen.portfolio.util.Interval;
                                         break;
                                     case DELIVERY_OUTBOUND:
                                         addValue(outboundTransferals, t.getCurrencyCode(), t.getAmount(), interval, d);
+                                        break;
+                                    case FUND_TRANSFER_IN:
+                                        if (!((FundTransferEntry) t.getCrossEntry()).isInternalTo(getClient()))
+                                            addValue(inboundTransferals, t.getCurrencyCode(), t.getAmount(), interval,
+                                                            d);
+                                        break;
+                                    case FUND_TRANSFER_OUT:
+                                        if (!((FundTransferEntry) t.getCrossEntry()).isInternalTo(getClient()))
+                                            addValue(outboundTransferals, t.getCurrencyCode(), t.getAmount(), interval,
+                                                            d);
                                         break;
                                     case BUY:
                                         addValue(buys, t.getCurrencyCode(), t.getAmount(), interval, d);

@@ -35,6 +35,15 @@ import name.abuchen.portfolio.util.LazyValue;
 
 public class Trade implements Adaptable
 {
+    private static LocalDateTime getEffectiveEntryDateTime(TransactionPair<PortfolioTransaction> pair)
+    {
+        PortfolioTransaction transaction = pair.getTransaction();
+        if (transaction instanceof FundTransferCarriedTransaction carried)
+            return carried.getAcquisitionDate().atStartOfDay();
+
+        return transaction.getDateTime();
+    }
+
     private static final class CollateralLot
     {
         private long shares;
@@ -123,7 +132,7 @@ public class Trade implements Adaptable
             this.holdingPeriod = Math.round(transactions.stream() //
                             .filter(t -> t.getTransaction().getType().isPurchase() == isLong)
                             .mapToLong(t -> t.getTransaction().getShares() * Dates.daysBetween(
-                                            t.getTransaction().getDateTime().toLocalDate(), end.toLocalDate()))
+                                            getEffectiveEntryDateTime(t).toLocalDate(), end.toLocalDate()))
                             .sum() / (double) shares);
         }
         else
@@ -142,7 +151,7 @@ public class Trade implements Adaptable
             this.holdingPeriod = Math.round(transactions.stream() //
                             .filter(t -> t.getTransaction().getType().isPurchase() == isLong)
                             .mapToLong(t -> t.getTransaction().getShares()
-                                            * Dates.daysBetween(t.getTransaction().getDateTime().toLocalDate(), now))
+                                            * Dates.daysBetween(getEffectiveEntryDateTime(t).toLocalDate(), now))
                             .sum() / (double) shares);
         }
 
@@ -150,8 +159,13 @@ public class Trade implements Adaptable
         // transfers
         Collections.sort(transactions, TransactionPair.BY_DATE);
 
-        // re-set start date from first entry after sorting
-        this.setStart(transactions.get(0).getTransaction().getDateTime());
+        // Fund transfers display synthetic carried lots on the transfer date,
+        // but trade start and holding period inherit the source lot's original
+        // acquisition date.
+        this.setStart(transactions.stream() //
+                        .filter(t -> t.getTransaction().getType().isPurchase() == isLong)
+                        .map(Trade::getEffectiveEntryDateTime).min(LocalDateTime::compareTo)
+                        .orElse(transactions.get(0).getTransaction().getDateTime()));
 
         calculateIRR(converter);
 
@@ -172,7 +186,8 @@ public class Trade implements Adaptable
         Deque<CollateralLot> collateralLots = new ArrayDeque<>();
 
         transactions.stream().forEach(t -> {
-            dates.add(t.getTransaction().getDateTime().toLocalDate());
+            LocalDateTime effectiveDateTime = getEffectiveEntryDateTime(t);
+            dates.add(effectiveDateTime.toLocalDate());
 
             double amount = t.getTransaction().getMonetaryAmount(converter).getAmount() / Values.Amount.divider();
 

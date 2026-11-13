@@ -28,6 +28,9 @@ private static final long serialVersionUID = 0L;
     security_ = "";
     units_ = java.util.Collections.emptyList();
     source_ = "";
+    targetSecurity_ = "";
+    carriedLots_ = java.util.Collections.emptyList();
+    targetCurrencyCode_ = "";
   }
 
   @java.lang.Override
@@ -115,6 +118,10 @@ private static final long serialVersionUID = 0L;
      * <code>FEE_REFUND = 14;</code>
      */
     FEE_REFUND(14),
+    /**
+     * <code>FUND_TRANSFER = 15;</code>
+     */
+    FUND_TRANSFER(15),
     UNRECOGNIZED(-1),
     ;
 
@@ -178,6 +185,10 @@ private static final long serialVersionUID = 0L;
      * <code>FEE_REFUND = 14;</code>
      */
     public static final int FEE_REFUND_VALUE = 14;
+    /**
+     * <code>FUND_TRANSFER = 15;</code>
+     */
+    public static final int FUND_TRANSFER_VALUE = 15;
 
 
     public final int getNumber() {
@@ -219,6 +230,7 @@ private static final long serialVersionUID = 0L;
         case 12: return TAX_REFUND;
         case 13: return FEE;
         case 14: return FEE_REFUND;
+        case 15: return FUND_TRANSFER;
         default: return null;
       }
     }
@@ -289,7 +301,7 @@ private static final long serialVersionUID = 0L;
     if (ref instanceof java.lang.String) {
       return (java.lang.String) ref;
     } else {
-      com.google.protobuf.ByteString bs = 
+      com.google.protobuf.ByteString bs =
           (com.google.protobuf.ByteString) ref;
       java.lang.String s = bs.toStringUtf8();
       uuid_ = s;
@@ -305,7 +317,7 @@ private static final long serialVersionUID = 0L;
       getUuidBytes() {
     java.lang.Object ref = uuid_;
     if (ref instanceof java.lang.String) {
-      com.google.protobuf.ByteString b = 
+      com.google.protobuf.ByteString b =
           com.google.protobuf.ByteString.copyFromUtf8(
               (java.lang.String) ref);
       uuid_ = b;
@@ -354,7 +366,7 @@ private static final long serialVersionUID = 0L;
     if (ref instanceof java.lang.String) {
       return (java.lang.String) ref;
     } else {
-      com.google.protobuf.ByteString bs = 
+      com.google.protobuf.ByteString bs =
           (com.google.protobuf.ByteString) ref;
       java.lang.String s = bs.toStringUtf8();
       account_ = s;
@@ -370,7 +382,7 @@ private static final long serialVersionUID = 0L;
       getAccountBytes() {
     java.lang.Object ref = account_;
     if (ref instanceof java.lang.String) {
-      com.google.protobuf.ByteString b = 
+      com.google.protobuf.ByteString b =
           com.google.protobuf.ByteString.copyFromUtf8(
               (java.lang.String) ref);
       account_ = b;
@@ -401,7 +413,7 @@ private static final long serialVersionUID = 0L;
     if (ref instanceof java.lang.String) {
       return (java.lang.String) ref;
     } else {
-      com.google.protobuf.ByteString bs = 
+      com.google.protobuf.ByteString bs =
           (com.google.protobuf.ByteString) ref;
       java.lang.String s = bs.toStringUtf8();
       portfolio_ = s;
@@ -417,7 +429,7 @@ private static final long serialVersionUID = 0L;
       getPortfolioBytes() {
     java.lang.Object ref = portfolio_;
     if (ref instanceof java.lang.String) {
-      com.google.protobuf.ByteString b = 
+      com.google.protobuf.ByteString b =
           com.google.protobuf.ByteString.copyFromUtf8(
               (java.lang.String) ref);
       portfolio_ = b;
@@ -448,7 +460,7 @@ private static final long serialVersionUID = 0L;
     if (ref instanceof java.lang.String) {
       return (java.lang.String) ref;
     } else {
-      com.google.protobuf.ByteString bs = 
+      com.google.protobuf.ByteString bs =
           (com.google.protobuf.ByteString) ref;
       java.lang.String s = bs.toStringUtf8();
       otherAccount_ = s;
@@ -464,7 +476,7 @@ private static final long serialVersionUID = 0L;
       getOtherAccountBytes() {
     java.lang.Object ref = otherAccount_;
     if (ref instanceof java.lang.String) {
-      com.google.protobuf.ByteString b = 
+      com.google.protobuf.ByteString b =
           com.google.protobuf.ByteString.copyFromUtf8(
               (java.lang.String) ref);
       otherAccount_ = b;
@@ -495,7 +507,7 @@ private static final long serialVersionUID = 0L;
     if (ref instanceof java.lang.String) {
       return (java.lang.String) ref;
     } else {
-      com.google.protobuf.ByteString bs = 
+      com.google.protobuf.ByteString bs =
           (com.google.protobuf.ByteString) ref;
       java.lang.String s = bs.toStringUtf8();
       otherPortfolio_ = s;
@@ -511,7 +523,7 @@ private static final long serialVersionUID = 0L;
       getOtherPortfolioBytes() {
     java.lang.Object ref = otherPortfolio_;
     if (ref instanceof java.lang.String) {
-      com.google.protobuf.ByteString b = 
+      com.google.protobuf.ByteString b =
           com.google.protobuf.ByteString.copyFromUtf8(
               (java.lang.String) ref);
       otherPortfolio_ = b;
@@ -542,7 +554,7 @@ private static final long serialVersionUID = 0L;
     if (ref instanceof java.lang.String) {
       return (java.lang.String) ref;
     } else {
-      com.google.protobuf.ByteString bs = 
+      com.google.protobuf.ByteString bs =
           (com.google.protobuf.ByteString) ref;
       java.lang.String s = bs.toStringUtf8();
       otherUuid_ = s;
@@ -558,7 +570,7 @@ private static final long serialVersionUID = 0L;
       getOtherUuidBytes() {
     java.lang.Object ref = otherUuid_;
     if (ref instanceof java.lang.String) {
-      com.google.protobuf.ByteString b = 
+      com.google.protobuf.ByteString b =
           com.google.protobuf.ByteString.copyFromUtf8(
               (java.lang.String) ref);
       otherUuid_ = b;
@@ -633,7 +645,7 @@ private static final long serialVersionUID = 0L;
     if (ref instanceof java.lang.String) {
       return (java.lang.String) ref;
     } else {
-      com.google.protobuf.ByteString bs = 
+      com.google.protobuf.ByteString bs =
           (com.google.protobuf.ByteString) ref;
       java.lang.String s = bs.toStringUtf8();
       currencyCode_ = s;
@@ -649,7 +661,7 @@ private static final long serialVersionUID = 0L;
       getCurrencyCodeBytes() {
     java.lang.Object ref = currencyCode_;
     if (ref instanceof java.lang.String) {
-      com.google.protobuf.ByteString b = 
+      com.google.protobuf.ByteString b =
           com.google.protobuf.ByteString.copyFromUtf8(
               (java.lang.String) ref);
       currencyCode_ = b;
@@ -710,7 +722,7 @@ private static final long serialVersionUID = 0L;
     if (ref instanceof java.lang.String) {
       return (java.lang.String) ref;
     } else {
-      com.google.protobuf.ByteString bs = 
+      com.google.protobuf.ByteString bs =
           (com.google.protobuf.ByteString) ref;
       java.lang.String s = bs.toStringUtf8();
       note_ = s;
@@ -726,7 +738,7 @@ private static final long serialVersionUID = 0L;
       getNoteBytes() {
     java.lang.Object ref = note_;
     if (ref instanceof java.lang.String) {
-      com.google.protobuf.ByteString b = 
+      com.google.protobuf.ByteString b =
           com.google.protobuf.ByteString.copyFromUtf8(
               (java.lang.String) ref);
       note_ = b;
@@ -757,7 +769,7 @@ private static final long serialVersionUID = 0L;
     if (ref instanceof java.lang.String) {
       return (java.lang.String) ref;
     } else {
-      com.google.protobuf.ByteString bs = 
+      com.google.protobuf.ByteString bs =
           (com.google.protobuf.ByteString) ref;
       java.lang.String s = bs.toStringUtf8();
       security_ = s;
@@ -773,7 +785,7 @@ private static final long serialVersionUID = 0L;
       getSecurityBytes() {
     java.lang.Object ref = security_;
     if (ref instanceof java.lang.String) {
-      com.google.protobuf.ByteString b = 
+      com.google.protobuf.ByteString b =
           com.google.protobuf.ByteString.copyFromUtf8(
               (java.lang.String) ref);
       security_ = b;
@@ -797,7 +809,7 @@ private static final long serialVersionUID = 0L;
    * <code>repeated .name.abuchen.portfolio.PTransactionUnit units = 15;</code>
    */
   @java.lang.Override
-  public java.util.List<? extends name.abuchen.portfolio.model.proto.v1.PTransactionUnitOrBuilder> 
+  public java.util.List<? extends name.abuchen.portfolio.model.proto.v1.PTransactionUnitOrBuilder>
       getUnitsOrBuilderList() {
     return units_;
   }
@@ -871,7 +883,7 @@ private static final long serialVersionUID = 0L;
     if (ref instanceof java.lang.String) {
       return (java.lang.String) ref;
     } else {
-      com.google.protobuf.ByteString bs = 
+      com.google.protobuf.ByteString bs =
           (com.google.protobuf.ByteString) ref;
       java.lang.String s = bs.toStringUtf8();
       source_ = s;
@@ -887,7 +899,7 @@ private static final long serialVersionUID = 0L;
       getSourceBytes() {
     java.lang.Object ref = source_;
     if (ref instanceof java.lang.String) {
-      com.google.protobuf.ByteString b = 
+      com.google.protobuf.ByteString b =
           com.google.protobuf.ByteString.copyFromUtf8(
               (java.lang.String) ref);
       source_ = b;
@@ -921,6 +933,191 @@ private static final long serialVersionUID = 0L;
   @java.lang.Override
   public name.abuchen.portfolio.model.proto.v1.PLocalDateTimeOrBuilder getExDateOrBuilder() {
     return exDate_ == null ? name.abuchen.portfolio.model.proto.v1.PLocalDateTime.getDefaultInstance() : exDate_;
+  }
+
+  public static final int TARGETSECURITY_FIELD_NUMBER = 19;
+  @SuppressWarnings("serial")
+  private volatile java.lang.Object targetSecurity_ = "";
+  /**
+   * <pre>
+   * Fund transfers use security/shares for the source side and these fields for the target side.
+   * </pre>
+   *
+   * <code>optional string targetSecurity = 19;</code>
+   * @return Whether the targetSecurity field is set.
+   */
+  @java.lang.Override
+  public boolean hasTargetSecurity() {
+    return ((bitField0_ & 0x00000800) != 0);
+  }
+  /**
+   * <pre>
+   * Fund transfers use security/shares for the source side and these fields for the target side.
+   * </pre>
+   *
+   * <code>optional string targetSecurity = 19;</code>
+   * @return The targetSecurity.
+   */
+  @java.lang.Override
+  public java.lang.String getTargetSecurity() {
+    java.lang.Object ref = targetSecurity_;
+    if (ref instanceof java.lang.String) {
+      return (java.lang.String) ref;
+    } else {
+      com.google.protobuf.ByteString bs =
+          (com.google.protobuf.ByteString) ref;
+      java.lang.String s = bs.toStringUtf8();
+      targetSecurity_ = s;
+      return s;
+    }
+  }
+  /**
+   * <pre>
+   * Fund transfers use security/shares for the source side and these fields for the target side.
+   * </pre>
+   *
+   * <code>optional string targetSecurity = 19;</code>
+   * @return The bytes for targetSecurity.
+   */
+  @java.lang.Override
+  public com.google.protobuf.ByteString
+      getTargetSecurityBytes() {
+    java.lang.Object ref = targetSecurity_;
+    if (ref instanceof java.lang.String) {
+      com.google.protobuf.ByteString b =
+          com.google.protobuf.ByteString.copyFromUtf8(
+              (java.lang.String) ref);
+      targetSecurity_ = b;
+      return b;
+    } else {
+      return (com.google.protobuf.ByteString) ref;
+    }
+  }
+
+  public static final int TARGETSHARES_FIELD_NUMBER = 20;
+  private long targetShares_ = 0L;
+  /**
+   * <code>optional int64 targetShares = 20;</code>
+   * @return Whether the targetShares field is set.
+   */
+  @java.lang.Override
+  public boolean hasTargetShares() {
+    return ((bitField0_ & 0x00001000) != 0);
+  }
+  /**
+   * <code>optional int64 targetShares = 20;</code>
+   * @return The targetShares.
+   */
+  @java.lang.Override
+  public long getTargetShares() {
+    return targetShares_;
+  }
+
+  public static final int CARRIEDLOTS_FIELD_NUMBER = 21;
+  @SuppressWarnings("serial")
+  private java.util.List<name.abuchen.portfolio.model.proto.v1.PFundTransferLot> carriedLots_;
+  /**
+   * <code>repeated .name.abuchen.portfolio.PFundTransferLot carriedLots = 21;</code>
+   */
+  @java.lang.Override
+  public java.util.List<name.abuchen.portfolio.model.proto.v1.PFundTransferLot> getCarriedLotsList() {
+    return carriedLots_;
+  }
+  /**
+   * <code>repeated .name.abuchen.portfolio.PFundTransferLot carriedLots = 21;</code>
+   */
+  @java.lang.Override
+  public java.util.List<? extends name.abuchen.portfolio.model.proto.v1.PFundTransferLotOrBuilder>
+      getCarriedLotsOrBuilderList() {
+    return carriedLots_;
+  }
+  /**
+   * <code>repeated .name.abuchen.portfolio.PFundTransferLot carriedLots = 21;</code>
+   */
+  @java.lang.Override
+  public int getCarriedLotsCount() {
+    return carriedLots_.size();
+  }
+  /**
+   * <code>repeated .name.abuchen.portfolio.PFundTransferLot carriedLots = 21;</code>
+   */
+  @java.lang.Override
+  public name.abuchen.portfolio.model.proto.v1.PFundTransferLot getCarriedLots(int index) {
+    return carriedLots_.get(index);
+  }
+  /**
+   * <code>repeated .name.abuchen.portfolio.PFundTransferLot carriedLots = 21;</code>
+   */
+  @java.lang.Override
+  public name.abuchen.portfolio.model.proto.v1.PFundTransferLotOrBuilder getCarriedLotsOrBuilder(
+      int index) {
+    return carriedLots_.get(index);
+  }
+
+  public static final int TARGETCURRENCYCODE_FIELD_NUMBER = 22;
+  @SuppressWarnings("serial")
+  private volatile java.lang.Object targetCurrencyCode_ = "";
+  /**
+   * <code>optional string targetCurrencyCode = 22;</code>
+   * @return Whether the targetCurrencyCode field is set.
+   */
+  @java.lang.Override
+  public boolean hasTargetCurrencyCode() {
+    return ((bitField0_ & 0x00002000) != 0);
+  }
+  /**
+   * <code>optional string targetCurrencyCode = 22;</code>
+   * @return The targetCurrencyCode.
+   */
+  @java.lang.Override
+  public java.lang.String getTargetCurrencyCode() {
+    java.lang.Object ref = targetCurrencyCode_;
+    if (ref instanceof java.lang.String) {
+      return (java.lang.String) ref;
+    } else {
+      com.google.protobuf.ByteString bs =
+          (com.google.protobuf.ByteString) ref;
+      java.lang.String s = bs.toStringUtf8();
+      targetCurrencyCode_ = s;
+      return s;
+    }
+  }
+  /**
+   * <code>optional string targetCurrencyCode = 22;</code>
+   * @return The bytes for targetCurrencyCode.
+   */
+  @java.lang.Override
+  public com.google.protobuf.ByteString
+      getTargetCurrencyCodeBytes() {
+    java.lang.Object ref = targetCurrencyCode_;
+    if (ref instanceof java.lang.String) {
+      com.google.protobuf.ByteString b =
+          com.google.protobuf.ByteString.copyFromUtf8(
+              (java.lang.String) ref);
+      targetCurrencyCode_ = b;
+      return b;
+    } else {
+      return (com.google.protobuf.ByteString) ref;
+    }
+  }
+
+  public static final int TARGETAMOUNT_FIELD_NUMBER = 23;
+  private long targetAmount_ = 0L;
+  /**
+   * <code>optional int64 targetAmount = 23;</code>
+   * @return Whether the targetAmount field is set.
+   */
+  @java.lang.Override
+  public boolean hasTargetAmount() {
+    return ((bitField0_ & 0x00004000) != 0);
+  }
+  /**
+   * <code>optional int64 targetAmount = 23;</code>
+   * @return The targetAmount.
+   */
+  @java.lang.Override
+  public long getTargetAmount() {
+    return targetAmount_;
   }
 
   private byte memoizedIsInitialized = -1;
@@ -990,6 +1187,21 @@ private static final long serialVersionUID = 0L;
     }
     if (((bitField0_ & 0x00000400) != 0)) {
       output.writeMessage(18, getExDate());
+    }
+    if (((bitField0_ & 0x00000800) != 0)) {
+      com.google.protobuf.GeneratedMessageV3.writeString(output, 19, targetSecurity_);
+    }
+    if (((bitField0_ & 0x00001000) != 0)) {
+      output.writeInt64(20, targetShares_);
+    }
+    for (int i = 0; i < carriedLots_.size(); i++) {
+      output.writeMessage(21, carriedLots_.get(i));
+    }
+    if (((bitField0_ & 0x00002000) != 0)) {
+      com.google.protobuf.GeneratedMessageV3.writeString(output, 22, targetCurrencyCode_);
+    }
+    if (((bitField0_ & 0x00004000) != 0)) {
+      output.writeInt64(23, targetAmount_);
     }
     getUnknownFields().writeTo(output);
   }
@@ -1061,6 +1273,24 @@ private static final long serialVersionUID = 0L;
     if (((bitField0_ & 0x00000400) != 0)) {
       size += com.google.protobuf.CodedOutputStream
         .computeMessageSize(18, getExDate());
+    }
+    if (((bitField0_ & 0x00000800) != 0)) {
+      size += com.google.protobuf.GeneratedMessageV3.computeStringSize(19, targetSecurity_);
+    }
+    if (((bitField0_ & 0x00001000) != 0)) {
+      size += com.google.protobuf.CodedOutputStream
+        .computeInt64Size(20, targetShares_);
+    }
+    for (int i = 0; i < carriedLots_.size(); i++) {
+      size += com.google.protobuf.CodedOutputStream
+        .computeMessageSize(21, carriedLots_.get(i));
+    }
+    if (((bitField0_ & 0x00002000) != 0)) {
+      size += com.google.protobuf.GeneratedMessageV3.computeStringSize(22, targetCurrencyCode_);
+    }
+    if (((bitField0_ & 0x00004000) != 0)) {
+      size += com.google.protobuf.CodedOutputStream
+        .computeInt64Size(23, targetAmount_);
     }
     size += getUnknownFields().getSerializedSize();
     memoizedSize = size;
@@ -1151,6 +1381,28 @@ private static final long serialVersionUID = 0L;
       if (!getExDate()
           .equals(other.getExDate())) return false;
     }
+    if (hasTargetSecurity() != other.hasTargetSecurity()) return false;
+    if (hasTargetSecurity()) {
+      if (!getTargetSecurity()
+          .equals(other.getTargetSecurity())) return false;
+    }
+    if (hasTargetShares() != other.hasTargetShares()) return false;
+    if (hasTargetShares()) {
+      if (getTargetShares()
+          != other.getTargetShares()) return false;
+    }
+    if (!getCarriedLotsList()
+        .equals(other.getCarriedLotsList())) return false;
+    if (hasTargetCurrencyCode() != other.hasTargetCurrencyCode()) return false;
+    if (hasTargetCurrencyCode()) {
+      if (!getTargetCurrencyCode()
+          .equals(other.getTargetCurrencyCode())) return false;
+    }
+    if (hasTargetAmount() != other.hasTargetAmount()) return false;
+    if (hasTargetAmount()) {
+      if (getTargetAmount()
+          != other.getTargetAmount()) return false;
+    }
     if (!getUnknownFields().equals(other.getUnknownFields())) return false;
     return true;
   }
@@ -1227,6 +1479,28 @@ private static final long serialVersionUID = 0L;
     if (hasExDate()) {
       hash = (37 * hash) + EXDATE_FIELD_NUMBER;
       hash = (53 * hash) + getExDate().hashCode();
+    }
+    if (hasTargetSecurity()) {
+      hash = (37 * hash) + TARGETSECURITY_FIELD_NUMBER;
+      hash = (53 * hash) + getTargetSecurity().hashCode();
+    }
+    if (hasTargetShares()) {
+      hash = (37 * hash) + TARGETSHARES_FIELD_NUMBER;
+      hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
+          getTargetShares());
+    }
+    if (getCarriedLotsCount() > 0) {
+      hash = (37 * hash) + CARRIEDLOTS_FIELD_NUMBER;
+      hash = (53 * hash) + getCarriedLotsList().hashCode();
+    }
+    if (hasTargetCurrencyCode()) {
+      hash = (37 * hash) + TARGETCURRENCYCODE_FIELD_NUMBER;
+      hash = (53 * hash) + getTargetCurrencyCode().hashCode();
+    }
+    if (hasTargetAmount()) {
+      hash = (37 * hash) + TARGETAMOUNT_FIELD_NUMBER;
+      hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
+          getTargetAmount());
     }
     hash = (29 * hash) + getUnknownFields().hashCode();
     memoizedHashCode = hash;
@@ -1361,6 +1635,7 @@ private static final long serialVersionUID = 0L;
         getUnitsFieldBuilder();
         getUpdatedAtFieldBuilder();
         getExDateFieldBuilder();
+        getCarriedLotsFieldBuilder();
       }
     }
     @java.lang.Override
@@ -1407,6 +1682,17 @@ private static final long serialVersionUID = 0L;
         exDateBuilder_.dispose();
         exDateBuilder_ = null;
       }
+      targetSecurity_ = "";
+      targetShares_ = 0L;
+      if (carriedLotsBuilder_ == null) {
+        carriedLots_ = java.util.Collections.emptyList();
+      } else {
+        carriedLots_ = null;
+        carriedLotsBuilder_.clear();
+      }
+      bitField0_ = (bitField0_ & ~0x00100000);
+      targetCurrencyCode_ = "";
+      targetAmount_ = 0L;
       return this;
     }
 
@@ -1448,6 +1734,15 @@ private static final long serialVersionUID = 0L;
         result.units_ = units_;
       } else {
         result.units_ = unitsBuilder_.build();
+      }
+      if (carriedLotsBuilder_ == null) {
+        if (((bitField0_ & 0x00100000) != 0)) {
+          carriedLots_ = java.util.Collections.unmodifiableList(carriedLots_);
+          bitField0_ = (bitField0_ & ~0x00100000);
+        }
+        result.carriedLots_ = carriedLots_;
+      } else {
+        result.carriedLots_ = carriedLotsBuilder_.build();
       }
     }
 
@@ -1523,6 +1818,22 @@ private static final long serialVersionUID = 0L;
             ? exDate_
             : exDateBuilder_.build();
         to_bitField0_ |= 0x00000400;
+      }
+      if (((from_bitField0_ & 0x00040000) != 0)) {
+        result.targetSecurity_ = targetSecurity_;
+        to_bitField0_ |= 0x00000800;
+      }
+      if (((from_bitField0_ & 0x00080000) != 0)) {
+        result.targetShares_ = targetShares_;
+        to_bitField0_ |= 0x00001000;
+      }
+      if (((from_bitField0_ & 0x00200000) != 0)) {
+        result.targetCurrencyCode_ = targetCurrencyCode_;
+        to_bitField0_ |= 0x00002000;
+      }
+      if (((from_bitField0_ & 0x00400000) != 0)) {
+        result.targetAmount_ = targetAmount_;
+        to_bitField0_ |= 0x00004000;
       }
       result.bitField0_ |= to_bitField0_;
     }
@@ -1617,7 +1928,7 @@ private static final long serialVersionUID = 0L;
             unitsBuilder_ = null;
             units_ = other.units_;
             bitField0_ = (bitField0_ & ~0x00004000);
-            unitsBuilder_ = 
+            unitsBuilder_ =
               com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
                  getUnitsFieldBuilder() : null;
           } else {
@@ -1635,6 +1946,48 @@ private static final long serialVersionUID = 0L;
       }
       if (other.hasExDate()) {
         mergeExDate(other.getExDate());
+      }
+      if (other.hasTargetSecurity()) {
+        targetSecurity_ = other.targetSecurity_;
+        bitField0_ |= 0x00040000;
+        onChanged();
+      }
+      if (other.hasTargetShares()) {
+        setTargetShares(other.getTargetShares());
+      }
+      if (carriedLotsBuilder_ == null) {
+        if (!other.carriedLots_.isEmpty()) {
+          if (carriedLots_.isEmpty()) {
+            carriedLots_ = other.carriedLots_;
+            bitField0_ = (bitField0_ & ~0x00100000);
+          } else {
+            ensureCarriedLotsIsMutable();
+            carriedLots_.addAll(other.carriedLots_);
+          }
+          onChanged();
+        }
+      } else {
+        if (!other.carriedLots_.isEmpty()) {
+          if (carriedLotsBuilder_.isEmpty()) {
+            carriedLotsBuilder_.dispose();
+            carriedLotsBuilder_ = null;
+            carriedLots_ = other.carriedLots_;
+            bitField0_ = (bitField0_ & ~0x00100000);
+            carriedLotsBuilder_ =
+              com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
+                 getCarriedLotsFieldBuilder() : null;
+          } else {
+            carriedLotsBuilder_.addAllMessages(other.carriedLots_);
+          }
+        }
+      }
+      if (other.hasTargetCurrencyCode()) {
+        targetCurrencyCode_ = other.targetCurrencyCode_;
+        bitField0_ |= 0x00200000;
+        onChanged();
+      }
+      if (other.hasTargetAmount()) {
+        setTargetAmount(other.getTargetAmount());
       }
       this.mergeUnknownFields(other.getUnknownFields());
       onChanged();
@@ -1768,6 +2121,39 @@ private static final long serialVersionUID = 0L;
               bitField0_ |= 0x00020000;
               break;
             } // case 146
+            case 154: {
+              targetSecurity_ = input.readStringRequireUtf8();
+              bitField0_ |= 0x00040000;
+              break;
+            } // case 154
+            case 160: {
+              targetShares_ = input.readInt64();
+              bitField0_ |= 0x00080000;
+              break;
+            } // case 160
+            case 170: {
+              name.abuchen.portfolio.model.proto.v1.PFundTransferLot m =
+                  input.readMessage(
+                      name.abuchen.portfolio.model.proto.v1.PFundTransferLot.parser(),
+                      extensionRegistry);
+              if (carriedLotsBuilder_ == null) {
+                ensureCarriedLotsIsMutable();
+                carriedLots_.add(m);
+              } else {
+                carriedLotsBuilder_.addMessage(m);
+              }
+              break;
+            } // case 170
+            case 178: {
+              targetCurrencyCode_ = input.readStringRequireUtf8();
+              bitField0_ |= 0x00200000;
+              break;
+            } // case 178
+            case 184: {
+              targetAmount_ = input.readInt64();
+              bitField0_ |= 0x00400000;
+              break;
+            } // case 184
             default: {
               if (!super.parseUnknownField(input, extensionRegistry, tag)) {
                 done = true; // was an endgroup tag
@@ -1810,7 +2196,7 @@ private static final long serialVersionUID = 0L;
         getUuidBytes() {
       java.lang.Object ref = uuid_;
       if (ref instanceof String) {
-        com.google.protobuf.ByteString b = 
+        com.google.protobuf.ByteString b =
             com.google.protobuf.ByteString.copyFromUtf8(
                 (java.lang.String) ref);
         uuid_ = b;
@@ -1942,7 +2328,7 @@ private static final long serialVersionUID = 0L;
         getAccountBytes() {
       java.lang.Object ref = account_;
       if (ref instanceof String) {
-        com.google.protobuf.ByteString b = 
+        com.google.protobuf.ByteString b =
             com.google.protobuf.ByteString.copyFromUtf8(
                 (java.lang.String) ref);
         account_ = b;
@@ -2021,7 +2407,7 @@ private static final long serialVersionUID = 0L;
         getPortfolioBytes() {
       java.lang.Object ref = portfolio_;
       if (ref instanceof String) {
-        com.google.protobuf.ByteString b = 
+        com.google.protobuf.ByteString b =
             com.google.protobuf.ByteString.copyFromUtf8(
                 (java.lang.String) ref);
         portfolio_ = b;
@@ -2100,7 +2486,7 @@ private static final long serialVersionUID = 0L;
         getOtherAccountBytes() {
       java.lang.Object ref = otherAccount_;
       if (ref instanceof String) {
-        com.google.protobuf.ByteString b = 
+        com.google.protobuf.ByteString b =
             com.google.protobuf.ByteString.copyFromUtf8(
                 (java.lang.String) ref);
         otherAccount_ = b;
@@ -2179,7 +2565,7 @@ private static final long serialVersionUID = 0L;
         getOtherPortfolioBytes() {
       java.lang.Object ref = otherPortfolio_;
       if (ref instanceof String) {
-        com.google.protobuf.ByteString b = 
+        com.google.protobuf.ByteString b =
             com.google.protobuf.ByteString.copyFromUtf8(
                 (java.lang.String) ref);
         otherPortfolio_ = b;
@@ -2258,7 +2644,7 @@ private static final long serialVersionUID = 0L;
         getOtherUuidBytes() {
       java.lang.Object ref = otherUuid_;
       if (ref instanceof String) {
-        com.google.protobuf.ByteString b = 
+        com.google.protobuf.ByteString b =
             com.google.protobuf.ByteString.copyFromUtf8(
                 (java.lang.String) ref);
         otherUuid_ = b;
@@ -2411,7 +2797,7 @@ private static final long serialVersionUID = 0L;
      * <code>optional .google.protobuf.Timestamp otherUpdatedAt = 8;</code>
      */
     private com.google.protobuf.SingleFieldBuilderV3<
-        com.google.protobuf.Timestamp, com.google.protobuf.Timestamp.Builder, com.google.protobuf.TimestampOrBuilder> 
+        com.google.protobuf.Timestamp, com.google.protobuf.Timestamp.Builder, com.google.protobuf.TimestampOrBuilder>
         getOtherUpdatedAtFieldBuilder() {
       if (otherUpdatedAtBuilder_ == null) {
         otherUpdatedAtBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
@@ -2530,7 +2916,7 @@ private static final long serialVersionUID = 0L;
      * <code>.google.protobuf.Timestamp date = 9;</code>
      */
     private com.google.protobuf.SingleFieldBuilderV3<
-        com.google.protobuf.Timestamp, com.google.protobuf.Timestamp.Builder, com.google.protobuf.TimestampOrBuilder> 
+        com.google.protobuf.Timestamp, com.google.protobuf.Timestamp.Builder, com.google.protobuf.TimestampOrBuilder>
         getDateFieldBuilder() {
       if (dateBuilder_ == null) {
         dateBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
@@ -2568,7 +2954,7 @@ private static final long serialVersionUID = 0L;
         getCurrencyCodeBytes() {
       java.lang.Object ref = currencyCode_;
       if (ref instanceof String) {
-        com.google.protobuf.ByteString b = 
+        com.google.protobuf.ByteString b =
             com.google.protobuf.ByteString.copyFromUtf8(
                 (java.lang.String) ref);
         currencyCode_ = b;
@@ -2719,7 +3105,7 @@ private static final long serialVersionUID = 0L;
         getNoteBytes() {
       java.lang.Object ref = note_;
       if (ref instanceof String) {
-        com.google.protobuf.ByteString b = 
+        com.google.protobuf.ByteString b =
             com.google.protobuf.ByteString.copyFromUtf8(
                 (java.lang.String) ref);
         note_ = b;
@@ -2798,7 +3184,7 @@ private static final long serialVersionUID = 0L;
         getSecurityBytes() {
       java.lang.Object ref = security_;
       if (ref instanceof String) {
-        com.google.protobuf.ByteString b = 
+        com.google.protobuf.ByteString b =
             com.google.protobuf.ByteString.copyFromUtf8(
                 (java.lang.String) ref);
         security_ = b;
@@ -3040,7 +3426,7 @@ private static final long serialVersionUID = 0L;
     /**
      * <code>repeated .name.abuchen.portfolio.PTransactionUnit units = 15;</code>
      */
-    public java.util.List<? extends name.abuchen.portfolio.model.proto.v1.PTransactionUnitOrBuilder> 
+    public java.util.List<? extends name.abuchen.portfolio.model.proto.v1.PTransactionUnitOrBuilder>
          getUnitsOrBuilderList() {
       if (unitsBuilder_ != null) {
         return unitsBuilder_.getMessageOrBuilderList();
@@ -3066,12 +3452,12 @@ private static final long serialVersionUID = 0L;
     /**
      * <code>repeated .name.abuchen.portfolio.PTransactionUnit units = 15;</code>
      */
-    public java.util.List<name.abuchen.portfolio.model.proto.v1.PTransactionUnit.Builder> 
+    public java.util.List<name.abuchen.portfolio.model.proto.v1.PTransactionUnit.Builder>
          getUnitsBuilderList() {
       return getUnitsFieldBuilder().getBuilderList();
     }
     private com.google.protobuf.RepeatedFieldBuilderV3<
-        name.abuchen.portfolio.model.proto.v1.PTransactionUnit, name.abuchen.portfolio.model.proto.v1.PTransactionUnit.Builder, name.abuchen.portfolio.model.proto.v1.PTransactionUnitOrBuilder> 
+        name.abuchen.portfolio.model.proto.v1.PTransactionUnit, name.abuchen.portfolio.model.proto.v1.PTransactionUnit.Builder, name.abuchen.portfolio.model.proto.v1.PTransactionUnitOrBuilder>
         getUnitsFieldBuilder() {
       if (unitsBuilder_ == null) {
         unitsBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
@@ -3191,7 +3577,7 @@ private static final long serialVersionUID = 0L;
      * <code>.google.protobuf.Timestamp updatedAt = 16;</code>
      */
     private com.google.protobuf.SingleFieldBuilderV3<
-        com.google.protobuf.Timestamp, com.google.protobuf.Timestamp.Builder, com.google.protobuf.TimestampOrBuilder> 
+        com.google.protobuf.Timestamp, com.google.protobuf.Timestamp.Builder, com.google.protobuf.TimestampOrBuilder>
         getUpdatedAtFieldBuilder() {
       if (updatedAtBuilder_ == null) {
         updatedAtBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
@@ -3236,7 +3622,7 @@ private static final long serialVersionUID = 0L;
         getSourceBytes() {
       java.lang.Object ref = source_;
       if (ref instanceof String) {
-        com.google.protobuf.ByteString b = 
+        com.google.protobuf.ByteString b =
             com.google.protobuf.ByteString.copyFromUtf8(
                 (java.lang.String) ref);
         source_ = b;
@@ -3389,7 +3775,7 @@ private static final long serialVersionUID = 0L;
      * <code>optional .name.abuchen.portfolio.PLocalDateTime exDate = 18;</code>
      */
     private com.google.protobuf.SingleFieldBuilderV3<
-        name.abuchen.portfolio.model.proto.v1.PLocalDateTime, name.abuchen.portfolio.model.proto.v1.PLocalDateTime.Builder, name.abuchen.portfolio.model.proto.v1.PLocalDateTimeOrBuilder> 
+        name.abuchen.portfolio.model.proto.v1.PLocalDateTime, name.abuchen.portfolio.model.proto.v1.PLocalDateTime.Builder, name.abuchen.portfolio.model.proto.v1.PLocalDateTimeOrBuilder>
         getExDateFieldBuilder() {
       if (exDateBuilder_ == null) {
         exDateBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
@@ -3400,6 +3786,508 @@ private static final long serialVersionUID = 0L;
         exDate_ = null;
       }
       return exDateBuilder_;
+    }
+
+    private java.lang.Object targetSecurity_ = "";
+    /**
+     * <pre>
+     * Fund transfers use security/shares for the source side and these fields for the target side.
+     * </pre>
+     *
+     * <code>optional string targetSecurity = 19;</code>
+     * @return Whether the targetSecurity field is set.
+     */
+    public boolean hasTargetSecurity() {
+      return ((bitField0_ & 0x00040000) != 0);
+    }
+    /**
+     * <pre>
+     * Fund transfers use security/shares for the source side and these fields for the target side.
+     * </pre>
+     *
+     * <code>optional string targetSecurity = 19;</code>
+     * @return The targetSecurity.
+     */
+    public java.lang.String getTargetSecurity() {
+      java.lang.Object ref = targetSecurity_;
+      if (!(ref instanceof java.lang.String)) {
+        com.google.protobuf.ByteString bs =
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        targetSecurity_ = s;
+        return s;
+      } else {
+        return (java.lang.String) ref;
+      }
+    }
+    /**
+     * <pre>
+     * Fund transfers use security/shares for the source side and these fields for the target side.
+     * </pre>
+     *
+     * <code>optional string targetSecurity = 19;</code>
+     * @return The bytes for targetSecurity.
+     */
+    public com.google.protobuf.ByteString
+        getTargetSecurityBytes() {
+      java.lang.Object ref = targetSecurity_;
+      if (ref instanceof String) {
+        com.google.protobuf.ByteString b =
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        targetSecurity_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+    /**
+     * <pre>
+     * Fund transfers use security/shares for the source side and these fields for the target side.
+     * </pre>
+     *
+     * <code>optional string targetSecurity = 19;</code>
+     * @param value The targetSecurity to set.
+     * @return This builder for chaining.
+     */
+    public Builder setTargetSecurity(
+        java.lang.String value) {
+      if (value == null) { throw new NullPointerException(); }
+      targetSecurity_ = value;
+      bitField0_ |= 0x00040000;
+      onChanged();
+      return this;
+    }
+    /**
+     * <pre>
+     * Fund transfers use security/shares for the source side and these fields for the target side.
+     * </pre>
+     *
+     * <code>optional string targetSecurity = 19;</code>
+     * @return This builder for chaining.
+     */
+    public Builder clearTargetSecurity() {
+      targetSecurity_ = getDefaultInstance().getTargetSecurity();
+      bitField0_ = (bitField0_ & ~0x00040000);
+      onChanged();
+      return this;
+    }
+    /**
+     * <pre>
+     * Fund transfers use security/shares for the source side and these fields for the target side.
+     * </pre>
+     *
+     * <code>optional string targetSecurity = 19;</code>
+     * @param value The bytes for targetSecurity to set.
+     * @return This builder for chaining.
+     */
+    public Builder setTargetSecurityBytes(
+        com.google.protobuf.ByteString value) {
+      if (value == null) { throw new NullPointerException(); }
+      checkByteStringIsUtf8(value);
+      targetSecurity_ = value;
+      bitField0_ |= 0x00040000;
+      onChanged();
+      return this;
+    }
+
+    private long targetShares_ ;
+    /**
+     * <code>optional int64 targetShares = 20;</code>
+     * @return Whether the targetShares field is set.
+     */
+    @java.lang.Override
+    public boolean hasTargetShares() {
+      return ((bitField0_ & 0x00080000) != 0);
+    }
+    /**
+     * <code>optional int64 targetShares = 20;</code>
+     * @return The targetShares.
+     */
+    @java.lang.Override
+    public long getTargetShares() {
+      return targetShares_;
+    }
+    /**
+     * <code>optional int64 targetShares = 20;</code>
+     * @param value The targetShares to set.
+     * @return This builder for chaining.
+     */
+    public Builder setTargetShares(long value) {
+
+      targetShares_ = value;
+      bitField0_ |= 0x00080000;
+      onChanged();
+      return this;
+    }
+    /**
+     * <code>optional int64 targetShares = 20;</code>
+     * @return This builder for chaining.
+     */
+    public Builder clearTargetShares() {
+      bitField0_ = (bitField0_ & ~0x00080000);
+      targetShares_ = 0L;
+      onChanged();
+      return this;
+    }
+
+    private java.util.List<name.abuchen.portfolio.model.proto.v1.PFundTransferLot> carriedLots_ =
+      java.util.Collections.emptyList();
+    private void ensureCarriedLotsIsMutable() {
+      if (!((bitField0_ & 0x00100000) != 0)) {
+        carriedLots_ = new java.util.ArrayList<name.abuchen.portfolio.model.proto.v1.PFundTransferLot>(carriedLots_);
+        bitField0_ |= 0x00100000;
+       }
+    }
+
+    private com.google.protobuf.RepeatedFieldBuilderV3<
+        name.abuchen.portfolio.model.proto.v1.PFundTransferLot, name.abuchen.portfolio.model.proto.v1.PFundTransferLot.Builder, name.abuchen.portfolio.model.proto.v1.PFundTransferLotOrBuilder> carriedLotsBuilder_;
+
+    /**
+     * <code>repeated .name.abuchen.portfolio.PFundTransferLot carriedLots = 21;</code>
+     */
+    public java.util.List<name.abuchen.portfolio.model.proto.v1.PFundTransferLot> getCarriedLotsList() {
+      if (carriedLotsBuilder_ == null) {
+        return java.util.Collections.unmodifiableList(carriedLots_);
+      } else {
+        return carriedLotsBuilder_.getMessageList();
+      }
+    }
+    /**
+     * <code>repeated .name.abuchen.portfolio.PFundTransferLot carriedLots = 21;</code>
+     */
+    public int getCarriedLotsCount() {
+      if (carriedLotsBuilder_ == null) {
+        return carriedLots_.size();
+      } else {
+        return carriedLotsBuilder_.getCount();
+      }
+    }
+    /**
+     * <code>repeated .name.abuchen.portfolio.PFundTransferLot carriedLots = 21;</code>
+     */
+    public name.abuchen.portfolio.model.proto.v1.PFundTransferLot getCarriedLots(int index) {
+      if (carriedLotsBuilder_ == null) {
+        return carriedLots_.get(index);
+      } else {
+        return carriedLotsBuilder_.getMessage(index);
+      }
+    }
+    /**
+     * <code>repeated .name.abuchen.portfolio.PFundTransferLot carriedLots = 21;</code>
+     */
+    public Builder setCarriedLots(
+        int index, name.abuchen.portfolio.model.proto.v1.PFundTransferLot value) {
+      if (carriedLotsBuilder_ == null) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        ensureCarriedLotsIsMutable();
+        carriedLots_.set(index, value);
+        onChanged();
+      } else {
+        carriedLotsBuilder_.setMessage(index, value);
+      }
+      return this;
+    }
+    /**
+     * <code>repeated .name.abuchen.portfolio.PFundTransferLot carriedLots = 21;</code>
+     */
+    public Builder setCarriedLots(
+        int index, name.abuchen.portfolio.model.proto.v1.PFundTransferLot.Builder builderForValue) {
+      if (carriedLotsBuilder_ == null) {
+        ensureCarriedLotsIsMutable();
+        carriedLots_.set(index, builderForValue.build());
+        onChanged();
+      } else {
+        carriedLotsBuilder_.setMessage(index, builderForValue.build());
+      }
+      return this;
+    }
+    /**
+     * <code>repeated .name.abuchen.portfolio.PFundTransferLot carriedLots = 21;</code>
+     */
+    public Builder addCarriedLots(name.abuchen.portfolio.model.proto.v1.PFundTransferLot value) {
+      if (carriedLotsBuilder_ == null) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        ensureCarriedLotsIsMutable();
+        carriedLots_.add(value);
+        onChanged();
+      } else {
+        carriedLotsBuilder_.addMessage(value);
+      }
+      return this;
+    }
+    /**
+     * <code>repeated .name.abuchen.portfolio.PFundTransferLot carriedLots = 21;</code>
+     */
+    public Builder addCarriedLots(
+        int index, name.abuchen.portfolio.model.proto.v1.PFundTransferLot value) {
+      if (carriedLotsBuilder_ == null) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        ensureCarriedLotsIsMutable();
+        carriedLots_.add(index, value);
+        onChanged();
+      } else {
+        carriedLotsBuilder_.addMessage(index, value);
+      }
+      return this;
+    }
+    /**
+     * <code>repeated .name.abuchen.portfolio.PFundTransferLot carriedLots = 21;</code>
+     */
+    public Builder addCarriedLots(
+        name.abuchen.portfolio.model.proto.v1.PFundTransferLot.Builder builderForValue) {
+      if (carriedLotsBuilder_ == null) {
+        ensureCarriedLotsIsMutable();
+        carriedLots_.add(builderForValue.build());
+        onChanged();
+      } else {
+        carriedLotsBuilder_.addMessage(builderForValue.build());
+      }
+      return this;
+    }
+    /**
+     * <code>repeated .name.abuchen.portfolio.PFundTransferLot carriedLots = 21;</code>
+     */
+    public Builder addCarriedLots(
+        int index, name.abuchen.portfolio.model.proto.v1.PFundTransferLot.Builder builderForValue) {
+      if (carriedLotsBuilder_ == null) {
+        ensureCarriedLotsIsMutable();
+        carriedLots_.add(index, builderForValue.build());
+        onChanged();
+      } else {
+        carriedLotsBuilder_.addMessage(index, builderForValue.build());
+      }
+      return this;
+    }
+    /**
+     * <code>repeated .name.abuchen.portfolio.PFundTransferLot carriedLots = 21;</code>
+     */
+    public Builder addAllCarriedLots(
+        java.lang.Iterable<? extends name.abuchen.portfolio.model.proto.v1.PFundTransferLot> values) {
+      if (carriedLotsBuilder_ == null) {
+        ensureCarriedLotsIsMutable();
+        com.google.protobuf.AbstractMessageLite.Builder.addAll(
+            values, carriedLots_);
+        onChanged();
+      } else {
+        carriedLotsBuilder_.addAllMessages(values);
+      }
+      return this;
+    }
+    /**
+     * <code>repeated .name.abuchen.portfolio.PFundTransferLot carriedLots = 21;</code>
+     */
+    public Builder clearCarriedLots() {
+      if (carriedLotsBuilder_ == null) {
+        carriedLots_ = java.util.Collections.emptyList();
+        bitField0_ = (bitField0_ & ~0x00100000);
+        onChanged();
+      } else {
+        carriedLotsBuilder_.clear();
+      }
+      return this;
+    }
+    /**
+     * <code>repeated .name.abuchen.portfolio.PFundTransferLot carriedLots = 21;</code>
+     */
+    public Builder removeCarriedLots(int index) {
+      if (carriedLotsBuilder_ == null) {
+        ensureCarriedLotsIsMutable();
+        carriedLots_.remove(index);
+        onChanged();
+      } else {
+        carriedLotsBuilder_.remove(index);
+      }
+      return this;
+    }
+    /**
+     * <code>repeated .name.abuchen.portfolio.PFundTransferLot carriedLots = 21;</code>
+     */
+    public name.abuchen.portfolio.model.proto.v1.PFundTransferLot.Builder getCarriedLotsBuilder(
+        int index) {
+      return getCarriedLotsFieldBuilder().getBuilder(index);
+    }
+    /**
+     * <code>repeated .name.abuchen.portfolio.PFundTransferLot carriedLots = 21;</code>
+     */
+    public name.abuchen.portfolio.model.proto.v1.PFundTransferLotOrBuilder getCarriedLotsOrBuilder(
+        int index) {
+      if (carriedLotsBuilder_ == null) {
+        return carriedLots_.get(index);  } else {
+        return carriedLotsBuilder_.getMessageOrBuilder(index);
+      }
+    }
+    /**
+     * <code>repeated .name.abuchen.portfolio.PFundTransferLot carriedLots = 21;</code>
+     */
+    public java.util.List<? extends name.abuchen.portfolio.model.proto.v1.PFundTransferLotOrBuilder>
+         getCarriedLotsOrBuilderList() {
+      if (carriedLotsBuilder_ != null) {
+        return carriedLotsBuilder_.getMessageOrBuilderList();
+      } else {
+        return java.util.Collections.unmodifiableList(carriedLots_);
+      }
+    }
+    /**
+     * <code>repeated .name.abuchen.portfolio.PFundTransferLot carriedLots = 21;</code>
+     */
+    public name.abuchen.portfolio.model.proto.v1.PFundTransferLot.Builder addCarriedLotsBuilder() {
+      return getCarriedLotsFieldBuilder().addBuilder(
+          name.abuchen.portfolio.model.proto.v1.PFundTransferLot.getDefaultInstance());
+    }
+    /**
+     * <code>repeated .name.abuchen.portfolio.PFundTransferLot carriedLots = 21;</code>
+     */
+    public name.abuchen.portfolio.model.proto.v1.PFundTransferLot.Builder addCarriedLotsBuilder(
+        int index) {
+      return getCarriedLotsFieldBuilder().addBuilder(
+          index, name.abuchen.portfolio.model.proto.v1.PFundTransferLot.getDefaultInstance());
+    }
+    /**
+     * <code>repeated .name.abuchen.portfolio.PFundTransferLot carriedLots = 21;</code>
+     */
+    public java.util.List<name.abuchen.portfolio.model.proto.v1.PFundTransferLot.Builder>
+         getCarriedLotsBuilderList() {
+      return getCarriedLotsFieldBuilder().getBuilderList();
+    }
+    private com.google.protobuf.RepeatedFieldBuilderV3<
+        name.abuchen.portfolio.model.proto.v1.PFundTransferLot, name.abuchen.portfolio.model.proto.v1.PFundTransferLot.Builder, name.abuchen.portfolio.model.proto.v1.PFundTransferLotOrBuilder>
+        getCarriedLotsFieldBuilder() {
+      if (carriedLotsBuilder_ == null) {
+        carriedLotsBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
+            name.abuchen.portfolio.model.proto.v1.PFundTransferLot, name.abuchen.portfolio.model.proto.v1.PFundTransferLot.Builder, name.abuchen.portfolio.model.proto.v1.PFundTransferLotOrBuilder>(
+                carriedLots_,
+                ((bitField0_ & 0x00100000) != 0),
+                getParentForChildren(),
+                isClean());
+        carriedLots_ = null;
+      }
+      return carriedLotsBuilder_;
+    }
+
+    private java.lang.Object targetCurrencyCode_ = "";
+    /**
+     * <code>optional string targetCurrencyCode = 22;</code>
+     * @return Whether the targetCurrencyCode field is set.
+     */
+    public boolean hasTargetCurrencyCode() {
+      return ((bitField0_ & 0x00200000) != 0);
+    }
+    /**
+     * <code>optional string targetCurrencyCode = 22;</code>
+     * @return The targetCurrencyCode.
+     */
+    public java.lang.String getTargetCurrencyCode() {
+      java.lang.Object ref = targetCurrencyCode_;
+      if (!(ref instanceof java.lang.String)) {
+        com.google.protobuf.ByteString bs =
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        targetCurrencyCode_ = s;
+        return s;
+      } else {
+        return (java.lang.String) ref;
+      }
+    }
+    /**
+     * <code>optional string targetCurrencyCode = 22;</code>
+     * @return The bytes for targetCurrencyCode.
+     */
+    public com.google.protobuf.ByteString
+        getTargetCurrencyCodeBytes() {
+      java.lang.Object ref = targetCurrencyCode_;
+      if (ref instanceof String) {
+        com.google.protobuf.ByteString b =
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        targetCurrencyCode_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+    /**
+     * <code>optional string targetCurrencyCode = 22;</code>
+     * @param value The targetCurrencyCode to set.
+     * @return This builder for chaining.
+     */
+    public Builder setTargetCurrencyCode(
+        java.lang.String value) {
+      if (value == null) { throw new NullPointerException(); }
+      targetCurrencyCode_ = value;
+      bitField0_ |= 0x00200000;
+      onChanged();
+      return this;
+    }
+    /**
+     * <code>optional string targetCurrencyCode = 22;</code>
+     * @return This builder for chaining.
+     */
+    public Builder clearTargetCurrencyCode() {
+      targetCurrencyCode_ = getDefaultInstance().getTargetCurrencyCode();
+      bitField0_ = (bitField0_ & ~0x00200000);
+      onChanged();
+      return this;
+    }
+    /**
+     * <code>optional string targetCurrencyCode = 22;</code>
+     * @param value The bytes for targetCurrencyCode to set.
+     * @return This builder for chaining.
+     */
+    public Builder setTargetCurrencyCodeBytes(
+        com.google.protobuf.ByteString value) {
+      if (value == null) { throw new NullPointerException(); }
+      checkByteStringIsUtf8(value);
+      targetCurrencyCode_ = value;
+      bitField0_ |= 0x00200000;
+      onChanged();
+      return this;
+    }
+
+    private long targetAmount_ ;
+    /**
+     * <code>optional int64 targetAmount = 23;</code>
+     * @return Whether the targetAmount field is set.
+     */
+    @java.lang.Override
+    public boolean hasTargetAmount() {
+      return ((bitField0_ & 0x00400000) != 0);
+    }
+    /**
+     * <code>optional int64 targetAmount = 23;</code>
+     * @return The targetAmount.
+     */
+    @java.lang.Override
+    public long getTargetAmount() {
+      return targetAmount_;
+    }
+    /**
+     * <code>optional int64 targetAmount = 23;</code>
+     * @param value The targetAmount to set.
+     * @return This builder for chaining.
+     */
+    public Builder setTargetAmount(long value) {
+
+      targetAmount_ = value;
+      bitField0_ |= 0x00400000;
+      onChanged();
+      return this;
+    }
+    /**
+     * <code>optional int64 targetAmount = 23;</code>
+     * @return This builder for chaining.
+     */
+    public Builder clearTargetAmount() {
+      bitField0_ = (bitField0_ & ~0x00400000);
+      targetAmount_ = 0L;
+      onChanged();
+      return this;
     }
     @java.lang.Override
     public final Builder setUnknownFields(
@@ -3464,4 +4352,3 @@ private static final long serialVersionUID = 0L;
   }
 
 }
-

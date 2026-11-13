@@ -8,6 +8,7 @@ import java.util.stream.Stream;
 
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
+import name.abuchen.portfolio.model.FundTransferEntry;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.TransactionOwner;
@@ -18,7 +19,7 @@ public class JTransaction
 {
     public enum Type
     {
-        PURCHASE, SALE, INBOUND_DELIVERY, OUTBOUND_DELIVERY, SECURITY_TRANSFER, CASH_TRANSFER, DEPOSIT, REMOVAL, DIVIDEND, INTEREST, INTEREST_CHARGE, TAX, TAX_REFUND, FEE, FEE_REFUND
+        PURCHASE, SALE, INBOUND_DELIVERY, OUTBOUND_DELIVERY, SECURITY_TRANSFER, FUND_TRANSFER, CASH_TRANSFER, DEPOSIT, REMOVAL, DIVIDEND, INTEREST, INTEREST_CHARGE, TAX, TAX_REFUND, FEE, FEE_REFUND
     }
 
     private Type type;
@@ -39,6 +40,12 @@ public class JTransaction
     private Double shares;
 
     private JSecurity security;
+    private JSecurity targetSecurity;
+    private Double targetShares;
+    private String targetCurrency;
+    private Double targetAmount;
+
+    private List<JFundTransferLot> carriedLots;
 
     private List<JTransactionUnit> units;
 
@@ -162,6 +169,41 @@ public class JTransaction
         this.security = security;
     }
 
+    public JSecurity getTargetSecurity()
+    {
+        return targetSecurity;
+    }
+
+    public void setTargetSecurity(JSecurity targetSecurity)
+    {
+        this.targetSecurity = targetSecurity;
+    }
+
+    public double getTargetShares()
+    {
+        return targetShares;
+    }
+
+    public void setTargetShares(double targetShares)
+    {
+        this.targetShares = targetShares;
+    }
+
+    public String getTargetCurrency()
+    {
+        return targetCurrency;
+    }
+
+    public double getTargetAmount()
+    {
+        return targetAmount;
+    }
+
+    public Stream<JFundTransferLot> getCarriedLots()
+    {
+        return carriedLots == null ? Stream.empty() : carriedLots.stream();
+    }
+
     public Stream<JTransactionUnit> getUnits()
     {
         return units == null ? Stream.empty() : units.stream();
@@ -201,15 +243,32 @@ public class JTransaction
 
         jtx.setNote(transaction.getTransaction().getNote());
 
-        if (transaction.getTransaction().getSecurity() != null)
+        if (jtx.security == null && transaction.getTransaction().getSecurity() != null)
             jtx.setSecurity(JSecurity.from(transaction.getTransaction().getSecurity()));
 
-        if (transaction.getTransaction().getShares() != 0)
+        if (jtx.shares == null && transaction.getTransaction().getShares() != 0)
             jtx.shares = transaction.getTransaction().getShares() / Values.Share.divider();
 
         transaction.getTransaction().getUnits().map(JTransactionUnit::from).forEach(jtx::addUnit);
 
+        if (transaction.getTransaction().getCrossEntry() instanceof FundTransferEntry entry)
+            fillFundTransferDetails(entry, jtx);
+
         return jtx;
+    }
+
+    private static void fillFundTransferDetails(FundTransferEntry entry, JTransaction transaction)
+    {
+        PortfolioTransaction source = entry.getSourceTransaction();
+        PortfolioTransaction target = entry.getTargetTransaction();
+
+        transaction.currency = source.getCurrencyCode();
+        transaction.amount = source.getAmount() / Values.Amount.divider();
+        transaction.targetCurrency = target.getCurrencyCode();
+        transaction.targetAmount = target.getAmount() / Values.Amount.divider();
+        transaction.carriedLots = entry.getCarriedLots().stream().map(JFundTransferLot::from).toList();
+        transaction.units = null;
+        source.getUnits().map(JTransactionUnit::from).forEach(transaction::addUnit);
     }
 
     private static void fillFromAccountTransaction(TransactionPair<AccountTransaction> tx, JTransaction jtx)
@@ -302,6 +361,31 @@ public class JTransaction
                 jtx.otherPortfolio = jtx.portfolio;
                 jtx.portfolio = transaction.getTransaction().getCrossEntry().getCrossOwner(transaction.getTransaction())
                                 .toString();
+                break;
+            case FUND_TRANSFER_OUT:
+                jtx.type = JTransaction.Type.FUND_TRANSFER;
+                jtx.otherPortfolio = transaction.getTransaction().getCrossEntry()
+                                .getCrossOwner(transaction.getTransaction()).toString();
+
+                PortfolioTransaction targetTransaction = (PortfolioTransaction) transaction.getTransaction()
+                                .getCrossEntry().getCrossTransaction(transaction.getTransaction());
+                jtx.targetSecurity = JSecurity.from(targetTransaction.getSecurity());
+                jtx.targetShares = targetTransaction.getShares() / Values.Share.divider();
+                break;
+            case FUND_TRANSFER_IN:
+                jtx.type = JTransaction.Type.FUND_TRANSFER;
+                jtx.otherPortfolio = jtx.portfolio;
+                jtx.portfolio = transaction.getTransaction().getCrossEntry().getCrossOwner(transaction.getTransaction())
+                                .toString();
+
+                PortfolioTransaction sourceTransaction = (PortfolioTransaction) transaction.getTransaction()
+                                .getCrossEntry().getCrossTransaction(transaction.getTransaction());
+                // Export fund transfers from the source side even when the
+                // caller provides the inbound target transaction.
+                jtx.security = JSecurity.from(sourceTransaction.getSecurity());
+                jtx.shares = sourceTransaction.getShares() / Values.Share.divider();
+                jtx.targetSecurity = JSecurity.from(transaction.getTransaction().getSecurity());
+                jtx.targetShares = transaction.getTransaction().getShares() / Values.Share.divider();
                 break;
             case DELIVERY_INBOUND:
                 jtx.type = JTransaction.Type.INBOUND_DELIVERY;

@@ -80,6 +80,9 @@ public class CheckCurrenciesAction implements ImportAction
         if (status.getCode() != Status.Code.OK)
             return status;
 
+        // Fund transfers intentionally follow the delivery-style currency
+        // checks above. Their amount is market value, not a taxable buy amount,
+        // so the buy tax/fee cap does not apply.
         if (transaction.getType() == PortfolioTransaction.Type.DELIVERY_INBOUND
                         || transaction.getType() == PortfolioTransaction.Type.BUY)
         {

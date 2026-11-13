@@ -39,6 +39,7 @@ import name.abuchen.portfolio.model.proto.v1.PBookmark;
 import name.abuchen.portfolio.model.proto.v1.PClient;
 import name.abuchen.portfolio.model.proto.v1.PConfigurationSet;
 import name.abuchen.portfolio.model.proto.v1.PDashboard;
+import name.abuchen.portfolio.model.proto.v1.PFundTransferLot;
 import name.abuchen.portfolio.model.proto.v1.PFullHistoricalPrice;
 import name.abuchen.portfolio.model.proto.v1.PHistoricalPrice;
 import name.abuchen.portfolio.model.proto.v1.PInvestmentPlan;
@@ -390,6 +391,65 @@ import name.abuchen.portfolio.money.Money;
                     targetTx.setUpdatedAt(fromUpdatedAtTimestamp(newTransaction.getOtherUpdatedAt()));
 
                     transfer.insert();
+
+                    break;
+
+                case FUND_TRANSFER:
+                    Portfolio fundTransferSource = lookup.getPortfolio(newTransaction.getPortfolio());
+                    PortfolioTransaction fundTransferSourceTx = new PortfolioTransaction(newTransaction.getUuid());
+
+                    if (!newTransaction.hasOtherUuid())
+                        throw new UnsupportedOperationException();
+                    PortfolioTransaction fundTransferTargetTx = new PortfolioTransaction(newTransaction.getOtherUuid());
+                    Portfolio fundTransferTarget = lookup.getPortfolio(newTransaction.getOtherPortfolio());
+
+                    FundTransferEntry fundTransfer = new FundTransferEntry(fundTransferSource, fundTransferSourceTx,
+                                    fundTransferTarget, fundTransferTargetTx);
+
+                    fundTransfer.setDate(fromTimestamp(newTransaction.getDate()));
+                    fundTransfer.setCurrencyCode(newTransaction.getCurrencyCode());
+                    fundTransfer.setSourceAmount(newTransaction.getAmount());
+                    fundTransfer.setTargetMonetaryAmount(Money.of(
+                                    newTransaction.hasTargetCurrencyCode() ? newTransaction.getTargetCurrencyCode()
+                                                    : newTransaction.getCurrencyCode(),
+                                    newTransaction.hasTargetAmount() ? newTransaction.getTargetAmount()
+                                                    : newTransaction.getAmount()));
+
+                    if (newTransaction.hasNote())
+                        fundTransfer.setNote(newTransaction.getNote());
+                    if (newTransaction.hasSource())
+                        fundTransfer.setSource(newTransaction.getSource());
+
+                    fundTransfer.setSourceShares(newTransaction.getShares());
+
+                    if (!newTransaction.hasTargetShares())
+                        throw new UnsupportedOperationException();
+                    fundTransfer.setTargetShares(newTransaction.getTargetShares());
+
+                    if (!newTransaction.hasSecurity() || !newTransaction.hasTargetSecurity())
+                        throw new UnsupportedOperationException();
+                    fundTransfer.setSourceSecurity(lookup.getSecurity(newTransaction.getSecurity()));
+                    fundTransfer.setTargetSecurity(lookup.getSecurity(newTransaction.getTargetSecurity()));
+
+                    // A fund transfer is stored from the outbound side, but the
+                    // target security, target shares, and carried lots are
+                    // persisted explicitly because they are asymmetric.
+                    for (PFundTransferLot newLot : newTransaction.getCarriedLotsList())
+                    {
+                        fundTransfer.addCarriedLot(new FundTransferEntry.CarriedLot( //
+                                        LocalDate.ofEpochDay(newLot.getAcquisitionDate()), //
+                                        newLot.getSourceShares(), //
+                                        newLot.getTargetShares(), //
+                                        Money.of(newLot.getAcquisitionCurrencyCode(), newLot.getAcquisitionAmount()), //
+                                        newLot.hasSourceTransaction() ? newLot.getSourceTransaction() : null));
+                    }
+
+                    loadTransactionUnits(newTransaction, fundTransferSourceTx);
+
+                    fundTransferSourceTx.setUpdatedAt(fromUpdatedAtTimestamp(newTransaction.getUpdatedAt()));
+                    fundTransferTargetTx.setUpdatedAt(fromUpdatedAtTimestamp(newTransaction.getOtherUpdatedAt()));
+
+                    fundTransfer.insert();
 
                     break;
 
@@ -1048,7 +1108,9 @@ import name.abuchen.portfolio.money.Money;
     {
         for (Portfolio portfolio : client.getPortfolios())
         {
-            portfolio.getTransactions().stream().filter(t -> t.getType() != PortfolioTransaction.Type.TRANSFER_IN)
+            portfolio.getTransactions().stream()
+                            .filter(t -> t.getType() != PortfolioTransaction.Type.TRANSFER_IN)
+                            .filter(t -> t.getType() != PortfolioTransaction.Type.FUND_TRANSFER_IN)
                             .forEach(t -> addTransaction(newClient, portfolio, t));
         }
 
@@ -1092,6 +1154,22 @@ import name.abuchen.portfolio.money.Money;
                 newTransaction.setOtherUpdatedAt(
                                 asUpdatedAtTimestamp(t.getCrossEntry().getCrossTransaction(t).getUpdatedAt()));
                 break;
+            case FUND_TRANSFER_OUT:
+                newTransaction.setTypeValue(PTransaction.Type.FUND_TRANSFER_VALUE);
+                newTransaction.setOtherPortfolio(t.getCrossEntry().getCrossOwner(t).getUUID());
+                newTransaction.setOtherUuid(t.getCrossEntry().getCrossTransaction(t).getUUID());
+                newTransaction.setOtherUpdatedAt(
+                                asUpdatedAtTimestamp(t.getCrossEntry().getCrossTransaction(t).getUpdatedAt()));
+
+                FundTransferEntry fundTransfer = (FundTransferEntry) t.getCrossEntry();
+                PortfolioTransaction targetTransaction = fundTransfer.getTargetTransaction();
+
+                newTransaction.setTargetSecurity(targetTransaction.getSecurity().getUUID());
+                newTransaction.setTargetShares(targetTransaction.getShares());
+                newTransaction.setTargetCurrencyCode(targetTransaction.getCurrencyCode());
+                newTransaction.setTargetAmount(targetTransaction.getAmount());
+                fundTransfer.getCarriedLots().forEach(lot -> addCarriedLot(lot, newTransaction));
+                break;
             case DELIVERY_INBOUND:
                 newTransaction.setTypeValue(PTransaction.Type.INBOUND_DELIVERY_VALUE);
                 break;
@@ -1106,6 +1184,22 @@ import name.abuchen.portfolio.money.Money;
         saveCommonTransaction(t, newTransaction);
 
         newClient.addTransactions(newTransaction.build());
+    }
+
+    private void addCarriedLot(FundTransferEntry.CarriedLot lot, PTransaction.Builder newTransaction)
+    {
+        PFundTransferLot.Builder newLot = PFundTransferLot.newBuilder();
+
+        newLot.setAcquisitionDate(lot.getAcquisitionDate().toEpochDay());
+        newLot.setSourceShares(lot.getSourceShares());
+        newLot.setTargetShares(lot.getTargetShares());
+        newLot.setAcquisitionAmount(lot.getAcquisitionValue().getAmount());
+        newLot.setAcquisitionCurrencyCode(lot.getAcquisitionValue().getCurrencyCode());
+
+        if (lot.getSourceTransactionUUID() != null)
+            newLot.setSourceTransaction(lot.getSourceTransactionUUID());
+
+        newTransaction.addCarriedLots(newLot);
     }
 
     private void addTransaction(PClient.Builder newClient, Account account, AccountTransaction t)

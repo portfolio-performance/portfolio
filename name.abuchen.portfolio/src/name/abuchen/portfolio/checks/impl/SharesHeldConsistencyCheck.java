@@ -89,11 +89,13 @@ public class SharesHeldConsistencyCheck implements Check
                     case BUY:
                     case TRANSFER_IN:
                     case DELIVERY_INBOUND:
+                    case FUND_TRANSFER_IN:
                         shares[index] += t.getShares();
                         break;
                     case SELL:
                     case TRANSFER_OUT:
                     case DELIVERY_OUTBOUND:
+                    case FUND_TRANSFER_OUT:
                         shares[index] -= t.getShares();
                         break;
                     default:

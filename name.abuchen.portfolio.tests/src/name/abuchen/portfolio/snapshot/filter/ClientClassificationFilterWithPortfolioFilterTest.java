@@ -3,6 +3,8 @@ package name.abuchen.portfolio.snapshot.filter;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 
 import org.junit.Before;
@@ -14,8 +16,13 @@ import name.abuchen.portfolio.junit.SecurityBuilder;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Classification;
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.FundTransferEntry;
 import name.abuchen.portfolio.model.Portfolio;
+import name.abuchen.portfolio.model.PortfolioTransaction;
+import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Taxonomy;
+import name.abuchen.portfolio.money.CurrencyUnit;
+import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
 
 /**
@@ -100,5 +107,64 @@ public class ClientClassificationFilterWithPortfolioFilterTest
                         .anyMatch(account -> !account.getTransactions().isEmpty());
 
         assertThat("Accounts should have transactions after classification filter", hasTransactions, is(true));
+    }
+
+    @Test
+    public void testClassificationFilterKeepsFundTransfers()
+    {
+        Client client = new Client();
+        Security sourceFund = new SecurityBuilder().addTo(client);
+        Security targetFund = new SecurityBuilder().addTo(client);
+        Account sourceAccount = new AccountBuilder().addTo(client);
+        Account targetAccount = new AccountBuilder().addTo(client);
+
+        Portfolio sourcePortfolio = new PortfolioBuilder(sourceAccount) //
+                        .buy(sourceFund, "2020-01-01", Values.Share.factorize(10),
+                                        Values.Amount.factorize(1000)) //
+                        .addTo(client);
+        Portfolio targetPortfolio = new PortfolioBuilder(targetAccount).addTo(client);
+
+        PortfolioTransaction sourceBuy = sourcePortfolio.getTransactions().get(0);
+
+        FundTransferEntry entry = new FundTransferEntry(sourcePortfolio, targetPortfolio);
+        entry.setDate(LocalDateTime.parse("2020-06-01T00:00"));
+        entry.setSourceSecurity(sourceFund);
+        entry.setTargetSecurity(targetFund);
+        entry.setSourceShares(Values.Share.factorize(3));
+        entry.setTargetShares(Values.Share.factorize(5));
+        entry.setSourceMonetaryAmount(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(600)));
+        entry.setTargetMonetaryAmount(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(600)));
+        entry.addCarriedLot(new FundTransferEntry.CarriedLot(LocalDate.parse("2020-01-01"),
+                        Values.Share.factorize(3), Values.Share.factorize(5),
+                        Money.of(CurrencyUnit.EUR, Values.Amount.factorize(300)), sourceBuy.getUUID()));
+        entry.insert();
+
+        Classification targetClassification = new Classification("target", "Target Fund");
+        targetClassification.addAssignment(new Classification.Assignment(targetFund));
+
+        Client targetOnly = new ClientClassificationFilter(targetClassification).filter(client);
+        PortfolioTransaction targetTransaction = findTransaction(targetOnly.getPortfolios().get(1),
+                        PortfolioTransaction.Type.FUND_TRANSFER_IN);
+
+        assertThat(targetTransaction.getCrossEntry().getOwner(targetTransaction), is(targetOnly.getPortfolios().get(1)));
+        assertThat(((FundTransferEntry) targetTransaction.getCrossEntry()).getCarriedLots().size(), is(1));
+
+        Classification bothClassification = new Classification("both", "Both Funds");
+        bothClassification.addAssignment(new Classification.Assignment(sourceFund));
+        bothClassification.addAssignment(new Classification.Assignment(targetFund));
+
+        Client both = new ClientClassificationFilter(bothClassification).filter(client);
+        PortfolioTransaction sourceTransaction = findTransaction(both.getPortfolios().get(0),
+                        PortfolioTransaction.Type.FUND_TRANSFER_OUT);
+        PortfolioTransaction copiedTargetTransaction = findTransaction(both.getPortfolios().get(1),
+                        PortfolioTransaction.Type.FUND_TRANSFER_IN);
+
+        assertThat(sourceTransaction.getCrossEntry(), is(copiedTargetTransaction.getCrossEntry()));
+    }
+
+    private PortfolioTransaction findTransaction(Portfolio portfolio, PortfolioTransaction.Type type)
+    {
+        return portfolio.getTransactions().stream().filter(t -> t.getType() == type).findFirst()
+                        .orElseThrow(IllegalArgumentException::new);
     }
 }
