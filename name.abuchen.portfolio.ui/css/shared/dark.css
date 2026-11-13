@@ -38,6 +38,7 @@ CTabFolder {
 }
 
 .hoverbutton Shell,
+Composite.hoverbutton,
 .hoverbutton ImageHyperlink {
 	background-color: #302E30;
 }

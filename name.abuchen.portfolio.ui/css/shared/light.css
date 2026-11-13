@@ -62,6 +62,7 @@ CTabItem:selected {
 }
 
 .hoverbutton Shell,
+Composite.hoverbutton,
 .hoverbutton ImageHyperlink {
 	background-color: white;
 }
