@@ -68,11 +68,11 @@ public class SutorBankGmbHPDFExtractor extends AbstractPDFExtractor
 
                         .subject(() -> new BuySellEntry(PortfolioTransaction.Type.BUY))
 
-                        // If type is "Verkauf" change from BUY to SELL
+                        // If type is "Verkauf" or "Fälligkeit/Verfall" change from BUY to SELL
                         .section("type").optional() //
                         .match("^(Transaktionsart: |Wertpapier Abrechnung )?(?<type>(Kauf|Verkauf|F.lligkeit\\/Verfall))$") //
                         .assign((t, v) -> {
-                            if ("Verkauf".equals(v.get("type")) || "Fälligkeit/Verfall".equals(v.get("type")))
+                            if (!"Kauf".equals(v.get("type")))
                                 t.setType(PortfolioTransaction.Type.SELL);
                         })
 
@@ -180,10 +180,12 @@ public class SutorBankGmbHPDFExtractor extends AbstractPDFExtractor
                         .oneOf( //
                                         // @formatter:off
                                         // Ausmachender Betrag: €2.083,94
+                                        // Ausmachender Betrag (einschl. Ausgleichszahlung €510,16
+                                        // Dritter):
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("currency", "amount") //
-                                                        .match("^Ausmachender Betrag: (?<currency>\\p{Sc})(?<amount>[\\.,\\d]+)$") //
+                                                        .match("^Ausmachender Betrag(:| \\(einschl\\. Ausgleichszahlung) (?<currency>\\p{Sc})(?<amount>[\\.,\\d]+)$") //
                                                         .assign((t, v) -> {
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                                             t.setAmount(asAmount(v.get("amount")));
@@ -320,7 +322,7 @@ public class SutorBankGmbHPDFExtractor extends AbstractPDFExtractor
 
         var pdfTransaction = new Transaction<AccountTransaction>();
 
-        var firstRelevantLine = new Block("^(Dividende [^pro]).*$");
+        var firstRelevantLine = new Block("^Dividende (?!pro).*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -557,11 +559,11 @@ public class SutorBankGmbHPDFExtractor extends AbstractPDFExtractor
 
                         .subject(() -> new BuySellEntry(PortfolioTransaction.Type.BUY))
 
-                        // Is type --> "Verkauf" change from BUY to SELL
+                        // Is type --> "Verkauf" or "Gebührentilgung" change from BUY to SELL
                         .section("type").optional() //
                         .match("^.* (?<type>(Kauf|Verkauf|Geb.hrentilgung)) .*$") //
                         .assign((t, v) -> {
-                            if ("Verkauf".equals(v.get("type")) || "Gebührentilgung".equals(v.get("type")))
+                            if (!"Kauf".equals(v.get("type")))
                                 t.setType(PortfolioTransaction.Type.SELL);
                         })
 
@@ -602,18 +604,20 @@ public class SutorBankGmbHPDFExtractor extends AbstractPDFExtractor
                                         // 10:47 Tradegate LU0846194776 52,2200 EUR -0,25
                                         // @formatter:on
                                         section -> section //
-                                                        .attributes("date", "shares", "amount", "tax1", "time", "isin", "tax2") //
-                                                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} "
-                                                                        + "(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) "
-                                                                        + "Verkauf Verkauf " + "(?<name>.*) "
-                                                                        + "\\-(?<shares>[\\.,\\d]+) "
-                                                                        + "([\\.,\\d]+ )?"
-                                                                        + "(?<amount>[\\.,\\d]+) "
-                                                                        + "[\\.,\\d]+ "
+                                                        .attributes("date", "name", "shares", "amount", "tax1", "time", "isin", "tax2") //
+                                                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} " //
+                                                                        + "(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) " //
+                                                                        + "Verkauf Verkauf " //
+                                                                        + "(?<name>.*) " //
+                                                                        + "\\-(?<shares>[\\.,\\d]+) " //
+                                                                        + "([\\.,\\d]+ )?" //
+                                                                        + "(?<amount>[\\.,\\d]+) " //
+                                                                        + "[\\.,\\d]+ " //
                                                                         + "\\-(?<tax1>[\\.,\\d]+)$") //
-                                                        .match("^(?<time>[\\d]{2}:[\\d]{2}) " + ".* "
-                                                                        + "(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) "
-                                                                        + "[\\.,\\d]+ ([\\w]{2}\\p{Sc}|[A-Z]{3}) "
+                                                        .match("^(?<time>[\\d]{2}:[\\d]{2}) " //
+                                                                        + ".* " //
+                                                                        + "(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) " //
+                                                                        + "[\\.,\\d]+ ([\\w]{2}\\p{Sc}|[A-Z]{3}) " //
                                                                         + "\\-(?<tax2>[\\.,\\d]+)$") //
                                                         .assign((t, v) -> {
                                                             t.setSecurity(getOrCreateSecurity(v));
@@ -1015,7 +1019,7 @@ public class SutorBankGmbHPDFExtractor extends AbstractPDFExtractor
 
         var depositRemovalBlock = new Transaction<AccountTransaction>();
 
-        firstRelevantLine = new Block("^.*([^staatlichen] Zulage" //
+        firstRelevantLine = new Block("^.*((?<!staatlichen) Zulage" //
                         + "|Einzahlung " //
                         + "|Auszahlung " //
                         + "|.berweisung" //
@@ -1033,14 +1037,16 @@ public class SutorBankGmbHPDFExtractor extends AbstractPDFExtractor
                                         // 09.11.2023 07.11.2023 Umbuchung Verrechnung Nachlasskapitale - 0,11
                                         // @formatter:on
                                         section -> section //
-                                                        .attributes("date", "note", "amount") //
+                                                        .attributes("date", "note", "type", "amount") //
                                                         .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} " //
                                                                         + "(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) " //
                                                                         + "(?<note>Umbuchung Verrechnung Nachlasskapitale) " //
-                                                                        + "\\- " //
+                                                                        + "\\-(?<type>\\s(\\-)?)" //
                                                                         + "(?<amount>[\\.,\\d]+)$") //
                                                         .assign((t, v) -> {
-                                                            t.setType(AccountTransaction.Type.REMOVAL);
+                                                            // Is type --> "-" change from DEPOSIT to REMOVAL
+                                                            if ("-".equals(trim(v.get("type"))))
+                                                                t.setType(AccountTransaction.Type.REMOVAL);
 
                                                             t.setDateTime(asDate(v.get("date")));
 
@@ -1051,6 +1057,7 @@ public class SutorBankGmbHPDFExtractor extends AbstractPDFExtractor
                                                         }),
                                         // @formatter:off
                                         // 01.02.2019 01.02.2019 160,42 automatischer Lastschrifteinzug
+                                        // 01.02.2019 01.02.2019 222,00 Zulage 2018: Grundz.222,00
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("date", "amount", "note") //
@@ -1074,14 +1081,15 @@ public class SutorBankGmbHPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("date", "type", "amount", "note") //
-                                                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} "
-                                                                        + "(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) "
-                                                                        + "(?<type>(Einzahlung|Auszahlung|.berweisung)) "
-                                                                        + "(?<note>.*) \\- "
-                                                                        + "(\\-)?(?<amount>[\\.,\\d]+)$") //
+                                                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} " //
+                                                                        + "(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) " //
+                                                                        + "(Einzahlung|Auszahlung|.berweisung) " //
+                                                                        + "(?<note>.*) " //
+                                                                        + "\\-(?<type>\\s(\\-)?)" //
+                                                                        + "(?<amount>[\\.,\\d]+)$") //
                                                         .assign((t, v) -> {
-                                                            // Is type is "-" change from DEPOSIT to REMOVAL
-                                                            if ("Auszahlung".equals(v.get("type")) || "Überweisung".equals(v.get("type")))
+                                                            // Is type --> "-" change from DEPOSIT to REMOVAL
+                                                            if ("-".equals(trim(v.get("type"))))
                                                                 t.setType(AccountTransaction.Type.REMOVAL);
 
                                                             t.setDateTime(asDate(v.get("date")));
@@ -1147,6 +1155,11 @@ public class SutorBankGmbHPDFExtractor extends AbstractPDFExtractor
                         .subject(() -> new AccountTransaction(AccountTransaction.Type.FEES))
 
                         .oneOf( //
+                                        // @formatter:off
+                                        // 10.07.2019 10.07.2019 -19,83 Verwaltungsgebühr/Vertriebskosten 1. Hj.2019
+                                        // 10.01.2019 10.01.2019 -2,12 anteil.Verwaltgebühr/Vertriebskosten2.Hj.2018
+                                        // 10.01.2019 10.01.2019 -13,50 Kontoführungs-u.Depotgebühren 1. Hj. 2019
+                                        // @formatter:on
                                         section -> section //
                                                         .attributes("date", "amount", "note") //
                                                         .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} " //
@@ -1167,6 +1180,14 @@ public class SutorBankGmbHPDFExtractor extends AbstractPDFExtractor
 
                                                             t.setNote(v.get("note"));
                                                         }),
+                                        // @formatter:off
+                                        // 08.01.2020 08.01.2020 Gebühr anteil.Verwaltgebühr/Vertriebskosten2.Hj.2019 - -0,92
+                                        // 11.06.2020 11.06.2020 Gebühren Kontoführungs-u.Depotgebühren 1. Hj. 2020 - -18,00
+                                        // 17.05.2021 17.05.2021 Gebühr anteilige Depot- u. Verwaltgebühr 1. Hj. 2021 - -6,55
+                                        // 17.05.2021 17.05.2021 Gebühr anteilige Kontoführungsgebühr 1. Hj.. 2021 - -15,00
+                                        // 01.02.2024 01.02.2024 Gebühr Servicegebühr 01.10.2023 - 31.12.2023 - -1,54
+                                        // 01.02.2024 01.02.2024 Gebühr Vermögensverwaltungsgebühr 01.10.2023 - 31.12 - -1,45
+                                        // @formatter:on
                                         section -> section //
                                                         .attributes("date", "amount", "note") //
                                                         .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} " //
@@ -1207,6 +1228,9 @@ public class SutorBankGmbHPDFExtractor extends AbstractPDFExtractor
 
                                                             t.setNote(v.get("note"));
                                                         }),
+                                        // @formatter:off
+                                        // 15.06.2021 15.06.2021 Umbuchung Umbuchung Geld - -23,77
+                                        // @formatter:on
                                         section -> section //
                                                         .attributes("date", "amount", "note") //
                                                         .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} " //
@@ -1222,6 +1246,9 @@ public class SutorBankGmbHPDFExtractor extends AbstractPDFExtractor
 
                                                             t.setNote(v.get("note"));
                                                         }),
+                                        // @formatter:off
+                                        // 25.11.2020 04.11.2020 Storno Storno Verwaltungsgebühr/Vertriebskosten 1. H - 34,57
+                                        // @formatter:on
                                         section -> section //
                                                         .attributes("date", "stornoDate", "note1", "note2", "amount") //
                                                         .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) " //
@@ -1261,6 +1288,10 @@ public class SutorBankGmbHPDFExtractor extends AbstractPDFExtractor
                         .subject(() -> new PortfolioTransaction(PortfolioTransaction.Type.DELIVERY_OUTBOUND))
 
                         .oneOf( //
+                                        // @formatter:off
+                                        // 15.06.2021 01.06.2021 Übertrag Übertrag Xtr. (IE)-MSCI World ESG 1C -241,0000 0,00
+                                        // IE00BZ02LR44 US$
+                                        // @formatter:on
                                         section -> section //
                                                         .attributes("date", "note", "name", "shares", "isin") //
                                                         .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} " //
@@ -1416,10 +1447,13 @@ public class SutorBankGmbHPDFExtractor extends AbstractPDFExtractor
                         // @formatter:off
                         // Orderprovision: €12,51
                         // Rabatt (inkl. Rückvergütung): - €11,51
+                        //
+                        // Orderprovision: €5,44
+                        // Ausgleichszahlung/Rabatt/Zuwendung: - €3,44
                         // @formatter:on
                         .section("currency", "fee", "discountCurrency", "discount").optional() //
                         .match("Orderprovision: (?<currency>\\p{Sc})(?<fee>[\\.,\\d]+)") //
-                        .match("^Rabatt \\(inkl\\. R.ckverg.tung\\): \\- (?<discountCurrency>\\p{Sc})(?<discount>[\\.,\\d]+)$") //
+                        .match("^(Rabatt \\(inkl\\. R.ckverg.tung\\)|Ausgleichszahlung\\/Rabatt\\/Zuwendung): \\- (?<discountCurrency>\\p{Sc})(?<discount>[\\.,\\d]+)$") //
                         .assign((t, v) -> {
                             var fee = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("fee")));
                             var discount = Money.of(asCurrencyCode(v.get("discountCurrency")), asAmount(v.get("discount")));
