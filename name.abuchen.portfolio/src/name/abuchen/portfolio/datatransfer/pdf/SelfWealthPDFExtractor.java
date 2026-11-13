@@ -11,7 +11,6 @@ import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.money.Values;
 
-
 /**
  * @formatter:off
  * @implNote SelfWealth Ltd. is a Australian dollar-based financial services company.
@@ -40,12 +39,12 @@ public class SelfWealthPDFExtractor extends AbstractPDFExtractor
 
     private void addBuySellTransaction()
     {
-        DocumentType type = new DocumentType("(Buy|Sell) Confirmation");
+        final var type = new DocumentType("(Buy|Sell) Confirmation");
         this.addDocumentTyp(type);
 
-        Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
+        var pdfTransaction = new Transaction<BuySellEntry>();
 
-        Block firstRelevantLine = new Block("^(Buy|Sell) Confirmation$");
+        var firstRelevantLine = new Block("^(Buy|Sell) Confirmation$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -65,14 +64,14 @@ public class SelfWealthPDFExtractor extends AbstractPDFExtractor
                         // 25 UMAX BETA S&P500 YIELDMAX 12.40 $312.50 AUD
                         // @formatter:on
                         .section("tickerSymbol", "name", "currency") //
-                        .match("^[\\.,\\d]+ (?<tickerSymbol>[A-Z0-9]{1,6}(?:\\.[A-Z]{1,4})?) (?<name>.*) [\\.,\\d]+ \\p{Sc}[\\.,\\d]+ (?<currency>[\\w]{3})$") //
+                        .match("^[\\.,\\d]+ (?<tickerSymbol>[A-Z0-9]{1,6}(?:\\.[A-Z]{1,4})?) (?<name>.*) [\\.,\\d]+ \\p{Sc}[\\.,\\d]+ (?<currency>[A-Z]{3})$") //
                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
                         // @formatter:off
                         // 25 UMAX BETA S&P500 YIELDMAX 12.40 $312.50 AUD
                         // @formatter:on
                         .section("shares") //
-                        .match("^(?<shares>[\\.,\\d]+) [\\w]{3,4} .* [\\.,\\d]+ \\p{Sc}[\\.,\\d]+ [\\w]{3}$") //
+                        .match("^(?<shares>[\\.,\\d]+) [A-Z0-9]{1,6}(?:\\.[A-Z]{1,4})? .* [\\.,\\d]+ \\p{Sc}[\\.,\\d]+ [A-Z]{3}$") //
                         .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
                         // @formatter:off
@@ -87,7 +86,7 @@ public class SelfWealthPDFExtractor extends AbstractPDFExtractor
                         // Total Amount Payable $692.60 AUD
                         // @formatter:on
                         .section("amount", "currency") //
-                        .match("^(Net Value|Total Amount Payable) \\p{Sc}(?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$") //
+                        .match("^(Net Value|Total Amount Payable) \\p{Sc}(?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
                         .assign((t, v) -> {
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
@@ -113,21 +112,21 @@ public class SelfWealthPDFExtractor extends AbstractPDFExtractor
                         // Brokerage* $9.50 AUD
                         // @formatter:on
                         .section("fee", "currency").optional() //
-                        .match("^Brokerage\\* \\p{Sc}(?<fee>[\\.,\\d]+) (?<currency>[\\w]{3})$") //
+                        .match("^Brokerage\\* \\p{Sc}(?<fee>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
                         .assign((t, v) -> processFeeEntries(t, v, type))
 
                         // @formatter:off
                         // Misc Fees & Charges $0.00 AUD
                         // @formatter:on
                         .section("fee", "currency").optional() //
-                        .match("^Misc Fees & Charges\\* \\p{Sc}(?<fee>[\\.,\\d]+) (?<currency>[\\w]{3})$") //
+                        .match("^Misc Fees & Charges(\\*)? \\p{Sc}(?<fee>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
                         .assign((t, v) -> processFeeEntries(t, v, type))
 
                         // @formatter:off
                         // Adviser Fee* $0.00 AUD
                         // @formatter:on
                         .section("fee", "currency").optional() //
-                        .match("^Adviser Fee\\* \\p{Sc}(?<fee>[\\.,\\d]+) (?<currency>[\\w]{3})$") //
+                        .match("^Adviser Fee\\* \\p{Sc}(?<fee>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
                         .assign((t, v) -> processFeeEntries(t, v, type));
     }
 
