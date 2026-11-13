@@ -100,8 +100,9 @@ info:
     - **No browser origin.** Any request that carries an `Origin` header is rejected
       `403 browser-origin-forbidden`. A web page therefore cannot reach this API.
     - **Bounded request body.** A body larger than 1 MiB is rejected
-      `413 request-too-large` without being read to the end. Every legitimate
-      request is far smaller; the limit exists because bodies are buffered whole.
+      `413 request-too-large`. Every legitimate request is far smaller; the limit
+      exists because bodies are buffered whole. A body that does not end within
+      another MiB gets no answer at all: the connection is closed.
     - **Per-file access.** Only files the user has individually enabled are visible.
       A file that exists but is not enabled answers exactly like one that does not
       exist (`404 not-found`) — the token must not let a client enumerate files the
@@ -169,6 +170,24 @@ info:
     **normal and temporary**: respect the `Retry-After` header and try again. Reads
     are unaffected.
 
+    ## Busy, slow or overloaded
+
+    Any request may be answered with a `503`, whose `type` says what to do:
+
+    - `ui-busy`: the application did not take the request on within 10 seconds.
+      It was not executed and never will be — retry after `Retry-After`. A read
+      gets this answer even when it had started: it changes nothing, so sending
+      it again is safe.
+    - `ui-request-underway`: a write was already running when the wait expired
+      and will complete. There is no `Retry-After`: do not send it again, read
+      the state back instead.
+    - `calculation-timeout`: a calculation did not finish within 120 seconds.
+      The same question takes just as long again — ask a smaller one.
+    - `server-busy`: more requests are in flight than the server serves at once,
+      or no calculation slot came free while the request waited for one (up to
+      30 seconds, a few requests at most) — a calculation keeps its slot until it
+      really ends, even past its deadline. Retry after `Retry-After`.
+
 servers:
   - url: http://127.0.0.1:{port}
     description: Loopback interface of the running application
@@ -228,6 +247,8 @@ paths:
           $ref: "#/components/responses/Forbidden"
         "500":
           $ref: "#/components/responses/InternalError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
 
   /v1/version:
     get:
@@ -277,6 +298,8 @@ paths:
           $ref: "#/components/responses/Forbidden"
         "500":
           $ref: "#/components/responses/InternalError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
 
   /v1/auth/requests:
     post:
@@ -332,6 +355,8 @@ paths:
           $ref: "#/components/responses/TooManyPairingRequests"
         "500":
           $ref: "#/components/responses/InternalError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
 
   /v1/auth/requests/{id}:
     get:
@@ -366,6 +391,7 @@ paths:
                   value:
                     status: approved
                     token: wZ4mJc9Y3K…
+                    persistent: true
         "400":
           $ref: "#/components/responses/BadRequest"
         "403":
@@ -374,6 +400,8 @@ paths:
           $ref: "#/components/responses/NotFound"
         "500":
           $ref: "#/components/responses/InternalError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
 
   /v1/files:
     get:
@@ -412,6 +440,8 @@ paths:
           $ref: "#/components/responses/Forbidden"
         "500":
           $ref: "#/components/responses/InternalError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
 
   /v1/files/{file}/instruments:
     parameters:
@@ -445,6 +475,8 @@ paths:
           $ref: "#/components/responses/Conflict"
         "500":
           $ref: "#/components/responses/InternalError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
 
   /v1/files/{file}/instruments/{uuid}:
     parameters:
@@ -483,6 +515,8 @@ paths:
           $ref: "#/components/responses/Conflict"
         "500":
           $ref: "#/components/responses/InternalError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
     patch:
       operationId: patchInstrument
       tags: [Instruments]
@@ -530,6 +564,8 @@ paths:
           $ref: "#/components/responses/Locked"
         "500":
           $ref: "#/components/responses/InternalError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
     delete:
       operationId: deleteInstrument
       tags: [Instruments]
@@ -556,6 +592,8 @@ paths:
           $ref: "#/components/responses/Locked"
         "500":
           $ref: "#/components/responses/InternalError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
 
   /v1/files/{file}/instruments/attribute-types:
     parameters:
@@ -595,6 +633,8 @@ paths:
           $ref: "#/components/responses/Conflict"
         "500":
           $ref: "#/components/responses/InternalError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
 
   /v1/files/{file}/cash-accounts:
     parameters:
@@ -628,6 +668,8 @@ paths:
           $ref: "#/components/responses/Conflict"
         "500":
           $ref: "#/components/responses/InternalError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
 
   /v1/files/{file}/cash-accounts/{uuid}:
     parameters:
@@ -663,6 +705,8 @@ paths:
           $ref: "#/components/responses/Conflict"
         "500":
           $ref: "#/components/responses/InternalError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
 
   /v1/files/{file}/investment-accounts:
     parameters:
@@ -696,6 +740,8 @@ paths:
           $ref: "#/components/responses/Conflict"
         "500":
           $ref: "#/components/responses/InternalError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
 
   /v1/files/{file}/investment-accounts/{uuid}:
     parameters:
@@ -734,6 +780,8 @@ paths:
           $ref: "#/components/responses/Conflict"
         "500":
           $ref: "#/components/responses/InternalError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
 
   /v1/files/{file}/holdings:
     parameters:
@@ -819,6 +867,8 @@ paths:
           $ref: "#/components/responses/Conflict"
         "500":
           $ref: "#/components/responses/InternalError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
 
   /v1/files/{file}/performance:
     parameters:
@@ -924,6 +974,8 @@ paths:
           $ref: "#/components/responses/Conflict"
         "500":
           $ref: "#/components/responses/InternalError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
 
   /v1/files/{file}/performance/instruments:
     parameters:
@@ -1031,6 +1083,8 @@ paths:
           $ref: "#/components/responses/Conflict"
         "500":
           $ref: "#/components/responses/InternalError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
 
   /v1/files/{file}/performance/instruments/{uuid}:
     parameters:
@@ -1107,6 +1161,8 @@ paths:
           $ref: "#/components/responses/Conflict"
         "500":
           $ref: "#/components/responses/InternalError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
 
   /v1/files/{file}/trades:
     parameters:
@@ -1201,6 +1257,8 @@ paths:
           $ref: "#/components/responses/Conflict"
         "500":
           $ref: "#/components/responses/InternalError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
 
   /v1/files/{file}/instruments/{uuid}/trades:
     parameters:
@@ -1302,6 +1360,8 @@ paths:
           $ref: "#/components/responses/Conflict"
         "500":
           $ref: "#/components/responses/InternalError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
 
 components:
   securitySchemes:
@@ -1774,6 +1834,17 @@ components:
           description: |
             The bearer token; present only while `status` is `approved`, and
             delivered exactly once.
+        persistent:
+          type: boolean
+          description: |
+            Present with `token`. Whether the token is confirmed to survive a
+            restart of the application: `false` when the user allowed access
+            for this session only, and when access was allowed permanently but
+            the application could not confirm it in its client file. Such a
+            grant may still work after a restart - the file may already hold
+            it, or a later write may add it - so a client that pairs again
+            should have the user check or revoke the earlier grant on the
+            preference page.
 
     Instrument:
       type: object
@@ -2457,6 +2528,10 @@ components:
             - https://portfolio-performance.info/rest/problems/pairing-pending
             - https://portfolio-performance.info/rest/problems/pairing-cooldown
             - https://portfolio-performance.info/rest/problems/internal-error
+            - https://portfolio-performance.info/rest/problems/ui-busy
+            - https://portfolio-performance.info/rest/problems/ui-request-underway
+            - https://portfolio-performance.info/rest/problems/calculation-timeout
+            - https://portfolio-performance.info/rest/problems/server-busy
         title:
           type: string
           description: Short, human-readable summary of the problem kind.
@@ -2601,6 +2676,27 @@ components:
 
     InternalError:
       description: An unexpected error (`internal-error`).
+      content:
+        application/problem+json:
+          schema:
+            $ref: "#/components/schemas/Problem"
+
+    ServiceUnavailable:
+      description: |
+        Not answered now; see the overview of 503 answers above. `server-busy`
+        (more requests in flight than the server serves at once, or no
+        calculation slot came free in time) can reach every operation. `ui-busy`
+        can reach every operation that runs on the application's UI thread -
+        the file list and everything under a file - but not the version or this
+        document; `ui-request-underway` only the writes among them, as a read
+        that had started is refused as `ui-busy`; `calculation-timeout` only the
+        calculations. Every one but `ui-request-underway` and
+        `calculation-timeout` carries a `Retry-After` and is safe to send again.
+      headers:
+        Retry-After:
+          description: Seconds to wait before sending the same request again.
+          schema:
+            type: integer
       content:
         application/problem+json:
           schema:

@@ -4,6 +4,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.List;
 import java.util.UUID;
 
@@ -83,9 +84,30 @@ public class PairingRoutesTest
 
         var token = json(approved).get("token").getAsString();
         assertThat(store.authenticate(token).isPresent(), is(true));
+        assertThat(json(approved).get("persistent").getAsBoolean(), is(true));
 
         // one-shot: the token is delivered exactly once
         assertStatus("GET", "/v1/auth/requests/" + id, null, 404);
+    }
+
+    /**
+     * Reported in review: an approval whose client could not be written says
+     * so in the response, not only in the service's result.
+     */
+    @Test
+    public void testAnApprovalThatCouldNotBeSavedIsNotPersistent() throws Exception
+    {
+        var blocked = tempFolder.newFolder("blocked").toPath();
+        Files.createDirectories(blocked.resolve("api-clients.json")); // a directory where the file belongs
+        router = ApiRoutes.create(new FileAccessRegistry(node), host, new PairingService(new ClientStore(blocked), host));
+
+        var id = json(call("POST", "/v1/auth/requests", "{\"clientName\":\"Claude Code\"}")).get("id").getAsString();
+        host.lastAccessRequest().allowAlways();
+
+        var approved = json(call("GET", "/v1/auth/requests/" + id, null));
+        assertThat(approved.get("status").getAsString(), is("approved"));
+        assertThat(approved.has("token"), is(true));
+        assertThat(approved.get("persistent").getAsBoolean(), is(false));
     }
 
     @Test
@@ -97,6 +119,7 @@ public class PairingRoutesTest
         var denied = json(call("GET", "/v1/auth/requests/" + id, null));
         assertThat(denied.get("status").getAsString(), is("denied"));
         assertThat(denied.has("token"), is(false));
+        assertThat(denied.has("persistent"), is(false));
     }
 
     @Test
@@ -143,7 +166,7 @@ public class PairingRoutesTest
         var id = json(call("POST", "/v1/auth/requests", "{\"clientName\":\"Claude Code\"}")).get("id").getAsString();
         call("GET", "/v1/auth/requests/" + id, null);
 
-        assertThat(host.syncExecResults(), is(List.of()));
+        assertThat(host.uiThreadResults(), is(List.of()));
     }
 
     private void assertStatus(String method, String path, String body, int expectedStatus) throws Exception
