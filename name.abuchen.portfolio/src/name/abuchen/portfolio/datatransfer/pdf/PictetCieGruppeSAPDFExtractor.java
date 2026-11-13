@@ -35,12 +35,12 @@ public class PictetCieGruppeSAPDFExtractor extends AbstractPDFExtractor
 
     private void addBuySellTransaction()
     {
-        DocumentType type = new DocumentType("STOCK EXCHANGE");
+        final var type = new DocumentType("STOCK EXCHANGE");
         this.addDocumentTyp(type);
 
-        Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
+        var pdfTransaction = new Transaction<BuySellEntry>();
 
-        Block firstRelevantLine = new Block("^Transaction no\\.: .*$");
+        var firstRelevantLine = new Block("^Transaction no\\.: .*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -63,7 +63,7 @@ public class PictetCieGruppeSAPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("name", "isin", "currency") //
-                                                        .match("^(Purchase|Sale) (\\-)?[\\.'\\d]+ (?<name>.*) at (?<currency>[\\w]{3}) [\\.'\\d]+$") //
+                                                        .match("^(Purchase|Sale) (\\-)?[\\.'\\d]+ (?<name>.*) at (?<currency>[A-Z]{3}) [\\.'\\d]+$") //
                                                         .match("^ISIN: (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) .*$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
                                         // @formatter:off
@@ -72,7 +72,7 @@ public class PictetCieGruppeSAPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("name", "isin", "currency") //
-                                                        .match("^(Purchase|Sale) (?<currency>[\\w]{3}) (\\-)?[\\.'\\d]+ (?<name>.*) at [\\.'\\d]+%$") //
+                                                        .match("^(Purchase|Sale) (?<currency>[A-Z]{3}) (\\-)?[\\.'\\d]+ (?<name>.*) at [\\.'\\d]+%$") //
                                                         .match("^ISIN: (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) .*$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))))
 
@@ -83,28 +83,40 @@ public class PictetCieGruppeSAPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("shares") //
-                                                        .match("^(Purchase|Sale) (\\-)?(?<shares>[\\.'\\d]+) .* at [\\w]{3} [\\.'\\d]+$") //
+                                                        .match("^(Purchase|Sale) (\\-)?(?<shares>[\\.'\\d]+) .* at [A-Z]{3} [\\.'\\d]+$") //
                                                         .assign((t, v) -> t.setShares(asShares(v.get("shares")))),
                                         // @formatter:off
                                         // Purchase GBP 180'000 6.516% MS (SX5E/SPX) 22/23 at 100.00%
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("shares") //
-                                                        .match("^(Purchase|Sale) [\\w]{3} (\\-)?(?<shares>[\\.'\\d]+) (?<name>.*) at [\\.'\\d]+%$") //
+                                                        .match("^(Purchase|Sale) [A-Z]{3} (\\-)?(?<shares>[\\.'\\d]+) .* at [\\.'\\d]+%$") //
                                                         .assign((t, v) -> {
                                                             // @formatter:off
                                                             // Percentage quotation, workaround for bonds
                                                             // @formatter:on
-                                                            BigDecimal shares = asExchangeRate(v.get("shares"));
+                                                            var shares = asExchangeRate(v.get("shares"));
                                                             t.setShares(Values.Share.factorize(shares.doubleValue() / 100));
                                                         }))
 
-                        // @formatter:off
-                        // Order date 20.05.2022 at 05:06:32 pm
-                        // @formatter:on
-                        .section("date", "time") //
-                        .match("^Order date (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) at (?<time>[\\d]{2}:[\\d]{2}:[\\d]{2} (am|pm))$") //
-                        .assign((t, v) -> t.setDate(asDate(v.get("date"), v.get("time"))))
+                        .oneOf( //
+                                        // @formatter:off
+                                        // Swiss stamp duty USD -443.99 Execution date 24.05.2022 at 09:51:27 amExecuted quantity 24'728.000
+                                        // Swiss stamp duty GBP -204.97 (XLON)Execution date 02.03.2022 at 02:41:02 pm
+                                        // Interest GBP 0.00 Execution date 23.03.2022 at 08:26:01 amExecuted nominal GBP 180'000
+                                        // Brokerage GBP -127.25 Execution date 14.07.2022 at 07:37:30 pmExecuted quantity -74.620
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("date", "time") //
+                                                        .match("^.*Execution date (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) at (?<time>[\\d]{2}\\:[\\d]{2}\\:[\\d]{2} (am|pm)).*$") //
+                                                        .assign((t, v) -> t.setDate(asDate(v.get("date"), v.get("time")))),
+                                        // @formatter:off
+                                        // Order date 20.05.2022 at 05:06:32 pm
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("date", "time") //
+                                                        .match("^Order date (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) at (?<time>[\\d]{2}\\:[\\d]{2}\\:[\\d]{2} (am|pm))$") //
+                                                        .assign((t, v) -> t.setDate(asDate(v.get("date"), v.get("time")))))
 
                         .oneOf( //
                                         // @formatter:off
@@ -113,7 +125,7 @@ public class PictetCieGruppeSAPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("currency", "amount") //
-                                                        .match("^Net amount (?<currency>[\\w]{3}) (\\-)?(?<amount>[\\.'\\d]+).*$") //
+                                                        .match("^Net amount (?<currency>[A-Z]{3}) (\\-)?(?<amount>[\\.'\\d]+).*$") //
                                                         .assign((t, v) -> {
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                                             t.setAmount(asAmount(v.get("amount")));
@@ -123,7 +135,7 @@ public class PictetCieGruppeSAPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("amount", "currency") //
-                                                        .match("^Net amount (Other([\\s]+)?)?(?<currency>[\\w]{3}) (\\-)?(?<amount>[\\.'\\d]+).*$") //
+                                                        .match("^Net amount (Other([\\s]+)?)?(?<currency>[A-Z]{3}) (\\-)?(?<amount>[\\.'\\d]+).*$") //
                                                         .assign((t, v) -> {
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                                             t.setAmount(asAmount(v.get("amount")));
@@ -144,12 +156,12 @@ public class PictetCieGruppeSAPDFExtractor extends AbstractPDFExtractor
 
     private void addDividendeTransaction()
     {
-        DocumentType type = new DocumentType("SECURITY EVENT");
+        final var type = new DocumentType("SECURITY EVENT");
         this.addDocumentTyp(type);
 
-        Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
+        var pdfTransaction = new Transaction<AccountTransaction>();
 
-        Block firstRelevantLine = new Block("^Transaction no\\.: .*$");
+        var firstRelevantLine = new Block("^Transaction no\\.: .*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -165,7 +177,7 @@ public class PictetCieGruppeSAPDFExtractor extends AbstractPDFExtractor
                         .section("name", "isin", "currency") //
                         .match("^(?<name>.*) [\\.'\\d]+ GeneralTrade date [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}$") //
                         .match("^ISIN: (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) .*$") //
-                        .match("^.* Income per unit (?<currency>[\\w]{3}) [\\.'\\d]+.*$") //
+                        .match("^.* Income per unit (?<currency>[A-Z]{3}) [\\.'\\d]+.*$") //
                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
                         // @formatter:off
@@ -193,7 +205,7 @@ public class PictetCieGruppeSAPDFExtractor extends AbstractPDFExtractor
                         // 2'304.81 Quantity held 2'420Net amount USD Income per unit USD 0.9524Gross amount USD 2'304.81
                         // @formatter:on
                         .section("amount", "currency") //
-                        .match("^(?<amount>[\\.'\\d]+) .*Net amount (?<currency>[\\w]{3}) .*$") //
+                        .match("^(?<amount>[\\.'\\d]+) .*Net amount (?<currency>[A-Z]{3}) .*$") //
                         .assign((t, v) -> {
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(asAmount(v.get("amount")));
@@ -220,14 +232,14 @@ public class PictetCieGruppeSAPDFExtractor extends AbstractPDFExtractor
                         // Swiss stamp duty USD -443.99 Execution date 24.05.2022 at 09:51:27 amExecuted quantity 24'728.000
                         // @formatter:on
                         .section("currency", "tax").optional() //
-                        .match("^Swiss stamp duty (?<currency>[\\w]{3}) \\-(?<tax>[\\.'\\d]+).*$") //
+                        .match("^Swiss stamp duty (?<currency>[A-Z]{3}) \\-(?<tax>[\\.'\\d]+).*$") //
                         .assign((t, v) -> processTaxEntries(t, v, type))
 
                         // @formatter:off
                         // Transaction taxes GBP -1.04
                         // @formatter:on
                         .section("currency", "tax").optional() //
-                        .match("^Transaction taxes (?<currency>[\\w]{3}) \\-(?<tax>[\\.'\\d]+).*$") //
+                        .match("^Transaction taxes (?<currency>[A-Z]{3}) \\-(?<tax>[\\.'\\d]+).*$") //
                         .assign((t, v) -> processTaxEntries(t, v, type));
     }
 
@@ -239,21 +251,21 @@ public class PictetCieGruppeSAPDFExtractor extends AbstractPDFExtractor
                         // Brokerage USD -160.03 Execution price USD 11.97Gross amount USD -295'994.16
                         // @formatter:on
                         .section("fee", "currency").optional() //
-                        .match("^Brokerage (?<currency>[\\w]{3}) \\-(?<fee>[\\.'\\d]+).*$") //
+                        .match("^Brokerage (?<currency>[A-Z]{3}) \\-(?<fee>[\\.'\\d]+).*$") //
                         .assign((t, v) -> processFeeEntries(t, v, type))
 
                         // @formatter:off
                         // Execution fees GBP -95.65 Gross amount GBP -136'647.03
                         // @formatter:on
                         .section("fee", "currency").optional() //
-                        .match("^Execution fees (?<currency>[\\w]{3}) \\-(?<fee>[\\.'\\d]+).*$") //
+                        .match("^Execution fees (?<currency>[A-Z]{3}) \\-(?<fee>[\\.'\\d]+).*$") //
                         .assign((t, v) -> processFeeEntries(t, v, type))
 
                         // @formatter:off
                         // Third party settlement fees GBP -3.20 OtherCustodian EUROCLEAR BANK S.A / N.V.
                         // @formatter:on
                         .section("fee", "currency").optional() //
-                        .match("^Third party settlement fees (?<currency>[\\w]{3}) \\-(?<fee>[\\.'\\d]+).*$") //
+                        .match("^Third party settlement fees (?<currency>[A-Z]{3}) \\-(?<fee>[\\.'\\d]+).*$") //
                         .assign((t, v) -> processFeeEntries(t, v, type));
     }
 
