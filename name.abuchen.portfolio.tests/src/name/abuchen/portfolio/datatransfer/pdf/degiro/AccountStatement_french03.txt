@@ -1,0 +1,52 @@
+PDFBox Version: 3.0.8
+Portfolio Performance Version: 0.89.0
+System: linux | x86_64 | 21.0.12.1+1-nixos | Oracle Corporation
+-----------------------------------------
+M. Kxbqmr Zhwlpn Tfqoyd
+CHEM. DU QRBVKSEZ 81
+37502 Hwpok
+France
+Nom d’utilisateur: ********417
+Relevé de compte du 23-09-2026 au 26-10-2026
+Date Heure Date de Produit Code ISIN Description FX Mouvements Solde
+23-10-2026 16:41 23-10-2026 Virement depuis votre Compte Espèces à la flatexDEGIRO EUR 884,61
+Bank: 1004,39 EUR
+23-10-2026 16:41 23-10-2026 Degiro Cash Sweep Transfer EUR 1 004,39 EUR 1 889,00
+23-10-2026 15:21 23-10-2026 SCOR SE FR0010411983 Frais DEGIRO de courtage et/ou de parties tierces EUR -2,00 EUR 884,61
+23-10-2026 15:21 23-10-2026 SCOR SE FR0010411983 Taxe sur les Transactions Financières (TTF) EUR -3,99 EUR 886,61
+23-10-2026 15:21 23-10-2026 SCOR SE FR0010411983 Achat 30 Scor SE@33,28 EUR (FR0010411983) EUR -998,40 EUR 890,60
+22-10-2026 15:21 22-10-2026 Virement vers votre Compte Espèces à la flatexDEGIRO EUR 1 889,00
+Bank: 906,9 EUR
+22-10-2026 15:21 22-10-2026 Degiro Cash Sweep Transfer EUR -906,90 EUR 982,10
+22-10-2026 14:14 22-10-2026 HUT 8 CORP US44812J1043 Frais DEGIRO de courtage et/ou de parties tierces EUR -3,90 EUR 1 889,00
+22-10-2026 14:14 22-10-2026 HUT 8 CORP US44812J1043 Vente 15 Hut 8 Corp@60,72 EUR (US44812J1043) EUR 910,80 EUR 1 892,90
+19-10-2026 15:21 19-10-2026 Virement vers votre Compte Espèces à la flatexDEGIRO EUR 982,10
+Bank: 869,56 EUR
+19-10-2026 15:21 19-10-2026 Degiro Cash Sweep Transfer EUR -869,56 EUR 112,54
+19-10-2026 14:54 19-10-2026 HUT 8 CORP US44812J1043 Frais DEGIRO de courtage et/ou de parties tierces EUR -3,90 EUR 982,10
+19-10-2026 14:54 19-10-2026 HUT 8 CORP US44812J1043 Vente 14 Hut 8 Corp@62,39 EUR (US44812J1043) EUR 873,46 EUR 986,00
+13-10-2026 19:20 13-10-2026 Virement depuis votre Compte Espèces à la flatexDEGIRO EUR 112,54
+Bank: 1304,92 EUR
+13-10-2026 19:20 13-10-2026 Degiro Cash Sweep Transfer EUR 1 304,92 EUR 1 417,46
+13-10-2026 18:35 13-10-2026 VANECK URANIUM AND NUCLEAR IE000M7V94E1 Frais DEGIRO de courtage et/ou de parties tierces EUR -1,00 EUR 112,54
+flatexDEGIRO Bank Dutch Branch, qui opère sous le nom de DEGIRO, est la succursale néerlandaise de flatexDEGIRO Bank SE. www.degiro.fr Compte
+flatexDEGIRO Bank SE est principalement supervisée par le régulateur financier allemand (BaFin). Aux Pays-Bas, flatexDEGIRO Bank clients@degiro.fr
+Dutch Branch est enregistrée auprès de la DNB et supervisée par l'AFM et la DNB. Amstelplein 1 1096 HA 2026-10-26
+Page 1 / 2
+M. Kxbqmr Zhwlpn Tfqoyd
+CHEM. DU QRBVKSEZ 81
+37502 Hwpok
+France
+Nom d’utilisateur: ********417
+Date Heure Date de Produit Code ISIN Description FX Mouvements Solde
+13-10-2026 18:35 13-10-2026 VANECK URANIUM AND NUCLEAR IE000M7V94E1 Achat 12 VanEck Uranium and Nuclear Technologies UCITS EUR -509,22 EUR 113,54
+ETF@42,435 EUR (IE000M7V94E1)
+13-10-2026 18:32 13-10-2026 GAMES WORKSHOP GROUP PLC GB0003718474 Frais DEGIRO de courtage et/ou de parties tierces EUR -3,90 EUR 622,76
+13-10-2026 18:32 13-10-2026 GAMES WORKSHOP GROUP PLC GB0003718474 Achat 4 Games Workshop Group PLC@197,7 EUR EUR -790,80 EUR 626,66
+(GB0003718474)
+06-10-2026 12:53 30-09-2026 Flatex Interest Income EUR 0,00 EUR 1 417,46
+05-10-2026 12:33 30-09-2026 Flatex Interest Income USD 0,00 USD 0,00
+flatexDEGIRO Bank Dutch Branch, qui opère sous le nom de DEGIRO, est la succursale néerlandaise de flatexDEGIRO Bank SE. www.degiro.fr Compte
+flatexDEGIRO Bank SE est principalement supervisée par le régulateur financier allemand (BaFin). Aux Pays-Bas, flatexDEGIRO Bank clients@degiro.fr
+Dutch Branch est enregistrée auprès de la DNB et supervisée par l'AFM et la DNB. Amstelplein 1 1096 HA 2026-10-26
+Page 2 / 2
