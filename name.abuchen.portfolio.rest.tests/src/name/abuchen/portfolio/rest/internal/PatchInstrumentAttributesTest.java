@@ -74,6 +74,25 @@ public class PatchInstrumentAttributesTest
     }
 
     @Test
+    public void testAttributeWithUnloadableConverterRejectedAsUnsupported()
+    {
+        var client = new Client();
+        var security = new SecurityBuilder().addTo(client);
+        InstrumentAttributesReadTest.unloadable(client, "future");
+        try
+        {
+            SecuritiesHandler.patch(client, security.getUUID(), json("{\"attributes\":{\"future\":\"x\"}}"));
+            Assert.fail("expected ApiException");
+        }
+        catch (ApiException e)
+        {
+            assertThat(e.getStatus(), is(422));
+            assertThat(e.getErrors().get(0).field(), is("attributes.future"));
+            assertThat(e.getErrors().get(0).code(), is("unsupported-attribute-type"));
+        }
+    }
+
+    @Test
     public void testUnsupportedTypeRejected()
     {
         var client = new Client();
