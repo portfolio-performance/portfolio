@@ -354,9 +354,9 @@ public class SecurityPriceUpdateView extends AbstractFinanceView implements Pric
                     return null;
 
                 if (security.getCurrencyCode() == null)
-                    return Values.Quote.format(latest.getValue());
+                    return Values.Quote.formatFor(security, latest.getValue());
                 else
-                    return Values.Quote.format(security.getCurrencyCode(), latest.getValue(),
+                    return Values.Quote.formatFor(security, security.getCurrencyCode(), latest.getValue(),
                                     getClient().getBaseCurrency());
             }
         });

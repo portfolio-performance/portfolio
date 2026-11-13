@@ -551,7 +551,7 @@ public class StatementOfAssetsViewer
                     return null;
 
                 Security security = element.getSecurity();
-                return Values.Quote.format(security.getCurrencyCode(),
+                return Values.Quote.formatFor(security, security.getCurrencyCode(),
                                 element.getSecurityPosition().getPrice().getValue(), client.getBaseCurrency());
             }
         });
@@ -1125,14 +1125,15 @@ public class StatementOfAssetsViewer
 
                 if (converter.getTermCurrency().equals(security.getCurrencyCode()))
                 {
-                    return Values.Quote.format(security.getCurrencyCode(), price.getValue(), client.getBaseCurrency());
+                    return Values.Quote.formatFor(security, security.getCurrencyCode(), price.getValue(),
+                                    client.getBaseCurrency());
                 }
                 else
                 {
                     var converted = converter.convert(price.getDate(),
                                     Quote.of(security.getCurrencyCode(), price.getValue()));
-                    return Values.CalculatedQuote.format(converted.getCurrencyCode(), converted.getAmount(),
-                                    client.getBaseCurrency());
+                    return Values.CalculatedQuote.formatFor(security, converted.getCurrencyCode(),
+                                    converted.getAmount(), client.getBaseCurrency());
                 }
             }
         });
@@ -1802,7 +1803,7 @@ public class StatementOfAssetsViewer
             if (value instanceof Money money)
                 return Values.Money.format(money, client.getBaseCurrency());
             else if (value instanceof Quote quote)
-                return Values.CalculatedQuote.format(quote, client.getBaseCurrency());
+                return Values.CalculatedQuote.formatFor(((Element) e).getSecurity(), quote, client.getBaseCurrency());
             else if (value instanceof Double d)
                 return Values.Percent2.format(d);
 

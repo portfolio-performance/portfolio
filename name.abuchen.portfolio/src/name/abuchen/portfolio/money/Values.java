@@ -12,6 +12,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.Locale;
 
+import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.util.FormatHelper;
 
 public abstract class Values<E>
@@ -135,6 +136,65 @@ public abstract class Values<E>
         }
 
         /**
+         * Formats a price of the given security: in percent of the nominal
+         * value for percentage-quoted securities, otherwise without unit like
+         * {@link #format(Long)}.
+         */
+        public String formatFor(Security security, long quote)
+        {
+            return isPercentageQuoted(security) ? formatPercentage(quote) : format(quote);
+        }
+
+        /**
+         * Formats a price of the given security: in percent of the nominal
+         * value for percentage-quoted securities if the price is given in the
+         * currency of the security, otherwise like
+         * {@link #format(String, long, String)}.
+         */
+        public String formatFor(Security security, String currencyCode, long quote, String skipCurrency)
+        {
+            return isPercentageQuoted(security, currencyCode) ? formatPercentage(quote)
+                            : format(currencyCode, quote, skipCurrency);
+        }
+
+        /**
+         * Formats a price of the given security: in percent of the nominal
+         * value for percentage-quoted securities, otherwise like
+         * {@link #format(String, long)}.
+         */
+        public String formatFor(Security security, String currencyCode, long quote)
+        {
+            return isPercentageQuoted(security, currencyCode) ? formatPercentage(quote) : format(currencyCode, quote);
+        }
+
+        /**
+         * Formats a price of the given security: in percent of the nominal
+         * value for percentage-quoted securities, otherwise like
+         * {@link #format(Quote)}.
+         */
+        public String formatFor(Security security, Quote quote)
+        {
+            return isPercentageQuoted(security, quote.getCurrencyCode()) ? formatPercentage(quote.getAmount())
+                            : format(quote);
+        }
+
+        /**
+         * Formats a price of the given security: in percent of the nominal
+         * value for percentage-quoted securities, otherwise like
+         * {@link #format(Quote, String)}.
+         */
+        public String formatFor(Security security, Quote quote, String skipCurrency)
+        {
+            return isPercentageQuoted(security, quote.getCurrencyCode()) ? formatPercentage(quote.getAmount())
+                            : format(quote, skipCurrency);
+        }
+
+        private String formatPercentage(long quote)
+        {
+            return format(quote) + "%"; //$NON-NLS-1$
+        }
+
+        /**
          * Factor by which to multiply a monetary amount to convert it into a
          * quote amount. Monetary amounts have 2 decimal digits while quotes
          * have 4 digits.
@@ -222,6 +282,65 @@ public abstract class Values<E>
         {
             return amount == null || amount.isZero() ? null : format(amount, skipCurrencyCode);
         }
+
+        /**
+         * Formats a price of the given security: in percent of the nominal
+         * value for percentage-quoted securities, otherwise without unit like
+         * {@link #format(Long)}.
+         */
+        public String formatFor(Security security, long quote)
+        {
+            return isPercentageQuoted(security) ? formatPercentage(quote) : format(quote);
+        }
+
+        /**
+         * Formats a price of the given security: in percent of the nominal
+         * value for percentage-quoted securities if the price is given in the
+         * currency of the security, otherwise like
+         * {@link #format(String, long, String)}.
+         */
+        public String formatFor(Security security, String currencyCode, long quote, String skipCurrency)
+        {
+            return isPercentageQuoted(security, currencyCode) ? formatPercentage(quote)
+                            : format(currencyCode, quote, skipCurrency);
+        }
+
+        /**
+         * Formats a price of the given security: in percent of the nominal
+         * value for percentage-quoted securities, otherwise like
+         * {@link #format(String, long)}.
+         */
+        public String formatFor(Security security, String currencyCode, long quote)
+        {
+            return isPercentageQuoted(security, currencyCode) ? formatPercentage(quote) : format(currencyCode, quote);
+        }
+
+        /**
+         * Formats a price of the given security: in percent of the nominal
+         * value for percentage-quoted securities, otherwise like
+         * {@link #format(Quote)}.
+         */
+        public String formatFor(Security security, Quote quote)
+        {
+            return isPercentageQuoted(security, quote.getCurrencyCode()) ? formatPercentage(quote.getAmount())
+                            : format(quote);
+        }
+
+        /**
+         * Formats a price of the given security: in percent of the nominal
+         * value for percentage-quoted securities, otherwise like
+         * {@link #format(Quote, String)}.
+         */
+        public String formatFor(Security security, Quote quote, String skipCurrency)
+        {
+            return isPercentageQuoted(security, quote.getCurrencyCode()) ? formatPercentage(quote.getAmount())
+                            : format(quote, skipCurrency);
+        }
+
+        private String formatPercentage(long quote)
+        {
+            return format(quote) + "%"; //$NON-NLS-1$
+        }
     }
 
     public static final Values<Long> Amount = new Values<Long>("#,##0.00", 2) //$NON-NLS-1$
@@ -298,6 +417,27 @@ public abstract class Values<E>
                 return format.format(share / divider());
         }
     };
+
+    /**
+     * Returns true if prices of the security are given in percent of the
+     * nominal value.
+     */
+    private static boolean isPercentageQuoted(Security security)
+    {
+        return security != null && security.isPercentageQuoted();
+    }
+
+    /**
+     * Returns true if a price in the given currency is to be shown in percent:
+     * a percentage refers to the nominal value in the currency of the
+     * security. A price converted into another currency is not a percentage
+     * and keeps its currency.
+     */
+    private static boolean isPercentageQuoted(Security security, String currencyCode)
+    {
+        return isPercentageQuoted(security)
+                        && (currencyCode == null || currencyCode.equals(security.getCurrencyCode()));
+    }
 
     public static final QuoteValues Quote = new QuoteValues(); // NOSONAR
 

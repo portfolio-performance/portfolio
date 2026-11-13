@@ -60,20 +60,24 @@ public class RevertBuySellAction extends Action
         Money feesAndTaxes = tx.getUnits().filter(u -> u.getType() == Unit.Type.FEE || u.getType() == Unit.Type.TAX) //
                         .map(Unit::getAmount).collect(MoneyCollectors.sum(tx.getCurrencyCode()));
 
+        // accrued interest is paid with a purchase and received with a sale,
+        // i.e. it is added in both cases
+        Money accruedInterest = tx.getAccruedInterest();
+
         Type type = tx.getType();
         if (type == PortfolioTransaction.Type.BUY)
         {
             buysell.getAccountTransaction().setType(AccountTransaction.Type.SELL);
             tx.setType(PortfolioTransaction.Type.SELL);
 
-            buysell.setMonetaryAmount(grossAmount.subtract(feesAndTaxes));
+            buysell.setMonetaryAmount(grossAmount.subtract(feesAndTaxes).add(accruedInterest));
         }
         else if (type == PortfolioTransaction.Type.SELL)
         {
             buysell.getAccountTransaction().setType(AccountTransaction.Type.BUY);
             tx.setType(PortfolioTransaction.Type.BUY);
 
-            buysell.setMonetaryAmount(grossAmount.add(feesAndTaxes));
+            buysell.setMonetaryAmount(grossAmount.add(feesAndTaxes).add(accruedInterest));
         }
         else
         {
