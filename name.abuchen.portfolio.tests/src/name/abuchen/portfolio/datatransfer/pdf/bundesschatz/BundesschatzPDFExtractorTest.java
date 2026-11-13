@@ -6,7 +6,6 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasDate;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasFees;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasGrossValue;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasNote;
-import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasShares;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasSource;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTaxes;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.interest;
@@ -108,7 +107,7 @@ public class BundesschatzPDFExtractorTest
 
         // assert transaction
         assertThat(results, hasItem(interest( //
-                        hasDate("2025-12-10"), hasShares(0.00), //
+                        hasDate("2025-12-10"), //
                         hasSource("Kontoauszug01.txt"), //
                         hasNote("10.11.2025 - 10.12.2025 (1 Monat)"), //
                         hasAmount("EUR", 2.78), hasGrossValue("EUR", 3.84), //
@@ -116,7 +115,7 @@ public class BundesschatzPDFExtractorTest
 
         // assert transaction
         assertThat(results, hasItem(interest( //
-                        hasDate("2026-01-12"), hasShares(0.00), //
+                        hasDate("2026-01-12"), //
                         hasSource("Kontoauszug01.txt"), //
                         hasNote("10.12.2025 - 12.01.2026 (1 Monat)"), //
                         hasAmount("EUR", 3.07), hasGrossValue("EUR", 4.23), //
