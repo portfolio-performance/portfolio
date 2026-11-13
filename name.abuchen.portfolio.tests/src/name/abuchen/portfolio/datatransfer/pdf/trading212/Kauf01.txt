@@ -1,0 +1,64 @@
+PDFBox Version: 3.0.6
+Portfolio Performance Version: 0.83.1
+System: macosx | aarch64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+NAME DES KUNDEN KUNDEN-ID
+DBkQavr TTrslKQ 04821913
+Handelsbestätigung
+Generiert von Trading 212 EU GmbH am 15. April 2026 um 15:29(UTC).
+Auftragsdetails
+Wertpapier Tencent
+Symbol NNND
+ISIN KYG875721634
+Art Market
+Anweisung Kaufen
+Status Ausgeführt
+Auftrags-ID-Nr. 76880828286
+Ausführungsnummer 43084871189
+Ausführungszeitpunkt 15 Apr 2026, 06:07:41 (UTC)
+Sitzung Reguläre Zeiten
+Ausführungsplatzes OTC
+Anzahl 0.92438528
+Ausführungskurs €54.09
+Wert €50
+Wechselkurs 1
+FX Gebühr -
+Gebühren der Handelsplattform &
+-
+Steuern
+Kosten €50.00
+Trading 212 handelt bei allen Geschäften als Auftraggeber oder Vermittler und auf reiner Ausführungsbasis.
+Die an einer Börse getätigten Anlagegeschäfte folgen dem Standardabwicklungszyklus für Aktien: Abschlusstag plus zwei Tage (T+2), auch wenn dieser Zeitraum aus
+betrieblichen Gründen gelegentlich verlängert werden kann.
+Trading 212 ist ein Handelsname von Trading 212 EU GmbH. Trading 212 EU GmbH ist in Deutschland registriert (Firmennummer 101710). Eingetragene Adresse: Bahnstraße
+47, 40878 Ratingen, Deutschland. Trading 212 EU GmbH ist von der BaFin autorisiert und reguliert (Lizenznummer 10109603). 1/2
+NAME DES KUNDEN KUNDEN-ID
+lSWYLTV cqZQSKe 30030851
+Glossar
+ISIN
+Ein eindeutiger Code, der zur internationalen Identifizierung eines bestimmten Finanzinstruments (z. B. einer Aktie oder eines
+ETF) verwendet wird.
+Auftrags-ID-Nr.
+Die Identifikationsnummer des gesamten Auftrags. Ein Auftrag kann mehrere Ausführungen haben.
+Sitzung
+Die Sitzung, in der der Handel ausgeführt wurde, so dass Kunden zwischen Aufträgen während der Hauptzeiten, der
+verlängerten (vor- und nachbörslichen) und der Über-Nacht-Handelszeiten unterscheiden können.
+Ausführungsnummer
+Eine eindeutige Kennung für eine bestimmte Ausführung innerhalb eines Auftrags.
+Wert
+Der gesamte Wert des Trades/der Position, wobei die Quantität mit dem Ausführungspreis multipliziert wird.
+Wechselkurs
+Der zum Zeitpunkt der Trade-Ausführung geltende Wechselkurs.
+Gebühren der Handelsplattform & Steuern
+Alle von den Behörden auferlegten obligatorischen Gebühren , darunter Stempelgebühren, Finanztransaktionssteuern, PTM-
+Abgaben, FINRA-Gebühren, SEC-Gebühren und Quellensteuern.
+Steuern
+Der Gesamtbetrag der auf Ihr Konto anfallenden Steuern, einschließlich Abgeltungssteuer, Solidaritätszuschlag und ggf.
+Kirchensteuer.
+Kosten
+Der insgesamt gezahlte Betrag für den Kauf, einschließlich aller anfallenden Kosten und Gebühren.
+Trading 212 handelt bei allen Geschäften als Auftraggeber oder Vermittler und auf reiner Ausführungsbasis.
+Die an einer Börse getätigten Anlagegeschäfte folgen dem Standardabwicklungszyklus für Aktien: Abschlusstag plus zwei Tage (T+2), auch wenn dieser Zeitraum aus
+betrieblichen Gründen gelegentlich verlängert werden kann.
+Trading 212 ist ein Handelsname von Trading 212 EU GmbH. Trading 212 EU GmbH ist in Deutschland registriert (Firmennummer 101710). Eingetragene Adresse: Bahnstraße
+47, 40878 Ratingen, Deutschland. Trading 212 EU GmbH ist von der BaFin autorisiert und reguliert (Lizenznummer 10109603). 2/2
