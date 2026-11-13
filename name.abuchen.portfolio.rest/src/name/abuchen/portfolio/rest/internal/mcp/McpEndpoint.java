@@ -29,10 +29,10 @@ import name.abuchen.portfolio.rest.internal.VersionHandler;
  * <b>No session model.</b> No {@code Mcp-Session-Id} is issued, responses are
  * plain {@code application/json} whatever {@code Accept} asks for, and
  * {@code GET} and {@code DELETE} fall through to the router's 405 - an SSE
- * stream is a parked request and this server runs a two-thread pool, which is
- * why ADR 0002 already refused long-polling. Everything a session could hold
- * travels per request instead. If a client ever demands a session id, emit a
- * constant one and ignore it coming back.
+ * stream is a parked request, which is why ADR 0002 already refused
+ * long-polling. Everything a session could hold travels per request instead. If
+ * a client ever demands a session id, emit a constant one and ignore it coming
+ * back.
  * <p/>
  * <b>Authorisation is per JSON-RPC method</b> (ADR 0005): {@code initialize},
  * {@code tools/list} and {@code ping} answer without a token, because all they
@@ -205,14 +205,20 @@ public final class McpEndpoint
         if (!request.authenticated())
         {
             // the one place a missing token is a refusal rather than a design,
-            // so the only place that files one
+            // so the only place that files one. A header in the wrong shape is a
+            // different fault from no header at all, and the preference page has
+            // to be able to tell them apart.
             RejectedConnections.record(request.path(), request.userAgent(),
-                            request.authorization() == Request.Authorization.INVALID);
+                            request.authorization() == Request.Authorization.INVALID,
+                            reasonOf(request.authorization()));
+
+            var fault = request.authorization() == Request.Authorization.WRONG_SCHEME
+                    ? "The `Authorization` header this connector sent does not carry a bearer token."
+                    : "Portfolio Performance will not answer this connector until it presents an access token.";
 
             // ADR 0005: a 401 reaches nobody. The chat does.
-            return toolError("Portfolio Performance will not answer this connector until it presents an access token."
-                            + "\n\nAsk the user to open Preferences → MCP Server & REST API in Portfolio Performance, "
-                            + "add a client there, and copy the token it shows once into this connector's "
+            return toolError(fault + "\n\nAsk the user to open Preferences → MCP Server & REST API in Portfolio "
+                            + "Performance, add a client there, and copy the token it shows once into this connector's "
                             + "`Authorization` header as `Bearer <token>`. Nothing can be read or changed until they "
                             + "have.");
         }
@@ -254,6 +260,17 @@ public final class McpEndpoint
                             + ". Nothing the user did caused this, and retrying the same call will probably fail the "
                             + "same way.");
         }
+    }
+
+    /** the fault behind an unauthenticated call, spelled for the preference page */
+    private static RejectedConnections.Reason reasonOf(Request.Authorization authorization)
+    {
+        return switch (authorization)
+        {
+            case INVALID -> RejectedConnections.Reason.INVALID_TOKEN;
+            case WRONG_SCHEME -> RejectedConnections.Reason.NO_BEARER_SCHEME;
+            default -> RejectedConnections.Reason.NO_HEADER;
+        };
     }
 
     /**
