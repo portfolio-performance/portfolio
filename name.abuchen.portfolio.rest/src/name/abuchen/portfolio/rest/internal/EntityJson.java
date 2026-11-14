@@ -27,6 +27,7 @@ import name.abuchen.portfolio.snapshot.AssetPosition;
 import name.abuchen.portfolio.snapshot.ClientPerformanceSnapshot;
 import name.abuchen.portfolio.snapshot.ClientPerformanceSnapshot.CategoryType;
 import name.abuchen.portfolio.snapshot.ClientSnapshot;
+import name.abuchen.portfolio.snapshot.SecurityPosition;
 import name.abuchen.portfolio.snapshot.security.LazySecurityPerformanceRecord;
 import name.abuchen.portfolio.snapshot.trades.Trade;
 import name.abuchen.portfolio.util.TradeCalendarManager;
@@ -189,12 +190,27 @@ public final class EntityJson
         var items = new JsonArray();
         snapshot.getAssetPositions() //
                         .sorted(new AssetPosition.ByDescription()) //
-                        .forEach(position -> items.add(toJson(position, total, snapshot.getTime())));
+                        .forEach(position -> items.add(holding(position.getPosition(), position.getValuation(), total,
+                                        snapshot.getTime())));
         json.add("items", items); //$NON-NLS-1$
         return json;
     }
 
-    private static JsonObject toJson(AssetPosition position, Money totalAssets, LocalDate valuationDate)
+    /**
+     * One holding row, from the position and the value it is worth in the
+     * reporting currency. Not private: a report scoped to a single investment or
+     * cash account builds its rows here, so that a scoped answer states a
+     * holding exactly as the file-wide one does.
+     *
+     * @param valuation
+     *            the value in the reporting currency, as the caller's converter
+     *            produced it
+     * @param totalAssets
+     *            what the weight is a share of - the whole file, or, for a scoped
+     *            report, that one account
+     */
+    /* package */ static JsonObject holding(SecurityPosition position, Money valuation, Money totalAssets,
+                    LocalDate valuationDate)
     {
         var security = position.getSecurity();
         var vehicle = position.getInvestmentVehicle();
@@ -206,12 +222,12 @@ public final class EntityJson
 
         if (security != null)
         {
-            json.add("shares", decimal(position.getPosition().getShares(), Values.Share.precision())); //$NON-NLS-1$
+            json.add("shares", decimal(position.getShares(), Values.Share.precision())); //$NON-NLS-1$
 
             // the price the valuation is based on; its date may be well before
             // the snapshot date (stale quotes, fallback to the price of the
             // last transaction) - that staleness must be visible on the wire
-            var securityPrice = position.getPosition().getPrice();
+            var securityPrice = position.getPrice();
             var price = new JsonObject();
             price.add("value", decimal(securityPrice.getValue(), Values.Quote.precision())); //$NON-NLS-1$
             // a held instrument always has a currency: the application refuses
@@ -243,13 +259,16 @@ public final class EntityJson
             }
         }
 
-        json.add("valuation", toJson(position.getValuation())); //$NON-NLS-1$
-        json.add("weight", weight(totalAssets.isZero() ? 0d : position.getShare())); //$NON-NLS-1$
+        json.add("valuation", toJson(valuation)); //$NON-NLS-1$
+        // the same share the unscoped report states: this value over the total the
+        // report is about - the whole file, or, when scoped, that one account
+        var share = totalAssets.isZero() ? 0d : (double) valuation.getAmount() / (double) totalAssets.getAmount();
+        json.add("weight", weight(share)); //$NON-NLS-1$
 
         // the value before conversion into the reporting currency; only worth
         // stating when the two differ
-        var local = position.getPosition().calculateValue();
-        if (!local.getCurrencyCode().equals(position.getValuation().getCurrencyCode()))
+        var local = position.calculateValue();
+        if (!local.getCurrencyCode().equals(valuation.getCurrencyCode()))
             json.add("localValuation", toJson(local)); //$NON-NLS-1$
 
         return json;

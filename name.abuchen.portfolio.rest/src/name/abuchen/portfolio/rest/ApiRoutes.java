@@ -483,8 +483,11 @@ public final class ApiRoutes
 
         router.add("GET", "/v1/files/{file}/holdings", calc(resolver, ui, calculation, //$NON-NLS-1$ //$NON-NLS-2$
                         (context, req) -> Response.json(200, HoldingsHandler.list(context.client(), context.factory(),
-                                        req.queryParam("date"), req.queryParam("reportingCurrency")))), //$NON-NLS-1$ //$NON-NLS-2$
-                        "date", "reportingCurrency"); //$NON-NLS-1$ //$NON-NLS-2$
+                                        req.queryParam("date"), //$NON-NLS-1$
+                                        req.queryParam("reportingCurrency"), //$NON-NLS-1$
+                                        req.queryParam("investmentAccount"), req.queryParam("cashAccount")))), //$NON-NLS-1$ //$NON-NLS-2$
+                        "date", "reportingCurrency", "investmentAccount", "cashAccount"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+
         // how the file classifies its vehicles: the trees, their target weights
         // and their direct assignments - the shape of a portfolio, which no other
         // read of this API states
