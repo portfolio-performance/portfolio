@@ -71,7 +71,7 @@ public final class PerformanceHandler
     }
 
     /** whether any day of the index valued the file above zero, or moved money in or out of it */
-    private static boolean heldAnything(PerformanceIndex index)
+    static boolean heldAnything(PerformanceIndex index)
     {
         for (var total : index.getTotals())
             if (total != 0)
