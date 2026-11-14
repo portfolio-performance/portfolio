@@ -19,7 +19,9 @@ import com.google.gson.JsonElement;
 import name.abuchen.portfolio.junit.AccountBuilder;
 import name.abuchen.portfolio.junit.PortfolioBuilder;
 import name.abuchen.portfolio.junit.SecurityBuilder;
+import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.money.CurrencyUnit;
@@ -33,7 +35,15 @@ public class HoldingsTest
     /** calls the handler with a factory of its own, as the host would provide it */
     private static JsonElement list(Client client, String date, String currency)
     {
-        return HoldingsHandler.list(client, new ExchangeRateProviderFactory(client), date, currency);
+        return HoldingsHandler.list(client, new ExchangeRateProviderFactory(client), date, currency, null, null);
+    }
+
+    /** the same, narrowed to one account - an investment account or a cash account */
+    private static JsonElement list(Client client, String date, String currency, String investmentAccount,
+                    String cashAccount)
+    {
+        return HoldingsHandler.list(client, new ExchangeRateProviderFactory(client), date, currency, investmentAccount,
+                        cashAccount);
     }
 
     @Test
@@ -108,6 +118,134 @@ public class HoldingsTest
         assertThat(cash.has("priceMissedTradingDays"), is(false));
         assertThat(cash.get("valuation").getAsJsonObject().get("value").getAsDouble(), is(500d));
         assertThat(cash.get("weight").getAsDouble(), closeTo(0.3125, 1e-10));
+    }
+
+    // // scope: the same statement narrowed to one account
+
+    private record Fixture(Client client, Security security, Account cash, Portfolio depot)
+    {
+    }
+
+    /** ACME worth 1100 in a depot, 500 in its reference cash account, 1600 across the file */
+    private static Fixture fixture()
+    {
+        var client = new Client();
+
+        var security = new SecurityBuilder() //
+                        .addPrice("2026-07-01", Values.Quote.factorize(110)) //
+                        .addTo(client);
+        security.setName("ACME");
+
+        var cash = new AccountBuilder() //
+                        .deposit_("2026-01-01", Values.Amount.factorize(1500)) //
+                        .addTo(client);
+        cash.setName("Cash");
+
+        var depot = new PortfolioBuilder(cash) //
+                        .buy(security, "2026-01-15", Values.Share.factorize(10), Values.Amount.factorize(1000)) //
+                        .addTo(client);
+        depot.setName("Depot");
+
+        return new Fixture(client, security, cash, depot);
+    }
+
+    /** sent without an account, the answer is exactly what it was: no scope, file-wide totals */
+    @Test
+    public void testWithoutScopeNothingIsAdded()
+    {
+        var f = fixture();
+        var holdings = list(f.client(), "2026-07-20", null).getAsJsonObject();
+
+        assertThat(holdings.has("scope"), is(false));
+        assertThat(holdings.get("items").getAsJsonArray().size(), is(2));
+        assertThat(holdings.get("totalAssets").getAsJsonObject().get("value").getAsDouble(), is(1600d));
+    }
+
+    @Test
+    public void testScopedToAnInvestmentAccount()
+    {
+        var f = fixture();
+        var holdings = list(f.client(), "2026-07-20", null, f.depot().getUUID(), null).getAsJsonObject();
+
+        // the scope says once what a column on every row would repeat
+        var scope = holdings.get("scope").getAsJsonObject();
+        assertThat(scope.get("type").getAsString(), is("investment-account"));
+        assertThat(scope.get("uuid").getAsString(), is(f.depot().getUUID()));
+        assertThat(scope.get("name").getAsString(), is("Depot"));
+        assertThat(scope.get("referenceCashAccount").getAsJsonObject().get("uuid").getAsString(), //$NON-NLS-1$
+                        is(f.cash().getUUID()));
+
+        // only the position: the settlement cash is a cash account of its own, so
+        // it belongs to a call of its own, not to these rows
+        var items = holdings.get("items").getAsJsonArray();
+        assertThat(items.size(), is(1));
+
+        var position = items.get(0).getAsJsonObject();
+        assertThat(position.get("uuid").getAsString(), is(f.security().getUUID()));
+        assertThat(position.has("investmentAccount"), is(false));
+
+        // the row is stated exactly as in the file-wide report - same value, same
+        // price - while the total and the weight are the account's: 1100 of 1100,
+        // not the file's 1600 and 0.6875
+        assertThat(position.get("valuation").getAsJsonObject().get("value").getAsDouble(), is(1100d));
+        assertThat(position.get("price").getAsJsonObject().get("value").getAsDouble(), is(110d));
+        assertThat(position.get("weight").getAsDouble(), closeTo(1d, 1e-10));
+
+        assertThat(holdings.get("totalAssets").getAsJsonObject().get("value").getAsDouble(), is(1100d));
+    }
+
+    @Test
+    public void testScopedToACashAccount()
+    {
+        var f = fixture();
+        var holdings = list(f.client(), "2026-07-20", null, null, f.cash().getUUID()).getAsJsonObject();
+
+        assertThat(holdings.get("scope").getAsJsonObject().get("type").getAsString(), is("cash-account"));
+        assertThat(holdings.get("scope").getAsJsonObject().has("referenceCashAccount"), is(false));
+
+        var items = holdings.get("items").getAsJsonArray();
+        assertThat(items.size(), is(1));
+        assertThat(items.get(0).getAsJsonObject().get("type").getAsString(), is("cash-account"));
+        assertThat(items.get(0).getAsJsonObject().get("valuation").getAsJsonObject().get("value").getAsDouble(),
+                        is(500d));
+
+        assertThat(holdings.get("totalAssets").getAsJsonObject().get("value").getAsDouble(), is(500d));
+    }
+
+    @Test
+    public void testUnknownAccountUuidIs400()
+    {
+        var f = fixture();
+
+        try
+        {
+            list(f.client(), "2026-07-20", null, "no-such-account", null);
+            Assert.fail("expected ApiException");
+        }
+        catch (ApiException e)
+        {
+            assertThat(e.getStatus(), is(400));
+            assertThat(e.getErrors().get(0).field(), is("investmentAccount"));
+            assertThat(e.getErrors().get(0).code(), is("invalid-value"));
+        }
+    }
+
+    @Test
+    public void testBothScopesAtOnceIs400()
+    {
+        var f = fixture();
+
+        try
+        {
+            list(f.client(), "2026-07-20", null, f.depot().getUUID(), f.cash().getUUID());
+            Assert.fail("expected ApiException");
+        }
+        catch (ApiException e)
+        {
+            assertThat(e.getStatus(), is(400));
+            assertThat(e.getErrors().get(0).field(), is("investmentAccount"));
+            assertThat(e.getErrors().get(0).code(), is("invalid-value"));
+        }
     }
 
     /** a quote dated exactly the valuation date is younger than it, not stale */
