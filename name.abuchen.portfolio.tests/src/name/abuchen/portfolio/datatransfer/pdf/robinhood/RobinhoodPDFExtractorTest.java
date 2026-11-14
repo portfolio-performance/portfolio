@@ -192,7 +192,7 @@ public class RobinhoodPDFExtractorTest
 
         // check purchase transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2025-12-31"), hasShares(10.00), //
+                        hasDate("2025-12-31T00:00"), hasShares(10.00), //
                         hasSource("AccountStatement01.txt"), //
                         hasNote(null), //
                         hasAmount("USD", 736.65), hasGrossValue("USD", 736.65), //
@@ -200,7 +200,7 @@ public class RobinhoodPDFExtractorTest
 
         // check sale transaction
         assertThat(results, hasItem(sale( //
-                        hasDate("2026-01-02"), hasShares(1.00), //
+                        hasDate("2026-01-02T00:00"), hasShares(1.00), //
                         hasSource("AccountStatement01.txt"), //
                         hasNote(null), //
                         hasAmount("USD", 224.36), hasGrossValue("USD", 224.36), //
@@ -208,7 +208,7 @@ public class RobinhoodPDFExtractorTest
 
         // check sale transaction
         assertThat(results, hasItem(sale( //
-                        hasDate("2026-01-05"), hasShares(1.00), //
+                        hasDate("2026-01-05T00:00"), hasShares(1.00), //
                         hasSource("AccountStatement01.txt"), //
                         hasNote(null), //
                         hasAmount("USD", 232.72), hasGrossValue("USD", 232.72), //
@@ -216,7 +216,7 @@ public class RobinhoodPDFExtractorTest
 
         // check purchase transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2026-01-08"), hasShares(2.00), //
+                        hasDate("2026-01-08T00:00"), hasShares(2.00), //
                         hasSource("AccountStatement01.txt"), //
                         hasNote(null), //
                         hasAmount("USD", 224.24), hasGrossValue("USD", 224.24), //
@@ -224,7 +224,7 @@ public class RobinhoodPDFExtractorTest
 
         // check purchase transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2026-01-09"), hasShares(2.00), //
+                        hasDate("2026-01-09T00:00"), hasShares(2.00), //
                         hasSource("AccountStatement01.txt"), //
                         hasNote(null), //
                         hasAmount("USD", 220.48), hasGrossValue("USD", 220.48), //
@@ -232,7 +232,7 @@ public class RobinhoodPDFExtractorTest
 
         // check sale transaction
         assertThat(results, hasItem(sale( //
-                        hasDate("2026-01-09"), hasShares(4.00), //
+                        hasDate("2026-01-09T00:00"), hasShares(4.00), //
                         hasSource("AccountStatement01.txt"), //
                         hasNote(null), //
                         hasAmount("USD", 181.44), hasGrossValue("USD", 181.44), //
@@ -240,7 +240,7 @@ public class RobinhoodPDFExtractorTest
 
         // check purchase transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2026-01-09"), hasShares(12.00), //
+                        hasDate("2026-01-09T00:00"), hasShares(12.00), //
                         hasSource("AccountStatement01.txt"), //
                         hasNote(null), //
                         hasAmount("USD", 907.20), hasGrossValue("USD", 907.20), //
@@ -248,7 +248,7 @@ public class RobinhoodPDFExtractorTest
 
         // check purchase transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2026-01-12"), hasShares(2.00), //
+                        hasDate("2026-01-12T00:00"), hasShares(2.00), //
                         hasSource("AccountStatement01.txt"), //
                         hasNote(null), //
                         hasAmount("USD", 218.48), hasGrossValue("USD", 218.48), //
@@ -256,7 +256,7 @@ public class RobinhoodPDFExtractorTest
 
         // check purchase transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2026-01-12"), hasShares(12.00), //
+                        hasDate("2026-01-12T00:00"), hasShares(12.00), //
                         hasSource("AccountStatement01.txt"), //
                         hasNote(null), //
                         hasAmount("USD", 326.88), hasGrossValue("USD", 326.88), //
@@ -264,7 +264,7 @@ public class RobinhoodPDFExtractorTest
 
         // check purchase transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2026-01-13"), hasShares(2.00), //
+                        hasDate("2026-01-13T00:00"), hasShares(2.00), //
                         hasSource("AccountStatement01.txt"), //
                         hasNote(null), //
                         hasAmount("USD", 632.48), hasGrossValue("USD", 632.48), //
@@ -272,7 +272,7 @@ public class RobinhoodPDFExtractorTest
 
         // check purchase transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2026-01-13"), hasShares(2.00), //
+                        hasDate("2026-01-13T00:00"), hasShares(2.00), //
                         hasSource("AccountStatement01.txt"), //
                         hasNote(null), //
                         hasAmount("USD", 624.72), hasGrossValue("USD", 624.72), //
@@ -280,7 +280,7 @@ public class RobinhoodPDFExtractorTest
 
         // check purchase transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2026-01-13"), hasShares(2.00), //
+                        hasDate("2026-01-13T00:00"), hasShares(2.00), //
                         hasSource("AccountStatement01.txt"), //
                         hasNote(null), //
                         hasAmount("USD", 621.44), hasGrossValue("USD", 621.44), //
@@ -288,7 +288,7 @@ public class RobinhoodPDFExtractorTest
 
         // check purchase transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2026-01-13"), hasShares(2.00), //
+                        hasDate("2026-01-13T00:00"), hasShares(2.00), //
                         hasSource("AccountStatement01.txt"), //
                         hasNote(null), //
                         hasAmount("USD", 277.44), hasGrossValue("USD", 277.44), //
@@ -296,7 +296,7 @@ public class RobinhoodPDFExtractorTest
 
         // check purchase transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2026-01-14"), hasShares(2.00), //
+                        hasDate("2026-01-14T00:00"), hasShares(2.00), //
                         hasSource("AccountStatement01.txt"), //
                         hasNote(null), //
                         hasAmount("USD", 208.72), hasGrossValue("USD", 208.72), //
@@ -304,7 +304,7 @@ public class RobinhoodPDFExtractorTest
 
         // check purchase transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2026-01-14"), hasShares(2.00), //
+                        hasDate("2026-01-14T00:00"), hasShares(2.00), //
                         hasSource("AccountStatement01.txt"), //
                         hasNote(null), //
                         hasAmount("USD", 617.20), hasGrossValue("USD", 617.20), //
@@ -312,7 +312,7 @@ public class RobinhoodPDFExtractorTest
 
         // check purchase transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2026-01-14"), hasShares(1.00), //
+                        hasDate("2026-01-14T00:00"), hasShares(1.00), //
                         hasSource("AccountStatement01.txt"), //
                         hasNote(null), //
                         hasAmount("USD", 464.36), hasGrossValue("USD", 464.36), //
@@ -320,7 +320,7 @@ public class RobinhoodPDFExtractorTest
 
         // check sale transaction
         assertThat(results, hasItem(sale( //
-                        hasDate("2026-01-15"), hasShares(2.00), //
+                        hasDate("2026-01-15T00:00"), hasShares(2.00), //
                         hasSource("AccountStatement01.txt"), //
                         hasNote(null), //
                         hasAmount("USD", 456.36), hasGrossValue("USD", 456.36), //
@@ -328,7 +328,7 @@ public class RobinhoodPDFExtractorTest
 
         // check sale transaction
         assertThat(results, hasItem(sale( //
-                        hasDate("2026-01-15"), hasShares(2.00), //
+                        hasDate("2026-01-15T00:00"), hasShares(2.00), //
                         hasSource("AccountStatement01.txt"), //
                         hasNote(null), //
                         hasAmount("USD", 457.20), hasGrossValue("USD", 457.20), //
@@ -336,7 +336,7 @@ public class RobinhoodPDFExtractorTest
 
         // check sale transaction
         assertThat(results, hasItem(sale( //
-                        hasDate("2026-01-15"), hasShares(1.00), //
+                        hasDate("2026-01-15T00:00"), hasShares(1.00), //
                         hasSource("AccountStatement01.txt"), //
                         hasNote(null), //
                         hasAmount("USD", 231.12), hasGrossValue("USD", 231.12), //
@@ -344,7 +344,7 @@ public class RobinhoodPDFExtractorTest
 
         // check sale transaction
         assertThat(results, hasItem(sale( //
-                        hasDate("2026-01-15"), hasShares(1.00), //
+                        hasDate("2026-01-15T00:00"), hasShares(1.00), //
                         hasSource("AccountStatement01.txt"), //
                         hasNote(null), //
                         hasAmount("USD", 234.60), hasGrossValue("USD", 234.60), //
@@ -352,7 +352,7 @@ public class RobinhoodPDFExtractorTest
 
         // check sale transaction
         assertThat(results, hasItem(sale( //
-                        hasDate("2026-01-15"), hasShares(2.00), //
+                        hasDate("2026-01-15T00:00"), hasShares(2.00), //
                         hasSource("AccountStatement01.txt"), //
                         hasNote(null), //
                         hasAmount("USD", 472.50), hasGrossValue("USD", 472.50), //
@@ -360,7 +360,7 @@ public class RobinhoodPDFExtractorTest
 
         // check sale transaction
         assertThat(results, hasItem(sale( //
-                        hasDate("2026-01-15"), hasShares(1.00), //
+                        hasDate("2026-01-15T00:00"), hasShares(1.00), //
                         hasSource("AccountStatement01.txt"), //
                         hasNote(null), //
                         hasAmount("USD", 959.48), hasGrossValue("USD", 959.48), //
@@ -368,7 +368,7 @@ public class RobinhoodPDFExtractorTest
 
         // check sale transaction
         assertThat(results, hasItem(sale( //
-                        hasDate("2026-01-15"), hasShares(2.00), //
+                        hasDate("2026-01-15T00:00"), hasShares(2.00), //
                         hasSource("AccountStatement01.txt"), //
                         hasNote(null), //
                         hasAmount("USD", 100.48), hasGrossValue("USD", 100.48), //
@@ -376,7 +376,7 @@ public class RobinhoodPDFExtractorTest
 
         // check purchase transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2026-01-16"), hasShares(1.00), //
+                        hasDate("2026-01-16T00:00"), hasShares(1.00), //
                         hasSource("AccountStatement01.txt"), //
                         hasNote(null), //
                         hasAmount("USD", 107.36), hasGrossValue("USD", 107.36), //
@@ -384,7 +384,7 @@ public class RobinhoodPDFExtractorTest
 
         // check sale transaction
         assertThat(results, hasItem(sale( //
-                        hasDate("2026-01-20"), hasShares(1.00), //
+                        hasDate("2026-01-20T00:00"), hasShares(1.00), //
                         hasSource("AccountStatement01.txt"), //
                         hasNote(null), //
                         hasAmount("USD", 238.48), hasGrossValue("USD", 238.48), //
@@ -392,7 +392,7 @@ public class RobinhoodPDFExtractorTest
 
         // check purchase transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2026-01-20"), hasShares(1.00), //
+                        hasDate("2026-01-20T00:00"), hasShares(1.00), //
                         hasSource("AccountStatement01.txt"), //
                         hasNote(null), //
                         hasAmount("USD", 321.60), hasGrossValue("USD", 321.60), //
@@ -400,7 +400,7 @@ public class RobinhoodPDFExtractorTest
 
         // check purchase transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2026-01-20"), hasShares(1.00), //
+                        hasDate("2026-01-20T00:00"), hasShares(1.00), //
                         hasSource("AccountStatement01.txt"), //
                         hasNote(null), //
                         hasAmount("USD", 318.72), hasGrossValue("USD", 318.72), //
@@ -408,7 +408,7 @@ public class RobinhoodPDFExtractorTest
 
         // check purchase transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2026-01-20"), hasShares(1.00), //
+                        hasDate("2026-01-20T00:00"), hasShares(1.00), //
                         hasSource("AccountStatement01.txt"), //
                         hasNote(null), //
                         hasAmount("USD", 604.24), hasGrossValue("USD", 604.24), //
@@ -416,7 +416,7 @@ public class RobinhoodPDFExtractorTest
 
         // check purchase transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2026-01-20"), hasShares(1.00), //
+                        hasDate("2026-01-20T00:00"), hasShares(1.00), //
                         hasSource("AccountStatement01.txt"), //
                         hasNote(null), //
                         hasAmount("USD", 454.24), hasGrossValue("USD", 454.24), //
@@ -424,7 +424,7 @@ public class RobinhoodPDFExtractorTest
 
         // check purchase transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2026-01-20"), hasShares(1.00), //
+                        hasDate("2026-01-20T00:00"), hasShares(1.00), //
                         hasSource("AccountStatement01.txt"), //
                         hasNote(null), //
                         hasAmount("USD", 184.12), hasGrossValue("USD", 184.12), //
@@ -432,7 +432,7 @@ public class RobinhoodPDFExtractorTest
 
         // check purchase transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2026-01-20"), hasShares(2.00), //
+                        hasDate("2026-01-20T00:00"), hasShares(2.00), //
                         hasSource("AccountStatement01.txt"), //
                         hasNote(null), //
                         hasAmount("USD", 365.44), hasGrossValue("USD", 365.44), //
@@ -440,7 +440,7 @@ public class RobinhoodPDFExtractorTest
 
         // check purchase transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2026-01-20"), hasShares(1.00), //
+                        hasDate("2026-01-20T00:00"), hasShares(1.00), //
                         hasSource("AccountStatement01.txt"), //
                         hasNote(null), //
                         hasAmount("USD", 180.60), hasGrossValue("USD", 180.60), //
@@ -448,7 +448,7 @@ public class RobinhoodPDFExtractorTest
 
         // check purchase transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2026-01-20"), hasShares(1.00), //
+                        hasDate("2026-01-20T00:00"), hasShares(1.00), //
                         hasSource("AccountStatement01.txt"), //
                         hasNote(null), //
                         hasAmount("USD", 103.36), hasGrossValue("USD", 103.36), //
@@ -456,7 +456,7 @@ public class RobinhoodPDFExtractorTest
 
         // check purchase transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2026-01-20"), hasShares(15.00), //
+                        hasDate("2026-01-20T00:00"), hasShares(15.00), //
                         hasSource("AccountStatement01.txt"), //
                         hasNote(null), //
                         hasAmount("USD", 404.40), hasGrossValue("USD", 404.40), //
@@ -464,7 +464,7 @@ public class RobinhoodPDFExtractorTest
 
         // check purchase transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2026-01-20"), hasShares(9.00), //
+                        hasDate("2026-01-20T00:00"), hasShares(9.00), //
                         hasSource("AccountStatement01.txt"), //
                         hasNote(null), //
                         hasAmount("USD", 242.64), hasGrossValue("USD", 242.64), //
@@ -472,7 +472,7 @@ public class RobinhoodPDFExtractorTest
 
         // check purchase transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2026-01-20"), hasShares(2.00), //
+                        hasDate("2026-01-20T00:00"), hasShares(2.00), //
                         hasSource("AccountStatement01.txt"), //
                         hasNote(null), //
                         hasAmount("USD", 152.72), hasGrossValue("USD", 152.72), //
@@ -480,7 +480,7 @@ public class RobinhoodPDFExtractorTest
 
         // check purchase transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2026-01-20"), hasShares(2.00), //
+                        hasDate("2026-01-20T00:00"), hasShares(2.00), //
                         hasSource("AccountStatement01.txt"), //
                         hasNote(null), //
                         hasAmount("USD", 152.00), hasGrossValue("USD", 152.00), //
@@ -488,7 +488,7 @@ public class RobinhoodPDFExtractorTest
 
         // check purchase transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2026-01-20"), hasShares(8.00), //
+                        hasDate("2026-01-20T00:00"), hasShares(8.00), //
                         hasSource("AccountStatement01.txt"), //
                         hasNote(null), //
                         hasAmount("USD", 607.68), hasGrossValue("USD", 607.68), //
@@ -496,7 +496,7 @@ public class RobinhoodPDFExtractorTest
 
         // check sale transaction
         assertThat(results, hasItem(sale( //
-                        hasDate("2026-01-21"), hasShares(1.00), //
+                        hasDate("2026-01-21T00:00"), hasShares(1.00), //
                         hasSource("AccountStatement01.txt"), //
                         hasNote(null), //
                         hasAmount("USD", 244.96), hasGrossValue("USD", 244.96), //
@@ -504,7 +504,7 @@ public class RobinhoodPDFExtractorTest
 
         // check sale transaction
         assertThat(results, hasItem(sale( //
-                        hasDate("2026-01-21"), hasShares(2.00), //
+                        hasDate("2026-01-21T00:00"), hasShares(2.00), //
                         hasSource("AccountStatement01.txt"), //
                         hasNote(null), //
                         hasAmount("USD", 105.44), hasGrossValue("USD", 105.44), //
@@ -512,7 +512,7 @@ public class RobinhoodPDFExtractorTest
 
         // check purchase transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2026-01-21"), hasShares(4.00), //
+                        hasDate("2026-01-21T00:00"), hasShares(4.00), //
                         hasSource("AccountStatement01.txt"), //
                         hasNote(null), //
                         hasAmount("USD", 108.48), hasGrossValue("USD", 108.48), //
@@ -520,7 +520,7 @@ public class RobinhoodPDFExtractorTest
 
         // check purchase transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2026-01-21"), hasShares(2.00), //
+                        hasDate("2026-01-21T00:00"), hasShares(2.00), //
                         hasSource("AccountStatement01.txt"), //
                         hasNote(null), //
                         hasAmount("USD", 353.44), hasGrossValue("USD", 353.44), //
@@ -528,7 +528,7 @@ public class RobinhoodPDFExtractorTest
 
         // check purchase transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2026-01-21"), hasShares(24.00), //
+                        hasDate("2026-01-21T00:00"), hasShares(24.00), //
                         hasSource("AccountStatement01.txt"), //
                         hasNote(null), //
                         hasAmount("USD", 640.80), hasGrossValue("USD", 640.80), //
@@ -536,7 +536,7 @@ public class RobinhoodPDFExtractorTest
 
         // check sale transaction
         assertThat(results, hasItem(sale( //
-                        hasDate("2026-01-22"), hasShares(1.00), //
+                        hasDate("2026-01-22T00:00"), hasShares(1.00), //
                         hasSource("AccountStatement01.txt"), //
                         hasNote(null), //
                         hasAmount("USD", 254.73), hasGrossValue("USD", 254.73), //
@@ -544,7 +544,7 @@ public class RobinhoodPDFExtractorTest
 
         // check sale transaction
         assertThat(results, hasItem(sale( //
-                        hasDate("2026-01-23"), hasShares(2.00), //
+                        hasDate("2026-01-23T00:00"), hasShares(2.00), //
                         hasSource("AccountStatement01.txt"), //
                         hasNote(null), //
                         hasAmount("USD", 528.96), hasGrossValue("USD", 528.96), //
@@ -552,7 +552,7 @@ public class RobinhoodPDFExtractorTest
 
         // check purchase transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2026-01-23"), hasShares(1.00), //
+                        hasDate("2026-01-23T00:00"), hasShares(1.00), //
                         hasSource("AccountStatement01.txt"), //
                         hasNote(null), //
                         hasAmount("USD", 317.60), hasGrossValue("USD", 317.60), //
@@ -560,7 +560,7 @@ public class RobinhoodPDFExtractorTest
 
         // check purchase transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2026-01-23"), hasShares(2.00), //
+                        hasDate("2026-01-23T00:00"), hasShares(2.00), //
                         hasSource("AccountStatement01.txt"), //
                         hasNote(null), //
                         hasAmount("USD", 597.20), hasGrossValue("USD", 597.20), //
@@ -568,7 +568,7 @@ public class RobinhoodPDFExtractorTest
 
         // check purchase transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2026-01-26"), hasShares(1.00), //
+                        hasDate("2026-01-26T00:00"), hasShares(1.00), //
                         hasSource("AccountStatement01.txt"), //
                         hasNote(null), //
                         hasAmount("USD", 324.00), hasGrossValue("USD", 324.00), //
@@ -576,7 +576,7 @@ public class RobinhoodPDFExtractorTest
 
         // check sale transaction
         assertThat(results, hasItem(sale( //
-                        hasDate("2026-01-27"), hasShares(1.00), //
+                        hasDate("2026-01-27T00:00"), hasShares(1.00), //
                         hasSource("AccountStatement01.txt"), //
                         hasNote(null), //
                         hasAmount("USD", 1469.36), hasGrossValue("USD", 1469.36), //
@@ -584,7 +584,7 @@ public class RobinhoodPDFExtractorTest
 
         // check purchase transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2026-01-28"), hasShares(2.00), //
+                        hasDate("2026-01-28T00:00"), hasShares(2.00), //
                         hasSource("AccountStatement01.txt"), //
                         hasNote(null), //
                         hasAmount("USD", 255.92), hasGrossValue("USD", 255.92), //
@@ -592,7 +592,7 @@ public class RobinhoodPDFExtractorTest
 
         // check purchase transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2026-01-29"), hasShares(1.00), //
+                        hasDate("2026-01-29T00:00"), hasShares(1.00), //
                         hasSource("AccountStatement01.txt"), //
                         hasNote(null), //
                         hasAmount("USD", 327.36), hasGrossValue("USD", 327.36), //
@@ -600,7 +600,7 @@ public class RobinhoodPDFExtractorTest
 
         // check purchase transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2026-01-29"), hasShares(2.00), //
+                        hasDate("2026-01-29T00:00"), hasShares(2.00), //
                         hasSource("AccountStatement01.txt"), //
                         hasNote(null), //
                         hasAmount("USD", 248.72), hasGrossValue("USD", 248.72), //
@@ -608,7 +608,7 @@ public class RobinhoodPDFExtractorTest
 
         // check purchase transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2026-01-29"), hasShares(1.00), //
+                        hasDate("2026-01-29T00:00"), hasShares(1.00), //
                         hasSource("AccountStatement01.txt"), //
                         hasNote(null), //
                         hasAmount("USD", 434.72), hasGrossValue("USD", 434.72), //
@@ -616,7 +616,7 @@ public class RobinhoodPDFExtractorTest
 
         // check purchase transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2026-01-29"), hasShares(1.00), //
+                        hasDate("2026-01-29T00:00"), hasShares(1.00), //
                         hasSource("AccountStatement01.txt"), //
                         hasNote(null), //
                         hasAmount("USD", 100.72), hasGrossValue("USD", 100.72), //
@@ -624,7 +624,7 @@ public class RobinhoodPDFExtractorTest
 
         // check purchase transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2026-01-29"), hasShares(1.00), //
+                        hasDate("2026-01-29T00:00"), hasShares(1.00), //
                         hasSource("AccountStatement01.txt"), //
                         hasNote(null), //
                         hasAmount("USD", 396.72), hasGrossValue("USD", 396.72), //
@@ -632,7 +632,7 @@ public class RobinhoodPDFExtractorTest
 
         // check purchase transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2026-01-29"), hasShares(12.00), //
+                        hasDate("2026-01-29T00:00"), hasShares(12.00), //
                         hasSource("AccountStatement01.txt"), //
                         hasNote(null), //
                         hasAmount("USD", 937.44), hasGrossValue("USD", 937.44), //
