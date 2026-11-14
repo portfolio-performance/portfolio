@@ -8,7 +8,7 @@
    </configIni>
 
    <launcherArgs>
-      <vmArgs>-XX:+IgnoreUnrecognizedVMOptions -Dosgi.requiredJavaVersion=21 -Djdk.xml.elementAttributeLimit=0 --add-modules=ALL-SYSTEM -XX:+UseG1GC -XX:+UseStringDeduplication -Xms512m
+      <vmArgs>-XX:+IgnoreUnrecognizedVMOptions -Dosgi.requiredJavaVersion=21 -Djdk.xml.elementAttributeLimit=0 -XX:+UseG1GC -XX:+UseStringDeduplication -Xms512m
       </vmArgs>
       <vmArgsLin>-Djdk.gtk.version=3
       </vmArgsLin>
@@ -72,6 +72,7 @@
       <plugin id="org.apache.felix.scr" autoStart="true" startLevel="2" />
       <plugin id="org.eclipse.equinox.common" autoStart="true" startLevel="2" />
       <plugin id="org.eclipse.equinox.simpleconfigurator" autoStart="true" startLevel="1" />
+      <plugin id="name.abuchen.portfolio.logging" autoStart="true" startLevel="1" />
       <plugin id="org.apache.aries.spifly.dynamic.bundle" autoStart="true" startLevel="2" />
       <plugin id="org.eclipse.osgi" autoStart="true" startLevel="-1" />
       <property name="osgi.instance.area.default" value="$LOCALAPPDATA$/PortfolioPerformance/workspace" os="win32" />
