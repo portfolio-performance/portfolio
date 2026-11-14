@@ -17,7 +17,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 /**
- * Reads the sixteen tools from {@code mcp-tools.json}. Hand-authored and
+ * Reads the tools from {@code mcp-tools.json}. Hand-authored and
  * guarded by {@code McpToolsDriftTest}, which is how {@code openapi.yaml} is
  * kept honest too; there is no generator and no {@code package.json}.
  * <p/>

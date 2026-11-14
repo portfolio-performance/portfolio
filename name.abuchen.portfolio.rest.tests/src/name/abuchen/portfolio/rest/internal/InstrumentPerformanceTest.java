@@ -800,7 +800,7 @@ public class InstrumentPerformanceTest
 
         var closingValue = money(onlyItem(list(client)).get("valuation").getAsJsonObject(), "closingValue");
 
-        var holdings = HoldingsHandler.list(client, new ExchangeRateProviderFactory(client), CLOSING, null)
+        var holdings = HoldingsHandler.list(client, new ExchangeRateProviderFactory(client), CLOSING, null, null, null) //
                         .getAsJsonObject();
         var holding = holdings.get("items").getAsJsonArray().asList().stream() //
                         .map(element -> element.getAsJsonObject())

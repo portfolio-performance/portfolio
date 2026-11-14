@@ -1,6 +1,6 @@
 {
   "notice": {
-    "about": "Every word the MCP endpoint shows a model: the sixteen tool names, their descriptions, their argument descriptions and their annotations. Read by the /mcp endpoint in this bundle.",
+    "about": "Every word the MCP endpoint shows a model: the tool names, their descriptions, their argument descriptions and their annotations. Read by the /mcp endpoint in this bundle.",
     "stability": "Descriptions and inputSchema are published contract, not prose to tidy. Claude Desktop hashes a tool's description and parameters into the user's \"always allow\" grant, so revising wording silently revokes it. Change these words deliberately, in a release, on purpose.",
     "language": "English only, and excluded from translation. This text is read by a model, not by the user.",
     "fields": {
@@ -134,11 +134,107 @@
       ]
     },
     {
+      "name": "pp_create_instrument",
+      "operationId": "createInstrument",
+      "method": "POST",
+      "pathTemplate": "/v1/files/{file}/instruments",
+      "description": "Adds an instrument to the file: its name, its trading currency, and the identifiers the caller happens to have.\n\n**No quote is fetched.** The application's own dialog asks a provider for quotes and identifiers when a user creates an instrument; a call that reached a provider in the background would cause a side effect the caller can neither see nor order. So this creates an instrument with no quote feed and no prices at all - the feed is set in the application, and master data afterwards with pp_update_instrument. That is the whole of what this tool will not do, and the reason it exists anyway: reaching for a name that is missing is otherwise a trip to the keyboard.\n\n`name` and `currencyCode` are required in practice although no body property can be declared required: leave either out and the call comes back refused with the field named. A currency-less series - what an index is - is deliberately not created here, though the change tool can make an instrument one afterwards. Custom attributes can come along in the same call, keyed and typed exactly as in pp_update_instrument: those definitions belong to the file rather than to the instrument, so there is nothing to wait for.\n\n**An identifier the file already carries is refused, and nothing is created.** If the ISIN or the WKN belongs to another instrument, the refusal names that instrument with its uuid. Two instruments answering to one ISIN send every later search for it to whichever the file happens to list first, which is a mess nobody asked for. A ticker symbol is not that kind of identifier - the same ticker is ordinary across share classes and trading venues - so a shared ticker is not a refusal: those instruments are listed under `sameTickerAs`, and the same is done for the name under `sameNameAs`. Both are absent when the file has nothing else like it.\n\nThe answer carries the instrument with its new `uuid`: unlike a watchlist this has an identifier, and that uuid is how every other instrument tool addresses it. `hasQuoteFeed` and `hasTransactions` say what the record cannot - nothing was fetched, nothing refers to it yet - and that last part is what makes this reversible: pp_delete_instrument removes the instrument again for as long as no transaction and no investment plan uses it, which is the one real undo in this API.\n\nBefore the change is applied the application asks the user, naming the instrument as it will be called: `403 write-declined` is a no that stands, `423 write-unanswered` means nobody answered within two minutes and nothing was changed, and `429 write-pending` means another change is still waiting for an answer. A request that cannot be carried out is refused before anybody is asked about it. Reads are never asked about.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "file": {
+            "type": "string",
+            "description": "The `use` value from pp_list_files, sent exactly as given. Required: there is no default file."
+          },
+          "name": {
+            "type": "string",
+            "description": "What the instrument is to be called. Required in practice: omitted, the call is refused naming this field. Must not be blank."
+          },
+          "currencyCode": {
+            "type": "string",
+            "description": "The trading currency as an ISO 4217 code, e.g. EUR. Required in practice, and refused if the file has no series to that currency - prices are read in this currency."
+          },
+          "isin": {
+            "type": "string",
+            "description": "Twelve characters with a correct check digit, checked as the application checks it. Refused if another instrument already carries it."
+          },
+          "wkn": {
+            "type": "string",
+            "description": "The German securities identifier. Refused if another instrument already carries it."
+          },
+          "tickerSymbol": {
+            "type": "string",
+            "description": "The ticker symbol. Unlike ISIN and WKN this may repeat across the file - then the instruments sharing it are listed under `sameTickerAs`."
+          },
+          "note": {
+            "type": "string",
+            "description": "Free text shown with the instrument."
+          },
+          "attributes": {
+            "type": "object",
+            "description": "Optional, and shaped exactly as in pp_update_instrument: custom attributes keyed by the opaque attribute `id` from pp_list_attribute_types, with a value of the type declared there. The attribute definitions belong to the file, not to the instrument, so they can be set while the instrument is being created."
+          }
+        },
+        "required": [
+          "file"
+        ],
+        "additionalProperties": false
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": false,
+        "openWorldHint": false
+      },
+      "bindings": [
+        {
+          "arg": "file",
+          "where": "path",
+          "wire": "file"
+        },
+        {
+          "arg": "name",
+          "where": "body",
+          "wire": "name"
+        },
+        {
+          "arg": "currencyCode",
+          "where": "body",
+          "wire": "currencyCode"
+        },
+        {
+          "arg": "isin",
+          "where": "body",
+          "wire": "isin"
+        },
+        {
+          "arg": "wkn",
+          "where": "body",
+          "wire": "wkn"
+        },
+        {
+          "arg": "tickerSymbol",
+          "where": "body",
+          "wire": "tickerSymbol"
+        },
+        {
+          "arg": "note",
+          "where": "body",
+          "wire": "note"
+        },
+        {
+          "arg": "attributes",
+          "where": "body",
+          "wire": "attributes"
+        }
+      ]
+    },
+    {
       "name": "pp_update_instrument",
       "operationId": "patchInstrument",
       "method": "PATCH",
       "pathTemplate": "/v1/files/{file}/instruments/{uuid}",
-      "description": "Change an instrument's master data or its custom attributes. This is a merge, not a replacement: only the arguments you pass are touched, and passing null clears a field rather than setting it blank. Nothing else about an instrument is writable here — prices, transactions, quote feeds, events and taxonomies are read-only, and there is no way to create an instrument. Nothing is saved to disk - closing the file without saving discards the change, and there is no other undo. A patch is checked in full before anything is written, so it applies completely or not at all. A patch that names no field this API can write changes nothing: the response is the instrument as it already stands, and the file is not marked dirty.\n\nCustom attributes are addressed by the opaque attribute `id` from pp_list_attribute_types, never by the display name, and each value has to match the type declared there. The types: `string` and `boolean` as JSON strings and booleans; `date` as `YYYY-MM-DD`; `amount`, `quote` and `shares` as plain decimal numbers in currency units or shares (`1234.56`, not scaled); and the two numeric types to mind - a `percent` value is a fraction, so 0.7% is `0.007`, while a `number` value is unscaled, so an attribute the application reads as a percentage takes `5` to mean 5%. A patch that only restates values the instrument already has changes nothing and does not mark the file dirty.\n\nWhile the user has a dialog open in the application, or is part-way through editing a cell, writes are refused until they finish. That is normal and temporary, not a request that went wrong.",
+      "description": "Change an instrument's master data or its custom attributes. This is a merge, not a replacement: only the arguments you pass are touched, and passing null clears a field rather than setting it blank. Nothing else about an instrument is writable here — prices, transactions, quote feeds, events and taxonomies are read-only, and an instrument that does not exist yet is made by pp_create_instrument, not here. Nothing is saved to disk - closing the file without saving discards the change, and there is no other undo. A patch is checked in full before anything is written, so it applies completely or not at all. A patch that names no field this API can write changes nothing: the response is the instrument as it already stands, and the file is not marked dirty.\n\nCustom attributes are addressed by the opaque attribute `id` from pp_list_attribute_types, never by the display name, and each value has to match the type declared there. The types: `string` and `boolean` as JSON strings and booleans; `date` as `YYYY-MM-DD`; `amount`, `quote` and `shares` as plain decimal numbers in currency units or shares (`1234.56`, not scaled); and the two numeric types to mind - a `percent` value is a fraction, so 0.7% is `0.007`, while a `number` value is unscaled, so an attribute the application reads as a percentage takes `5` to mean 5%. A patch that only restates values the instrument already has changes nothing and does not mark the file dirty.\n\nWhile the user has a dialog open in the application, or is part-way through editing a cell, writes are refused until they finish. That is normal and temporary, not a request that went wrong.\n\nBefore the change is applied the application asks the user about it. A no answers `403 write-declined` and it stands - asking again will not change it. Nobody answering within two minutes answers `423 write-unanswered`, and since nothing was changed it can be tried again. While another change is still waiting for an answer this one is refused as `429 write-pending`. The user may also allow further calls of this kind without being asked again. Reads are never asked about.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -276,7 +372,7 @@
       "operationId": "deleteInstrument",
       "method": "DELETE",
       "pathTemplate": "/v1/files/{file}/instruments/{uuid}",
-      "description": "Delete an instrument from a file. Refused outright while any transaction or investment plan still refers to it. Erasing it would take that history with it, and this connector will not make that call on the user's behalf — they have to clear the transactions, or take the instrument out of the investment plan, first; a refusal says which of the two applies. A successful delete names the instrument it removed. Sitting in a watchlist or a taxonomy does not block a delete. Like every write here it is not saved to disk: closing the file without saving brings the instrument back, and there is no other undo.\n\nLike any write, this is refused while the user has a dialog open in the application. That is temporary, not a failure.",
+      "description": "Delete an instrument from a file. Refused outright while any transaction or investment plan still refers to it. Erasing it would take that history with it, and this connector will not make that call on the user's behalf — they have to clear the transactions, or take the instrument out of the investment plan, first; a refusal says which of the two applies. A successful delete names the instrument it removed. Sitting in a watchlist or a taxonomy does not block a delete. Like every write here it is not saved to disk: closing the file without saving brings the instrument back, and there is no other undo.\n\nLike any write, this is refused while the user has a dialog open in the application. That is temporary, not a failure.\n\nBefore the change is applied the application asks the user: `403 write-declined` is a no that stands, `423 write-unanswered` means nobody answered within two minutes and nothing was changed, and `429 write-pending` means another change is still waiting for an answer. Reads are never asked about.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -344,6 +440,147 @@
           "arg": "file",
           "where": "path",
           "wire": "file"
+        }
+      ]
+    },
+    {
+      "name": "pp_list_instrument_prices",
+      "operationId": "listInstrumentPrices",
+      "method": "GET",
+      "pathTemplate": "/v1/files/{file}/instruments/{uuid}/prices",
+      "description": "The stored price history of one instrument: its quotes day by day, oldest first and the newest last - the series the price chart draws and the positions are valued from. Reach for it whenever the question is how a series moved: an instrument record carries no price at all, and a holding names only the single price its own valuation rests on.\n\nThe series includes the instrument's latest quote even when a feed fetched it and it was never stored as history, because that is the quote a valuation rests on. There is no `order`: pages run forward only, so a caller after the recent end of a long series narrows `from` instead of walking everything. `count`, `firstDate` and `lastDate` describe the whole window, not the page. An instrument without a single stored price answers with an empty list, not an error.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "file": {
+            "type": "string",
+            "description": "The `use` value from pp_list_files, sent exactly as given. Required: there is no default file."
+          },
+          "uuid": {
+            "type": "string",
+            "description": "The instrument's `uuid`, from pp_list_instruments. Nothing else resolves: a name, ISIN, WKN or ticker symbol will not."
+          },
+          "from": {
+            "type": "string",
+            "format": "date",
+            "description": "First day of the window, inclusive, as YYYY-MM-DD. Without it, no lower bound."
+          },
+          "to": {
+            "type": "string",
+            "format": "date",
+            "description": "Last day of the window, inclusive, as YYYY-MM-DD. Without it, no upper bound; never before `from`."
+          },
+          "cursor": {
+            "type": "string",
+            "description": "Where a page continues: `page.nextCursor` of the page before. It names this instrument and this window, so a cursor from another is refused rather than quietly skipping prices."
+          },
+          "limit": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "At most this many prices; omit it for as many as fit in one answer. A long series is large: an index held for decades is tens of thousands of quotes."
+          }
+        },
+        "required": [
+          "file",
+          "uuid"
+        ],
+        "additionalProperties": false
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false
+      },
+      "bindings": [
+        {
+          "arg": "file",
+          "where": "path",
+          "wire": "file"
+        },
+        {
+          "arg": "uuid",
+          "where": "path",
+          "wire": "uuid"
+        },
+        {
+          "arg": "from",
+          "where": "query",
+          "wire": "from"
+        },
+        {
+          "arg": "to",
+          "where": "query",
+          "wire": "to"
+        },
+        {
+          "arg": "cursor",
+          "where": "query",
+          "wire": "cursor"
+        },
+        {
+          "arg": "limit",
+          "where": "query",
+          "wire": "limit"
+        }
+      ]
+    },
+    {
+      "name": "pp_update_quotes",
+      "operationId": "updateQuotes",
+      "method": "POST",
+      "pathTemplate": "/v1/files/{file}/quotes/update",
+      "description": "Starts the application's own price update - the job behind its *Update quotes* menu item - for a chosen part of the file.\n\nNothing is fetched here and no provider is picked here. Each instrument keeps the feed the application configured for it, the update runs in the application with its own progress dialog and its own error reporting, and the application itself marks the file unsaved as quotes arrive. What this call settles is the scope - and it is asked about first, like every change here.\n\n`scope` chooses the part of the file. `all` (the default) hands over the whole file the way the plain menu item does, indices and exchange rates along with the instruments. `active` takes every instrument not set to retired. `instrument` takes exactly the one named by `instrument`. `watchlist` takes the instruments of the list named by `watchlist`. Holdings are deliberately not a scope of their own: the menu's version of that resolves them through a valuation, which no part of this call has a use for.\n\nThe answer is `202`, and it describes what was **started**, not what arrived: `securities` in scope, `withQuoteFeed` of those reachable by a feed, `started: true`. The update runs on past this call - either watch the application's own progress dialog, or read pp_list_instrument_prices afterwards to see what came in. `X-Portfolio-Changed` answers whether the file can end up unsaved: `false` when nothing in scope has a feed that could deliver anything, and `true` for `all`, which takes exchange rates with it.\n\nRefused with `400`, before anyone is asked, when `scope` is not one of the four, when `instrument` names no uuid or the file does not have it, when `watchlist` names nothing or no list of that name, or when the body carries a field this call does not read.\n\nBefore it starts, the application asks the user, naming the scope: `403 write-declined` is a no that stands, `423 write-unanswered` means nobody answered within two minutes and nothing was started, and `429 write-pending` means another change is still waiting for an answer.\n\nThis is the one tool of the API that reaches out to the internet, which is exactly why the user is asked. Sending it twice fetches twice.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "file": {
+            "type": "string",
+            "description": "The `use` value from pp_list_files, sent exactly as given. Required: there is no default file."
+          },
+          "scope": {
+            "type": "string",
+            "enum": ["all", "active", "instrument", "watchlist"],
+            "description": "Which part of the file to refresh: `all` the whole file as the menu item does (default), `active` every instrument not set to retired, `instrument` the one named by `instrument`, `watchlist` the instruments of the list named by `watchlist`."
+          },
+          "instrument": {
+            "type": "string",
+            "description": "The uuid of the one instrument to refresh, from pp_list_instruments. Only read when scope is `instrument`; refused as `400` when that scope is chosen without it, or with a uuid the file does not have."
+          },
+          "watchlist": {
+            "type": "string",
+            "description": "The name of the watchlist whose instruments to refresh, spelled as pp_list_watchlists names it. Only read when scope is `watchlist`; refused as `400` when that scope is chosen without it, or with a name the file does not have."
+          }
+        },
+        "required": ["file"],
+        "additionalProperties": false
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": false,
+        "openWorldHint": true
+      },
+      "bindings": [
+        {
+          "arg": "file",
+          "where": "path",
+          "wire": "file"
+        },
+        {
+          "arg": "scope",
+          "where": "body",
+          "wire": "scope"
+        },
+        {
+          "arg": "instrument",
+          "where": "body",
+          "wire": "instrument"
+        },
+        {
+          "arg": "watchlist",
+          "where": "body",
+          "wire": "watchlist"
         }
       ]
     },
@@ -500,11 +737,371 @@
       ]
     },
     {
+      "name": "pp_get_file_info",
+      "operationId": "getFileInfo",
+      "method": "GET",
+      "pathTemplate": "/v1/files/{file}/info",
+      "description": "The file itself, in the cheapest answer this API gives: the currency it counts in, every currency it moves in, the version its XML was read at, and how many of each kind of thing it holds.\n\nWorth reading before anything larger, when a file is not known yet: the counts say whether `pp_list_holdings` will hold a handful of positions or a thousand, and whether there are taxonomies at all before `pp_list_taxonomies` is a question worth asking. `baseCurrency` is the currency every report defaults to; `currencies` are the ones the accounts, portfolios and instruments actually use, so a `reportingCurrency` outside that list converts at 1:1 and names itself in `fxWarnings`.\n\nThe counts are an inventory, not a statement of assets: an instrument with no position still counts, and so does a closed account - what is owned and what it is worth on a date is `pp_list_holdings`. `fileVersion` is the format version the file was read at, not a modification date, and it says nothing about a newer copy on disk.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "file": {
+            "type": "string",
+            "description": "The `use` value from pp_list_files, sent exactly as given. Required: there is no default file."
+          }
+        },
+        "required": [
+          "file"
+        ],
+        "additionalProperties": false
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false
+      },
+      "bindings": [
+        {
+          "arg": "file",
+          "where": "path",
+          "wire": "file"
+        }
+      ]
+    },
+    {
+      "name": "pp_list_watchlists",
+      "operationId": "listWatchlists",
+      "method": "GET",
+      "pathTemplate": "/v1/files/{file}/watchlists",
+      "description": "The watchlists of a file: named baskets of instruments that the application quotes together. A watchlist is not an account and holds nothing - it is a selection of names, the answer to which instruments one keeps an eye on - and it is the one thing in a file without an identifier: `name` is all a reader can quote back, and no uuid anywhere points at a list.\n\nBy default each list only says how full it is (`instrumentCount`); `withInstruments=true` adds the instruments as `{uuid, name}` pairs, which is worth asking for only together with `instrument`, because a working list carries several hundred and this answer is never paged. `instrument` narrows to the lists holding that one instrument - how to ask where a name is kept without pulling every list of the file along.\n\nA watchlist says nothing about ownership: an instrument can be watched without being held, and held without being watched. What is owned and what it is worth is `pp_list_holdings`. When nothing comes back, `empty` says whether the file has no watchlists at all or only none holding what was asked for - two different answers that an empty list cannot tell apart.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "file": {
+            "type": "string",
+            "description": "The `use` value from pp_list_files, sent exactly as given. Required: there is no default file."
+          },
+          "instrument": {
+            "type": "string",
+            "description": "Only the lists holding this one instrument, as its `uuid` from pp_list_instruments. The answer then names the lists, not just the instrument."
+          },
+          "withInstruments": {
+            "type": "boolean",
+            "description": "Whether each list also carries the instruments it holds. Off by default: a working list holds several hundred, and `instrumentCount` states the size either way."
+          }
+        },
+        "required": [
+          "file"
+        ],
+        "additionalProperties": false
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false
+      },
+      "bindings": [
+        {
+          "arg": "file",
+          "where": "path",
+          "wire": "file"
+        },
+        {
+          "arg": "instrument",
+          "where": "query",
+          "wire": "instrument"
+        },
+        {
+          "arg": "withInstruments",
+          "where": "query",
+          "wire": "withInstruments"
+        }
+      ]
+    },
+    {
+      "name": "pp_create_watchlist",
+      "operationId": "createWatchlist",
+      "method": "POST",
+      "pathTemplate": "/v1/files/{file}/watchlists",
+      "description": "Adds a watchlist to the file, optionally already holding instruments.\n\nA watchlist has **no identifier**: its name is the only way to address it, and no uuid anywhere in the file points at one. That answers a question here that no other object of the file asks. A name already in use is refused as `409 name-taken` rather than created, because once two lists share a name nothing this API returns can tell them apart. Names are compared exactly once the spaces around them are gone, and not folded to one case - `Tech` and `tech` are two lists, and the second one is refused only against a list already named `tech`.\n\n`name` is required in practice even though a body property cannot be declared required: leave it out and the call comes back `400` naming the field. The name travels in the body rather than in the path for the same reason it has no uuid - a list name is free text, free text can hold a slash, and a path segment cannot be asked to survive one.\n\n`instruments` takes uuids as pp_list_instruments gives them. One that is not in the file refuses the whole request instead of adding the rest, because a caller that meant to add two names and got one would never hear of it. A list with no instruments is not a failure: that is what the application calls an empty watchlist, and pp_update_watchlist fills it.\n\nBefore the change is applied the application asks the user, naming the list: `403 write-declined` is a no that stands, `423 write-unanswered` means nobody answered within two minutes and nothing was changed, and `429 write-pending` means another change is still waiting for an answer. Reads are never asked about.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "file": {
+            "type": "string",
+            "description": "The `use` value from pp_list_files, sent exactly as given. Required: there is no default file."
+          },
+          "name": {
+            "type": "string",
+            "description": "What the list is to be called, as the navigation will show it. Required in practice: omitted, the call is refused with a 400 naming this field. Refused with `409 name-taken` if the file already has a list of that very name."
+          },
+          "instruments": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Uuids of the instruments the list should hold, from pp_list_instruments. Omit it for an empty list. Any uuid the file does not have refuses the whole request."
+          }
+        },
+        "required": [
+          "file"
+        ],
+        "additionalProperties": false
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": false,
+        "openWorldHint": false
+      },
+      "bindings": [
+        {
+          "arg": "file",
+          "where": "path",
+          "wire": "file"
+        },
+        {
+          "arg": "name",
+          "where": "body",
+          "wire": "name"
+        },
+        {
+          "arg": "instruments",
+          "where": "body",
+          "wire": "instruments"
+        }
+      ]
+    },
+    {
+      "name": "pp_update_watchlist",
+      "operationId": "updateWatchlist",
+      "method": "PATCH",
+      "pathTemplate": "/v1/files/{file}/watchlists",
+      "description": "Puts instruments into one watchlist and takes others out of it, both in one request - so moving a name from one list to another costs one call, and the surface does not grow a tool per direction.\n\n`name` says which list, and is required in practice although a body property cannot be declared required: omitted, the call comes back `400` naming the field. A list the file does not have is refused as `409 no-such-watchlist`, and the refusal names the lists the file does have. As everywhere a watchlist is addressed, the name is in the body and not the path: it is free text, and free text can hold a slash.\n\nGive at least one of `add` or `remove`. Both take uuids from pp_list_instruments, and a uuid the file does not have refuses the whole request rather than being skipped. Something listed under `remove` that the list does not hold is **not** an error - the state asked for already holds - and comes back under `notHeld`, which is what makes this request safe to send twice. Adding a name the list already holds does nothing at all, as the model keeps a list free of duplicates.\n\nBefore the change is applied the application asks the user, naming the list: `403 write-declined` is a no that stands, `423 write-unanswered` means nobody answered within two minutes and nothing was changed, and `429 write-pending` means another change is still waiting for an answer. Reads are never asked about.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "file": {
+            "type": "string",
+            "description": "The `use` value from pp_list_files, sent exactly as given. Required: there is no default file."
+          },
+          "name": {
+            "type": "string",
+            "description": "Which list to change, spelled as pp_list_watchlists names it. Required in practice: omitted, the call is refused with a 400 naming this field."
+          },
+          "add": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Uuids to put into the list, from pp_list_instruments. One already in the list is left as it is."
+          },
+          "remove": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Uuids to take out of the list. Only the selection goes: the instrument itself stays in the file. Uuids the list does not hold are reported under `notHeld` rather than refused."
+          }
+        },
+        "required": [
+          "file"
+        ],
+        "additionalProperties": false
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": true,
+        "idempotentHint": true,
+        "openWorldHint": false
+      },
+      "bindings": [
+        {
+          "arg": "file",
+          "where": "path",
+          "wire": "file"
+        },
+        {
+          "arg": "name",
+          "where": "body",
+          "wire": "name"
+        },
+        {
+          "arg": "add",
+          "where": "body",
+          "wire": "add"
+        },
+        {
+          "arg": "remove",
+          "where": "body",
+          "wire": "remove"
+        }
+      ]
+    },
+    {
+      "name": "pp_get_category_performance",
+      "operationId": "getCategoryPerformance",
+      "method": "GET",
+      "pathTemplate": "/v1/files/{file}/performance/categories/{classification}",
+      "description": "How one class of a taxonomy performed between two dates: the report of `pp_get_overall_performance` with its scope narrowed from the whole file to what one class holds - the same fields, the same signs, the same reconciliation.\n\nWhat a class holds is the application's own reckoning and not merely the vehicles tagged to it: a cash account assigned to the class counts as money, and the settlement cash of a securities account is shared out between the classes its holdings belong to. The classes of one tree therefore add back up to the whole file - and an instrument's own row in `pp_list_instrument_performance` need not match its share of a class, because the cash belongs to the class and not to the instrument.\n\nOne class per call: `class` is its id from pp_list_taxonomies, unique within a taxonomy, so `taxonomy` is only needed when several taxonomies define that same id. A class holding nothing has no capital to measure a return on, so `ttwror` and `irr` come back null and not 0 %, while `category.assignedCount` states what the class holds. `category` names the class the figures belong to - id, name, parent and taxonomy - because a report over a class would otherwise carry nothing saying which one it is. The figures are computed for this request and stored nowhere: only the same dates and settings reproduce them.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "file": {
+            "type": "string",
+            "description": "The `use` value from pp_list_files, sent exactly as given. Required: there is no default file."
+          },
+          "class": {
+            "type": "string",
+            "description": "The class to report on, as its `id` from the classes of pp_list_taxonomies. Nothing else resolves: a class name is not an id, and the same name appears in several trees."
+          },
+          "taxonomy": {
+            "type": "string",
+            "description": "The taxonomy the class belongs to, as its `id`. Optional, because a class id is unique within one tree; only needed when several taxonomies define that same id, which is otherwise refused rather than guessed."
+          },
+          "openingDate": {
+            "type": "string",
+            "format": "date",
+            "description": "Start of the period, as YYYY-MM-DD; a transaction on this day counts as part of the starting position."
+          },
+          "closingDate": {
+            "type": "string",
+            "format": "date",
+            "description": "End of the period, as YYYY-MM-DD, after the opening date; defaults to today. For a date in the future see pp_get_overall_performance."
+          },
+          "reportingCurrency": {
+            "type": "string",
+            "description": "Express every amount in this ISO 4217 currency; defaults to the file's base currency. A pair without an exchange rate converts at 1:1 and is named in `fxWarnings`."
+          },
+          "costMethod": {
+            "type": "string",
+            "enum": [
+              "fifo",
+              "moving-average"
+            ],
+            "default": "fifo",
+            "description": "`fifo` (the default) or `moving-average`: the cost basis gains are measured against. It never changes `irr` or a time-weighted return."
+          }
+        },
+        "required": [
+          "file",
+          "class",
+          "openingDate"
+        ],
+        "additionalProperties": false
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false
+      },
+      "bindings": [
+        {
+          "arg": "file",
+          "where": "path",
+          "wire": "file"
+        },
+        {
+          "arg": "class",
+          "where": "path",
+          "wire": "classification"
+        },
+        {
+          "arg": "taxonomy",
+          "where": "query",
+          "wire": "taxonomy"
+        },
+        {
+          "arg": "openingDate",
+          "where": "query",
+          "wire": "openingDate"
+        },
+        {
+          "arg": "closingDate",
+          "where": "query",
+          "wire": "closingDate"
+        },
+        {
+          "arg": "reportingCurrency",
+          "where": "query",
+          "wire": "reportingCurrency"
+        },
+        {
+          "arg": "costMethod",
+          "where": "query",
+          "wire": "costMethod"
+        }
+      ]
+    },
+    {
+      "name": "pp_list_investment_plans",
+      "operationId": "listInvestmentPlans",
+      "method": "GET",
+      "pathTemplate": "/v1/files/{file}/investment-plans",
+      "description": "The savings plans of a file: what it intends to book next, how often, and between which two accounts. Nothing else on this API speaks of the future - a holding states what is there and `pp_list_transactions` states what happened - so a plan is the one thing neither of them answers.\n\nA plan is a schedule, not a booking. What it has already executed is ordinary transactions in the accounts it names, visible in `pp_list_transactions` like any other booking; this states how many (`executions`), the date of the last one and the date the next is due, but does not repeat them. `executions: 0` means the plan has never run, and then no `lastExecution` comes back at all; `nextExecution` is the date the application would use next - for a plan that never ran that is its `start`, which can lie in the past, and it does not move until something is generated. `interval` together with `intervalUnit` is the rhythm: `interval: 1` with `intervalUnit: month` is the monthly plan the application shows, `2` with `week` every second week. `amount` is the rate of one execution, `fees` and `taxes` appear only when the plan carries them.\n\n`type` is what a plan does: `PURCHASE_OR_DELIVERY` buys or delivers into `investmentAccount`, `DEPOSIT` pays money into a cash account, `REMOVAL` takes money out, `INTEREST` books interest. A plan that buys names no cash account of its own - the `cashAccount` stated for it is the settlement account of its securities account, derived exactly as a purchase booking derives it. A plan is named, never identified: it has no uuid, and since plans cannot be written through this API there is nothing to point at. `investmentAccount`, `cashAccount` and `instrument` take a uuid and narrow the list; a file holds plans by the dozen, so this answer is never paged. When nothing comes back, `empty` says which kind of nothing it is - that the file holds no plans at all, or that none of its plans match what was asked for - because an empty list cannot tell the two apart and they lead to different next calls.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "file": {
+            "type": "string",
+            "description": "The `use` value from pp_list_files, sent exactly as given. Required: there is no default file."
+          },
+          "investmentAccount": {
+            "type": "string",
+            "description": "Only the plans that buy or deliver into this one securities account, as its `uuid` from pp_list_investment_accounts. A plan that only moves money has no securities account and is never returned."
+          },
+          "cashAccount": {
+            "type": "string",
+            "description": "Only the plans whose money moves through this one cash account, as its `uuid` from pp_list_cash_accounts - for a plan that buys, its settlement account."
+          },
+          "instrument": {
+            "type": "string",
+            "description": "Only the plans that feed this one instrument, as its `uuid` from pp_list_instruments."
+          }
+        },
+        "required": [
+          "file"
+        ],
+        "additionalProperties": false
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false
+      },
+      "bindings": [
+        {
+          "arg": "file",
+          "where": "path",
+          "wire": "file"
+        },
+        {
+          "arg": "investmentAccount",
+          "where": "query",
+          "wire": "investmentAccount"
+        },
+        {
+          "arg": "cashAccount",
+          "where": "query",
+          "wire": "cashAccount"
+        },
+        {
+          "arg": "instrument",
+          "where": "query",
+          "wire": "instrument"
+        }
+      ]
+    },
+    {
       "name": "pp_list_holdings",
       "operationId": "listHoldings",
       "method": "GET",
       "pathTemplate": "/v1/files/{file}/holdings",
-      "description": "The statement of assets: everything the file holds on one date and what it is worth, instrument positions and cash account balances in a single list, each with its share of total assets. This is the only place a cash balance can be read and the only place a position's value can be, because the account tools carry neither.\n\nEach position is valued at the most recent price on or before the date, in the instrument's own currency, and that price's own date travels with it. A `priceNote` says when that price needs naming: stale - more than one trading day of the instrument's own calendar passed without a quote, so a weekend or a holiday never counts - or maintained by hand, with its age. Name it when you report a value built on that price. Positions already closed by the date drop out; cash accounts stay in even at zero. A cash account can hold a negative balance - a loan or a credit card - and then has a negative weight, while the others are divided by the smaller net total and can exceed 1; the weights add up to 1 within their rounding to 8 decimals - unless total assets are zero, when every weight is 0.",
+      "description": "The statement of assets: everything the file holds on one date and what it is worth, instrument positions and cash account balances in a single list, each with its share of total assets. This is the only place a cash balance can be read and the only place a position's value can be, because the account tools carry neither.\n\nEach position is valued at the most recent price on or before the date, in the instrument's own currency, and that price's own date travels with it. A `priceNote` says when that price needs naming: stale - more than one trading day of the instrument's own calendar passed without a quote, so a weekend or a holiday never counts - or maintained by hand, with its age. Name it when you report a value built on that price. Positions already closed by the date drop out; cash accounts stay in even at zero. A cash account can hold a negative balance - a loan or a credit card - and then has a negative weight, while the others are divided by the smaller net total and can exceed 1; the weights add up to 1 within their rounding to 8 decimals - unless total assets are zero, when every weight is 0.\n\nWithout an account parameter this is the whole file, and an instrument held in two investment accounts is a single row. `investmentAccount` or `cashAccount` narrows the report to that one account: the answer then states its `scope` once at the top and gains no column per row, `totalAssets` is that account's value, and every `weight` is the share of it rather than of the file. A scoped report is the shorter answer whenever the question is about one account, and the only way to see where a position sits.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -520,6 +1117,14 @@
           "reportingCurrency": {
             "type": "string",
             "description": "Express every amount in this ISO 4217 currency; defaults to the file's base currency. A pair without an exchange rate converts at 1:1 and is named in `fxWarnings` - the details are on pp_get_overall_performance."
+          },
+          "investmentAccount": {
+            "type": "string",
+            "description": "Restrict the report to the positions of this one investment account, as its `uuid` from pp_list_investment_accounts. An account closed by the date is still valued. Its settlement cash is a cash account of its own - named in `scope.referenceCashAccount` - and is not among these rows. Cannot be combined with `cashAccount`."
+          },
+          "cashAccount": {
+            "type": "string",
+            "description": "Restrict the report to the balance of this one cash account, as its `uuid` from pp_list_cash_accounts. Cannot be combined with `investmentAccount`."
           }
         },
         "required": [
@@ -548,6 +1153,240 @@
           "arg": "reportingCurrency",
           "where": "query",
           "wire": "reportingCurrency"
+        },
+        {
+          "arg": "investmentAccount",
+          "where": "query",
+          "wire": "investmentAccount"
+        },
+        {
+          "arg": "cashAccount",
+          "where": "query",
+          "wire": "cashAccount"
+        }
+      ]
+    },
+    {
+      "name": "pp_list_taxonomies",
+      "operationId": "listTaxonomies",
+      "method": "GET",
+      "pathTemplate": "/v1/files/{file}/taxonomies",
+      "description": "The taxonomies of a file: their class trees, the target weight of every class and the vehicles assigned to it. No other tool reaches this: pp_list_holdings says what a position is worth, never which class it belongs to, and pp_get_instrument states master data, never an assignment - so the shape of a portfolio was not answerable.\n\nThe answer has two parts. `items` are the taxonomies themselves - always all of them, each with its `classCount` - and `classes` is one flat list of every class, which is what `limit` and `cursor` page through, because a working file holds more classes than fit in one answer. Each class row names the `taxonomy` it belongs to, so a page reads on its own; `taxonomy=<id>` takes one tree instead of all.\n\nClasses arrive in the order the application shows them: a parent before its children, children by `rank`. Every class carries its `parent`, so a page alone is enough to rebuild the tree; `withPath=true` adds the whole `path` of ids from the root, a uuid for every step, and is off by default. **Every ratio is a fraction** - `0.6` is the 60 % the application shows. Two of them mean different things: a class's `targetWeight` is what rebalancing aims at (zero means either never set or set to nothing - the model cannot tell), while an `assignments[].weight` is the factor that class applies to one vehicle's value - `1` counts it in full, `0.6` at 60 % - which is not the slice the class's pie chart draws, since that follows from the value times the factor. A target weight travels exactly as the file stores it: it can exceed a whole, the levels of one tree can sum to far more than a hundred percent, and a negative one can only come from an older version of the application whose dialog still accepted a minus - the current dialog does not. Nothing here is clamped or corrected, because those are the numbers the application itself displays. A taxonomy covers only what is assigned to it: the application's view ends with a row `Ohne Klassifizierung` - unclassified - for the vehicles belonging to no class of that taxonomy, and that row is not a class. It is neither in `items` nor in `classes`, and no `assignedCount` says how much of the file is missing from the tree; the remainder is what is left of pp_list_holdings once the assignments of the taxonomy are subtracted. A file with no taxonomies answers with empty lists. Assignments are off by default, because one class of a working file holds several hundred vehicles: `assignedCount` states the size either way, and `withAssignments=true` is worth sending together with `class` or `limit` - seven classes of a real file carried 838 vehicles between them, which is more than one answer carries. Narrowed to one class and asked for its vehicles, the page moves from the classes to those vehicles: `classes` then holds that one class whole, its `assignedCount` the total in all, while `assignments` is the paged list - in the order of the application's table, with `rank` naming that place on every row, continued with `page.nextCursor` like every other page here. A cursor of the class list is no cursor of the vehicles, and is refused rather than obeyed.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "file": {
+            "type": "string",
+            "description": "The `use` value from pp_list_files, sent exactly as given. Required: there is no default file."
+          },
+          "taxonomy": {
+            "type": "string",
+            "description": "Read one taxonomy instead of all of them, as its `id` from `items`. Unknown here is reported as invalid-value."
+          },
+          "class": {
+            "type": "string",
+            "description": "Read one class instead of a whole tree, as its `id`. The way to ask for the vehicles of a single class: together with withAssignments=true this answers that class and all of its vehicles, instead of paging every other class to reach it. A class id is unique within a taxonomy only - without `taxonomy` the id is searched in all of them, and one that several define is refused. Only the class itself comes back, never its subclasses."
+          },
+          "withAssignments": {
+            "type": "boolean",
+            "description": "Whether each class carries the vehicles assigned to it. Off by default: one class of a working file holds several hundred, which is more than one answer holds - `assignedCount` states it either way. Send it together with `class` to read one class and all of its vehicles, or with `limit` to keep the classes few: seven classes of a real file carried 838 vehicles between them."
+          },
+          "withPath": {
+            "type": "boolean",
+            "description": "Whether each class also carries the `path` of ids from the root down to it. Off by default: `parent` already links every class to the one above, and a page is enough to walk the tree, while the path costs one uuid per step - in a working file about half of the whole class list."
+          },
+          "cursor": {
+            "type": "string",
+            "description": "Where a page of classes continues: `page.nextCursor` of the page before, or a class row's own `cursor`. Only good for the same list, with the same `taxonomy`."
+          },
+          "limit": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "At most this many classes; omit it for as many as fit in one answer."
+          }
+        },
+        "required": [
+          "file"
+        ],
+        "additionalProperties": false
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false
+      },
+      "bindings": [
+        {
+          "arg": "file",
+          "where": "path",
+          "wire": "file"
+        },
+        {
+          "arg": "taxonomy",
+          "where": "query",
+          "wire": "taxonomy"
+        },
+        {
+          "arg": "class",
+          "where": "query",
+          "wire": "class"
+        },
+        {
+          "arg": "withAssignments",
+          "where": "query",
+          "wire": "withAssignments"
+        },
+        {
+          "arg": "withPath",
+          "where": "query",
+          "wire": "withPath"
+        },
+        {
+          "arg": "cursor",
+          "where": "query",
+          "wire": "cursor"
+        },
+        {
+          "arg": "limit",
+          "where": "query",
+          "wire": "limit"
+        }
+      ]
+    },
+    {
+      "name": "pp_assign_vehicle",
+      "operationId": "assignVehicle",
+      "method": "PUT",
+      "pathTemplate": "/v1/files/{file}/taxonomies/{taxonomy}/classes/{classification}/vehicles/{vehicle}",
+      "description": "Puts one vehicle into one class of a taxonomy. A PUT, not a POST: sent twice it has done exactly what it did once, so it can be repeated without doubling anything up. `vehicle` is the uuid of an instrument or of a cash account, as pp_list_instruments and pp_list_cash_accounts give them; an investment account has a uuid too but cannot be placed in a class - assign its reference cash account instead. The class id and the taxonomy it belongs to come from pp_list_taxonomies, and both are asked for, because a class id is only unique inside its own taxonomy.\n\n`weight` is the factor the class's report multiplies the vehicle's value by, as a fraction: `1` counts it in full - which is what every existing assignment of a real file does - and `0.6` counts it at 60 %. Left out, a vehicle newly placed takes `1`, the same as its new class mates; nothing here resets a share silently.\n\nBefore the change is applied the application asks the user, naming the vehicle and the class: `403 write-declined` is a no that stands, `423 write-unanswered` means nobody answered within two minutes and nothing was changed, and `429 write-pending` means another change is still waiting for an answer. Reads are never asked about.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "file": {
+            "type": "string",
+            "description": "The `use` value from pp_list_files, sent exactly as given. Required: there is no default file."
+          },
+          "taxonomy": {
+            "type": "string",
+            "description": "The taxonomy's `id`, from the `items` of pp_list_taxonomies."
+          },
+          "class": {
+            "type": "string",
+            "description": "The class's `id`, from the `classes` of pp_list_taxonomies. Unique only inside the taxonomy named above."
+          },
+          "vehicle": {
+            "type": "string",
+            "description": "The uuid of the instrument or cash account to place, from pp_list_instruments or pp_list_cash_accounts. An investment account cannot be assigned and is refused as such."
+          },
+          "weight": {
+            "type": "number",
+            "maximum": 1,
+            "description": "The factor the class applies to the vehicle's value, as a fraction: `1` counts it in full, `0.6` at 60 %. More than 0 and at most 1 - 0 is refused. Omit it to count the vehicle in full, as every existing assignment of a real file does, or to leave an existing factor alone."
+          }
+        },
+        "required": [
+          "file",
+          "taxonomy",
+          "class",
+          "vehicle"
+        ],
+        "additionalProperties": false
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false
+      },
+      "bindings": [
+        {
+          "arg": "file",
+          "where": "path",
+          "wire": "file"
+        },
+        {
+          "arg": "taxonomy",
+          "where": "path",
+          "wire": "taxonomy"
+        },
+        {
+          "arg": "class",
+          "where": "path",
+          "wire": "classification"
+        },
+        {
+          "arg": "vehicle",
+          "where": "path",
+          "wire": "vehicle"
+        },
+        {
+          "arg": "weight",
+          "where": "body",
+          "wire": "weight"
+        }
+      ]
+    },
+    {
+      "name": "pp_unassign_vehicle",
+      "operationId": "unassignVehicle",
+      "method": "DELETE",
+      "pathTemplate": "/v1/files/{file}/taxonomies/{taxonomy}/classes/{classification}/vehicles/{vehicle}",
+      "description": "Takes one vehicle out of one class of a taxonomy. It removes the assignment and nothing else: the instrument or cash account stays in the file, with its bookings and its place in every other taxonomy. The same `taxonomy`, `class` and `vehicle` ids as pp_assign_vehicle.\n\nRefused as `not-assigned` when the class does not hold that vehicle - unlike a missing entity there is nothing to go and look up, so that refusal says the class and the vehicle are both fine and only the relation between them was never there. Sending it twice therefore fails the second time.\n\nA write to a file open in the application: the model changes, the file is marked dirty and the open views recalculate, but nothing is saved to disk and there is no undo - putting it back is pp_assign_vehicle.\n\nBefore the change is applied the application asks the user, naming the vehicle and the class: `403 write-declined` is a no that stands, `423 write-unanswered` means nobody answered within two minutes and nothing was changed, and `429 write-pending` means another change is still waiting for an answer. Reads are never asked about.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "file": {
+            "type": "string",
+            "description": "The `use` value from pp_list_files, sent exactly as given. Required: there is no default file."
+          },
+          "taxonomy": {
+            "type": "string",
+            "description": "The taxonomy's `id`, from the `items` of pp_list_taxonomies."
+          },
+          "class": {
+            "type": "string",
+            "description": "The class's `id`, from the `classes` of pp_list_taxonomies."
+          },
+          "vehicle": {
+            "type": "string",
+            "description": "The uuid of the instrument or cash account to take out."
+          }
+        },
+        "required": [
+          "file",
+          "taxonomy",
+          "class",
+          "vehicle"
+        ],
+        "additionalProperties": false
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": true,
+        "idempotentHint": false,
+        "openWorldHint": false
+      },
+      "bindings": [
+        {
+          "arg": "file",
+          "where": "path",
+          "wire": "file"
+        },
+        {
+          "arg": "taxonomy",
+          "where": "path",
+          "wire": "taxonomy"
+        },
+        {
+          "arg": "class",
+          "where": "path",
+          "wire": "classification"
+        },
+        {
+          "arg": "vehicle",
+          "where": "path",
+          "wire": "vehicle"
         }
       ]
     },
@@ -861,6 +1700,114 @@
           "arg": "metrics",
           "where": "query",
           "wire": "metrics"
+        }
+      ]
+    },
+    {
+      "name": "pp_list_transactions",
+      "operationId": "listTransactions",
+      "method": "GET",
+      "pathTemplate": "/v1/files/{file}/transactions",
+      "description": "The bookings of a file, one row per transaction as it was recorded: the deposit that funded a purchase, the dividend that arrived, the fee a bank charged, the transfer that moved shares from one securities account to another. Unlike `pp_list_trades`, which reports purchases and sales matched into trades, this reports what was booked - a trade answers how a position did, a transaction answers what happened on a day. Nothing else in this API reaches deposits, removals, interest, fees or transfers.\n\nRows come back oldest first, and a page belongs to the period it was asked for: carry `page.nextCursor` over only with the same `from` and `to`. `cashAccount`, `investmentAccount` and `instrument` take a uuid. For a purchase or a sale the cash side is the settlement account of the securities account, which the file derives and the booking does not store; a deposit or a fee has no securities side, so asking for an `investmentAccount` never yields one.\n\nA purchase or a sale is **two rows**: one booked in the securities account, with `shares`, `grossAmount` and the charges, and one in the cash account, the money that moved. The two share date, time, amount and note, and `type` is `BUY` or `SELL` in both families - counting rows of that type counts a trade twice. Charges live in two places as well: as the `fees` and `taxes` of a security booking, and as bookings of their own type. One without the other is not the whole bill.\n\n`type` takes the names the `type` field spells, comma-separated and case-insensitive. Cash bookings and security bookings are two families - some names mean the same thing on either side of a transfer, a name of one family simply selects nothing of the other. A transfer appears twice, once in each account it joins, and no row names its counterpart.\n\n`amount` is in the currency of the booking: a file holding foreign positions answers in several currencies at once, and this read has no reporting currency. `grossAmount` comes with a security booking, `fees` and `taxes` only when they are not zero, `shares` only where shares moved.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "file": {
+            "type": "string",
+            "description": "The `use` value from pp_list_files, sent exactly as given. Required: there is no default file."
+          },
+          "from": {
+            "type": "string",
+            "format": "date",
+            "description": "First day of the period, as YYYY-MM-DD, inclusive; a booking on this day is part of the answer. Omit it for no lower bound."
+          },
+          "to": {
+            "type": "string",
+            "format": "date",
+            "description": "Last day of the period, as YYYY-MM-DD, inclusive, on or after `from`. Omit it for no upper bound."
+          },
+          "cashAccount": {
+            "type": "string",
+            "description": "Only bookings with a side in this cash account, as its `uuid` from pp_list_cash_accounts. For a purchase or a sale that is the settlement account of the securities account - `referenceCashAccount` on pp_list_investment_accounts."
+          },
+          "investmentAccount": {
+            "type": "string",
+            "description": "Only the bookings of this securities account, as its `uuid` from pp_list_investment_accounts. Deposits, fees and interest are booked in a cash account and never match this filter."
+          },
+          "instrument": {
+            "type": "string",
+            "description": "Only bookings naming this instrument, as its `uuid` from pp_list_instruments - a purchase, a sale, a dividend and the fees and taxes attached to them."
+          },
+          "type": {
+            "type": "string",
+            "description": "Only these types, comma-separated and case-insensitive: `BUY`, `SELL`, `TRANSFER_IN`, `TRANSFER_OUT`, `DELIVERY_INBOUND`, `DELIVERY_OUTBOUND` for security bookings and `DEPOSIT`, `REMOVAL`, `INTEREST`, `INTEREST_CHARGE`, `DIVIDENDS`, `FEES`, `FEES_REFUND`, `TAXES`, `TAX_REFUND` and the two transfer names for cash bookings. Anything else fails as a field error naming all of them."
+          },
+          "cursor": {
+            "type": "string",
+            "description": "Where a page continues: `page.nextCursor` of the page before - as on pp_list_instruments."
+          },
+          "limit": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "At most this many bookings; omit it for as many as fit in one answer."
+          }
+        },
+        "required": [
+          "file"
+        ],
+        "additionalProperties": false
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false
+      },
+      "bindings": [
+        {
+          "arg": "file",
+          "where": "path",
+          "wire": "file"
+        },
+        {
+          "arg": "from",
+          "where": "query",
+          "wire": "from"
+        },
+        {
+          "arg": "to",
+          "where": "query",
+          "wire": "to"
+        },
+        {
+          "arg": "cashAccount",
+          "where": "query",
+          "wire": "cashAccount"
+        },
+        {
+          "arg": "investmentAccount",
+          "where": "query",
+          "wire": "investmentAccount"
+        },
+        {
+          "arg": "instrument",
+          "where": "query",
+          "wire": "instrument"
+        },
+        {
+          "arg": "type",
+          "where": "query",
+          "wire": "type"
+        },
+        {
+          "arg": "cursor",
+          "where": "query",
+          "wire": "cursor"
+        },
+        {
+          "arg": "limit",
+          "where": "query",
+          "wire": "limit"
         }
       ]
     },

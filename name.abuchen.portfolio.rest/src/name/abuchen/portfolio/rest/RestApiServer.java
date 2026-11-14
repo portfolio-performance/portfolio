@@ -40,7 +40,7 @@ import name.abuchen.portfolio.rest.internal.Router;
  * context (Origin header); all must present a bearer token - except the pairing
  * endpoints, whose purpose is to obtain one, and the MCP endpoint, which
  * decides per JSON-RPC method. One server, one port, one switch: a second
- * toggle would advertise a boundary that does not exist, since the sixteen MCP
+ * toggle would advertise a boundary that does not exist, since the MCP
  * tools <em>are</em> the REST operations.
  */
 public class RestApiServer

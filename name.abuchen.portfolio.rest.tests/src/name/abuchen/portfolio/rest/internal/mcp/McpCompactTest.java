@@ -29,6 +29,7 @@ public class McpCompactTest
     private static final McpTool PERFORMANCE = McpTools.byName("pp_get_overall_performance").orElseThrow();
     private static final McpTool INSTRUMENTS = McpTools.byName("pp_list_instruments").orElseThrow();
     private static final McpTool TRADES = McpTools.byName("pp_list_trades").orElseThrow();
+    private static final McpTool TAXONOMIES = McpTools.byName("pp_list_taxonomies").orElseThrow();
 
     /** a holding in the reporting currency, one in USD, and a cash account */
     private static final String HOLDINGS_PAYLOAD = """
@@ -404,6 +405,136 @@ public class McpCompactTest
         var columns = new ArrayList<String>();
         table.getAsJsonArray("columns").forEach(column -> columns.add(column.getAsString()));
         return columns;
+    }
+
+    /**
+     * A report that pages an array of its own: the taxonomies hold their headers
+     * in {@code items} and their classes beside them, and both are lists - so
+     * both become tables, and the note has to name them rather than assume.
+     */
+    @Test
+    public void testEveryListOfObjectsBecomesATable()
+    {
+        var result = McpCompact.compact(TAXONOMIES, JsonParser
+                        .parseString("""
+                                        {"items":[{"id":"tax","name":"Asset Classes","classCount":2}],
+                                         "classes":[{"taxonomy":"tax","id":"tax","name":"Asset Classes","rank":0,"targetWeight":1},
+                                                    {"taxonomy":"tax","id":"equity","name":"Equities","rank":0,"targetWeight":0.6}],
+                                         "page":{"limit":2,"total":2,"nextCursor":null}}"""));
+
+        assertThat(result.tables(), is(List.of("items", "classes")));
+
+        var report = result.payload().getAsJsonObject();
+        assertThat(columns(report.getAsJsonObject("items")), is(List.of("id", "name", "classCount")));
+        assertThat(columns(report.getAsJsonObject("classes")), is(List.of("taxonomy", "id", "name", "rank",
+                        "targetWeight")));
+        assertThat(report.getAsJsonObject("classes").getAsJsonArray("rows").size(), is(2));
+    }
+
+    /** a uuid returning on many rows is named once and referred to by an alias */
+    @Test
+    public void testARepeatedIdentifierIsNamedOnce()
+    {
+        var rows = new JsonArray();
+        for (var i = 0; i < 22; i++)
+        {
+            var row = new JsonObject();
+            // every booking with its own uuid, which no mapping could pay for
+            row.addProperty("uuid", String.format("%08d-0000-0000-0000-000000000000", i));
+            // while the instrument is one of two, over and over
+            row.addProperty("instrumentUuid", i % 2 == 0 ? "aaaaaaaa-0000-0000-0000-000000000001"
+                            : "bbbbbbbb-0000-0000-0000-000000000002");
+            rows.add(row);
+        }
+        var payload = new JsonObject();
+        payload.add("items", rows);
+
+        var table = McpCompact.compact(TRADES, payload).payload().getAsJsonObject().getAsJsonObject("items");
+        var references = table.getAsJsonObject("references");
+
+        assertThat(references.entrySet().size(), is(2));
+        assertThat(references.get("#1").getAsString(), is("aaaaaaaa-0000-0000-0000-000000000001"));
+        assertThat(cell(table, 0, "instrumentUuid").getAsString(), is("#1"));
+        assertThat(cell(table, 1, "instrumentUuid").getAsString(), is("#2"));
+        assertThat(cell(table, 2, "instrumentUuid").getAsString(), is("#1"));
+
+        // an uuid of one row only stays as it is: mapping it costs what it saves
+        assertThat(cell(table, 0, "uuid").getAsString(), is("00000000-0000-0000-0000-000000000000"));
+    }
+
+    /** a table this short cannot pay for a mapping */
+    @Test
+    public void testAShortTableKeepsItsIdentifiers()
+    {
+        var rows = new JsonArray();
+        for (var i = 0; i < 4; i++)
+        {
+            var row = new JsonObject();
+            row.addProperty("instrumentUuid", "aaaaaaaa-0000-0000-0000-000000000001");
+            rows.add(row);
+        }
+        var payload = new JsonObject();
+        payload.add("items", rows);
+
+        var table = McpCompact.compact(TRADES, payload).payload().getAsJsonObject().getAsJsonObject("items");
+
+        assertThat(table.has("references"), is(false));
+        assertThat(cell(table, 0, "instrumentUuid").getAsString(), is("aaaaaaaa-0000-0000-0000-000000000001"));
+    }
+
+    /** the steps of a path repeat from class to class, so they are named once too */
+    @Test
+    public void testAnIdentifierInsideAListIsNamedOnce()
+    {
+        var root = "11111111-0000-0000-0000-000000000000";
+        var child = "22222222-0000-0000-0000-000000000000";
+        var rows = new JsonArray();
+        for (var i = 0; i < 21; i++)
+        {
+            var row = new JsonObject();
+            var path = new JsonArray();
+            path.add(root);
+            path.add(child);
+            row.add("path", path);
+            row.addProperty("name", "class " + i);
+            rows.add(row);
+        }
+        var payload = new JsonObject();
+        payload.add("classes", rows);
+
+        var table = McpCompact.compact(TAXONOMIES, payload).payload().getAsJsonObject().getAsJsonObject("classes");
+
+        assertThat(table.getAsJsonObject("references").entrySet().size(), is(2));
+        assertThat(cell(table, 0, "path").getAsJsonArray().get(0).getAsString(), is("#1"));
+        assertThat(cell(table, 20, "path").getAsJsonArray().get(1).getAsString(), is("#2"));
+        assertThat(table.getAsJsonObject("references").get("#1").getAsString(), is(root));
+    }
+
+    /** what a list holds besides plain values stays untouched */
+    @Test
+    public void testAListOfObjectsIsNotTouched()
+    {
+        var shared = "33333333-0000-0000-0000-000000000000";
+        var rows = new JsonArray();
+        for (var i = 0; i < 21; i++)
+        {
+            var row = new JsonObject();
+            var vehicle = new JsonObject();
+            vehicle.addProperty("uuid", shared);
+            vehicle.addProperty("weight", 0.5);
+            var assigned = new JsonArray();
+            assigned.add(vehicle);
+            row.add("assignments", assigned);
+            rows.add(row);
+        }
+        var payload = new JsonObject();
+        payload.add("classes", rows);
+
+        var table = McpCompact.compact(TAXONOMIES, payload).payload().getAsJsonObject().getAsJsonObject("classes");
+
+        assertThat(table.has("references"), is(false));
+        assertThat(cell(table, 0, "assignments").getAsJsonArray().get(0).getAsJsonObject().get("uuid").getAsString(),
+                        is(shared));
     }
 
     private static JsonElement cell(JsonObject table, int row, String column)

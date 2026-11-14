@@ -7,6 +7,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Consumer;
+import java.util.regex.Pattern;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -46,14 +48,22 @@ import com.google.gson.JsonPrimitive;
 {
     /**
      * What was done to a payload, which decides the notes it needs:
-     * {@code currencyColumn} when a table carries a {@code <name>.currency}
-     * column - beside amounts in another currency, or beside a price -,
-     * {@code moreColumn} when its sparse fields went into {@code more}, and
-     * {@code hasNull} when the payload as sent holds a {@code null} anywhere.
+     * {@code tables} names the arrays that became tables - a plain list calls
+     * itself {@code items}, a report that pages an array among others adds that
+     * name -, {@code currencyColumn} when a table carries a
+     * {@code <name>.currency} column - beside amounts in another currency, or
+     * beside a price -, {@code moreColumn} when its sparse fields went into
+     * {@code more}, and {@code hasNull} when the payload as sent holds a
+     * {@code null} anywhere.
      */
-    /* package */ record Result(JsonElement payload, boolean tabulated, String currencyDropped,
+    /* package */ record Result(JsonElement payload, List<String> tables, String currencyDropped,
                     boolean currencyColumn, boolean moreColumn, boolean hasNull)
     {
+        /** whether any list of the response became a table */
+        boolean tabulated()
+        {
+            return !tables.isEmpty();
+        }
     }
 
     /** the column that holds the sparse fields of a long table */
@@ -61,6 +71,16 @@ import com.google.gson.JsonPrimitive;
 
     /** a table this long has sparse columns worth folding; a short one does not */
     private static final int MIN_ROWS_FOR_MORE = 20;
+
+    /**
+     * The shape of an identifier rather than of text: a model never reads a uuid
+     * aloud, so a table may name it once and refer to it shortly after.
+     */
+    private static final Pattern IDENTIFIER = Pattern.compile( //$NON-NLS-1$
+                    "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"); //$NON-NLS-1$
+
+    /** below this length a table cannot pay for the mapping it would need */
+    private static final int MIN_ROWS_FOR_REFERENCES = 20;
 
     /** a column is sparse when at most one cell in this many holds a value */
     private static final int SPARSE_RATIO = 10;
@@ -82,7 +102,7 @@ import com.google.gson.JsonPrimitive;
         if (payload == null || !payload.isJsonObject())
             // a 204 renders as a sentence, not as null, and a bare list is not this
             // API's shape: neither has a null worth explaining
-            return new Result(payload, false, null, false, false, false);
+            return new Result(payload, List.of(), null, false, false, false);
 
         var report = payload.getAsJsonObject().deepCopy();
         var currency = stringOf(report.get("reportingCurrency")); //$NON-NLS-1$
@@ -99,25 +119,38 @@ import com.google.gson.JsonPrimitive;
         var future = date != null && isAfterToday(date);
         forEachItem(report, item -> notePriceAge(item, future));
 
+        // which arrays become tables: any array of objects at the top of a
+        // report. A plain list calls itself "items"; a report that pages an
+        // array among others - the taxonomies page their "classes" beside the
+        // headers, which are never paged - names it differently and is no less
+        // a table. Echoes of the request ("status", "metrics") hold strings and
+        // are left alone by allObjects().
+        var tables = new ArrayList<String>();
+        for (var entry : report.entrySet())
+        {
+            var value = entry.getValue();
+            if (value.isJsonArray() && !value.getAsJsonArray().isEmpty() && allObjects(value.getAsJsonArray()))
+                tables.add(entry.getKey());
+        }
+
         var dropped = new boolean[1];
         for (var entry : report.entrySet())
         {
-            if (!ITEMS.equals(entry.getKey()))
+            // a table settles its amounts itself, with the currency column to
+            // go with them; everything else is settled here
+            if (!tables.contains(entry.getKey()))
                 entry.setValue(dropCurrency(entry.getValue(), currency, dropped));
         }
 
-        var tabulated = false;
         var currencyColumn = new boolean[1];
         var moreColumn = new boolean[1];
-        var items = report.get(ITEMS);
-        if (items != null && items.isJsonArray() && !items.getAsJsonArray().isEmpty()
-                        && allObjects(items.getAsJsonArray()))
+        for (var key : tables)
         {
-            report.add(ITEMS, table(items.getAsJsonArray(), currency, dropped, currencyColumn, moreColumn));
-            tabulated = true;
+            var rows = report.get(key).getAsJsonArray();
+            report.add(key, table(rows, currency, dropped, currencyColumn, moreColumn));
         }
 
-        return new Result(report, tabulated, dropped[0] ? currency : null, currencyColumn[0], moreColumn[0],
+        return new Result(report, tables, dropped[0] ? currency : null, currencyColumn[0], moreColumn[0],
                         hasNull(report));
     }
 
@@ -290,7 +323,116 @@ import com.google.gson.JsonPrimitive;
         var table = new JsonObject();
         table.add("columns", columnArray); //$NON-NLS-1$
         table.add("rows", rows); //$NON-NLS-1$
+
+        // last, because it speaks about the rows above: the handful of uuids a
+        // long list repeats on nearly every row, named once instead of often
+        var references = new JsonObject();
+        collapseIdentifiers(rows, references);
+        if (references.size() > 0)
+            table.add("references", references); //$NON-NLS-1$
+
         return table;
+    }
+
+    /**
+     * A uuid is thirty-six characters, and in a long list the same few return on
+     * almost every row - the instrument of a booking, the account it settled in.
+     * Where one comes back more than once it is replaced by {@code #1}, {@code
+     * #2} in the order of first appearance and stated once in {@code references}
+     * beside the table. One that appears once stays as it is: mapping it would
+     * cost exactly what it saves.
+     */
+    private static void collapseIdentifiers(JsonArray rows, JsonObject references)
+    {
+        if (rows.size() < MIN_ROWS_FOR_REFERENCES)
+            return;
+
+        var counts = new LinkedHashMap<String, Integer>();
+        for (var row : rows)
+        {
+            for (var cell : row.getAsJsonArray())
+                forEachIdentifier(cell, value -> counts.merge(value, 1, Integer::sum));
+        }
+
+        var alias = new LinkedHashMap<String, String>();
+        for (var entry : counts.entrySet())
+        {
+            // two occurrences already pay for the mapping, and a higher bar is
+            // the dearer one: measured on real pages, a file's taxonomy classes
+            // cost 36.8k characters this way, 43.2k from three occurrences up
+            // and 121.6k with no mapping at all
+            if (entry.getValue() < 2)
+                continue;
+
+            var name = "#" + (alias.size() + 1); //$NON-NLS-1$
+            alias.put(entry.getKey(), name);
+            references.addProperty(name, entry.getKey());
+        }
+        if (alias.isEmpty())
+            return;
+
+        for (var row : rows)
+        {
+            var cells = row.getAsJsonArray();
+            for (var i = 0; i < cells.size(); i++)
+                cells.set(i, aliased(cells.get(i), alias));
+        }
+    }
+
+    /**
+     * The identifiers of one cell: a cell of its own, and also the entries of a
+     * list - a path of class ids is one cell whose steps repeat from class to
+     * class. Only one level deep: what a list holds besides plain values, such
+     * as the vehicles of a class, is left as it came.
+     */
+    private static void forEachIdentifier(JsonElement cell, Consumer<String> found)
+    {
+        if (isIdentifier(cell))
+        {
+            found.accept(cell.getAsString());
+            return;
+        }
+        if (!cell.isJsonArray())
+            return;
+
+        for (var element : cell.getAsJsonArray())
+        {
+            if (isIdentifier(element))
+                found.accept(element.getAsString());
+        }
+    }
+
+    /** the cell with its identifiers replaced, or the very cell if none of them is aliased */
+    private static JsonElement aliased(JsonElement cell, Map<String, String> alias)
+    {
+        var name = alias.get(isIdentifier(cell) ? cell.getAsString() : null);
+        if (name != null)
+            return new JsonPrimitive(name);
+
+        if (!cell.isJsonArray())
+            return cell;
+
+        var elements = new JsonArray();
+        var replaced = false;
+        for (var element : cell.getAsJsonArray())
+        {
+            var inner = alias.get(isIdentifier(element) ? element.getAsString() : null);
+            if (inner == null)
+            {
+                elements.add(element);
+                continue;
+            }
+            elements.add(inner);
+            replaced = true;
+        }
+        return replaced ? elements : cell;
+    }
+
+    /** a plain string of the identifier shape; a number, a bool, an object never is */
+    private static boolean isIdentifier(JsonElement cell)
+    {
+        return cell.isJsonPrimitive() && cell.getAsJsonPrimitive().isString()
+                        && IDENTIFIER.matcher(cell.getAsString()).matches();
     }
 
     /**

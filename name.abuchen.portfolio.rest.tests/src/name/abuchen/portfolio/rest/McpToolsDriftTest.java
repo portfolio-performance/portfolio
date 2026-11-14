@@ -59,6 +59,21 @@ public class McpToolsDriftTest
 
     private static final Pattern PATH_PLACEHOLDER = Pattern.compile("\\{([^}]+)\\}");
 
+    /** writes that only ever add: an assignment, a list or an instrument that was not there, a quote that was not stored */
+    private static final Set<String> ADDING_WRITES = Set.of("pp_assign_vehicle", "pp_create_watchlist", //$NON-NLS-1$ //$NON-NLS-2$
+                    "pp_create_instrument", "pp_update_quotes"); //$NON-NLS-1$ //$NON-NLS-2$
+
+    /**
+     * writes whose second sending is refused, brings a second thing into being,
+     * or - for the one tool that reaches the network - does the work all over
+     * again rather than leaving the world alone
+     */
+    private static final Set<String> ONCE_ONLY_WRITES = Set.of("pp_unassign_vehicle", "pp_create_watchlist", //$NON-NLS-1$ //$NON-NLS-2$
+                    "pp_create_instrument", "pp_update_quotes"); //$NON-NLS-1$ //$NON-NLS-2$
+
+    /** the one tool that contacts something outside the application */
+    private static final Set<String> OPEN_WORLD_TOOLS = Set.of("pp_update_quotes"); //$NON-NLS-1$
+
     private IEclipsePreferences node;
 
     @Before
@@ -75,10 +90,10 @@ public class McpToolsDriftTest
 
     /** also asserts the document is reachable as a bundle entry, not just in the IDE */
     @Test
-    public void testTheSixteenToolsAreServed()
+    public void testTheToolsAreServed()
     {
-        assertThat(McpTools.all(), hasSize(16));
-        assertThat(McpTools.listPayload().size(), is(16));
+        assertThat(McpTools.all(), hasSize(29));
+        assertThat(McpTools.listPayload().size(), is(29));
     }
 
     @Test
@@ -173,7 +188,7 @@ public class McpToolsDriftTest
 
     /** no default file and no active file, on all but the first call */
     @Test
-    public void testFileIsRequiredOnFifteenOfSixteen()
+    public void testFileIsRequiredOnEveryToolButOne()
     {
         var without = new TreeSet<String>();
         for (McpTool tool : McpTools.all())
@@ -250,20 +265,38 @@ public class McpToolsDriftTest
             var readOnly = "GET".equals(tool.method());
 
             assertThat(tool.name() + " readOnlyHint", annotations.get("readOnlyHint").getAsBoolean(), is(readOnly));
-            // MCP defaults destructiveHint to true whenever readOnlyHint is
-            // false, and a merge patch clears fields when given null, so it is
-            // not additive either
+
+            // MCP defaults destructiveHint to true whenever readOnlyHint is false,
+            // and that default fits the writes here with the exceptions named
+            // below: a merge patch clears a field when given null and a delete
+            // takes something away - but placing a vehicle into a class and naming
+            // a list that did not exist take away nothing that was there before
+            var destructive = !readOnly && !ADDING_WRITES.contains(tool.name());
             assertThat(tool.name() + " destructiveHint", annotations.get("destructiveHint").getAsBoolean(),
-                            is(!readOnly));
-            assertThat(tool.name() + " idempotentHint", annotations.get("idempotentHint").getAsBoolean(), is(true));
-            // a closed local system, not the open internet
-            assertThat(tool.name() + " openWorldHint", annotations.get("openWorldHint").getAsBoolean(), is(false));
+                            is(destructive));
+
+            // every other request of this surface can be sent again unchanged and
+            // comes back the same. Taking an assignment out cannot, and neither can
+            // naming a list: the second time there is nothing to do and the call is
+            // refused rather than quietly succeeding - a different effect, not a
+            // repeated one
+            var idempotent = !ONCE_ONLY_WRITES.contains(tool.name());
+            assertThat(tool.name() + " idempotentHint", annotations.get("idempotentHint").getAsBoolean(),
+                            is(idempotent));
+
+            // a closed local system, not the open internet - with the one
+            // exception named below: starting the application's price update hands
+            // the job over to providers outside this application, and saying so is
+            // what lets a client ask before it does
+            var openWorld = OPEN_WORLD_TOOLS.contains(tool.name());
+            assertThat(tool.name() + " openWorldHint", annotations.get("openWorldHint").getAsBoolean(),
+                            is(openWorld));
         }
     }
 
-    /** exactly two writes, and they are the two the surface names */
+    /** the writes are the ones the surface names, and no read is secret about it */
     @Test
-    public void testTheWriteToolsAreTheTwoExpectedOnes()
+    public void testTheWriteToolsAreTheExpectedOnes()
     {
         var writes = new TreeSet<String>();
         for (McpTool tool : McpTools.all())
@@ -272,7 +305,10 @@ public class McpToolsDriftTest
                 writes.add(tool.name());
         }
 
-        assertThat(writes, is(new TreeSet<>(Set.of("pp_update_instrument", "pp_delete_instrument"))));
+        assertThat(writes, is(new TreeSet<>(Set.of("pp_update_instrument", "pp_delete_instrument", //
+                        "pp_assign_vehicle", "pp_unassign_vehicle", //
+                        "pp_create_watchlist", "pp_update_watchlist", "pp_create_instrument", //$NON-NLS-1$
+                        "pp_update_quotes")))); //$NON-NLS-1$
     }
 
     @Test

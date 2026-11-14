@@ -38,8 +38,8 @@ import name.abuchen.portfolio.rest.internal.Router;
 import name.abuchen.portfolio.rest.internal.VersionHandler;
 
 /**
- * The Model Context Protocol front door: {@code POST /mcp}, serving the
- * sixteen tools of {@code mcp-tools.json} over Streamable HTTP, and
+ * The Model Context Protocol front door: {@code POST /mcp}, serving the tools
+ * of {@code mcp-tools.json} over Streamable HTTP, and
  * {@code DELETE /mcp} to end a session.
  * <p/>
  * <b>A tool call is answered as a stream</b> when the client accepts
@@ -622,8 +622,8 @@ public final class McpEndpoint
         try
         {
             var response = McpDispatch.call(router, tool, arguments, request.progress());
-            // a PATCH says whether a stored value changed, which decides whether
-            // the user has anything to save
+            // every write says whether it changed the model, which decides
+            // whether the user has anything left to save
             var changed = response.headers().get(ApiRoutes.CHANGED_HEADER);
 
             var payload = payloadOf(response);

@@ -22,6 +22,7 @@ import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.ClientFactory;
+import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.online.impl.EurostatHICPLabels;
 import name.abuchen.portfolio.rest.ApiRoutes;
 import name.abuchen.portfolio.rest.ClientStore;
@@ -30,6 +31,7 @@ import name.abuchen.portfolio.rest.PairingService;
 import name.abuchen.portfolio.rest.RestApiConstants;
 import name.abuchen.portfolio.rest.RestApiServer;
 import name.abuchen.portfolio.rest.spi.ApiAccessRequest;
+import name.abuchen.portfolio.rest.spi.WriteConfirmation;
 import name.abuchen.portfolio.rest.spi.HostApplication;
 import name.abuchen.portfolio.rest.spi.OpenFile;
 import name.abuchen.portfolio.util.TokenReplacingReader;
@@ -96,12 +98,36 @@ public class DevServer
         }
 
         @Override
+        public void updateQuotes(Client client, List<Security> securities)
+        {
+            // headless: neither the job nor a provider is on this classpath, so the
+            // most a dev server can do is report what was asked for
+            System.out.println("dev-server: price update asked for " + securities.size() + " securities");
+        }
+
+        @Override
+        public void updateAllQuotes(Client client)
+        {
+            System.out.println("dev-server: price update asked for the whole file");
+        }
+
+        @Override
         public void requestApiAccessApproval(ApiAccessRequest request)
         {
             // PairingService still holds its lock here.
             var approval = new Thread(request::allowForSession, "dev-server-pairing");
             approval.setDaemon(true);
             approval.start();
+        }
+
+        @Override
+        public void requestModelWriteApproval(WriteConfirmation request)
+        {
+            // no user sitting in front of this one: say what was changed and
+            // let the rest of the run go through without being asked again
+            System.out.println("dev-server: approving " + request.getOperation() + " in " + request.getFileLabel()
+                            + " (" + request.getSubjectName() + ")");
+            request.allowForSession();
         }
     }
 
