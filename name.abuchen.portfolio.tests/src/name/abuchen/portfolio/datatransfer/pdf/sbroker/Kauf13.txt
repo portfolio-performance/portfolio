@@ -6,45 +6,44 @@ ORIGINAL=1
 FAXVERSAND=N
 EMAILVERSAND=N
 Wertpapierabrechnung
-DEPOTNUMMER=259/4851/002
+DEPOTNUMMER=685/8812/002
 DEPOTUNTERBEZEICHNUNG=
 Kauf
 VERSANDARTENSCHLUESSEL=0000
 Kommissionsgeschäft
 ADRESSZEILE1=Herrn
-ADRESSZEILE2=YjvQPD NTVTv
-ADRESSZEILE3=TWZdfud. 07
+ADRESSZEILE2=coVBXG ZaFjQ
+ADRESSZEILE3=TSBWJGs. 95
 Depot-Nr. Abrechnungs-Nr.
-Herrn ADRESSZEILE4=23351 jNPlrQhJYA
+Herrn ADRESSZEILE4=50325 wqumjIndDz
 ADRESSZEILE5=
-HBunoG YYvBO
-768/4844/002 15651559
+dQjbUh eCuFM
+319/2718/002 21461152
 ADRESSZEILE6=
-WOLnKKP. 45
-BELEGNUMMER=35390
-29686 EwgZlNtJZW
+sNumPJq. 58
+BELEGNUMMER=11714
+76753 HVFSbdxgYi
 SEITENNUMMER=1
 STEUERERSTATTUNG=N
 Depotinhaber
-ihAiWY ssGqr
-Wiesbaden, 05.05.2020
+PokLhK iJuix
+Wiesbaden, 08.04.2021
 Wir haben für Sie gekauft
 Gattungsbezeichnung ISIN
-Xtr.Stoxx Gbl Sel.Div.100 Swap Inhaber-Anteile 1D o.N. LU0292096186
+Johnson & Johnson Registered Shares DL 1 US4781601046
 Nominal Kurs
-STK 21,413 EUR 21,5250
-Handelstag 05.05.2020 EUR 460,91-
+STK 8,000 EUR 136,9800
+Handelstag 08.04.2021 EUR 1.095,84-
 Kurswert
-Handelszeit 09:06
-Handelsplatz Xetra
+EUR 10,47-
+Handelszeit 21:20
+Orderentgelt
+Handelsplatz Quotrix
 Verwahrart Girosammelverwahrung
 Wert Betrag zu Ihren Lasten
-07.05.2020 EUR 460,91
-Die Höhe des von der Kapitalverwaltungsgesellschaft (KVG) festgelegten Ausgabeauf- bzw. Rücknahmeabschlages sowie
-die jährlich zu zahlende Verwaltungsvergütung und die Gesamtkostenquote sind dem Verkaufsprospekt bzw. den
-Vertragsbedingungen zu entnehmen.
+12.04.2021 EUR 1.106,31
 Wir werden in Ihrem Depot wie angegeben buchen.
 Mit freundlichen Grüßen
 S Broker AG & Co. KG
 Dieser Beleg wird maschinell erstellt und daher nicht unterschrieben.
-3.18/ABREABHNHANDKF/ITS/035390/060520/004110
+3.18/ABREABHNHANDKFDI/GAAASAFG/011714/090421/004445

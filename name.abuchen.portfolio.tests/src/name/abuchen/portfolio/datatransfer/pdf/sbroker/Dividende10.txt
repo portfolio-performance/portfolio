@@ -1,87 +1,50 @@
 PDFBox Version: 1.8.17
-Portfolio Performance Version: 0.61.4
+Portfolio Performance Version: 0.62.1
 -----------------------------------------
-BELEGDRUCK=J
-ORIGINAL=1
-FAXVERSAND=N
-EMAILVERSAND=N
-Erträgnisgutschrift aus Wertpapieren
-DEPOTNUMMER=700/7940/000
-DEPOTUNTERBEZEICHNUNG=
-VERSANDARTENSCHLUESSEL=0000
-ADRESSZEILE1=Herrn
-Ausschüttung für
-ADRESSZEILE2=Dr. Fritz Fox
-01.05.2017 - 31.12.2017
-ADRESSZEILE3=Frau Fritzi Foxy
-Depot-Nr. Abrechnungs-Nr.
-Herrn ADRESSZEILE4=Fuchsstraße 1
-ADRESSZEILE5=88888 München
-Dr. Fritz Fox
-700/7940/000 61314054
-ADRESSZEILE6=
-Frau Fritzi Foxy
-BELEGNUMMER=22135
-Fuchsstraße 1
-SEITENNUMMER=1
-88888 München
-STEUERERSTATTUNG=N
-Depotinhaber
-Dr. Fritz Fox oder Fritzi Foxy
-Ertragsthesaurierung
-Wiesbaden, 13.01.2018
-Gattungsbezeichnung ISIN
-iShares MDAX UCITS ETF DE Inhaber-Anteile DE0005933923
-Nominal Ex-Tag Zahltag Ausschüttungsbetrag pro Stück
-STK 0,254 02.01.2018 15.01.2018 EUR 2,693217
-Wert Konto-Nr. Betrag zu Ihren Lasten
-15.01.2018 11/7940/001 EUR 0,01
-Ertrag für 2017 EUR 0,68
-Hinweise zur steuerlichen Verrechnung: vorher aktuell
-inl. Dividendenanteil (Thesaurierung) EUR 0,68
-Aktienverlusttopf EUR 0,00 0,00
-allgemeiner Verlusttopf EUR 0,00 0,00
-Freistellungsauftrag (eingereicht: EUR 501,00) EUR 0,00 0,00
-Quellensteuertopf EUR 0,00 0,00
-Steuerliquidität EUR 0,19
-zu versteuern EUR 0,68
-einbehaltene Kapitalertragsteuer EUR 0,17
-einbehaltener Solidaritätszuschlag EUR 0,01
-einbehaltene Kirchensteuer EUR 0,01
-einbehaltene Kirchensteuer Ehegatte/Lebenspartner EUR 0,01
-im laufenden Jahr einbehaltene Kapitalertragsteuer EUR 40,10
-im laufenden Jahr einbehaltener Solidaritätszuschlag EUR 2,20
-im laufenden Jahr einbehaltene Kirchensteuer EUR 1,60
-im laufenden Jahr einbehaltene Kirchensteuer Ehegatte/Lebenspartner EUR 1,60
-Kapitalertragsteuer, Solidaritätszuschlag und ggf. Kirchensteuer nach gemeldetem Kirchensteuersatz verrechnet mit dem
-Finanzamt Wiesbaden, Steuernummer 402/200/0073.
-Es folgt Seite 2
-3.20/ABREEREIERTR/GDBERTRG/022135/130118/032659
-BELEGDRUCK=J
-ORIGINAL=1
-FAXVERSAND=N
-EMAILVERSAND=N
-Depot-Nr. Abrechnungs-Nr. Seite-Nr.
-DEPOTNUMMER=700/7940/000
-700/7940/000 61314054 2
-DEPOTUNTERBEZEICHNUNG=
-VERSANDARTENSCHLUESSEL=0000
-ADRESSZEILE1=Herrn
-ADRESSZEILE2=Dr. Fritz Fox
-ADRESSZEILE3=Frau Fritzi Foxy
-Steuerlicher Stichtag 31.12.2017
-ADRESSZEILE4=Fuchsstraße 1
-Die Kapitalverwaltungsgesellschaft (KVG) entnimmt KESt, SolZ und ggf. KiSt dem Sondervermögen und stellt den
-ADRESSZEILE5=88888 München
-auszahlenden Stellen diesen Betrag in Form der Steuerliquidität zur Verfügung. Abhängig von der tatsächlich
-ADRESSZEILE6=
-abzuführenden Steuer wird ein möglicher Differenzbetrag dem Kundenkonto erstattet.
-BELEGNUMMER=22135
-Jahressteuerbescheinigung folgt
-SEITENNUMMER=2
-Verwahrart: Girosammelverwahrung
-STEUERERSTATTUNG=N
-Mit freundlichen Grüßen
-S Broker AG & Co. KG
-Dieser Beleg wird maschinell erstellt und daher nicht unterschrieben.
-3.20/ABREEREIERTR/GDBERTRG/022135/130118/032659
+~$~|ER01|746015||||||||ERTRAEGE.D230508.AFP||||20230508||33844|0000|||||~$~
+S Broker AG & Co. KG ´ Postfach 90 01 50 ´ 39133 Magdeburg Seite 1
+Depotnummer 12345678
+Sebastian Name
+Abrechnungsnr. 12345678
+Datum 08.05.2023
+Herrn
+Sebastian Name
+Stadtteil
+Strasse. 123
+12345 Stadt
+Dividendengutschrift
+Nominale Wertpapierbezeichnung ISIN (WKN)
+Stück 28 HUHTAMAEKI OYJ FI0009000459 (870740)
+REGISTERED SHARES O.N.
+Zahlbarkeitstag 09.05.2023 Dividende pro Stück 0,50 EUR
+Bestandsstichtag 27.04.2023 Herkunftsland Finnland
+Ex-Tag 28.04.2023 Art der Dividende Zwischendividende
+Geschäftsjahr 01.01.2022 - 31.12.2022
+Dividendengutschrift 14,00+ EUR
+Einbehaltene Quellensteuer 35 % auf 14,00 EUR 4,90- EUR
+Anrechenbare Quellensteuer 15 % auf 14,00 EUR 2,10 EUR
+Kapitalertragsteuerpflichtige Dividende 14,00 EUR
+Verrechneter Sparer-Pauschbetrag 14,00 - EUR
+Berechnungsgrundlage für die Kapitalertragsteuer 0,00 EUR
+Ausmachender Betrag 9,10+ EUR
+20 % rückforderbare Quellensteuer 2,80 EUR
+Lagerstelle Clearstream Banking FFM (849000 / 40030000)
+Jahressteuerbescheinigung folgt.
+Bitte ggf. Rückseite beachten.
+5500.05082144.0040698ER01
+SBRO_ER01_v10.8P.ERTRAEGE.D230508.AFP_33844
+
+Seite 2
+Depotnummer 12345678
+Abrechnungsnr. 12345678
+Datum 08.05.2023
+Nachrichtlich die Übersicht Ihrer Verrechnungs- und Steuertopfsalden zum Zeitpunkt der Erstellung der Abrechnung.
+Verrechnungstöpfe 2023 Berechnungsgrundlage
+der gezahlten Steuern
+Euro Aktien Sonstige Sparer- anrechenbare Aktien und Sonstige
+Pauschbetrag Quellensteuer
+Vorher 2.306,26 0,00 167,05 31,75 0,00
+Ertrag 0,00 0,00 14,00- 2,10 0,00
+Nachher 2.306,26 0,00 153,05 33,85 0,00
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+5500.05082144.0040699ER01

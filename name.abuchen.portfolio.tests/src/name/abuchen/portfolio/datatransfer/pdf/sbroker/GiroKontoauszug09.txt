@@ -1,139 +1,120 @@
 ```
-PDFBox Version: 1.8.17
-Portfolio Performance Version: 0.62.1
+PDFBox Version: 3.0.3 != 1.8.17
+Portfolio Performance Version: 0.74.0
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
 -----------------------------------------
 S Sparkasse
 Schweinfurt-Haßberge
-341 00 00 81
 Herrn Ihr Ansprechpartner:
-Max Mustermann Manuel Jahna
-Strasse Kundenberatung Hofheim
-Strasse 7 Marktplatz 7
-99999 Stadt 97461 Hofheim
+max max max max
+strasse Kundenberatung Hofheim
+strasse 7 Marktplatz 7
+99999 stadt 99999 Hofheim
 Telefon 09521 58-764
 Fax 09521 58-499
-manuel.jahna@sparkasse-sw-has.de
+max.max@sparkasse-sw-has.de
  
  
- 
-2. Januar 2020
-. Kontoauszug 21/2019 Seite 1 von 6
-Giro Sm@rt 190743781, DE34 7935 0101 0190 9999 99
-  
-Datum Wert Erläuterung Betrag Soll EUR Betrag Haben EUR
- Kontostand am 29.11.2019, Auszug Nr.   20            4.392,93+
-27.12.2019 27.12.2019 Lohn, Gehalt, Rente            1.111,11+
-ZF FRIEDRICHSHAFEN A
-Lohn/Gehalt 09006580/201912
-30.12.2019 01.01.2020 Entgeltabrechnung                6,20-
+ 1. Dezember 2021
+Kontoauszug 20/2021 Seite 1 von 3
+S  -Giro Smart 190999999, DE34 7935 0101 0190 9999 99
+Datum Erläuterung Betrag Soll EUR Betrag Haben EUR
+ Kontostand am 29.10.2021, Auszug Nr.   19             2.648,17
+02.11.2021 Dauerauftrag / Wert: 01.11.2021              -600,00
+max max ETF
+02.11.2021 Lastschrift               -34,50
+IGM Schweinfurt Industriegewerkschaft Metall BEITRAG BIS
+10/21 MANDATSREF 999999 3701 GLAEUBIGER-ID
+DE71ZZZ000000535 93 NAECHSTER BEITRAGSEINZUG IN
+BEKA NNTER HOEHE UND VEREINBARTEM TURNUS
+162144784 9999993701 Gläubiger-ID:
+DE71ZZZ00000053593
+08.11.2021 Überweisung online            -1.000,00
+max max DATUM 07.11.2021, 14.38 UHR
+ed167428d-7976906-14375169-20211107
+16.11.2021 Lastschrift               -57,30
+PAYPAL (EUROPE) S.A.R.L ET CIE,S.C. PP.9962.PP . WES
+Handel . Dienstlei stung GmbH, Ihr Einkauf bei WES Han
+del . Dienstleistung GmbH 1016806442351 PP.9962.PP
+PAYPAL 4CU2224VNSRPG Gläubiger-ID:
+LU96ZZZ0000000000000000058
+16.11.2021 Lastschrift                -8,30
+Lotto24 by Adyen Lotto24 C99685998 T558459002550
+C7739369178101997C 1636257542382004 Gläubiger-ID:
+NL48ZZZ342764500000
+23.11.2021 Lastschrift               -86,39
+PAYPAL (EUROPE) S.A.R.L ET CIE,S.C. PP.9962.PP . Re-In
+Retail Internati onal GmbH, Ihr Einkauf bei Re-In Re tail
+International GmbH 1016920528968 PP.9962.PP PAYPAL
+4CU2224VNSRPG Gläubiger-ID:
+LU96ZZZ0000000000000000058
+23.11.2021 Lastschrift               -12,34
+AMAZON PAYMENTS EUROPE S.C.A.
+305-0193746-8690705 AMZN Mktp DE 6W
+ZH55YDCWHOML8K 6WZH55YDCWHOML8K
+KcoKMYuvg4ojtd-,O0?0,pPDaFQVWe Gläubiger-ID:
+DE94ZZZ00000561653
+Übertrag:               849,34
+Sparkasse Schweinfurt-Haßberge Anstalt des öffentlichen Rechts Telefon 09721/721-0 www.sparkasse-sw-has.de
+Jägersbrunnen 1-7 HR Nr. A/1124 (AG Schweinfurt) Telefax 09721/721-3229 info@sparkasse-sw-has.de
+97421 Schweinfurt USt-IdNr. DE 133 906 578 BLZ: 793 501 01 BIC: BYLADEM1KSW
+Sparkassen-Finanzgruppe
+S Sparkasse
+Schweinfurt-Haßberge
+Kontoauszug 20/2021 Seite 2 von 3
+S-Giro Smart 190999999, DE34 7935 0101 0190 9999 99,  max max
+Datum Erläuterung Betrag Soll EUR Betrag Haben EUR
+Übertrag:               849,34
+24.11.2021 Lastschrift               -73,73
+AMAZON PAYMENTS EUROPE S.C.A.
+305-9919388-8166721 AMZN Mktp DE FQ
+HRADKBJ0P27QTJ FQHRADKBJ0P27QTJ
+KcoKMYuvg4ojtd-,O0?0,pPDaFQVWe Gläubiger-ID:
+DE94ZZZ00000561653
+29.11.2021 Überweisung online              -250,00
+solarisBank AG BISON App DATUM 27.11.2021, 14.49 UHR
+7387004d-13537109-14483336-20211127
+29.11.2021 Lastschrift               -10,00
+PAYPAL (EUROPE) S.A.R.L ET CIE,S.C. . Telekom
+Deutschland GmbH, Ihr Ein kauf bei Telekom Deutschland
+GmbH 1017019999608 PAYPAL 4CU2224VNSRPG
+Gläubiger-ID: LU96ZZZ0000000000000000058
+29.11.2021 Lohn, Gehalt, Rente             3.499,31
+  ZF FRIEDRICHSHAFEN A Lohn/Gehalt 99999999/202111
+30.11.2021 Überweisung online            -1.000,00
+max max DATUM 30.11.2021, 17.24 UHR
+f1fd88a43-4759718-16500185-20211130
+30.11.2021 Dauerauftrag              -600,00
+max max ETF
+30.11.2021 Lastschrift               -10,96
+PAYPAL (EUROPE) S.A.R.L ET CIE,S.C. . eBay S.a r.l., Ihr
+Einkauf bei eB ay S.a r.l. 1017045769238 PAYPAL
+4CU2224VNSRPG Gläubiger-ID:
+LU96ZZZ0000000000000000058
+30.11.2021 Entgeltabrechnung / Wert: 01.12.2021                -5,10
 siehe Anlage Nr. 1
-30.12.2019 01.01.2020 Abrechnung 30.12.2019                0,00+
-siehe Anlage Nr. 2
- Kontostand am 30.12.2019 um 23:03 Uhr            2.323,87+
+ Kontostand am 30.11.2021 um 20:02 Uhr             2.398,86
 Der Kontostand kann Beträge mit späterer Wertstellung enthalten, bitte Hinweise zum Kontoauszug beachten.
-Anzahl Anlagen 2
-Ihr Dispositionskredit EUR: 2.000,00
+Anzahl Anlagen 1
+Ihr Kreditlimit EUR: 2.000,00
 Sparkasse Schweinfurt-Haßberge Anstalt des öffentlichen Rechts Telefon 09721/721-0 www.sparkasse-sw-has.de
 Jägersbrunnen 1-7 HR Nr. A/1124 (AG Schweinfurt) Telefax 09721/721-3229 info@sparkasse-sw-has.de
 97421 Schweinfurt USt-IdNr. DE 133 906 578 BLZ: 793 501 01 BIC: BYLADEM1KSW
 Sparkassen-Finanzgruppe
-0.53.2.4960708 940981.0.10.01 1(Fassung November 2013) - (V1) 
-Finanz Informatik 
-Urheberrechtlich geschützt
 S Sparkasse
 Schweinfurt-Haßberge
-Kontoauszug 21/2019 Seite 4 von 6
-Giro Sm@rt 190743781, DE34 7935 0101 0190 9999 99 Max Mustermann
-Kundenmitteilungen:
-Sehr geehrte Kundin, sehr geehrter Kunde,
-ab dem 19. April 2020 gelten neue gesetzliche Bestimmungen für Bargeldaus-
-zahlungen und Zahlungen im stationären Handel mit der Karte innerhalb des
-Europäischen Wirtschaftsraums, die in einer Fremdwährung durchgeführt wer-
-den und eine Währungsumrechnung beinhalten (EU-Preisverordnung 2019/518).
-Zur Umsetzung der gesetzlichen Bestimmungen passen wir zum 19. April 2020
-unser Preis- und Leistungsverzeichnis und die Bedingungen für unsere Mas-
-tercard/Visa Card-Kartenprodukte (Kredit- und Debitkarten) entsprechend an.
-. Die Anpassungen im Preis- und Leistungsverzeichnis bzgl. der EU-Preisver-
-  ordnung für Kartenzahlungen sowie Bedingungen für unsere Mastercard/
-Visa Card-Kartenprodukte (Kredit- und Debitkarten) zum 19. April 2020
-haben wir für Sie übersichtlich zusammengefasst. Die Übersicht können Sie
-unter www.sparkasse-sw-has.de/preise unter dem Titel 'EU-Preisverordnung
-für Kartenzahlungen zum 19. April 2020' bzw. in allen Filialen einsehen.
-Gerne händigen wir Ihnen ein Exemplar aus.
-Das Preis- und Leistungsverzeichnis tritt mit Wirkung zum 19. April 2020 in
-Kraft. Wie mit Ihnen in Nr. 2 Abs. 2 unserer Allgemeinen Geschäftsbedin-
-. gungen vereinbart, gilt Ihre Zustimmung zu den Änderungen des Preis- und
-Leistungsverzeichnisses sowie, falls Sie Inhaber eines unserer Mastercard/
-Visa Card-Kartenprodukte (Kredit- und Debitkarten) sind, der Bedingungen
-für Ihre jeweilige Mastercard/Visa Card und Mastercard Basis (Debitkarte)
-als erteilt, sofern Sie uns Ihre Ablehnung nicht vor dem 19. April 2020
-anzeigen. Wenn Sie mit den angebotenen Vertragsänderungen nicht einverstan-
-den sind, können Sie den jeweils betroffenen Zahlungsdiensterahmenvertrag
-(Ihren Girokontovertrag bzw. die Vereinbarung zu Ihrer jeweiligen Karte)
-auch kostenfrei und fristlos vor dem 19. April 2020 kündigen, was wir
-sehr bedauern würden.
-Mit freundlichen Grüßen
-Ihre Sparkasse Schweinfurt-Haßberge
-Sparkasse Schweinfurt-Haßberge Anstalt des öffentlichen Rechts Telefon 09721/721-0 www.sparkasse-sw-has.de
-Jägersbrunnen 1-7 HR Nr. A/1124 (AG Schweinfurt) Telefax 09721/721-3229 info@sparkasse-sw-has.de
-97421 Schweinfurt USt-IdNr. DE 133 906 578 BLZ: 793 501 01 BIC: BYLADEM1KSW
-Sparkassen-Finanzgruppe
-0.53.2.4960708 940981.0.10.01 1(Fassung November 2013) - (V1) 
-Finanz Informatik 
-Urheberrechtlich geschützt
-S Sparkasse
-Schweinfurt-Haßberge
-Kontoauszug 21/2019 Seite 5 von 6
-Giro Sm@rt 190743781, DE34 7935 0101 0190 9999 99 Max Mustermann
+Kontoauszug 20/2021 Seite 3 von 3
+S-Giro Smart 190999999, DE34 7935 0101 0190 9999 99,  max max
 Entgeltabschluss: Anlage     1
- 
-Entgelte vom 30.11.2019 bis 30.12.2019                               6,20-
- 
-Grundpreis (Kontoführung)                              2,00-
-Zahlungsverkehr                                        4,20-
+Entgelte vom 30.10.2021 bis 30.11.2021                               5,10-
+Grundpreis (Kontoführung)                              4,00-
+Zahlungsverkehr                                        1,10-
                                                             --------------
-Abrechnung 30.12.2019                                                6,20-
- 
+Abrechnung 30.11.2021                                                5,10-
 Es handelt sich hierbei um eine umsatzsteuerfreie Leistung.
-Rechnungsnummer: 20191230-BY044-00008944939
- 
-.  
+Rechnungsnummer: 20211130-BY044-00013729379
   
 Bitte beachten Sie die Hinweise zum Kontoauszug.
-.
-Sparkasse Schweinfurt-Haßberge Anstalt des öffentlichen Rechts Telefon 09721/721-0 www.sparkasse-sw-has.de
-Jägersbrunnen 1-7 HR Nr. A/1124 (AG Schweinfurt) Telefax 09721/721-3229 info@sparkasse-sw-has.de
-97421 Schweinfurt USt-IdNr. DE 133 906 578 BLZ: 793 501 01 BIC: BYLADEM1KSW
-Sparkassen-Finanzgruppe
-0.53.2.4960708 940981.0.10.01 1(Fassung November 2013) - (V1) 
-Finanz Informatik 
-Urheberrechtlich geschützt
-S Sparkasse
-Schweinfurt-Haßberge
-Kontoauszug 21/2019 Seite 6 von 6
-Giro Sm@rt 190743781, DE34 7935 0101 0190 9999 99 Max Mustermann
-Rechnungsabschluss: Anlage     2
- 
-Kontostand in EUR am 30.12.2019                                 2.323,87 +
-                                                            --------------
-Abrechnungszeitraum vom 01.10.2019 bis 31.12.2019
-Abrechnung 31.12.2019                                                0,00+
- 
-Sollzinssätze am 30.12.2019
-10,0500 v.H. für eingeräumte Kontoüberziehung
-(aktuell eingeräumte Kontoüberziehung       2.000,00)
-10,0500 v.H. für geduldete Kontoüberziehung
-über die eingeräumte Kontoüberziehung hinaus
-.  
-  Die Anpassungen des Zinssatzes für Kontoüberziehungen sind abhängig von
-der Entwicklung des 3-Monats-Euribor.
- 
-Es handelt sich hierbei um eine umsatzsteuerfreie Leistung.
- 
-Kontostand/Rechnungsabschluss in EUR am 30.12.2019              2.323,87 +
-Rechnungsnummer: 20191230-BY044-00008944938
- 
-. Bitte beachten Sie die Hinweise zum Kontoauszug.
 Hinweise zum Kontoauszug:
 Sehr geehrte Kundin, sehr geehrter Kunde,
 bitte prüfen Sie die Buchungen und Berechnungen in diesem Kontoauszug. Eventuelle Rückfragen besprechen Sie bitte mit Ihrem
@@ -165,8 +146,5 @@ Sparkasse Schweinfurt-Haßberge Anstalt des öffentlichen Rechts Telefon 09721/7
 Jägersbrunnen 1-7 HR Nr. A/1124 (AG Schweinfurt) Telefax 09721/721-3229 info@sparkasse-sw-has.de
 97421 Schweinfurt USt-IdNr. DE 133 906 578 BLZ: 793 501 01 BIC: BYLADEM1KSW
 Sparkassen-Finanzgruppe
-0.53.2.4960708 940981.0.10.01 1(Fassung November 2013) - (V1) 
-Finanz Informatik 
-Urheberrechtlich geschützt
 
 ```
