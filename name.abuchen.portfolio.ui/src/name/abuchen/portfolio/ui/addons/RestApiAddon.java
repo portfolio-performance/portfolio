@@ -35,9 +35,11 @@ import name.abuchen.portfolio.rest.RestApiWorkspace;
 import name.abuchen.portfolio.rest.spi.ApiAccessRequest;
 import name.abuchen.portfolio.rest.spi.HostApplication;
 import name.abuchen.portfolio.rest.spi.OpenFile;
+import name.abuchen.portfolio.rest.spi.WriteConfirmation;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.dialogs.ApiAccessApprovalDialog;
+import name.abuchen.portfolio.ui.dialogs.ModelWriteApprovalDialog;
 import name.abuchen.portfolio.ui.editor.ClientInput;
 import name.abuchen.portfolio.ui.editor.ClientInputFactory;
 import name.abuchen.portfolio.ui.editor.EditorActivationState;
@@ -175,6 +177,16 @@ public class RestApiAddon
         {
             Display.getDefault().asyncExec(() -> showApprovalWhenIdle(this, request));
         }
+
+        @Override
+        public void requestModelWriteApproval(WriteConfirmation request)
+        {
+            // called from an HTTP worker thread; the dialog belongs to the UI
+            // thread and the call must not wait, because the caller parks on the
+            // answer rather than on this method
+            Display.getDefault().asyncExec(() -> showWriteApprovalWhenIdle(this, request));
+        }
+
     }
 
     @Inject
@@ -268,6 +280,38 @@ public class RestApiAddon
 
         new ApiAccessApprovalDialog(Display.getDefault().getActiveShell(), request, anyFileEnabled,
                         this::openRestApiPreferences).open();
+    }
+
+    /**
+     * Shows the dialog asking whether a change to a file may be made, on the UI
+     * thread and not while the user is in the middle of an edit. Unlike the
+     * access prompt this one has an owner waiting: the route parks on the answer,
+     * so a prompt deferred too long simply ends with the request's expiry and the
+     * change is refused as unanswered - never applied without a yes.
+     */
+    private void showWriteApprovalWhenIdle(HostApplication host, WriteConfirmation request)
+    {
+        if (!Instant.now().isBefore(request.getExpiresAt()))
+            return; // expired while waiting; the caller already reported it
+
+        if (host.isUserEditing())
+        {
+            Display.getDefault().timerExec(500, () -> showWriteApprovalWhenIdle(host, request));
+            return;
+        }
+
+        try
+        {
+            new ModelWriteApprovalDialog(Display.getDefault().getActiveShell(), request).open();
+        }
+        catch (RuntimeException | Error e)
+        {
+            // nothing was shown, so nothing was ever asked. Refuse rather than
+            // let the caller sit out the expiry of a question nobody could see:
+            // a refusal says plainly that no change was made, and it says it now
+            PortfolioLog.error(e);
+            request.decline();
+        }
     }
 
     private void openRestApiPreferences()

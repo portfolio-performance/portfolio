@@ -315,12 +315,34 @@ public final class ApiRoutes
     }
 
     /**
-     * On a PATCH: {@code true} when this patch changed a stored value - the file
-     * then has unsaved changes - {@code false} when it only restated what was
-     * already there. About this patch only: after {@code false} the file may
-     * still hold unsaved changes of earlier edits.
+     * On a write: {@code true} when this call changed the model - the file then
+     * has unsaved changes - {@code false} when it left everything as it was.
+     * About this call only: after {@code false} the file may still hold unsaved
+     * changes of earlier edits.
+     *
+     * Every write answers it, not only a PATCH. Two of them already say the same
+     * fact in their body under {@code changed}; the header repeats it so that
+     * knowing whether to warn about an unsaved file costs no body to parse and no
+     * language to read. The MCP layer reads the header for exactly that.
      */
     public static final String CHANGED_HEADER = "X-Portfolio-Changed"; //$NON-NLS-1$
+
+    /** the answer of a write, with what it did to the file stated in the header */
+    private static Response wrote(Response response, boolean changed)
+    {
+        return response.withHeader(CHANGED_HEADER, String.valueOf(changed));
+    }
+
+    /**
+     * Whether a handler left the model as it was: the handlers that can be
+     * restated without touching anything say so in their body, and one that says
+     * nothing is not read as a no-op.
+     */
+    private static boolean changedOf(JsonObject body)
+    {
+        var flag = body.get("changed"); //$NON-NLS-1$
+        return flag == null || flag.getAsBoolean();
+    }
 
     private ApiRoutes()
     {
@@ -343,8 +365,13 @@ public final class ApiRoutes
         var resolver = new FileResolver(registry, host);
         var files = new FilesHandler(registry, host);
 
+        // every change to a file is asked about before it happens. The asking
+        // belongs to the routes rather than to the handlers, so that a write
+        // cannot forget it and a read cannot stumble into it
+        var approvals = new WriteApprovals(host);
+
         // the MCP front door: registered on this same table and dispatching
-        // back into it, so the sixteen tools cannot drift from the routes they
+        // back into it, so the tools cannot drift from the routes they
         // are - and GET and DELETE get the router's own 405
         McpEndpoint.register(router);
 
@@ -374,41 +401,34 @@ public final class ApiRoutes
                         (client, req) -> SecuritiesHandler.attributeTypes(client)));
         router.add("GET", "/v1/files/{file}/instruments/{uuid}", read(resolver, ui, //$NON-NLS-1$ //$NON-NLS-2$
                         (client, req) -> SecuritiesHandler.get(client, req.pathParam("uuid")))); //$NON-NLS-1$
-        router.add("PATCH", "/v1/files/{file}/instruments/{uuid}", write(resolver, ui, //$NON-NLS-1$ //$NON-NLS-2$
+        router.add("PATCH", "/v1/files/{file}/instruments/{uuid}", write(resolver, ui, approvals, //$NON-NLS-1$ //$NON-NLS-2$
+                        "pp_update_instrument", (file, req) -> SecuritiesHandler.describe(file.getClient(), //$NON-NLS-1$
+                                        req.pathParam("uuid"), parseObject(req), file.getLabel()), //$NON-NLS-1$
                         (file, req) -> {
                             var result = SecuritiesHandler.patch(file.getClient(), req.pathParam("uuid"), //$NON-NLS-1$
                                             parseObject(req));
                             InstrumentChangeLog.record(file.getLabel(), result.instrumentName(), result.changes());
-                            // whether a stored value changed - and with it whether the
-                            // file now has unsaved changes - which the body cannot say
-                            return Response.json(200, result.entity()).withHeader(CHANGED_HEADER,
-                                            String.valueOf(!result.changes().isEmpty()));
+                            // whether a stored value changed - and with it whether
+                            // the file now has unsaved changes - which the body cannot say
+                            return wrote(Response.json(200, result.entity()), !result.changes().isEmpty());
                         }));
-        router.add("DELETE", "/v1/files/{file}/instruments/{uuid}", write(resolver, ui, //$NON-NLS-1$ //$NON-NLS-2$
+        router.add("DELETE", "/v1/files/{file}/instruments/{uuid}", write(resolver, ui, approvals, //$NON-NLS-1$ //$NON-NLS-2$
+                        "pp_delete_instrument", (file, req) -> SecuritiesHandler.describeDeletion(file.getClient(), //$NON-NLS-1$
+                                        req.pathParam("uuid"), file.getLabel()), //$NON-NLS-1$
                         (file, req) -> {
                             // read in the task that removes it, so that it is the
                             // record that is gone: the MCP result describes it
                             var removed = SecuritiesHandler.get(file.getClient(), req.pathParam("uuid")); //$NON-NLS-1$
                             var name = SecuritiesHandler.delete(file.getClient(), req.pathParam("uuid")); //$NON-NLS-1$
                             InstrumentChangeLog.recordDeletion(file.getLabel(), name);
-                            return Response.noContent().withInProcess(removed);
+                            // something was removed, so the file holds unsaved changes
+                            return wrote(Response.noContent().withInProcess(removed), true);
                         }));
-
-        router.add("GET", "/v1/files/{file}/cash-accounts", read(resolver, ui, //$NON-NLS-1$ //$NON-NLS-2$
-                        (client, req) -> AccountsHandler.list(client)));
-        router.add("GET", "/v1/files/{file}/cash-accounts/{uuid}", read(resolver, ui, //$NON-NLS-1$ //$NON-NLS-2$
-                        (client, req) -> AccountsHandler.get(client, req.pathParam("uuid")))); //$NON-NLS-1$
-
-        router.add("GET", "/v1/files/{file}/investment-accounts", read(resolver, ui, //$NON-NLS-1$ //$NON-NLS-2$
-                        (client, req) -> PortfoliosHandler.list(client)));
-        router.add("GET", "/v1/files/{file}/investment-accounts/{uuid}", read(resolver, ui, //$NON-NLS-1$ //$NON-NLS-2$
-                        (client, req) -> PortfoliosHandler.get(client, req.pathParam("uuid")))); //$NON-NLS-1$
 
         router.add("GET", "/v1/files/{file}/holdings", calc(resolver, ui, calculation, //$NON-NLS-1$ //$NON-NLS-2$
                         (context, req) -> Response.json(200, HoldingsHandler.list(context.client(), context.factory(),
                                         req.queryParam("date"), req.queryParam("reportingCurrency")))), //$NON-NLS-1$ //$NON-NLS-2$
                         "date", "reportingCurrency"); //$NON-NLS-1$ //$NON-NLS-2$
-
         router.add("GET", "/v1/files/{file}/performance", calc(resolver, ui, calculation, //$NON-NLS-1$ //$NON-NLS-2$
                         (context, req) -> Response.json(200, PerformanceHandler.list(context.client(),
                                         context.factory(), req.queryParam("openingDate"), //$NON-NLS-1$
@@ -840,18 +860,64 @@ public final class ApiRoutes
         };
     }
 
-    private static Router.Handler write(FileResolver resolver, UiThread ui,
-                    BiFunction<OpenFile, Request, Response> body)
+    /** states, in facts rather than in a sentence, what a write would change */
+    private interface WriteOperation
     {
-        return onUiThread(ui, false, request -> {
-            // resolve first: an unknown file is a 404 even while the user edits
-            var resolved = resolver.resolve(request.pathParam("file")); //$NON-NLS-1$
+        WriteApprovals.Facts facts(OpenFile file, Request request);
+    }
 
-            if (ui.host().isUserEditing())
-                throw ApiException.locked();
+    /**
+     * The one way into a change. Three steps, in this order and for a reason.
+     * <p/>
+     * First the facts, read on the UI thread because names live in the model: an
+     * instrument called "Bevi" and a class called "Währung", not their uuids.
+     * This step also validates, so that a request which cannot be carried out is
+     * refused without ever interrupting the user.
+     * <p/>
+     * Then the user is asked, on this worker thread. Asking from inside the UI
+     * task would hold the UI thread for as long as the answer is read, and the
+     * deadline that keeps a caller from hanging would pass while the prompt is
+     * still open - the change would then land in the file with nobody told.
+     * <p/>
+     * Only a yes queues the change itself, and the user-editing guard applies
+     * then rather than at the door: a prompt that ends while the user is deep in
+     * a cell edit should not fail on the threshold it arrived at.
+     */
+    private static Router.Handler write(FileResolver resolver, UiThread ui, WriteApprovals approvals,
+                    String operation, WriteOperation describe, BiFunction<OpenFile, Request, Response> body)
+    {
+        return request -> {
+            var facts = uiExecBounded(ui.host(), () -> {
+                var resolved = resolver.resolve(request.pathParam("file")); //$NON-NLS-1$
+                return describe.facts(resolved.file(), request);
+            }, ui.deadline(), true, request.progress());
 
-            return body.apply(resolved.file(), request);
-        });
+            // the operation is what "allow for this session" is remembered under,
+            // so it is stamped in here rather than left to each describer: one
+            // route, one operation, whatever the describer was busy naming
+            approvals.await(new WriteApprovals.Facts(operation, facts.fileLabel(), facts.subjectType(),
+                            facts.subjectName(), facts.targetName(), facts.detail()));
+
+            return onUiThread(ui, false, r -> {
+                var resolved = resolver.resolve(r.pathParam("file")); //$NON-NLS-1$
+
+                if (ui.host().isUserEditing())
+                    throw ApiException.locked();
+
+                return body.apply(resolved.file(), r);
+            }).handle(request);
+        };
+    }
+
+    /**
+     * The body of a call that may carry none. A price update with nothing in it
+     * means "the whole file", which is what the application's own menu item does,
+     * so an empty body reads as an empty object rather than as a broken one.
+     */
+    private static JsonObject optionalObject(Request request)
+    {
+        var body = request.body();
+        return body == null || body.length == 0 ? new JsonObject() : parseObject(request);
     }
 
     private static JsonObject parseObject(Request request)

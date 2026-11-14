@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CompletableFuture;
 
+
 /**
  * Services the hosting application provides to the REST plugin. Implemented
  * by the UI plugin; the REST plugin must not depend on UI bundles.
@@ -40,4 +41,13 @@ public interface HostApplication
      * through the request object.
      */
     void requestApiAccessApproval(ApiAccessRequest request);
+
+    /**
+     * Asks the user to approve a change to a portfolio file, before anything is
+     * touched. Called on an HTTP worker thread and must not block; the decision
+     * is reported asynchronously through the request object, and a request left
+     * unanswered ends in its expiry - the change is then refused as unanswered,
+     * never applied silently. Reads never come here.
+     */
+    void requestModelWriteApproval(WriteConfirmation request);
 }

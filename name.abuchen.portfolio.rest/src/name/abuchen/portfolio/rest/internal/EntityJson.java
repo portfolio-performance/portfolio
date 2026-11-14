@@ -60,6 +60,24 @@ public final class EntityJson
         return json;
     }
 
+    /**
+     * The envelope of a list that can come back empty. An empty `items` is two
+     * different answers - none in the file at all, or none left by what was
+     * asked for - and they lead a reader to different next calls, while the
+     * array itself cannot tell them apart. Only the handler knows which, so it
+     * says so here, in a word the reader does not have to guess.
+     *
+     * @param whenEmpty
+     *            what it means that nothing came back
+     */
+    public static JsonObject envelope(JsonArray items, String whenEmpty)
+    {
+        var json = envelope(items);
+        if (items.size() == 0)
+            json.addProperty("empty", whenEmpty); //$NON-NLS-1$
+        return json;
+    }
+
     public static <T> JsonObject envelope(Collection<T> entities, Function<T, JsonObject> mapper)
     {
         var items = new JsonArray();
