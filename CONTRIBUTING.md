@@ -392,7 +392,7 @@ See [Color Code Reference](#color-code-reference) for exact colors.
 Test regular expressions at [regex101.com](https://regex101.com/).
 
 **Best Practices:**
-- Match special characters (`äöüÄÖÜß`, circumflex, etc.) with `.` (dot) - PDF conversion varies
+- Match special characters (`äöüÄÖÜß`, accents, etc.) exactly as they appear in the sample text. Use `.` (dot) only for a character that is evidently broken in the sample (e.g. `�`) or that differs between samples of the same bank
 - Escape special regex characters: `$^{[(|)]}*+?\`
 - `.match(" ... ")` - Use anchors `^...$`
 - `.find(" ... ")` - Do NOT add anchors (added automatically)

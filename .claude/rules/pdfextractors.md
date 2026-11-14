@@ -57,10 +57,14 @@ var shares = asBigDecimal(v.get("shares"));
 ## Regular Expressions
 
 Beside general good practices for regular expressions, keep in mind:
-* all special characters in the PDF document (`äöüÄÖÜß` as well as e.g. circumflex or similar) should be matched by a `.` (dot) because the PDF to text conversion can create different results
+* match characters exactly as they appear in the sample text: if the sample shows `ü`, write `ü`. This holds for all non-ASCII characters (umlauts, `ß`, accents, `°`, `€`). Do not replace correct characters with `.` (dot) on suspicion.
+* use `.` only for a character that is evidently broken: either the sample shows a replacement character (`�`), or two samples of the same bank disagree at that spot (`ü` in one, `�` in another). Whether a character is broken is the human's call: point it out and ask, don't decide on your own. Mojibake such as `Ã¼` for `ü` replaces one character with two, so a dot does not fit; report the sample as suspect instead.
+* existing `.` patterns stay as they are; do not rewrite them to umlauts, or the other way around, in code you are not otherwise changing.
 * the special characters `$^{[(|)]}*+?\` in the PDF document are to be escaped
 * `.match(" ... ")` — always use anchors `^...$`
 * `.find(" ... ")` — do NOT add anchors (they are added automatically)
+
+**In reviews:** flag neither a literal umlaut nor an existing `.` in its place. A newly written `.` where the sample clearly shows the correct character gets a light note, not a required change.
 
 **Standard patterns for common values:**
 
