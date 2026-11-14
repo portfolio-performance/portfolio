@@ -3,6 +3,7 @@ package name.abuchen.portfolio.ui.addons;
 import java.io.IOException;
 import java.text.MessageFormat;
 import java.time.Instant;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CompletableFuture;
@@ -25,6 +26,7 @@ import org.osgi.service.event.Event;
 
 import name.abuchen.portfolio.PortfolioLog;
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
 import name.abuchen.portfolio.rest.ApiRoutes;
 import name.abuchen.portfolio.rest.FileAccessRegistry;
@@ -43,6 +45,7 @@ import name.abuchen.portfolio.ui.dialogs.ModelWriteApprovalDialog;
 import name.abuchen.portfolio.ui.editor.ClientInput;
 import name.abuchen.portfolio.ui.editor.ClientInputFactory;
 import name.abuchen.portfolio.ui.editor.EditorActivationState;
+import name.abuchen.portfolio.ui.jobs.priceupdate.UpdatePricesJob;
 
 /**
  * Starts and stops the REST API server with the application and implements
@@ -187,6 +190,19 @@ public class RestApiAddon
             Display.getDefault().asyncExec(() -> showWriteApprovalWhenIdle(this, request));
         }
 
+        @Override
+        public void updateQuotes(Client client, List<Security> securities)
+        {
+            // the application's own job, exactly as the menu item schedules it:
+            // its progress dialog, its feeds, its markDirty() when a quote lands
+            new UpdatePricesJob(client, securities).schedule();
+        }
+
+        @Override
+        public void updateAllQuotes(Client client)
+        {
+            new UpdatePricesJob(client, EnumSet.allOf(UpdatePricesJob.Target.class)).schedule();
+        }
     }
 
     @Inject
