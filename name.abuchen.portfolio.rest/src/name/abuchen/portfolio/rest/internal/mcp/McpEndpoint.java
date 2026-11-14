@@ -813,9 +813,22 @@ public final class McpEndpoint
             return "`" + argument + "` must be one of " + namesOf(enumeration.getAsJsonArray());
 
         var minimum = schema.get("minimum");
-        if (minimum != null && value.isJsonPrimitive() && value.getAsJsonPrimitive().isNumber()
-                        && value.getAsBigDecimal().compareTo(minimum.getAsBigDecimal()) < 0)
-            return "`" + argument + "` must be at least " + minimum.getAsString();
+        if (minimum != null && value.isJsonPrimitive() && value.getAsJsonPrimitive().isNumber())
+        {
+            try
+            {
+                if (value.getAsBigDecimal().compareTo(minimum.getAsBigDecimal()) < 0)
+                    return "`" + argument + "` must be at least " + minimum.getAsString();
+            }
+            catch (NumberFormatException e)
+            {
+                // good JSON and no number: the exponent of something like
+                // 1e999999999 is legal and nothing a BigDecimal - or the model
+                // behind it - holds. Named here, rather than let the handler
+                // throw over an argument nobody pointed at.
+                return "`" + argument + "` is a number out of the range this API can hold";
+            }
+        }
 
         var minLength = schema.get("minLength");
         if (minLength != null && value.isJsonPrimitive() && value.getAsJsonPrimitive().isString()
