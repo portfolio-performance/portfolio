@@ -20,7 +20,6 @@ import java.time.temporal.TemporalAccessor;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -93,6 +92,11 @@ public class IBFlexStatementExtractor implements Extractor
 
     // Map to store exchange mappings from Interactive Broker to Yahoo
     private Map<String, String> exchanges = new HashMap<>();
+
+    // Executions canceled by a TradeCancel row imported together with them
+    private Set<String> canceledTradeTransactionIds = new HashSet<>();
+    // TradeCancel row -> canceled execution imported together with it
+    private Map<Element, Element> matchedTradeCancellations = new HashMap<>();
 
     // Supported date formats (from IB Flex Query configuration):
     // - yyyyMMdd, yyyy-MM-dd, MM/dd/yyyy, MM/dd/yy, dd/MM/yyyy, dd/MM/yy,
@@ -278,46 +282,58 @@ public class IBFlexStatementExtractor implements Extractor
     }
 
     /**
-     * Imports an Interactive Broker Activity Statement from an XML file.
-     * Returns one result per FlexStatement (i.e., per account) in the file.
+     * Imports Interactive Broker Activity Statements from XML files. Returns
+     * one result per FlexStatement (i.e., per account) in the files.
      *
-     * @param f The input stream of the XML file.
+     * @param files The XML files.
      * @return The list of extraction results, one per account.
      */
-    /* package */ List<IBFlexStatementExtractorResult> importActivityStatement(InputStream f)
+    /* package */ List<IBFlexStatementExtractorResult> importActivityStatement(List<Extractor.InputFile> files)
     {
         List<IBFlexStatementExtractorResult> results = new ArrayList<>();
+        List<Element> statementElements = new ArrayList<>();
 
-        try (InputStream fileInputStream = f)
+        for (Extractor.InputFile file : files)
         {
-            // Setup XML document parsing with secure features
-            DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-            dbFactory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
-            dbFactory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
-
-            DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-            Document doc = dBuilder.parse(fileInputStream);
-
-            doc.getDocumentElement().normalize();
-
-            // Process each FlexStatement separately (one per account)
-            NodeList statements = doc.getElementsByTagName("FlexStatement");
-            for (int i = 0; i < statements.getLength(); i++)
+            try (InputStream fileInputStream = new FileInputStream(file.getFile()))
             {
-                Node node = statements.item(i);
-                if (node.getNodeType() == Node.ELEMENT_NODE)
+                // Setup XML document parsing with secure features
+                DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+                dbFactory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+                dbFactory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+
+                DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+                Document doc = dBuilder.parse(fileInputStream);
+
+                doc.getDocumentElement().normalize();
+
+                NodeList statements = doc.getElementsByTagName("FlexStatement");
+                for (int i = 0; i < statements.getLength(); i++)
                 {
-                    var result = new IBFlexStatementExtractorResult();
-                    result.parseStatement((Element) node);
-                    results.add(result);
+                    Node node = statements.item(i);
+                    if (node.getNodeType() == Node.ELEMENT_NODE)
+                        statementElements.add((Element) node);
                 }
             }
+            catch (ParserConfigurationException | SAXException | IOException e)
+            {
+                // Handle exceptions and add errors to a new result
+                var result = new IBFlexStatementExtractorResult();
+                result.addError(e);
+                results.add(result);
+            }
         }
-        catch (ParserConfigurationException | SAXException | IOException e)
+
+        // Collect canceled trades of all files before importing trade
+        // executions.
+        IBFlexStatementExtractorResult.collectCanceledTradeTransactionIds(statementElements,
+                        canceledTradeTransactionIds, matchedTradeCancellations);
+
+        // Process each FlexStatement separately (one per account)
+        for (Element statement : statementElements)
         {
-            // Handle exceptions and add errors to a new result
             var result = new IBFlexStatementExtractorResult();
-            result.addError(e);
+            result.parseStatement(statement);
             results.add(result);
         }
 
@@ -367,9 +383,6 @@ public class IBFlexStatementExtractor implements Extractor
         private String accountCurrency = null;
         private Map<String, Account> accounts = new HashMap<>();
         private Portfolio portfolio = null;
-        private Set<String> canceledTradeTransactionIds = new HashSet<>();
-        // TradeCancel row -> canceled execution of the same statement
-        private Map<Element, Element> matchedTradeCancellations = new HashMap<>();
 
         // Map to store currency conversion rates by (date, "fromCurrency-toCurrency")
         private Map<Pair<String, String>, BigDecimal> conversionRates = new HashMap<>();
@@ -1200,12 +1213,13 @@ public class IBFlexStatementExtractor implements Extractor
 
         /**
          * Pairs TradeCancel rows with the execution they cancel. Only
-         * executions of the same statement are paired: if the execution came
-         * with an earlier statement, it may already be imported, and the
+         * executions imported together are paired: if the execution came with
+         * an earlier import, it may already be part of the client, and the
          * cancellation must stay visible as unsupported so that the user can
          * correct the existing transaction.
          */
-        private void collectCanceledTradeTransactionIds()
+        private static void collectCanceledTradeTransactionIds(List<Element> statements,
+                        Set<String> canceledTradeTransactionIds, Map<Element, Element> matchedTradeCancellations)
         {
             canceledTradeTransactionIds.clear();
             matchedTradeCancellations.clear();
@@ -1213,23 +1227,26 @@ public class IBFlexStatementExtractor implements Extractor
             Map<String, Element> executions = new HashMap<>();
             List<Element> cancellations = new ArrayList<>();
 
-            NodeList nList = statement.getElementsByTagName("Trade");
-            for (int index = 0; index < nList.getLength(); index++)
+            for (Element statement : statements)
             {
-                Node node = nList.item(index);
-                if (node.getNodeType() != Node.ELEMENT_NODE)
-                    continue;
+                NodeList nList = statement.getElementsByTagName("Trade");
+                for (int index = 0; index < nList.getLength(); index++)
+                {
+                    Node node = nList.item(index);
+                    if (node.getNodeType() != Node.ELEMENT_NODE)
+                        continue;
 
-                Element element = (Element) node;
-                if ("TradeCancel".equals(element.getAttribute("transactionType")))
-                {
-                    cancellations.add(element);
-                }
-                else
-                {
-                    String transactionID = element.getAttribute("transactionID");
-                    if (!transactionID.isEmpty())
-                        executions.put(transactionID, element);
+                    Element element = (Element) node;
+                    if ("TradeCancel".equals(element.getAttribute("transactionType")))
+                    {
+                        cancellations.add(element);
+                    }
+                    else
+                    {
+                        String transactionID = element.getAttribute("transactionID");
+                        if (!transactionID.isEmpty())
+                            executions.put(transactionID, element);
+                    }
                 }
             }
 
@@ -1298,9 +1315,6 @@ public class IBFlexStatementExtractor implements Extractor
 
             // Import AccountInformation
             importModelObjects("AccountInformation", buildAccountInformation);
-
-            // Collect canceled trades before importing trade executions.
-            collectCanceledTradeTransactionIds();
 
             // Process all Trades
             importModelObjects("Trade", buildPortfolioTransaction);
@@ -1520,24 +1534,39 @@ public class IBFlexStatementExtractor implements Extractor
         }
     }
 
+    /**
+     * Imports all files together, so that a TradeCancel row in one file is
+     * paired with the canceled execution in another file.
+     */
+    @Override
+    public List<Item> extract(List<Extractor.InputFile> files, List<Exception> errors)
+    {
+        List<Item> items = new ArrayList<>();
+        for (var result : importActivityStatement(files))
+        {
+            errors.addAll(result.getErrors());
+            items.addAll(result.getResults());
+        }
+
+        postProcessing(items);
+
+        Map<Extractor, List<Item>> itemsByExtractor = new HashMap<>();
+        itemsByExtractor.put(this, items);
+        new SecurityCache(client).addMissingSecurityItems(itemsByExtractor);
+
+        return items;
+    }
+
     @Override
     public List<Item> extract(SecurityCache securityCache, Extractor.InputFile inputFile, List<Exception> errors)
     {
-        try (FileInputStream in = new FileInputStream(inputFile.getFile()))
+        List<Item> items = new ArrayList<>();
+        for (var result : importActivityStatement(List.of(inputFile)))
         {
-            List<Item> items = new ArrayList<>();
-            for (var result : importActivityStatement(in))
-            {
-                errors.addAll(result.getErrors());
-                items.addAll(result.getResults());
-            }
-            return items;
+            errors.addAll(result.getErrors());
+            items.addAll(result.getResults());
         }
-        catch (IOException e)
-        {
-            errors.add(e);
-            return Collections.emptyList();
-        }
+        return items;
     }
 
     /**
