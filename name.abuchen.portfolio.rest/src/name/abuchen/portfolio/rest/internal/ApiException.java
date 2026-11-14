@@ -117,6 +117,25 @@ public class ApiException extends RuntimeException
     }
 
     /**
+     * The vehicle asked about exists, and so does the class, but the class does
+     * not hold that vehicle - so there is nothing to take out. Not {@link
+     * #notFound()}, which would leave the caller hunting for an entity that is
+     * not missing: what is missing is the relation between two things that are
+     * both there.
+     */
+    public static ApiException notAssigned(String detail)
+    {
+        return new ApiException(404, "not-assigned", "Not assigned to this class", detail, List.of(), //$NON-NLS-1$ //$NON-NLS-2$
+                        Map.of());
+    }
+
+    public static ApiException locked()
+    {
+        return new ApiException(423, "user-interaction", "User interaction in progress, retry later", null, //$NON-NLS-1$ //$NON-NLS-2$
+                        List.of(), Map.of("Retry-After", "5")); //$NON-NLS-1$ //$NON-NLS-2$
+    }
+
+    /**
      * The user looked at the change and refused it. That is an answer, not a
      * failure to reach the application: nothing will change by asking again, so
      * this carries no {@code Retry-After}.
