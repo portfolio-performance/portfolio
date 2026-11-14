@@ -50,6 +50,16 @@ public final class SecuritiesHandler
     {}
 
     /**
+     * An instrument that did not exist before this call: the answer to hand back,
+     * and what to say about it in the log the desktop user reads. A
+     * {@code JsonObject} rather than a {@code JsonElement} because the answer has
+     * named members, and whoever reads it should not have to ask first.
+     */
+    public record CreationResult(JsonObject answer, String instrumentName,
+                    List<InstrumentChangeLog.Change> changes)
+    {}
+
+    /**
      * The writable fields of an instrument. Validating and applying a field are
      * kept side by side so that the two cannot drift apart; a field that is not
      * listed here is not writable.
@@ -208,6 +218,221 @@ public final class SecuritiesHandler
 
         return new WriteApprovals.Facts(null, fileLabel, "instrument", security.getName(), null, //$NON-NLS-1$
                         String.join(", ", body.keySet())); //$NON-NLS-1$
+    }
+
+    /**
+     * A new instrument: its name, its currency and, if the caller has them, its
+     * identifiers. Deliberately without a quote feed - asking a provider for quotes
+     * is a side effect the caller can neither see nor order, and it would happen
+     * while nobody is looking. The feed is set in the application; the master data
+     * after it can be filled by the tool that changes them.
+     */
+    public static CreationResult create(Client client, JsonObject body)
+    {
+        var security = new Security();
+
+        var check = check(client, security, body);
+        var errors = check.errors();
+        creationRules(client, body, errors);
+        if (!errors.isEmpty())
+            throw ApiException.validation(errors);
+
+        apply(security, body, check.assignments());
+        client.addSecurity(security);
+        client.markDirty();
+
+        // answer and log name the same thing: the fields the caller named, with the
+        // value the model holds of each now
+        var named = namedFields(security, body, check.assignments());
+
+        var json = new JsonObject();
+        json.add("instrument", EntityJson.toJson(client, security)); //$NON-NLS-1$
+        json.add("fields", fieldsOf(named)); //$NON-NLS-1$
+        // what the record alone cannot say: nothing was fetched for this instrument,
+        // and nothing in the file refers to it yet - which is exactly what makes the
+        // delete tool able to undo this one
+        json.addProperty("hasQuoteFeed", false); //$NON-NLS-1$
+        json.addProperty("hasTransactions", false); //$NON-NLS-1$
+
+        // not a refusal, and not silence either: an instrument of a name the file
+        // already has is addressable through its uuid, but a caller who did not mean
+        // to add a second one should hear that it now has two
+        var names = sharing(client, security, true);
+        if (names.size() > 0)
+            json.add("sameNameAs", names); //$NON-NLS-1$
+        var tickers = sharing(client, security, false);
+        if (tickers.size() > 0)
+            json.add("sameTickerAs", tickers); //$NON-NLS-1$
+
+        // what the log the desktop user reads gets: the same list the answer shows.
+        // A difference list would leave out the currency, which a new security
+        // already carries before anything is set on it.
+        var changes = named.stream() //
+                        .map(f -> new InstrumentChangeLog.Change(f.field(), null, f.value())) //
+                        .toList();
+
+        return new CreationResult(json, security.getName(), changes);
+    }
+
+    /** what the prompt will name, with the creation already rejected if it cannot be */
+    public static WriteApprovals.Facts describeCreation(Client client, JsonObject body, String fileLabel)
+    {
+        var security = new Security();
+
+        var errors = new ArrayList<ApiException.FieldError>();
+        var check = check(client, security, body);
+        errors.addAll(check.errors());
+        creationRules(client, body, errors);
+        if (!errors.isEmpty())
+            throw ApiException.validation(errors);
+
+        var proposed = body.get("name").getAsString().trim(); //$NON-NLS-1$
+        return new WriteApprovals.Facts(null, fileLabel, "instrument", proposed, null, //$NON-NLS-1$
+                        String.join(", ", body.keySet())); //$NON-NLS-1$
+    }
+
+    /** the identifiers one instrument must not share with another */
+    private static final List<String> UNIQUE_IDENTIFIERS = List.of("isin", "wkn"); //$NON-NLS-1$ //$NON-NLS-2$
+
+    /**
+     * What only a creation asks for: a currency, and identifiers no other
+     * instrument of the file carries.
+     *
+     * <p>
+     * A currency-less series is what an index is, so a creation insists on one and
+     * the existing change tool can still take it away afterwards. A duplicate ISIN
+     * is a warning in the application and a reason to do nothing here, because two
+     * instruments answering to one ISIN send every later search for it to whichever
+     * the file happens to list first. A ticker symbol is deliberately not among
+     * these: the same ticker is ordinary for share classes and trading venues, so it
+     * is reported in the answer instead of refused.
+     * </p>
+     */
+    private static void creationRules(Client client, JsonObject body, List<ApiException.FieldError> errors)
+    {
+        if (!body.has("name")) //$NON-NLS-1$
+            errors.add(new ApiException.FieldError("name", "required", "name is required to create an instrument")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+
+        var currency = body.get("currencyCode"); //$NON-NLS-1$
+        if (currency == null || currency.isJsonNull())
+            errors.add(new ApiException.FieldError("currencyCode", "required", //$NON-NLS-1$ //$NON-NLS-2$
+                            "currencyCode is required - a currency-less series is an index, and the change tool can make one")); //$NON-NLS-1$
+
+        for (var identifier : UNIQUE_IDENTIFIERS)
+        {
+            var element = body.get(identifier);
+            if (element == null || !isString(element))
+                continue;
+
+            var wanted = element.getAsString().trim();
+            if (wanted.isEmpty())
+                continue;
+
+            for (var other : client.getSecurities())
+            {
+                if (!sameText(identifierOf(other, identifier), wanted))
+                    continue;
+
+                var detail = wanted + " is already the " + identifier + " of " + other.getName() //$NON-NLS-1$ //$NON-NLS-2$
+                                + " (uuid " + other.getUUID() + ")" //$NON-NLS-1$ //$NON-NLS-2$
+                                + " - create nothing, or change the instrument that has it"; //$NON-NLS-1$
+                errors.add(new ApiException.FieldError(identifier, "duplicate-identifier", detail)); //$NON-NLS-1$
+                break;
+            }
+        }
+    }
+
+    private static String identifierOf(Security security, String identifier)
+    {
+        return switch (identifier)
+        {
+            case "isin" -> security.getIsin(); //$NON-NLS-1$
+            case "wkn" -> security.getWkn(); //$NON-NLS-1$
+            default -> security.getTickerSymbol(); //$NON-NLS-1$
+        };
+    }
+
+    /** other instruments of the file that answer to the same name or the same ticker */
+    private static JsonArray sharing(Client client, Security security, boolean byName)
+    {
+        var wanted = byName ? security.getName() : security.getTickerSymbol();
+        var others = new JsonArray();
+        if (wanted == null || wanted.isBlank())
+            return others;
+
+        for (var other : client.getSecurities())
+        {
+            if (other == security)
+                continue;
+
+            if (sameText(byName ? other.getName() : other.getTickerSymbol(), wanted))
+                others.add(InvestmentPlansHandler.namedReference(other.getUUID(), other.getName()));
+        }
+
+        return others;
+    }
+
+    private static boolean sameText(String one, String other)
+    {
+        if (one == null || other == null)
+            return false;
+
+        return one.trim().equalsIgnoreCase(other.trim());
+    }
+
+    /** one field the caller named, with the value the model holds of it */
+    private record Named(String field, String value)
+    {}
+
+    /**
+     * The fields the new instrument arrives with. For something that did not exist
+     * before, the useful question is what the caller asked for and what the model
+     * holds of it now - not what differs from an earlier value: a new security
+     * already answers to the file's currency before anything is set on it, so a
+     * comparison would hide the one field that is never left empty. One list for
+     * the answer and for the log, so the two cannot disagree.
+     */
+    private static List<Named> namedFields(Security security, JsonObject body,
+                    List<AttributeAssignment> assignments)
+    {
+        var named = new ArrayList<Named>();
+
+        for (var entry : body.entrySet())
+        {
+            if ("attributes".equals(entry.getKey())) //$NON-NLS-1$
+                continue;
+
+            var field = WRITABLE_FIELDS.get(entry.getKey());
+            if (field == null)
+                continue;
+
+            named.add(new Named(entry.getKey(), field.getter().get(security)));
+        }
+
+        for (var assignment : assignments)
+        {
+            if (assignment.clear())
+                continue;
+
+            named.add(new Named(assignment.type().getName(), renderAttribute(assignment.type(), assignment.value())));
+        }
+
+        return named;
+    }
+
+    private static JsonArray fieldsOf(List<Named> named)
+    {
+        var fields = new JsonArray();
+
+        for (var f : named)
+        {
+            var item = new JsonObject();
+            item.addProperty("field", f.field()); //$NON-NLS-1$
+            item.addProperty("value", f.value()); //$NON-NLS-1$
+            fields.add(item);
+        }
+
+        return fields;
     }
 
     /** the fields a patch or a creation names that are staged but not yet applied, and the violations */

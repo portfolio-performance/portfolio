@@ -410,6 +410,19 @@ public final class ApiRoutes
                         (client, req) -> SecuritiesHandler.attributeTypes(client)));
         router.add("GET", "/v1/files/{file}/instruments/{uuid}", read(resolver, ui, //$NON-NLS-1$ //$NON-NLS-2$
                         (client, req) -> SecuritiesHandler.get(client, req.pathParam("uuid")))); //$NON-NLS-1$
+        // a new instrument, and deliberately nothing else: no quote is fetched from
+        // a provider, because the caller can neither see nor order that side effect.
+        // Asked about first, like every change here, and refused before the prompt if
+        // an identifier belongs to another instrument already
+        router.add("POST", "/v1/files/{file}/instruments", write(resolver, ui, approvals, //$NON-NLS-1$ //$NON-NLS-2$
+                        "pp_create_instrument", (file, req) -> SecuritiesHandler.describeCreation(file.getClient(), //$NON-NLS-1$
+                                        parseObject(req), file.getLabel()), (file, req) -> {
+                            var made = SecuritiesHandler.create(file.getClient(), parseObject(req)); //$NON-NLS-1$
+                            InstrumentChangeLog.recordCreation(file.getLabel(), made.instrumentName(), //$NON-NLS-1$
+                                            made.changes());
+                            // a creation is always a change, so the file is unsaved now
+                            return wrote(Response.json(201, made.answer()), true);
+                        }));
         router.add("PATCH", "/v1/files/{file}/instruments/{uuid}", write(resolver, ui, approvals, //$NON-NLS-1$ //$NON-NLS-2$
                         "pp_update_instrument", (file, req) -> SecuritiesHandler.describe(file.getClient(), //$NON-NLS-1$
                                         req.pathParam("uuid"), parseObject(req), file.getLabel()), //$NON-NLS-1$
