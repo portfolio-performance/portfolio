@@ -13,8 +13,8 @@ import name.abuchen.portfolio.model.Watchlist;
 import name.abuchen.portfolio.rest.WriteApprovals;
 
 /**
- * The two changes a watchlist takes: a list that does not exist yet, and
- * instruments into or out of a list that does.
+ * The three changes a watchlist takes: a list that does not exist yet,
+ * instruments into or out of a list that does, and a list out of the file.
  *
  * <p>
  * A watchlist is the one object of a file without an identifier: its name is the
@@ -174,6 +174,57 @@ public final class WatchlistWriteHandler
         json.addProperty("changed", changed); //$NON-NLS-1$
         if (notHeld.size() > 0)
             json.add("notHeld", notHeld); //$NON-NLS-1$
+        return json;
+    }
+
+    /**
+     * What taking one list out of the file would do. The list has to be there -
+     * a name the file does not have is refused here, before anybody is asked,
+     * rather than after.
+     */
+    public static WriteApprovals.Facts describeDeletion(Client client, String fileLabel, JsonObject body)
+    {
+        var errors = new ArrayList<ApiException.FieldError>();
+        var name = name(body, errors);
+
+        if (!errors.isEmpty())
+            throw ApiException.badRequest(errors);
+
+        var existing = lookup(client, name);
+        if (existing == null)
+            throw noSuchList(client, name);
+
+        return new WriteApprovals.Facts(null, fileLabel, "watchlist", name, null, null); //$NON-NLS-1$
+    }
+
+    /**
+     * Takes one list out of the file. What it held stays: instruments are held by
+     * the file, and a watchlist only points at them - removing a list takes away
+     * a selection, never a security. There is no undo here; making the list
+     * again, with pp_create_watchlist naming the very same instruments, is the
+     * way back.
+     */
+    public static JsonObject remove(Client client, JsonObject body)
+    {
+        var errors = new ArrayList<ApiException.FieldError>();
+        var name = name(body, errors);
+
+        if (!errors.isEmpty())
+            throw ApiException.badRequest(errors);
+
+        var watchlist = lookup(client, name);
+        if (name != null && watchlist == null)
+            throw noSuchList(client, name);
+
+        var held = held(watchlist).size();
+        client.removeWatchlist(watchlist);
+        client.markDirty();
+
+        var json = answer(watchlist, 0, 0, false);
+        // the instruments are the answer's own count, and now it counts what is
+        // left: the list is gone from the file, nothing else is
+        json.addProperty("deleted", true); //$NON-NLS-1$
+        json.addProperty("instrumentCountBefore", held); //$NON-NLS-1$
         return json;
     }
 

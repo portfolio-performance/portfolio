@@ -579,6 +579,16 @@ public final class ApiRoutes
                             return wrote(Response.json(200, written), changedOf(written));
                         }));
 
+        // and away again - the name travels in the body here too, for the same
+        // reason it does in the two above: a list name is free text
+        router.add("DELETE", "/v1/files/{file}/watchlists", write(resolver, ui, approvals, //$NON-NLS-1$ //$NON-NLS-2$
+                        "pp_delete_watchlist", (file, req) -> WatchlistWriteHandler.describeDeletion(file.getClient(), //$NON-NLS-1$
+                                        file.getLabel(), parseObject(req)), (file, req) -> {
+                            // a list that was there and is not now is a change
+                            return wrote(Response.json(200, WatchlistWriteHandler.remove(file.getClient(), //$NON-NLS-1$
+                                            parseObject(req))), true);
+                        }));
+
         router.add("GET", "/v1/files/{file}/performance", calc(resolver, ui, calculation, //$NON-NLS-1$ //$NON-NLS-2$
                         (context, req) -> Response.json(200, PerformanceHandler.list(context.client(),
                                         context.factory(), req.queryParam("openingDate"), //$NON-NLS-1$

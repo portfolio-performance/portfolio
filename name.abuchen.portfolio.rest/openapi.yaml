@@ -1605,6 +1605,93 @@ paths:
         "503":
           $ref: "#/components/responses/ServiceUnavailable"
 
+    delete:
+      operationId: deleteWatchlist
+      tags: [Watchlists]
+      summary: Take a watchlist out of the file
+      description: |
+        The list is named in the body as it is for creating and changing one -
+        a list has no uuid, its name is the only address, and free text can hold
+        a slash a path segment cannot survive.
+
+        A name the file does not have is refused as `409 no-such-watchlist`,
+        naming the lists the file does have: sending this twice fails the second
+        time, and there is no undo - making the list again with `POST` under the
+        very name and with the very instruments is the way back.
+
+        What was watched stays: a watchlist only points at instruments. Removing
+        a list takes away a selection, never a security, and changes nothing
+        about the holdings, the bookings, or the other lists the same names
+        appear in.
+
+        The user is asked before the list goes, naming it: `403
+        write-declined`, `423 write-unanswered`, `429 write-pending`.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name]
+              additionalProperties: false
+              properties:
+                name:
+                  type: string
+                  description: |
+                    Which list to remove, spelled as `GET /v1/files/{file}/watchlists`
+                    names it.
+      responses:
+        "200":
+          description: |
+            The list as it last stood - its name, and how many instruments it
+            held - with `deleted: true`. The instruments themselves are in the
+            file as they were.
+          headers:
+            X-Portfolio-Changed:
+              description: |
+                Always `true`: a list that was there and is not now is a change,
+                and the file then has unsaved changes.
+              schema:
+                type: string
+                enum: ["true"]
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  name:
+                    type: string
+                  deleted:
+                    type: boolean
+                  hasIdentifier:
+                    type: boolean
+                  instrumentCountBefore:
+                    type: integer
+                  created:
+                    type: boolean
+                  added:
+                    type: integer
+                  removed:
+                    type: integer
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "423":
+          $ref: "#/components/responses/Locked"
+        "429":
+          $ref: "#/components/responses/WritePending"
+        "500":
+          $ref: "#/components/responses/InternalError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
+
   /v1/files/{file}/performance/categories/{classification}:
     parameters:
       - $ref: "#/components/parameters/File"

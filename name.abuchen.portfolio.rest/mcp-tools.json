@@ -941,6 +941,48 @@
       ]
     },
     {
+      "name": "pp_delete_watchlist",
+      "operationId": "deleteWatchlist",
+      "method": "DELETE",
+      "pathTemplate": "/v1/files/{file}/watchlists",
+      "description": "Takes one watchlist out of the file. `name` says which one, spelled exactly as pp_list_watchlists names it, and travels in the body as it does for creating and changing a list: a list has no uuid, its name is the only address, and free text can hold a slash a path segment cannot survive.\n\nA list the file does not have is refused as `409 no-such-watchlist`, and the refusal names the lists the file does have - so sending this twice fails the second time, and there is no undo. Making the list again with pp_create_watchlist, under the very name and with the very instruments, is the way back.\n\nWhat was watched stays: a watchlist only points at instruments, it does not hold them. Removing a list takes away a selection, never a security, and changes nothing about the holdings, the bookings, or the other lists the same names appear in.\n\nBefore the change is applied the application asks the user, naming the list: `403 write-declined` is a no that stands, `423 write-unanswered` means nobody answered within two minutes and nothing was changed, and `429 write-pending` means another change is still waiting for an answer. Reads are never asked about.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "file": {
+            "type": "string",
+            "description": "The `use` value from pp_list_files, sent exactly as given. Required: there is no default file."
+          },
+          "name": {
+            "type": "string",
+            "description": "Which list to remove, spelled as pp_list_watchlists names it. Required in practice: omitted, the call is refused with a 400 naming this field."
+          }
+        },
+        "required": [
+          "file"
+        ],
+        "additionalProperties": false
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": true,
+        "idempotentHint": false,
+        "openWorldHint": false
+      },
+      "bindings": [
+        {
+          "arg": "file",
+          "where": "path",
+          "wire": "file"
+        },
+        {
+          "arg": "name",
+          "where": "body",
+          "wire": "name"
+        }
+      ]
+    },
+    {
       "name": "pp_get_category_performance",
       "operationId": "getCategoryPerformance",
       "method": "GET",

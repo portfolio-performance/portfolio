@@ -37,6 +37,7 @@ public class Messages extends NLS
     public static String ApiWriteOpCreateInstrument;
     public static String ApiWriteOpCreateWatchlist;
     public static String ApiWriteOpDelete;
+    public static String ApiWriteOpDeleteWatchlist;
     public static String ApiWriteOpUnassign;
     public static String ApiWriteOpUpdate;
     public static String ApiWriteOpUpdateQuotes;
