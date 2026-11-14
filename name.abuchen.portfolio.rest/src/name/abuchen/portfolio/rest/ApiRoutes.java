@@ -52,6 +52,7 @@ import name.abuchen.portfolio.rest.internal.TaxonomyAssignmentHandler;
 import name.abuchen.portfolio.rest.internal.TradesHandler;
 import name.abuchen.portfolio.rest.internal.TransactionsHandler;
 import name.abuchen.portfolio.rest.internal.VersionHandler;
+import name.abuchen.portfolio.rest.internal.WatchlistWriteHandler;
 import name.abuchen.portfolio.rest.internal.WatchlistsHandler;
 import name.abuchen.portfolio.rest.internal.mcp.McpEndpoint;
 import name.abuchen.portfolio.rest.spi.HostApplication;
@@ -518,6 +519,24 @@ public final class ApiRoutes
                         (client, req) -> WatchlistsHandler.list(client, req.queryParam("instrument"), //$NON-NLS-1$
                                         req.queryParam("withInstruments"))), //$NON-NLS-1$
                         "instrument", "withInstruments"); //$NON-NLS-1$ //$NON-NLS-2$
+
+        // A watchlist has no identifier, so both changes address it by name and
+        // carry that name in the body: a list name is free text, free text can
+        // hold a slash, and a path segment cannot be asked to survive one. Both
+        // ask first, naming the list the user will see in the navigation.
+        router.add("POST", "/v1/files/{file}/watchlists", write(resolver, ui, approvals, //$NON-NLS-1$ //$NON-NLS-2$
+                        "pp_create_watchlist", (file, req) -> WatchlistWriteHandler.describe(file.getClient(), //$NON-NLS-1$
+                                        file.getLabel(), parseObject(req), true), (file, req) -> {
+                            // a list that did not exist before is a change
+                            return wrote(Response.json(201, WatchlistWriteHandler.create(file.getClient(), //$NON-NLS-1$
+                                            parseObject(req))), true);
+                        }));
+        router.add("PATCH", "/v1/files/{file}/watchlists", write(resolver, ui, approvals, //$NON-NLS-1$ //$NON-NLS-2$
+                        "pp_update_watchlist", (file, req) -> WatchlistWriteHandler.describe(file.getClient(), //$NON-NLS-1$
+                                        file.getLabel(), parseObject(req), false), (file, req) -> {
+                            var written = WatchlistWriteHandler.update(file.getClient(), parseObject(req));
+                            return wrote(Response.json(200, written), changedOf(written));
+                        }));
 
         router.add("GET", "/v1/files/{file}/performance", calc(resolver, ui, calculation, //$NON-NLS-1$ //$NON-NLS-2$
                         (context, req) -> Response.json(200, PerformanceHandler.list(context.client(),
