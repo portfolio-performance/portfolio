@@ -368,6 +368,8 @@ public class IBFlexStatementExtractor implements Extractor
         private Map<String, Account> accounts = new HashMap<>();
         private Portfolio portfolio = null;
         private Set<String> canceledTradeTransactionIds = new HashSet<>();
+        // TradeCancel row -> canceled execution of the same statement
+        private Map<Element, Element> matchedTradeCancellations = new HashMap<>();
 
         // Map to store currency conversion rates by (date, "fromCurrency-toCurrency")
         private Map<Pair<String, String>, BigDecimal> conversionRates = new HashMap<>();
@@ -692,15 +694,27 @@ public class IBFlexStatementExtractor implements Extractor
             if (!transactionID.isEmpty() && canceledTradeTransactionIds.contains(transactionID))
                 return;
 
-            if ("TradeCancel".equals(element.getAttribute("transactionType")))
-                return;
-
             // Check if the level of detail is supported
             String lod = element.getAttribute("levelOfDetail");
             if (lod.contains("ASSET_SUMMARY")
                             || lod.contains("SYMBOL_SUMMARY")
                             || lod.contains("ORDER"))
                 return;
+
+            // A TradeCancel row whose execution is in this statement is
+            // dropped together with that execution. The cancellation does not
+            // necessarily refund the commission and taxes of the execution, so
+            // book what remains. Other TradeCancel rows are reported below as
+            // unsupported cancellation.
+            Element canceledExecution = matchedTradeCancellations.get(element);
+            if (canceledExecution != null)
+            {
+                addUnreversedCharge(canceledExecution, element, "ibCommission", "ibCommissionCurrency",
+                                AccountTransaction.Type.FEES, AccountTransaction.Type.FEES_REFUND);
+                addUnreversedCharge(canceledExecution, element, "taxes", "currency",
+                                AccountTransaction.Type.TAXES, AccountTransaction.Type.TAX_REFUND);
+                return;
+            }
 
             // Set transaction type
             String tType = element.getAttribute("buySell");
@@ -1184,9 +1198,20 @@ public class IBFlexStatementExtractor implements Extractor
             }
         }
 
+        /**
+         * Pairs TradeCancel rows with the execution they cancel. Only
+         * executions of the same statement are paired: if the execution came
+         * with an earlier statement, it may already be imported, and the
+         * cancellation must stay visible as unsupported so that the user can
+         * correct the existing transaction.
+         */
         private void collectCanceledTradeTransactionIds()
         {
             canceledTradeTransactionIds.clear();
+            matchedTradeCancellations.clear();
+
+            Map<String, Element> executions = new HashMap<>();
+            List<Element> cancellations = new ArrayList<>();
 
             NodeList nList = statement.getElementsByTagName("Trade");
             for (int index = 0; index < nList.getLength(); index++)
@@ -1196,13 +1221,64 @@ public class IBFlexStatementExtractor implements Extractor
                     continue;
 
                 Element element = (Element) node;
-                if (!"TradeCancel".equals(element.getAttribute("transactionType")))
+                if ("TradeCancel".equals(element.getAttribute("transactionType")))
+                {
+                    cancellations.add(element);
+                }
+                else
+                {
+                    String transactionID = element.getAttribute("transactionID");
+                    if (!transactionID.isEmpty())
+                        executions.put(transactionID, element);
+                }
+            }
+
+            for (Element cancellation : cancellations)
+            {
+                String origTransactionID = cancellation.getAttribute("origTransactionID");
+                if (origTransactionID.isEmpty() || "0".equals(origTransactionID) || "N/A".equals(origTransactionID))
                     continue;
 
-                String origTransactionID = element.getAttribute("origTransactionID");
-                if (!origTransactionID.isEmpty() && !"0".equals(origTransactionID) && !"N/A".equals(origTransactionID))
-                    canceledTradeTransactionIds.add(origTransactionID);
+                Element execution = executions.get(origTransactionID);
+                if (execution == null)
+                    continue;
+
+                canceledTradeTransactionIds.add(origTransactionID);
+                matchedTradeCancellations.put(cancellation, execution);
             }
+        }
+
+        /**
+         * Books the part of a charge (commission or taxes) of a canceled
+         * execution that its cancellation does not reverse. IBFlex reports
+         * charges as negative and refunds as positive amounts.
+         */
+        private void addUnreversedCharge(Element execution, Element cancellation, String amountAttribute,
+                        String currencyAttribute, AccountTransaction.Type chargeType,
+                        AccountTransaction.Type refundType)
+        {
+            long remainder = asSignedAmount(execution.getAttribute(amountAttribute))
+                            + asSignedAmount(cancellation.getAttribute(amountAttribute));
+            if (remainder == 0)
+                return;
+
+            AccountTransaction transaction = new AccountTransaction();
+            transaction.setType(remainder < 0 ? chargeType : refundType);
+            transaction.setDateTime(extractDate(execution));
+            transaction.setSecurity(this.getOrCreateSecurity(execution, true));
+            transaction.setMonetaryAmount(Money.of(asCurrencyCode(execution.getAttribute(currencyAttribute)),
+                            Math.abs(remainder)));
+            transaction.setNote(extractNote(execution));
+
+            addItem(transaction);
+        }
+
+        private long asSignedAmount(String value)
+        {
+            if (value.isEmpty())
+                return 0;
+            return new BigDecimal(value).multiply(Values.Amount.getBigDecimalFactor())
+                            .setScale(0, RoundingMode.HALF_UP).longValue();
         }
 
         /**
