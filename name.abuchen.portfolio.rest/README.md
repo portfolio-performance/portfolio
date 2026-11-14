@@ -36,11 +36,13 @@ curl -s -X POST -d '{"clientName": "My Script"}' http://127.0.0.1:5712/v1/auth/r
 
 # 2. the user approves or declines inside Portfolio Performance; poll every 1–2s
 curl -s http://127.0.0.1:5712/v1/auth/requests/<id>
-# → {"status": "pending"} … then {"status": "approved", "token": "…"}
+# → {"status": "pending"} … then {"status": "approved", "token": "…", "persistent": true}
 ```
 
 The approval prompt offers **Allow for this session** (the token dies when the application quits),
 **Always allow** (persistent), and **Decline**. The token is delivered **exactly once** — store it.
+`persistent` says whether it survives a restart: `false` for a session grant, and also for an
+always-allow grant the application could not record — pair again after the next start.
 A request expires after 2 minutes; only one may be pending at a time, and a decline imposes a
 cool-down (both reported `429` with `Retry-After`). Every `401` names the pairing endpoint in its
 `pairingEndpoint` field, so the flow is discoverable at runtime.
@@ -48,7 +50,9 @@ cool-down (both reported `429` with `Retry-After`). Every `401` names the pairin
 The preference page lists all authorized clients with their last use, lets the user **revoke** each
 individually (effective immediately), and can mint a token manually via **Add client** — the path
 for headless setups where nobody watches the screen. Tokens are stored hashed; a lost token cannot
-be re-displayed, only replaced.
+be re-displayed, only replaced. When the client file cannot be written as a client is revoked, the
+page says so: the revocation holds for this run and is written with a later request once the file
+can be written again, tried at most once a minute.
 
 ## Talking to it
 
@@ -326,6 +330,10 @@ endpoint takes none, so a new endpoint is strict without doing anything. Documen
 `openapi.yaml` in the same change, and give the operation a `400` response — every endpoint can
 now return one. `OpenApiSpecDriftTest` fails if any of that drifts apart, and `McpToolsDriftTest`
 fails until the new route either has a tool or is listed as one that deliberately has none.
+
+`Authorization` is read case-insensitively (`bearer …` is accepted); a header that carries a token
+under a different scheme is refused as a wrong scheme rather than as a missing token, and the
+preference page says which of the two happened.
 
 The drift tests compare the specification with the code; the `openapi-compat` Maven profile
 compares it with the published contract. It runs [oasdiff](https://github.com/oasdiff/oasdiff)
