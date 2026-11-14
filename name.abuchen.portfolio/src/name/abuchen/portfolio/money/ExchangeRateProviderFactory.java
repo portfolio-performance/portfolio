@@ -168,12 +168,30 @@ public class ExchangeRateProviderFactory
     }
 
     private final Client client;
+    private final List<ExchangeRateProvider> providers;
     private final ConcurrentMap<CurrencyPair, ExchangeRateTimeSeries> cache = new ConcurrentHashMap<>();
 
     @Inject
     public ExchangeRateProviderFactory(Client client)
     {
+        this(client, PROVIDERS);
+    }
+
+    /**
+     * A factory that works with the given providers rather than with the ones a
+     * {@code ServiceLoader} finds.
+     * <p/>
+     * The service registration sits in {@code META-INF/services} and so belongs
+     * to the bundle, not to the classes: a launch that runs the tests against
+     * the output folders - any plain JUnit launch, Infinitest among them - has
+     * no way to find it, and every pair of currencies then looks unconverted.
+     * Only through this seam can a test tell an empty portfolio apart from an
+     * environment without providers.
+     */
+    /* testing */ ExchangeRateProviderFactory(Client client, List<ExchangeRateProvider> providers)
+    {
         this.client = client;
+        this.providers = List.copyOf(providers);
 
         // clear cache if exchange rates are added or removed in the list of
         // securities
@@ -212,7 +230,7 @@ public class ExchangeRateProviderFactory
     public List<ExchangeRateTimeSeries> getAvailableTimeSeries()
     {
         List<ExchangeRateTimeSeries> series = new ArrayList<>();
-        for (ExchangeRateProvider p : PROVIDERS)
+        for (ExchangeRateProvider p : providers)
             series.addAll(p.getAvailableTimeSeries(client));
 
         return series;
