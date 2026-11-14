@@ -34,7 +34,9 @@ public class Messages extends NLS
     public static String ApiWriteDialogWhat;
     public static String ApiWriteDialogWhere;
     public static String ApiWriteOpAssign;
+    public static String ApiWriteOpCreateCashAccount;
     public static String ApiWriteOpCreateInstrument;
+    public static String ApiWriteOpCreateInvestmentAccount;
     public static String ApiWriteOpCreateWatchlist;
     public static String ApiWriteOpDelete;
     public static String ApiWriteOpDeleteWatchlist;
@@ -46,6 +48,7 @@ public class Messages extends NLS
     public static String ApiWriteTypeCashAccount;
     public static String ApiWriteTypeClassification;
     public static String ApiWriteTypeInstrument;
+    public static String ApiWriteTypeInvestmentAccount;
     public static String ApiWriteTypeQuoteUpdate;
     public static String ApiWriteTypeWatchlist;
     public static String AttributeSettings;

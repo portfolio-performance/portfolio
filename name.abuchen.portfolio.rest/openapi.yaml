@@ -1137,6 +1137,87 @@ paths:
         "503":
           $ref: "#/components/responses/ServiceUnavailable"
 
+    post:
+      operationId: createCashAccount
+      tags: [Cash accounts]
+      summary: Add a cash account to the file
+      description: |
+        A new account of one currency, and the money end of every structure a
+        caller might build. `currencyCode` left out takes the file's own base
+        currency; given, it must be a currency the file already moves in -
+        prices and reports read their rates from series the file holds - or the
+        call is refused as `unknown-currency`.
+
+        A name the file already carries, in the very same currency, is refused
+        as `409 name-taken`: an account has a uuid, so two of one name could be
+        told apart, but only by a caller that went and looked. Another currency
+        makes another account, and that pair is ordinary.
+
+        The user is asked before anything is created, naming the account and
+        its currency: `403 write-declined`, `423 write-unanswered`, `429
+        write-pending`. Nothing is saved to disk, and there is no undo - this
+        API creates accounts and never removes one.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name]
+              additionalProperties: false
+              properties:
+                name:
+                  type: string
+                  description: What the account is to be called.
+                currencyCode:
+                  type: string
+                  description: |
+                    The currency as an ISO 4217 code, e.g. `EUR`. Optional:
+                    left out it is the file's base currency.
+                note:
+                  type: string
+                  description: Free text shown with the account.
+      responses:
+        "201":
+          description: |
+            The account as it now stands, with its new `uuid` - which every
+            other account tool addresses it by - and `created: true`.
+          headers:
+            X-Portfolio-Changed:
+              description: |
+                Always `true`: an account that did not exist before is a change,
+                and the file then has unsaved changes.
+              schema:
+                type: string
+                enum: ["true"]
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/CashAccount"
+                  - type: object
+                    properties:
+                      created:
+                        type: boolean
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "423":
+          $ref: "#/components/responses/Locked"
+        "429":
+          $ref: "#/components/responses/WritePending"
+        "500":
+          $ref: "#/components/responses/InternalError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
+
   /v1/files/{file}/cash-accounts/{uuid}:
     parameters:
       - $ref: "#/components/parameters/File"
@@ -1204,6 +1285,86 @@ paths:
           $ref: "#/components/responses/NotFound"
         "409":
           $ref: "#/components/responses/Conflict"
+        "500":
+          $ref: "#/components/responses/InternalError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
+
+    post:
+      operationId: createInvestmentAccount
+      tags: [Investment accounts]
+      summary: Add an investment account to the file
+      description: |
+        A new depot: securities accounts hold instrument positions and nothing
+        else, the money that belongs with them living in the **reference cash
+        account** - every purchase booked into the depot draws its money from
+        that one account. `referenceCashAccount` is its uuid; left out, it must
+        be the file's one cash account in the base currency, and a file holding
+        none or several is refused rather than guessed at.
+
+        A name another depot already carries is refused as `409 name-taken`.
+        The user is asked before anything is created, naming the depot and the
+        money account it will point at: `403 write-declined`, `423
+        write-unanswered`, `429 write-pending`. Nothing is saved to disk, and
+        there is no undo - this API creates depots and never removes one.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name]
+              additionalProperties: false
+              properties:
+                name:
+                  type: string
+                  description: What the depot is to be called.
+                referenceCashAccount:
+                  type: string
+                  description: |
+                    The uuid of the cash account that belongs with this depot.
+                    Optional: left out, the file's one cash account in its base
+                    currency is used - and if there is not exactly one, the call
+                    asks for the uuid.
+                note:
+                  type: string
+                  description: Free text shown with the depot.
+      responses:
+        "201":
+          description: |
+            The depot as it now stands, with its new `uuid` and its
+            `referenceCashAccount`, and `created: true`.
+          headers:
+            X-Portfolio-Changed:
+              description: |
+                Always `true`: a depot that did not exist before is a change,
+                and the file then has unsaved changes.
+              schema:
+                type: string
+                enum: ["true"]
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/InvestmentAccount"
+                  - type: object
+                    properties:
+                      created:
+                        type: boolean
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "423":
+          $ref: "#/components/responses/Locked"
+        "429":
+          $ref: "#/components/responses/WritePending"
         "500":
           $ref: "#/components/responses/InternalError"
         "503":
