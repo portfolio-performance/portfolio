@@ -20,6 +20,16 @@ Eclipse is the preferred IDE for launching the RCP app and JUnit Plug-in Tests.
 
 Follow the existing Eclipse formatter and organize imports automatically. Use Java 21 features conservatively; prefer `var` for obvious local types. Keep package names lowercase and mirror the existing bundle structure. Name tests `*Test.java`; PDF importer pairs should follow `BankNamePDFExtractor.java` and `BankNamePDFExtractorTest.java`. Do not mass-reformat unrelated files. For PDF extractor sources, preserve manual alignment and use `@formatter:off` only where necessary.
 
+## Externalized Strings
+
+- Externalize user-visible text to `Messages` and translate it into every `messages_xx.properties`, in any bundle. That means labels, columns, menus, dialogs, tooltips, and error messages that reach a dialog or the error log view. This also holds inside a class annotated `@SuppressWarnings("nls")`, where the compiler does not flag it.
+- Mark literals that are not visible: keys, identifiers, regular expressions, formats, log-only diagnostics, messages of internal exceptions. This applies in `name.abuchen.portfolio`, `.ui`, and `.bootstrap`, where the compiler warns. `rest` and `cli` expose APIs and do not translate keys.
+  - Up to about three literals: `//$NON-NLS-n$` on each line.
+  - More: `@SuppressWarnings("nls")` on the narrowest method, field, or class that covers them.
+  - Class level is fine for importers (`AbstractPDFExtractor` subclasses, `IBFlexStatementExtractor`, `XTBCSVExtractor`), key or enum tables (`FieldCode`), and test classes.
+- Unmarked literals are fine while work is in progress. When you hand work back, and in every review, each literal in the changed code is either translated or marked as not visible.
+- Leave existing suppressions, markers, and untranslated text alone unless your edit makes one wrong (for example, a marked literal becomes visible text). If code you change contains visible text that is untranslated on purpose, keep it as is and name it in your summary.
+
 ## Testing Guidelines
 
 Add or update tests for any business logic change, especially in `name.abuchen.portfolio`. Core coverage belongs in `name.abuchen.portfolio.tests`; UI behavior belongs in `name.abuchen.portfolio.ui.tests`. Prefer focused regression tests over broad fixture churn. If changing importers, include realistic sanitized samples and matching extractor tests.

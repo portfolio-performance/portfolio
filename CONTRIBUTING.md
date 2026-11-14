@@ -346,6 +346,7 @@ Portfolio Performance is translated into multiple languages using POEditor.
 - Use [Source → Externalize Strings](https://help.eclipse.org/latest/topic/org.eclipse.jdt.doc.user/reference/ref-wizard-externalize-strings.htm) in Eclipse
 - Use [ResourceBundle Editor](https://marketplace.eclipse.org/content/resourcebundle-editor) for editing
 - Translate new labels to all languages using [DeepL](https://www.deepl.com)
+- Externalize and translate every user-visible string; mark non-visible literals with `//$NON-NLS-n$`, or `@SuppressWarnings("nls")` when there are many (details in [AGENTS.md](AGENTS.md))
 
 **Label Naming Conventions:**
 - `Label` - Short labels

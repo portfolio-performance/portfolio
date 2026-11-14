@@ -55,3 +55,13 @@ mvn -f portfolio-app/pom.xml verify -Plocal-dev \
 - Use `var` keyword for local variables where type is obvious
 - Do NOT auto-format PDF extractor files — use `@formatter:off` / `@formatter:on` where formatting is intentional; otherwise carefully insert code manually preserving existing alignment
 - Do not reformat code unrelated to your change
+
+## Externalized Strings
+
+- Externalize user-visible text to `Messages` and translate it into every `messages_xx.properties`, in any bundle. That means labels, columns, menus, dialogs, tooltips, and error messages that reach a dialog or the error log view. This also holds inside a class annotated `@SuppressWarnings("nls")`, where the compiler does not flag it. Use the `translate` skill.
+- Mark literals that are not visible: keys, identifiers, regular expressions, formats, log-only diagnostics, messages of internal exceptions. This applies in `name.abuchen.portfolio`, `.ui`, and `.bootstrap`, where the compiler warns. `rest` and `cli` expose APIs and do not translate keys.
+  - Up to about three literals: `//$NON-NLS-n$` on each line.
+  - More: `@SuppressWarnings("nls")` on the narrowest method, field, or class that covers them.
+  - Class level is fine for importers (`AbstractPDFExtractor` subclasses, `IBFlexStatementExtractor`, `XTBCSVExtractor`), key or enum tables (`FieldCode`), and test classes.
+- Unmarked literals are fine while work is in progress. When you hand work back, and in every review, each literal in the changed code is either translated or marked as not visible.
+- Leave existing suppressions, markers, and untranslated text alone unless your edit makes one wrong (for example, a marked literal becomes visible text). If code you change contains visible text that is untranslated on purpose, keep it as is and name it in your summary.
