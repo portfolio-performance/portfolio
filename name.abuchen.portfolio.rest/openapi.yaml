@@ -2347,9 +2347,10 @@ paths:
         things: a class's `targetWeight` is what rebalancing aims at for the
         class, while an `assignments[].weight` is the factor that class applies to
         one vehicle's value - `1` in full - which is not the slice the class's pie
-        chart draws, since that follows from value times factor. A `targetWeight` of
-        zero means either never set or set to nothing; the model does not tell
-        them apart. The value travels exactly as the file stores it: it can
+        chart draws, since that follows from value times factor. A class the
+        application creates starts at a whole (`1`), so a `targetWeight` of `1`
+        marks a fresh class rather than a decided one. The value travels
+        exactly as the file stores it: it can
         exceed a whole, the levels of one tree can sum to far more than a
         hundred percent, and a negative one can only come from an older version
         of the application whose dialog still accepted a minus - the current
@@ -2506,7 +2507,8 @@ paths:
                           type: number
                           description: |
                             What rebalancing aims at for this class, as a fraction
-                            (0.6 = 60 %). Zero means never set or set to nothing.
+                            (0.6 = 60 %). A new class of the application starts at
+                            a whole (1 = 100 %).
                         note:
                           type: string
                           description: The class note, when set.

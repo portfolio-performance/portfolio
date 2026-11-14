@@ -74,9 +74,20 @@ public class TaxonomyAssignmentHandlerTest
 
     private static String classId(Taxonomy taxonomy, String name)
     {
-        return taxonomy.getRoot().getChildren().stream() //
-                        .filter(c -> c.getName().equals(name)) //
-                        .findFirst().orElseThrow().getId();
+        return classId(taxonomy.getRoot(), name).orElseThrow();
+    }
+
+    /** a class of any depth, looked up by name - "growth" sits below "equity" */
+    private static java.util.Optional<String> classId(Classification node, String name)
+    {
+        if (name.equals(node.getName()))
+            return java.util.Optional.of(node.getId());
+
+        return node.getChildren().stream() //
+                        .map(child -> classId(child, name))
+                        .filter(java.util.Optional::isPresent)
+                        .findFirst()
+                        .orElse(java.util.Optional.empty());
     }
 
     @Test

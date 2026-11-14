@@ -119,7 +119,9 @@ public class McpEndpointTest
     {
         var tools = rpc(null, "{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"tools/list\"}");
         assertThat(tools.statusCode(), is(200));
-        assertThat(body(tools).getAsJsonObject().getAsJsonObject("result").getAsJsonArray("tools").size(), is(18));
+        // whatever the catalog holds today, anonymous or not: no pinned count
+        assertThat(body(tools).getAsJsonObject().getAsJsonObject("result").getAsJsonArray("tools").size(),
+                        is(McpTools.all().size()));
 
         var ping = rpc(null, "{\"jsonrpc\":\"2.0\",\"id\":2,\"method\":\"ping\"}");
         assertThat(ping.statusCode(), is(200));

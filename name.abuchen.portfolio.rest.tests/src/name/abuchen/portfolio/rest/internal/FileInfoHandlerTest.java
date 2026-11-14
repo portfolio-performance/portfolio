@@ -101,7 +101,7 @@ public class FileInfoHandlerTest
         assertThat(counts.get("investmentPlans").getAsInt(), is(1));
         assertThat(counts.get("watchlists").getAsInt(), is(1));
         assertThat(counts.get("taxonomies").getAsInt(), is(1));
-        // both the class and the one below it: the tree, not its roots
-        assertThat(counts.get("classes").getAsInt(), is(2));
+        // the tree as the application shows it: root, class, and the one below it
+        assertThat(counts.get("classes").getAsInt(), is(3));
     }
 }

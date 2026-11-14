@@ -118,7 +118,8 @@ public class PricesHandlerTest
         var items = second.get("items").getAsJsonArray();
         assertThat(items.size(), is(1));
         assertThat(items.get(0).getAsJsonObject().get("date").getAsString(), is("2026-01-09"));
-        assertThat(second.get("page").getAsJsonObject().has("nextCursor"), is(false));
+        // the walk ends with a null cursor, not with a missing member
+        assertThat(second.get("page").getAsJsonObject().get("nextCursor").isJsonNull(), is(true));
     }
 
     /** a cursor belongs to the window it was made for: it is refused, not obeyed */

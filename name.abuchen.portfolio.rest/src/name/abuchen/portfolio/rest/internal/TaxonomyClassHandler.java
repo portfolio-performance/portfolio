@@ -8,7 +8,6 @@ import com.google.gson.JsonObject;
 
 import name.abuchen.portfolio.model.Classification;
 import name.abuchen.portfolio.model.Client;
-import name.abuchen.portfolio.model.Taxonomy;
 import name.abuchen.portfolio.rest.WriteApprovals;
 
 /**

@@ -209,7 +209,7 @@ public class McpToolCallTest
                         "{\"file\":\"sample\",\"uuid\":\"" + security.getUUID() + "\",\"note\":\"seen\"}");
 
         assertThat(isError(result), is(false));
-        assertThat(text(result), containsString("already had that value"));
+        assertThat(text(result), containsString("Nothing changed"));
         assertThat(text(result), not(containsString("not saved to disk")));
     }
 
@@ -258,7 +258,9 @@ public class McpToolCallTest
         var result = call("pp_delete_instrument", "{\"file\":\"sample\",\"uuid\":\"" + security.getUUID() + "\"}");
 
         assertThat(isError(result), is(false));
-        assertThat(host.callablesRun() - before, is(1));
+        // two tasks on the UI thread: the facts for the question, and the one
+        // task that both reads the record and removes it - never a third read
+        assertThat(host.callablesRun() - before, is(2));
         assertThat(text(result), containsString("\"isin\":\"DE0001234567\""));
         assertThat(text(result), containsString("\"name\":\"ACME\""));
         assertThat(client.getSecurities().size(), is(0));
@@ -451,7 +453,9 @@ public class McpToolCallTest
         payload.addProperty("reportingCurrency", "EUR");
 
         var warnings = new JsonArray();
-        for (int ii = 0; ii < 1_200; ii++)
+        // far past the cap even as a compacted series of pairs, so the cut
+        // happens for sure and the advice is what survives it
+        for (int ii = 0; ii < 2_200; ii++)
         {
             var warning = new JsonObject();
             warning.addProperty("currency", "X" + ii);

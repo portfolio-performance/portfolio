@@ -3,6 +3,7 @@ package name.abuchen.portfolio.rest.internal;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
@@ -122,6 +123,10 @@ public class TransactionsHandler
                     rows.add(new Row(transaction, settlement, portfolio));
             }
         }
+
+        // both families in one timeline: the rows come per account, the page
+        // has to read oldest first across them
+        rows.sort(Comparator.comparing(Row::key));
 
         var json = new JsonObject();
         paging.apply(Paging.Kind.TRANSACTIONS, json, "items", rows, Row::key, //$NON-NLS-1$

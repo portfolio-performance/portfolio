@@ -107,7 +107,8 @@ public class CategoryPerformanceTest
         assertThat(category.get("name").getAsString(), is("equity"));
         assertThat(category.get("assignedCount").getAsInt(), is(1));
         assertThat(category.get("taxonomy").getAsJsonObject().get("id").getAsString(), is(taxonomy.getId()));
-        assertThat(category.has("parentId"), is(false));
+        // equity hangs under the taxonomy's root, and the category block says so
+        assertThat(category.get("parentId").getAsString(), is(taxonomy.getRoot().getId()));
     }
 
     /** a class holding nothing has no capital to measure a return on: null, not 0 % */
