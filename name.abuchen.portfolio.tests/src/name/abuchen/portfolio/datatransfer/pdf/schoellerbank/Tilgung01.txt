@@ -1,0 +1,34 @@
+Portfolio Performance Version: 0.89.0
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+Abrechnung Ereignis
+Schoellerbank AG 23310534-18.5.2026
+Private Banking Wien Depot-Nr.: 03292419355
+Renngasse 3 Mag. QXRlQ TdflIJH Ncc CvhIV       
+4786 eUMa
+Herrn
+Mag. GGWBu EafsSHe YbA xDRVy
+NJWrivzgQo 85
+9911 inaW                                                                                                                                                                                              
+Wir haben für Sie am 18.5.2026 unten angeführtes Geschäft abgerechnet:
+Geschäftsart: Tilgung
+Abgang: 35.000 CHF
+Titel: CH0005362097  K O N .  L U C H T V AART MIJ. N.V.          
+SF-ANL. 1986(96/PERPETUAL)         
+Kurs: 100,5 %
+Verwahrart: WR
+Positionsdaten: Loco: Zürich                             
+Kurswert: 35.175,-- CHF 
+Transaktionsgebühr: -43,97 CHF 
+Umsatzsteuer: -8,79 CHF 
+Zu Gunsten IBAN Mp73 0023 3905 2666 4048 35.122,24 CHF 
+Valuta 15.5.2026
+Es wurde Umsatzsteuer in der Höhe von 20% berücksichtigt.
+Extag: 15.5.2026
+Record-Tag: 14.5.2026
+Bemessungsgrundlage USt: -47,72 EUR
+KESt-Altbestand: 35.000 CHF
+18.5.2026 Seite 1
+\___________________________________________________________________________________\_
+Diese Mitteilung wird nicht unterschrieben. Irrtum vorbehalten! DVR: 0041556
+01255 Doknr.: ON00-023-0000000001

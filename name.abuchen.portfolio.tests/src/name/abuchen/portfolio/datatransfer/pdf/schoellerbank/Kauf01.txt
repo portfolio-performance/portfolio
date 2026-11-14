@@ -1,0 +1,44 @@
+Portfolio Performance Version: 0.89.0
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+Abrechnung Handel
+Schoellerbank AG 23399188-19.12.2025
+Private Banking Wien Depot-Nr.: 81853382038
+Renngasse 3 Mag. hfYfg jjxJFte iIk IDPYA       
+2940 kFmV
+Herrn
+Mag. CTaRp BGvTSQy bta JZIVJ
+RvBnYtxCcL 04
+7811 DCnP                                                                                                                                                                                              
+Wir haben für Sie am 19.12.2025 unten angeführtes Geschäft abgerechnet:
+Geschäftsart: Kauf
+Auftrags-Nr.: 23477527-18.12.2025
+Auftragseingang: 18.12.2025-10:53:01
+Zugang: 730 Stk
+Titel: CH0126881561  S w i s s  R e  A G                        
+Namens-Aktien SF -,10              
+Kurs: 129,524726 CHF 
+Handelsplatz: XSWX     SIX Swiss Exchange
+Handelszeit: 18.12.2025 um 11:00:41 Uhr
+Verwahrart: WR
+Positionsdaten: Loco: Zürich                             
+Kurswert: -94.553,05 CHF 
+-94.553,05 CHF 
+Devisenkurs: 1,270881 (19.12.2025) -120.165,64 USD 
+Fremde Spesen: -108,15 USD 
+Eigene Spesen: -360,50 USD 
+Devisenprovision: -330,75 USD 
+SWIFT-Gebühr: -5,88 USD 
+Zu Lasten IBAN no35 1920 1899 2043 4021 -120.970,92 USD 
+Valuta 22.12.2025
+Schlusstag: 18.12.2025
+Kassatag: 22.12.2025
+Devisenkurs: ,9255 (19.12.2025)
+Bestand nach Buchung:
+KESt-Neubestand mit Anschaffungskosten nach dem gleitenden 
+Durchschnittsverfahren § 27a Abs. 4 Zi 3 EStG 730 Stk
+steuerlicher Anschaffungswert: 102.164,29 EUR
+19.12.2025 Seite 1
+\___________________________________________________________________________________\_
+Diese Mitteilung wird nicht unterschrieben. Irrtum vorbehalten! DVR: 0041556
+ Doknr.: BSKD-023-0000000176
