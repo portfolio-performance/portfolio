@@ -38,6 +38,11 @@ public class RestApiServer
     private static final Set<String> IPV6_LOOPBACK = Set.of("::1", "0:0:0:0:0:0:0:1"); //$NON-NLS-1$ //$NON-NLS-2$
 
     /**
+     * the bearer scheme, matched case-insensitively below
+     */
+    private static final String BEARER_PREFIX = "Bearer "; //$NON-NLS-1$
+
+    /**
      * The largest request body accepted. Handlers parse JSON, so a body is
      * buffered whole - without a limit any local process could make the
      * application allocate arbitrary amounts of memory, and the pairing
@@ -203,21 +208,39 @@ public class RestApiServer
     {
         var path = exchange.getRequestURI().getPath();
         var header = exchange.getRequestHeaders().getFirst("Authorization"); //$NON-NLS-1$
-        var presented = header != null && header.startsWith("Bearer "); //$NON-NLS-1$
 
-        if (presented && tokenValidator.test(header.substring("Bearer ".length()))) //$NON-NLS-1$
+        // the scheme is case-insensitive per RFC 6750, and a header in the wrong
+        // shape is a different fault from no header at all - the preference page
+        // says "no token offered" for both otherwise, which is a misdiagnosis
+        var bearer = header != null && header.regionMatches(true, 0, BEARER_PREFIX, 0, BEARER_PREFIX.length());
+        var token = bearer ? header.substring(BEARER_PREFIX.length()).trim() : null;
+
+        if (token != null && tokenValidator.test(token))
             return Request.Authorization.VALID;
 
-        var authorization = presented ? Request.Authorization.INVALID : Request.Authorization.MISSING;
+        var authorization = token != null ? Request.Authorization.INVALID
+                        : header != null ? Request.Authorization.WRONG_SCHEME : Request.Authorization.MISSING;
 
         if (isAuthExempt(path) || RestApiConstants.MCP_ENDPOINT.equals(path))
             return authorization;
 
         // a wrong token never becomes an entry in the client list, so this
         // record is the only trace the user will have of it
-        RejectedConnections.record(path, exchange.getRequestHeaders().getFirst("User-Agent"), presented); //$NON-NLS-1$
+        RejectedConnections.record(path, exchange.getRequestHeaders().getFirst("User-Agent"), //$NON-NLS-1$
+                token != null, reasonOf(authorization));
 
         throw ApiException.unauthorized();
+    }
+
+    /** the same three faults, spelled for the preference page */
+    private static RejectedConnections.Reason reasonOf(Request.Authorization authorization)
+    {
+        return switch (authorization)
+        {
+            case INVALID -> RejectedConnections.Reason.INVALID_TOKEN;
+            case WRONG_SCHEME -> RejectedConnections.Reason.NO_BEARER_SCHEME;
+            default -> RejectedConnections.Reason.NO_HEADER;
+        };
     }
 
     /**
