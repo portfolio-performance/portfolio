@@ -343,4 +343,77 @@ public class WatchlistWriteHandlerTest
         assertThat(refusal.getStatus(), is(400));
         assertThat(refusal.getErrors().get(0).field(), is("name"));
     }
+
+    // ------------------------------------------------------------------ delete
+
+    @Test
+    public void aListThatIsRemovedIsGoneFromTheFile()
+    {
+        var client = new Client();
+        var tech = aListed("Tech");
+        client.addWatchlist(tech);
+        var dirty = watch(client);
+
+        var json = WatchlistWriteHandler.remove(client, body("{\"name\": \"Tech\"}"));
+
+        assertThat(json.get("name").getAsString(), is("Tech"));
+        assertThat(json.get("deleted").getAsBoolean(), is(true));
+        assertThat(json.get("instrumentCountBefore").getAsInt(), is(0));
+        assertThat(client.getWatchlists().size(), is(0));
+        assertThat(dirty[0], is(1));
+    }
+
+    @Test
+    public void deletingAListTakesAwayTheSelectionAndNotTheInstruments()
+    {
+        var client = new Client();
+        var sas = new SecurityBuilder().addTo(client);
+        sas.setName("SAP SE");
+
+        var tech = aListed("Tech");
+        tech.addSecurity(sas);
+        client.addWatchlist(tech);
+
+        var json = WatchlistWriteHandler.remove(client, body("{\"name\": \"Tech\"}"));
+
+        // the instruments the list pointed at stay in the file, untouched
+        assertThat(json.get("instrumentCountBefore").getAsInt(), is(1));
+        assertThat(client.getWatchlists().size(), is(0));
+        assertThat(client.getSecurities().size(), is(1));
+    }
+
+    @Test
+    public void aListTheFileDoesNotHaveIsRefusedAndSaysWhatItHas()
+    {
+        var client = new Client();
+        client.addWatchlist(aListed("Tech"));
+
+        // the list is there once - and after this it is not
+        WatchlistWriteHandler.remove(client, body("{\"name\": \"Tech\"}"));
+
+        var refusal = capture(() -> WatchlistWriteHandler.remove(client, body("{\"name\": \"Tech\"}")));
+        assertThat(refusal.getStatus(), is(409));
+        assertThat(refusal.getType(), is("no-such-watchlist"));
+
+        // a second sending cannot succeed, and describing it refuses too
+        var again = capture(() -> WatchlistWriteHandler.describeDeletion(client, "f", body("{\"name\": \"Tech\"}")));
+        assertThat(again.getStatus(), is(409));
+    }
+
+    @Test
+    public void deletingADifferentListStillWorksAfterARetusal()
+    {
+        var client = new Client();
+        client.addWatchlist(aListed("Tech"));
+        client.addWatchlist(aListed("Bonds"));
+        var dirty = watch(client);
+
+        capture(() -> WatchlistWriteHandler.remove(client, body("{\"name\": \"Zombie\"}")));
+        WatchlistWriteHandler.remove(client, body("{\"name\": \"Tech\"}"));
+
+        // the refusal touched nothing; the name is matched exactly, spaces gone
+        assertThat(client.getWatchlists().size(), is(1));
+        assertThat(client.getWatchlists().get(0).getName(), is("Bonds"));
+        assertThat(dirty[0], is(1));
+    }
 }

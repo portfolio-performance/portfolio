@@ -137,6 +137,8 @@ public class ModelWriteApprovalDialog extends Dialog
                 return Messages.ApiWriteOpUpdateWatchlist;
             case "pp_delete_instrument": //$NON-NLS-1$
                 return Messages.ApiWriteOpDelete;
+            case "pp_delete_watchlist": //$NON-NLS-1$
+                return Messages.ApiWriteOpDeleteWatchlist;
             default:
                 return request.getOperation();
         }
