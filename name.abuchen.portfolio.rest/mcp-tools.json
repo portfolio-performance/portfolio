@@ -661,6 +661,66 @@
       ]
     },
     {
+      "name": "pp_create_cash_account",
+      "operationId": "createCashAccount",
+      "method": "POST",
+      "pathTemplate": "/v1/files/{file}/cash-accounts",
+      "description": "Adds one cash account to the file - what the application itself calls simply an *account*: money in a single currency, and the money end of every structure a caller might build.\n\n`name` is required in practice although no body property can be declared required: leave it out and the call comes back `400` naming the field. `currencyCode` may be left out and then takes the file's own base currency; given, it has to be a currency the file already moves in - the base currency, or one an instrument or account carries - because prices and reports read their rates from series the file holds, and a currency outside them is refused as `unknown-currency` naming the currencies it does move in.\n\nA name the file already carries, in the very same currency, is refused as `409 name-taken` naming the account that holds it. An account does have a uuid, so two of one name could be told apart - but only by a caller that went and looked, which is the mistake this refuses to let through quietly. Another currency makes another account, and that pair is ordinary.\n\nThe answer carries the account with its new `uuid`, which every other account tool addresses by. Nothing is saved to disk: closing the file without saving discards the account, and there is no other undo - this API creates accounts and never removes one.\n\nBefore the change is applied the application asks the user, naming the account and its currency: `403 write-declined` is a no that stands, `423 write-unanswered` means nobody answered within two minutes and nothing was changed, and `429 write-pending` means another change is still waiting for an answer. Reads are never asked about.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "file": {
+            "type": "string",
+            "description": "The `use` value from pp_list_files, sent exactly as given. Required: there is no default file."
+          },
+          "name": {
+            "type": "string",
+            "description": "What the account is to be called. Required in practice: omitted, the call is refused naming this field."
+          },
+          "currencyCode": {
+            "type": "string",
+            "description": "The currency the account holds, as an ISO 4217 code, e.g. EUR. Optional: left out it is the file's base currency. Must be a currency the file moves in."
+          },
+          "note": {
+            "type": "string",
+            "description": "Free text shown with the account."
+          }
+        },
+        "required": [
+          "file"
+        ],
+        "additionalProperties": false
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": false,
+        "openWorldHint": false
+      },
+      "bindings": [
+        {
+          "arg": "file",
+          "where": "path",
+          "wire": "file"
+        },
+        {
+          "arg": "name",
+          "where": "body",
+          "wire": "name"
+        },
+        {
+          "arg": "currencyCode",
+          "where": "body",
+          "wire": "currencyCode"
+        },
+        {
+          "arg": "note",
+          "where": "body",
+          "wire": "note"
+        }
+      ]
+    },
+    {
       "name": "pp_list_investment_accounts",
       "operationId": "listInvestmentAccounts",
       "method": "GET",
@@ -733,6 +793,66 @@
           "arg": "uuid",
           "where": "path",
           "wire": "uuid"
+        }
+      ]
+    },
+    {
+      "name": "pp_create_investment_account",
+      "operationId": "createInvestmentAccount",
+      "method": "POST",
+      "pathTemplate": "/v1/files/{file}/investment-accounts",
+      "description": "Adds one investment account to the file - a securities account, which the application calls a *portfolio*. A depot holds instrument positions and nothing else: the money that belongs with it lives in its **reference cash account**, and every purchase booked into the depot draws its money from that account. Creating a depot without settling its money is how a file ends up with two brokers and no way to tell whose cash paid.\n\nSo `referenceCashAccount` matters: the uuid of a cash account from pp_list_cash_accounts. Left out, it must be the file's one cash account in the base currency - and if the file holds none or several, the call is refused rather than guessed, asking for the uuid.\n\n`name` is required in practice although no body property can be declared required: leave it out and the call comes back `400` naming the field. A name another depot already carries is refused as `409 name-taken` naming that depot - depots have uuids, but a caller that had made two of one name could not know which one it had made.\n\nThe answer carries the depot with its new `uuid` and its `referenceCashAccount`. Nothing is saved to disk: closing the file without saving discards it, and there is no other undo - this API creates depots and never removes one.\n\nBefore the change is applied the application asks the user, naming the depot and the money account it will point at: `403 write-declined` is a no that stands, `423 write-unanswered` means nobody answered within two minutes and nothing was changed, and `429 write-pending` means another change is still waiting for an answer. Reads are never asked about.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "file": {
+            "type": "string",
+            "description": "The `use` value from pp_list_files, sent exactly as given. Required: there is no default file."
+          },
+          "name": {
+            "type": "string",
+            "description": "What the depot is to be called. Required in practice: omitted, the call is refused naming this field."
+          },
+          "referenceCashAccount": {
+            "type": "string",
+            "description": "The uuid of the cash account that belongs with this depot, from pp_list_cash_accounts. Optional: left out, the file's one cash account in its base currency is used - and if there is not exactly one, the call asks for the uuid."
+          },
+          "note": {
+            "type": "string",
+            "description": "Free text shown with the depot."
+          }
+        },
+        "required": [
+          "file"
+        ],
+        "additionalProperties": false
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": false,
+        "openWorldHint": false
+      },
+      "bindings": [
+        {
+          "arg": "file",
+          "where": "path",
+          "wire": "file"
+        },
+        {
+          "arg": "name",
+          "where": "body",
+          "wire": "name"
+        },
+        {
+          "arg": "referenceCashAccount",
+          "where": "body",
+          "wire": "referenceCashAccount"
+        },
+        {
+          "arg": "note",
+          "where": "body",
+          "wire": "note"
         }
       ]
     },

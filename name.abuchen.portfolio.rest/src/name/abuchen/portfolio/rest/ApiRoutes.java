@@ -27,6 +27,7 @@ import com.google.gson.JsonSyntaxException;
 import name.abuchen.portfolio.PortfolioLog;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
+import name.abuchen.portfolio.rest.internal.AccountWriteHandler;
 import name.abuchen.portfolio.rest.internal.AccountsHandler;
 import name.abuchen.portfolio.rest.internal.ApiException;
 import name.abuchen.portfolio.rest.internal.CategoryPerformanceHandler;
@@ -477,10 +478,31 @@ public final class ApiRoutes
         router.add("GET", "/v1/files/{file}/cash-accounts/{uuid}", read(resolver, ui, //$NON-NLS-1$ //$NON-NLS-2$
                         (client, req) -> AccountsHandler.get(client, req.pathParam("uuid")))); //$NON-NLS-1$
 
+        // a new account of one currency: every structure a caller might want to
+        // build starts with its accounts, and until now none could be made
+        router.add("POST", "/v1/files/{file}/cash-accounts", write(resolver, ui, approvals, //$NON-NLS-1$ //$NON-NLS-2$
+                        "pp_create_cash_account", (file, req) -> AccountWriteHandler.describeCash(file.getClient(), //$NON-NLS-1$
+                                        file.getLabel(), parseObject(req)), (file, req) -> {
+                            // an account that did not exist before is a change
+                            return wrote(Response.json(201, AccountWriteHandler.createCash(file.getClient(), //$NON-NLS-1$
+                                            parseObject(req))), true);
+                        }));
+
         router.add("GET", "/v1/files/{file}/investment-accounts", read(resolver, ui, //$NON-NLS-1$ //$NON-NLS-2$
                         (client, req) -> PortfoliosHandler.list(client)));
         router.add("GET", "/v1/files/{file}/investment-accounts/{uuid}", read(resolver, ui, //$NON-NLS-1$ //$NON-NLS-2$
                         (client, req) -> PortfoliosHandler.get(client, req.pathParam("uuid")))); //$NON-NLS-1$
+
+        // a new depot, pointing at the money account that belongs with it - the
+        // other half of a structure no caller could build before
+        router.add("POST", "/v1/files/{file}/investment-accounts", write(resolver, ui, approvals, //$NON-NLS-1$ //$NON-NLS-2$
+                        "pp_create_investment_account", //$NON-NLS-1$
+                        (file, req) -> AccountWriteHandler.describeInvestment(file.getClient(), file.getLabel(), //$NON-NLS-1$
+                                        parseObject(req)), (file, req) -> {
+                            // a depot that did not exist before is a change
+                            return wrote(Response.json(201, AccountWriteHandler.createInvestment(file.getClient(), //$NON-NLS-1$
+                                            parseObject(req))), true);
+                        }));
 
         router.add("GET", "/v1/files/{file}/holdings", calc(resolver, ui, calculation, //$NON-NLS-1$ //$NON-NLS-2$
                         (context, req) -> Response.json(200, HoldingsHandler.list(context.client(), context.factory(),

@@ -125,6 +125,10 @@ public class ModelWriteApprovalDialog extends Dialog
                 return Messages.ApiWriteOpAssign;
             case "pp_create_instrument": //$NON-NLS-1$
                 return Messages.ApiWriteOpCreateInstrument;
+            case "pp_create_investment_account": //$NON-NLS-1$
+                return Messages.ApiWriteOpCreateInvestmentAccount;
+            case "pp_create_cash_account": //$NON-NLS-1$
+                return Messages.ApiWriteOpCreateCashAccount;
             case "pp_create_watchlist": //$NON-NLS-1$
                 return Messages.ApiWriteOpCreateWatchlist;
             case "pp_unassign_vehicle": //$NON-NLS-1$
@@ -169,6 +173,8 @@ public class ModelWriteApprovalDialog extends Dialog
                 return Messages.ApiWriteTypeWatchlist;
             case "cash-account": //$NON-NLS-1$
                 return Messages.ApiWriteTypeCashAccount;
+            case "investment-account": //$NON-NLS-1$
+                return Messages.ApiWriteTypeInvestmentAccount;
             case "classification": //$NON-NLS-1$
                 return Messages.ApiWriteTypeClassification;
             case "quote-update": //$NON-NLS-1$

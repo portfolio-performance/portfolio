@@ -61,7 +61,8 @@ public class McpToolsDriftTest
 
     /** writes that only ever add: an assignment, a list or an instrument that was not there, a quote that was not stored */
     private static final Set<String> ADDING_WRITES = Set.of("pp_assign_vehicle", "pp_create_watchlist", //$NON-NLS-1$ //$NON-NLS-2$
-                    "pp_create_instrument", "pp_update_quotes"); //$NON-NLS-1$
+                    "pp_create_instrument", "pp_update_quotes", "pp_create_cash_account", //$NON-NLS-1$ //$NON-NLS-2$
+                    "pp_create_investment_account"); //$NON-NLS-1$
 
     /**
      * writes whose second sending is refused, brings a second thing into being,
@@ -69,7 +70,8 @@ public class McpToolsDriftTest
      * again rather than leaving the world alone
      */
     private static final Set<String> ONCE_ONLY_WRITES = Set.of("pp_unassign_vehicle", "pp_create_watchlist", //$NON-NLS-1$ //$NON-NLS-2$
-                    "pp_create_instrument", "pp_update_quotes", "pp_delete_watchlist"); //$NON-NLS-1$
+                    "pp_create_instrument", "pp_update_quotes", "pp_delete_watchlist", "pp_create_cash_account", //$NON-NLS-1$ //$NON-NLS-2$
+                    "pp_create_investment_account"); //$NON-NLS-1$
 
     /** the one tool that contacts something outside the application */
     private static final Set<String> OPEN_WORLD_TOOLS = Set.of("pp_update_quotes"); //$NON-NLS-1$
@@ -92,8 +94,8 @@ public class McpToolsDriftTest
     @Test
     public void testTheToolsAreServed()
     {
-        assertThat(McpTools.all(), hasSize(31));
-        assertThat(McpTools.listPayload().size(), is(31));
+        assertThat(McpTools.all(), hasSize(33));
+        assertThat(McpTools.listPayload().size(), is(33));
     }
 
     @Test
@@ -306,9 +308,10 @@ public class McpToolsDriftTest
         }
 
         assertThat(writes, is(new TreeSet<>(Set.of("pp_update_instrument", "pp_delete_instrument", //
-                        "pp_assign_vehicle", "pp_unassign_vehicle", "pp_update_class", "pp_delete_watchlist", //
-                        "pp_create_watchlist", "pp_update_watchlist", "pp_create_instrument", //$NON-NLS-1$
-                        "pp_update_quotes")))); //$NON-NLS-1$
+                        "pp_assign_vehicle", "pp_unassign_vehicle", "pp_update_class", //
+                        "pp_create_watchlist", "pp_update_watchlist", "pp_delete_watchlist", //
+                        "pp_create_instrument", "pp_update_quotes", //
+                        "pp_create_cash_account", "pp_create_investment_account")))); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
     }
 
     @Test
