@@ -13,6 +13,7 @@ Set `JAVA_HOME` to a Java 21 JDK before building.
 - `mvn -f portfolio-app/pom.xml verify -Plocal-dev -o -pl :portfolio-target-definition,:name.abuchen.portfolio.pdfbox1,:name.abuchen.portfolio.pdfbox3,:name.abuchen.portfolio,:name.abuchen.portfolio.junit,:name.abuchen.portfolio.tests -am -amd`: run core tests offline.
 - `mvn -f portfolio-app/pom.xml verify -Plocal-dev -o -pl :portfolio-target-definition,:name.abuchen.portfolio.pdfbox1,:name.abuchen.portfolio.pdfbox3,:name.abuchen.portfolio,:name.abuchen.portfolio.junit,:name.abuchen.portfolio.tests -am -amd -Dtest=<fully.qualified.CoreTestClass>`: run one core test class, for example `... -Dtest=name.abuchen.portfolio.datatransfer.pdf.baaderbank.BaaderBankPDFExtractorTest`.
 - `mvn -f portfolio-app/pom.xml verify -Plocal-dev -o -pl :portfolio-target-definition,:name.abuchen.portfolio.pdfbox1,:name.abuchen.portfolio.pdfbox3,:name.abuchen.portfolio,:name.abuchen.portfolio.rest,:name.abuchen.portfolio.bootstrap,:name.abuchen.portfolio.ui,:name.abuchen.portfolio.junit,:name.abuchen.portfolio.ui.tests -am -amd -Dtest=<fully.qualified.UITestClass>`: run one UI test class. Include `:name.abuchen.portfolio.rest` and `:name.abuchen.portfolio.bootstrap` because `name.abuchen.portfolio.ui` requires those OSGi bundles and Tycho does not infer it from `-Dtest`.
+- To compile without running tests, use `clean compile` with the same `-pl` list, leaving out the test bundles (`.junit`, `.tests`, `.ui.tests`).
 
 Eclipse is the preferred IDE for launching the RCP app and JUnit Plug-in Tests.
 
