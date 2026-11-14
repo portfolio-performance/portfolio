@@ -2444,6 +2444,126 @@ paths:
         "503":
           $ref: "#/components/responses/ServiceUnavailable"
 
+  /v1/files/{file}/taxonomies/{taxonomy}/classes/{classification}:
+    patch:
+      operationId: updateClass
+      tags: [Taxonomies]
+      summary: Change the target weight of a class
+      description: |
+        The one number the file keeps that says what a class should be worth -
+        readable since `GET /v1/files/{file}/taxonomies` carried `targetWeight`,
+        and untouched by every operation until this one.
+
+        `targetWeight` travels as a fraction, the figure the read gives back:
+        `0.6` is the 60 % the application shows. It may be more than a whole -
+        the classes of one tree need not add up to a hundred percent - but never
+        negative: a minus came in through an older version of the application
+        whose dialog still accepted one, while the current dialog, like this
+        operation, refuses it.
+
+        A PATCH although targetWeight is the only field it takes: a PUT would
+        promise the request states the class whole, and one field is one field.
+        Setting the same weight again changes nothing and answers `changed:
+        false`, so the call may be sent twice.
+
+        The user is asked before the number moves, naming the class and the
+        taxonomy it belongs to: `403 write-declined`, `423 write-unanswered`,
+        `429 write-pending`.
+      parameters:
+        - $ref: "#/components/parameters/File"
+        - name: taxonomy
+          in: path
+          required: true
+          description: The taxonomy's `id`, from the `items` of `GET /v1/files/{file}/taxonomies`.
+          schema:
+            type: string
+        - name: classification
+          in: path
+          required: true
+          description: |
+            The class's `id`, from the `classes` of `GET /v1/files/{file}/taxonomies`.
+            Unique only inside the taxonomy named above, so that one is asked for too.
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [targetWeight]
+              additionalProperties: false
+              properties:
+                targetWeight:
+                  type: number
+                  minimum: 0
+                  description: |
+                    The new target weight as a fraction: `0.6` is the 60 % the
+                    application shows. 0 is allowed; more than 1 is stored as
+                    given; negative is refused.
+      responses:
+        "200":
+          description: |
+            The class and its tree, the weight as it was and as it is now, and
+            `changed` - false when the number was the one the class already
+            carried, in which case the file, unsaved changes included, stays as
+            it was.
+          headers:
+            X-Portfolio-Changed:
+              description: |
+                Whether this call changed the model: `true` when it did and the
+                file then has unsaved changes, `false` when the weight already
+                was what was asked for. It repeats the body's `changed`. Earlier
+                edits may still be unsaved after a `false`.
+              schema:
+                type: string
+                enum: ["true", "false"]
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  taxonomy:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      name:
+                        type: string
+                  class:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      name:
+                        type: string
+                      parent:
+                        type: string
+                  previousTargetWeight:
+                    type: number
+                  targetWeight:
+                    type: number
+                  changed:
+                    type: boolean
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "423":
+          $ref: "#/components/responses/Locked"
+        "429":
+          $ref: "#/components/responses/WritePending"
+        "500":
+          $ref: "#/components/responses/InternalError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
+
   /v1/files/{file}/taxonomies/{taxonomy}/classes/{classification}/vehicles/{vehicle}:
     put:
       operationId: assignVehicle

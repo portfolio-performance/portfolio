@@ -131,6 +131,8 @@ public class ModelWriteApprovalDialog extends Dialog
                 return Messages.ApiWriteOpUnassign;
             case "pp_update_instrument": //$NON-NLS-1$
                 return Messages.ApiWriteOpUpdate;
+            case "pp_update_class": //$NON-NLS-1$
+                return Messages.ApiWriteOpUpdateClass;
             case "pp_update_quotes": //$NON-NLS-1$
                 return Messages.ApiWriteOpUpdateQuotes;
             case "pp_update_watchlist": //$NON-NLS-1$
@@ -167,6 +169,8 @@ public class ModelWriteApprovalDialog extends Dialog
                 return Messages.ApiWriteTypeWatchlist;
             case "cash-account": //$NON-NLS-1$
                 return Messages.ApiWriteTypeCashAccount;
+            case "classification": //$NON-NLS-1$
+                return Messages.ApiWriteTypeClassification;
             case "quote-update": //$NON-NLS-1$
                 return Messages.ApiWriteTypeQuoteUpdate;
             default:

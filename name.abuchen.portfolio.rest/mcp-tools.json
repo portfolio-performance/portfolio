@@ -1433,6 +1433,69 @@
       ]
     },
     {
+      "name": "pp_update_class",
+      "operationId": "updateClass",
+      "method": "PATCH",
+      "pathTemplate": "/v1/files/{file}/taxonomies/{taxonomy}/classes/{classification}",
+      "description": "Sets the target weight of one class of a taxonomy - the one number the file keeps that says what a class should be worth, readable since pp_list_taxonomies carried `targetWeight` and untouched by every tool until now.\n\n`targetWeight` is a fraction, the same figure the read gives back: `0.6` is the 60 % the application shows. It may be more than a whole - the classes of one tree need not add up to a hundred percent, and a satellite of 150 % is stored as given - but never negative: a minus came in through an older version of the application whose dialog still accepted one, while the current dialog, like this tool, refuses it.\n\nA class is named by its `class` id from the classes of pp_list_taxonomies and the `taxonomy` whose `items` it belongs to - one class id is unique only inside its own tree. Only targetWeight moves: the name, the parent and the assigned vehicles are what they are, in the application as before.\n\nSetting the same weight again changes nothing - the answer says `changed: false` and leaves the file, unsaved changes included, as it was - so this request may be sent twice.\n\nBefore the change is applied the application asks the user, naming the class and the taxonomy it belongs to: `403 write-declined` is a no that stands, `423 write-unanswered` means nobody answered within two minutes and nothing was changed, and `429 write-pending` means another change is still waiting for an answer. Reads are never asked about.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "file": {
+            "type": "string",
+            "description": "The `use` value from pp_list_files, sent exactly as given. Required: there is no default file."
+          },
+          "taxonomy": {
+            "type": "string",
+            "description": "The taxonomy's `id`, from the `items` of pp_list_taxonomies."
+          },
+          "class": {
+            "type": "string",
+            "description": "The class's `id`, from the `classes` of pp_list_taxonomies. Unique only inside the taxonomy named above."
+          },
+          "targetWeight": {
+            "type": "number",
+            "minimum": 0,
+            "description": "The new target weight as a fraction: `0.6` is the 60 % the application shows. 0 is allowed; more than 1 is stored as given; negative is refused."
+          }
+        },
+        "required": [
+          "file",
+          "taxonomy",
+          "class"
+        ],
+        "additionalProperties": false
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": true,
+        "idempotentHint": true,
+        "openWorldHint": false
+      },
+      "bindings": [
+        {
+          "arg": "file",
+          "where": "path",
+          "wire": "file"
+        },
+        {
+          "arg": "taxonomy",
+          "where": "path",
+          "wire": "taxonomy"
+        },
+        {
+          "arg": "class",
+          "where": "path",
+          "wire": "classification"
+        },
+        {
+          "arg": "targetWeight",
+          "where": "body",
+          "wire": "targetWeight"
+        }
+      ]
+    },
+    {
       "name": "pp_get_overall_performance",
       "operationId": "getPerformance",
       "method": "GET",

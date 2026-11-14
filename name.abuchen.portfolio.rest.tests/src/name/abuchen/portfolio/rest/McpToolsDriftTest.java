@@ -92,8 +92,8 @@ public class McpToolsDriftTest
     @Test
     public void testTheToolsAreServed()
     {
-        assertThat(McpTools.all(), hasSize(30));
-        assertThat(McpTools.listPayload().size(), is(30));
+        assertThat(McpTools.all(), hasSize(31));
+        assertThat(McpTools.listPayload().size(), is(31));
     }
 
     @Test
@@ -306,7 +306,7 @@ public class McpToolsDriftTest
         }
 
         assertThat(writes, is(new TreeSet<>(Set.of("pp_update_instrument", "pp_delete_instrument", //
-                        "pp_assign_vehicle", "pp_unassign_vehicle", "pp_delete_watchlist", //
+                        "pp_assign_vehicle", "pp_unassign_vehicle", "pp_update_class", "pp_delete_watchlist", //
                         "pp_create_watchlist", "pp_update_watchlist", "pp_create_instrument", //$NON-NLS-1$
                         "pp_update_quotes")))); //$NON-NLS-1$
     }

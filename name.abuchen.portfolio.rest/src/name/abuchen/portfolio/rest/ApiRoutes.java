@@ -50,6 +50,7 @@ import name.abuchen.portfolio.rest.internal.Router;
 import name.abuchen.portfolio.rest.internal.SecuritiesHandler;
 import name.abuchen.portfolio.rest.internal.TaxonomiesHandler;
 import name.abuchen.portfolio.rest.internal.TaxonomyAssignmentHandler;
+import name.abuchen.portfolio.rest.internal.TaxonomyClassHandler;
 import name.abuchen.portfolio.rest.internal.TradesHandler;
 import name.abuchen.portfolio.rest.internal.TransactionsHandler;
 import name.abuchen.portfolio.rest.internal.VersionHandler;
@@ -497,6 +498,20 @@ public final class ApiRoutes
                                         req.queryParam("withPath"), req.queryParam("cursor"), //$NON-NLS-1$ //$NON-NLS-2$
                                         req.queryParam("limit"))), //$NON-NLS-1$
                         "taxonomy", "class", "withAssignments", "withPath", "cursor", "limit"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
+
+        // the one number of a class that rebalancing turns on, writable now that
+        // pp_list_taxonomies made it readable: a PATCH, because it changes that
+        // one field and no caller should have to describe a class whole
+        router.add("PATCH", "/v1/files/{file}/taxonomies/{taxonomy}/classes/{classification}", //$NON-NLS-1$ //$NON-NLS-2$
+                        write(resolver, ui, approvals, "pp_update_class", //$NON-NLS-1$
+                                        (file, req) -> TaxonomyClassHandler.describe(file.getClient(), //$NON-NLS-1$
+                                                        req.pathParam("taxonomy"), req.pathParam("classification"), //$NON-NLS-1$ //$NON-NLS-2$
+                                                        parseObject(req).get("targetWeight"), file.getLabel()), //$NON-NLS-1$
+                                        (file, req) -> {
+                            var updated = TaxonomyClassHandler.patch(file.getClient(), req.pathParam("taxonomy"), //$NON-NLS-1$
+                                            req.pathParam("classification"), parseObject(req).get("targetWeight")); //$NON-NLS-1$ //$NON-NLS-2$
+                            return wrote(Response.json(200, updated), changedOf(updated));
+                        }));
 
         // The one write this file's classification tree takes: one vehicle into
         // one class, and back out. A PUT rather than a POST, so that sending it

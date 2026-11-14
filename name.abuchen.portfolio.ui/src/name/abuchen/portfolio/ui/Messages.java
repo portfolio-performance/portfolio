@@ -40,9 +40,11 @@ public class Messages extends NLS
     public static String ApiWriteOpDeleteWatchlist;
     public static String ApiWriteOpUnassign;
     public static String ApiWriteOpUpdate;
+    public static String ApiWriteOpUpdateClass;
     public static String ApiWriteOpUpdateQuotes;
     public static String ApiWriteOpUpdateWatchlist;
     public static String ApiWriteTypeCashAccount;
+    public static String ApiWriteTypeClassification;
     public static String ApiWriteTypeInstrument;
     public static String ApiWriteTypeQuoteUpdate;
     public static String ApiWriteTypeWatchlist;
