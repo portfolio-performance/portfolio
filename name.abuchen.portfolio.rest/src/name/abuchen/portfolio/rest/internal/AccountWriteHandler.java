@@ -3,7 +3,6 @@ package name.abuchen.portfolio.rest.internal;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 import name.abuchen.portfolio.model.Account;

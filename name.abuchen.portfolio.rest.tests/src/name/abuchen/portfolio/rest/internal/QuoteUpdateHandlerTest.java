@@ -136,7 +136,7 @@ public class QuoteUpdateHandlerTest
         watchlist.setName("Beobachtet");
         watchlist.addSecurity(first);
         watchlist.addSecurity(second);
-        client.getWatchlists().add(watchlist);
+        client.addWatchlist(watchlist);
 
         var host = host();
         var started = QuoteUpdateHandler.run(client, body("{\"scope\":\"watchlist\",\"watchlist\":\"Beobachtet\"}"),

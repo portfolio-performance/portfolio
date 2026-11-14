@@ -75,9 +75,10 @@ public class WriteApprovalsTest
 
         // a different operation is still asked about: a session grant is not a
         // blanket yes, and deleting is not placing
-        approvals.await(new WriteApprovals.Facts("pp_delete_instrument", "Richard.portfolio", "instrument", "Apple",
-                        null, null));
-        assertThat(host.writeRequests(), is(2));
+        var other = new Running(approvals, new WriteApprovals.Facts("pp_delete_instrument", "Richard.portfolio",
+                        "instrument", "Apple", null, null));
+        waitUntil(() -> host.writeRequests() == 2);
+        other.answer(host, WriteConfirmation::decline);
     }
 
     @Test

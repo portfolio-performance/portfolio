@@ -153,7 +153,11 @@ public final class QuoteUpdateHandler
         }
 
         var uuid = given.getAsString().trim();
-        var security = SecuritiesHandler.find(client, uuid);
+        // not Entities.byUuid: a missing instrument is refused here as a field
+        // error naming pp_list_instruments, not as a bare 404
+        var security = client.getSecurities().stream() //
+                        .filter(candidate -> candidate.getUUID().equals(uuid)) //
+                        .findFirst().orElse(null);
         if (security == null)
         {
             errors.add(new ApiException.FieldError("instrument", "invalid-value", //$NON-NLS-1$ //$NON-NLS-2$

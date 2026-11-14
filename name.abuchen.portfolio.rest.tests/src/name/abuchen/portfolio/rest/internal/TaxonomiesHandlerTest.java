@@ -83,20 +83,20 @@ public class TaxonomiesHandlerTest
         assertThat(classes.size(), is(6));
 
         // a parent before its children, same rank decided by name
-        assertThat(id(classes, 0), is(assets.getId()));
+        assertThat(id(classes, 0), is(assets.getRoot().getId()));
         assertThat(id(classes, 1), is("bonds"));
         assertThat(id(classes, 2), is("equity"));
         assertThat(id(classes, 3), is("growth"));
-        assertThat(id(classes, 4), is(regions.getId()));
+        assertThat(id(classes, 4), is(regions.getRoot().getId()));
         assertThat(id(classes, 5), is("asia"));
 
         // every row names its taxonomy, so a page can be read on its own
         assertThat(classes.get(0).getAsJsonObject().get("taxonomy").getAsString(), is(assets.getId()));
         assertThat(classes.get(4).getAsJsonObject().get("taxonomy").getAsString(), is(regions.getId()));
 
-        // the root carries the taxonomy's id and has nothing above it
+        // the root row leads its tree and has nothing above it
         assertThat(classes.get(0).getAsJsonObject().has("parent"), is(false));
-        assertThat(classes.get(1).getAsJsonObject().get("parent").getAsString(), is(assets.getId()));
+        assertThat(classes.get(1).getAsJsonObject().get("parent").getAsString(), is(assets.getRoot().getId()));
 
         // the way down from the root is not in the row unless it is asked for
         assertThat(classById(classes, "growth").has("path"), is(false));
@@ -129,7 +129,8 @@ public class TaxonomiesHandlerTest
         var classes = list(client).get("classes").getAsJsonArray();
 
         assertThat(classById(classes, "equity").get("targetWeight").getAsDouble(), is(closeTo(0.6, EPS)));
-        assertThat(classById(classes, "bonds").get("targetWeight").getAsDouble(), is(closeTo(0d, EPS)));
+        // untouched classes come from the application at a whole: 100 %, not 0 %
+        assertThat(classById(classes, "bonds").get("targetWeight").getAsDouble(), is(closeTo(1d, EPS)));
     }
 
     /** the vehicles are off by default, because one class can hold hundreds of them */
@@ -191,13 +192,15 @@ public class TaxonomiesHandlerTest
                         .addAssignment(new Classification.Assignment(security, Classification.ONE_HUNDRED_PERCENT));
         new TaxonomyBuilder().addClassification("asia").addTo(client);
 
-        var classes = oneClass(client, null, "growth", "true").get("classes").getAsJsonArray();
+        var narrowed = oneClass(client, null, "growth", "true");
+        var classes = narrowed.get("classes").getAsJsonArray();
         assertThat(classes.size(), is(1));
 
         var growth = classes.get(0).getAsJsonObject();
         assertThat(growth.get("id").getAsString(), is("growth"));
         assertThat(growth.get("assignedCount").getAsInt(), is(1));
-        assertThat(growth.get("assignments").getAsJsonArray().get(0).getAsJsonObject().get("name").getAsString(),
+        // the vehicles of the one class are the paged list beside it, not on the row
+        assertThat(narrowed.get("assignments").getAsJsonArray().get(0).getAsJsonObject().get("name").getAsString(),
                         is("ACME"));
 
         // the headers above stay whole even when the classes are narrowed to one
@@ -255,7 +258,7 @@ public class TaxonomiesHandlerTest
         assertThat(classes.size(), is(2));
         assertThat(page.get("total").getAsInt(), is(6));
         assertThat(page.get("limit").getAsInt(), is(2));
-        assertThat(id(classes, 0), is(assets.getId()));
+        assertThat(id(classes, 0), is(assets.getRoot().getId()));
         assertThat(id(classes, 1), is("bonds"));
 
         // every row carries its own cursor, and every row of a page has one
@@ -387,7 +390,8 @@ public class TaxonomiesHandlerTest
         var third = vehiclesOf(client, assets.getId(), "growth",
                         second.get("page").getAsJsonObject().get("nextCursor").getAsString(), "2");
         assertThat(third.get("assignments").getAsJsonArray().size(), is(1));
-        assertThat(third.get("page").getAsJsonObject().has("nextCursor"), is(false));
+        // the last page says so by a null cursor, not by leaving the member out
+        assertThat(third.get("page").getAsJsonObject().get("nextCursor").isJsonNull(), is(true));
     }
 
     /** a cursor of the class list is not a cursor of the vehicles of a class */
