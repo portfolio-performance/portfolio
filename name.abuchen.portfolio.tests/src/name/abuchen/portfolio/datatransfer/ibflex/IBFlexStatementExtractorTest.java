@@ -1601,9 +1601,9 @@ public class IBFlexStatementExtractorTest
 
         assertThat(errors, empty());
         assertThat(securityItems.size(), is(1));
-        assertThat(buySellTransactions.size(), is(1));
+        assertThat(buySellTransactions.size(), is(2));
         assertThat(accountTransactions.size(), is(0));
-        assertThat(results.size(), is(2));
+        assertThat(results.size(), is(3));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // check security
@@ -1616,16 +1616,58 @@ public class IBFlexStatementExtractorTest
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
         assertThat(security.getFeed(), is(YahooFinanceQuoteFeed.ID));
 
-        // TradeCancel rows are skipped; the original execution remains when no origTransactionID is present.
+        // check 1st buy sell transaction
         BuySellEntry entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
+
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-12-02T06:26:11")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(450)));
         assertNull(entry.getSource());
         assertThat(entry.getNote(), is("Trade-ID: 464740365 | Transaction-ID: 1522126816"));
+
+        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2446.84))));
+        assertThat(entry.getPortfolioTransaction().getGrossValue(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2444.40))));
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2.44))));
+        assertThat(entry.getPortfolioTransaction().getGrossPricePerShare(),
+                        is(Quote.of(CurrencyUnit.EUR, Values.Quote.factorize(5.432))));
+
+        // check cancellation (Storno) transaction
+        BuySellEntry cancellation = (BuySellEntry) results.stream() //
+                        .filter(BuySellEntryItem.class::isInstance) //
+                        .filter(item -> item.getFailureMessage() != null) //
+                        .findFirst().orElseThrow(IllegalArgumentException::new) //
+                        .getSubject();
+
+        assertThat(cancellation, is(not(nullValue())));
+
+        assertThat(cancellation.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
+        assertThat(cancellation.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
+        assertThat(cancellation, is(not(nullValue())));
+
+        assertThat(cancellation.getPortfolioTransaction().getDateTime(),
+                        is(LocalDateTime.parse("2022-12-02T06:26:11")));
+        assertThat(cancellation.getPortfolioTransaction().getShares(), is(Values.Share.factorize(450)));
+        assertNull(cancellation.getSource());
+        assertThat(cancellation.getNote(), is(Messages.MsgErrorTransactionOrderCancellationUnsupported));
+
+        assertThat(cancellation.getPortfolioTransaction().getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2444.40))));
+        assertThat(cancellation.getPortfolioTransaction().getGrossValue(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2444.40))));
+        assertThat(cancellation.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        assertThat(cancellation.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        assertThat(cancellation.getPortfolioTransaction().getGrossPricePerShare(),
+                        is(Quote.of(CurrencyUnit.EUR, Values.Quote.factorize(5.432))));
     }
 
     @Test
@@ -3656,37 +3698,6 @@ public class IBFlexStatementExtractorTest
                         hasNote("Trade-ID: 1144440025 | Transaction-ID: 4606872535")))));
     }
 
-
-    @Test
-    public void testIBFlexStatementFile34() throws IOException
-    {
-        IBFlexStatementExtractor extractor = new IBFlexStatementExtractor(new Client());
-
-        InputStream activityStatement = getClass().getResourceAsStream("testIBFlexStatementFile34.xml");
-        Extractor.InputFile tempFile = createTempFile(activityStatement);
-
-        List<Exception> errors = new ArrayList<>();
-
-        List<Item> results = extractor.extract(Collections.singletonList(tempFile), errors);
-
-        assertThat(errors, empty());
-        assertThat(countSecurities(results), is(1L));
-        assertThat(countBuySell(results), is(1L));
-        assertThat(countAccountTransactions(results), is(0L));
-
-        BuySellEntry entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2025-09-11T10:00")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(5000)));
-        assertThat(entry.getNote(), is("Trade-ID: 2001 | Transaction-ID: 1003"));
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of("AUD", Values.Amount.factorize(1600.00))));
-
-        assertThat(results.stream().filter(BuySellEntryItem.class::isInstance).count(), is(1L));
-    }
-
     @Test
     public void testParseDateTimeFormats()
     {
@@ -4087,5 +4098,89 @@ public class IBFlexStatementExtractorTest
                         hasNote("Transaction-ID: 41560910443 | Trade-ID: 9760868262 | Refund (BOND, 200, 2026-06-23)"), //
                         hasAmount("USD", 1.00), //
                         hasTaxes("USD", 0.00), hasFees("USD", 0.00))));
+    }
+
+    @Test
+    public void testIBFlexStatementFile34() throws IOException
+    {
+        // Cancel and rebook of an execution within one statement (issue
+        // #5915): only the rebooked execution is imported. The cancellation
+        // does not refund the commission of the canceled execution, so it is
+        // booked as a fee.
+        var extractor = new IBFlexStatementExtractor(new Client());
+
+        var activityStatement = getClass().getResourceAsStream("testIBFlexStatementFile34.xml");
+        var tempFile = createTempFile(activityStatement);
+
+        var errors = new ArrayList<Exception>();
+
+        var results = extractor.extract(Collections.singletonList(tempFile), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(results.size(), is(3));
+        new AssertImportActions().check(results, "AUD");
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2025-09-11T10:00"), hasShares(5000), //
+                        hasSecurity(hasIsin("CA38501D2041")), //
+                        hasNote("Trade-ID: 2001 | Transaction-ID: 1003"), //
+                        hasAmount("AUD", 1600.00), hasGrossValue("AUD", 1600.00), //
+                        hasTaxes("AUD", 0.00), hasFees("AUD", 0.00))));
+
+        // check fee transaction
+        assertThat(results, hasItem(fee( //
+                        hasDate("2025-09-11T10:00"), hasShares(0), //
+                        hasSecurity(hasIsin("CA38501D2041")), //
+                        hasNote("Trade-ID: 2001 | Transaction-ID: 1001"), //
+                        hasAmount("AUD", 6.00), //
+                        hasTaxes("AUD", 0.00), hasFees("AUD", 0.00))));
+    }
+
+    @Test
+    public void testIBFlexStatementFile35() throws IOException
+    {
+        // Cancellation of an execution that is not part of the statement, for
+        // example because it was imported with an earlier statement: the
+        // cancellation stays visible as unsupported, because the user may have
+        // to correct the existing transaction.
+        var extractor = new IBFlexStatementExtractor(new Client());
+
+        var activityStatement = getClass().getResourceAsStream("testIBFlexStatementFile35.xml");
+        var tempFile = createTempFile(activityStatement);
+
+        var errors = new ArrayList<Exception>();
+
+        var results = extractor.extract(Collections.singletonList(tempFile), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(2L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(results.size(), is(3));
+        new AssertImportActions().check(results, "AUD");
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2025-09-11T10:00"), hasShares(5000), //
+                        hasSecurity(hasIsin("CA38501D2041")), //
+                        hasNote("Trade-ID: 2001 | Transaction-ID: 1003"), //
+                        hasAmount("AUD", 1600.00), hasGrossValue("AUD", 1600.00), //
+                        hasTaxes("AUD", 0.00), hasFees("AUD", 0.00))));
+
+        // check cancellation (Storno) transaction
+        assertThat(results, hasItem(withFailureMessage( //
+                        Messages.MsgErrorTransactionOrderCancellationUnsupported, //
+                        purchase( //
+                                        hasDate("2025-09-11T10:00"), hasShares(5000), //
+                                        hasSecurity(hasIsin("CA38501D2041")), //
+                                        hasNote(Messages.MsgErrorTransactionOrderCancellationUnsupported), //
+                                        hasAmount("AUD", 1600.00), hasGrossValue("AUD", 1600.00), //
+                                        hasTaxes("AUD", 0.00), hasFees("AUD", 0.00)))));
     }
 }
