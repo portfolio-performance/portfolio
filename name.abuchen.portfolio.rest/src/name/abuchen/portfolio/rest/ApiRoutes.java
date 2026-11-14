@@ -29,22 +29,29 @@ import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
 import name.abuchen.portfolio.rest.internal.AccountsHandler;
 import name.abuchen.portfolio.rest.internal.ApiException;
+import name.abuchen.portfolio.rest.internal.CategoryPerformanceHandler;
+import name.abuchen.portfolio.rest.internal.FileInfoHandler;
 import name.abuchen.portfolio.rest.internal.FileResolver;
 import name.abuchen.portfolio.rest.internal.FilesHandler;
 import name.abuchen.portfolio.rest.internal.HoldingsHandler;
 import name.abuchen.portfolio.rest.internal.InstrumentChangeLog;
 import name.abuchen.portfolio.rest.internal.InstrumentPerformanceHandler;
+import name.abuchen.portfolio.rest.internal.InvestmentPlansHandler;
 import name.abuchen.portfolio.rest.internal.OpenApiHandler;
 import name.abuchen.portfolio.rest.internal.PairingHandler;
 import name.abuchen.portfolio.rest.internal.PerformanceHandler;
 import name.abuchen.portfolio.rest.internal.PortfoliosHandler;
+import name.abuchen.portfolio.rest.internal.PricesHandler;
 import name.abuchen.portfolio.rest.internal.Progress;
 import name.abuchen.portfolio.rest.internal.Request;
 import name.abuchen.portfolio.rest.internal.Response;
 import name.abuchen.portfolio.rest.internal.Router;
 import name.abuchen.portfolio.rest.internal.SecuritiesHandler;
+import name.abuchen.portfolio.rest.internal.TaxonomiesHandler;
 import name.abuchen.portfolio.rest.internal.TradesHandler;
+import name.abuchen.portfolio.rest.internal.TransactionsHandler;
 import name.abuchen.portfolio.rest.internal.VersionHandler;
+import name.abuchen.portfolio.rest.internal.WatchlistsHandler;
 import name.abuchen.portfolio.rest.internal.mcp.McpEndpoint;
 import name.abuchen.portfolio.rest.spi.HostApplication;
 import name.abuchen.portfolio.rest.spi.OpenFile;
@@ -425,10 +432,58 @@ public final class ApiRoutes
                             return wrote(Response.noContent().withInProcess(removed), true);
                         }));
 
+        // the stored quotes of one instrument: a series rather than a list of
+        // entities, so it is windowed by date and paged by the date it last
+        // rendered to, and it reads the resolved client like the other reads
+        router.add("GET", "/v1/files/{file}/instruments/{uuid}/prices", read(resolver, ui, //$NON-NLS-1$ //$NON-NLS-2$
+                        (client, req) -> PricesHandler.list(client, req.pathParam("uuid"), //$NON-NLS-1$
+                                        req.queryParam("from"), req.queryParam("to"), req.queryParam("cursor"), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+                                        req.queryParam("limit"))), //$NON-NLS-1$
+                        "from", "to", "cursor", "limit"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+
         router.add("GET", "/v1/files/{file}/holdings", calc(resolver, ui, calculation, //$NON-NLS-1$ //$NON-NLS-2$
                         (context, req) -> Response.json(200, HoldingsHandler.list(context.client(), context.factory(),
                                         req.queryParam("date"), req.queryParam("reportingCurrency")))), //$NON-NLS-1$ //$NON-NLS-2$
                         "date", "reportingCurrency"); //$NON-NLS-1$ //$NON-NLS-2$
+        // how the file classifies its vehicles: the trees, their target weights
+        // and their direct assignments - the shape of a portfolio, which no other
+        // read of this API states
+        router.add("GET", "/v1/files/{file}/taxonomies", read(resolver, ui, //$NON-NLS-1$ //$NON-NLS-2$
+                        (client, req) -> TaxonomiesHandler.list(client, req.queryParam("taxonomy"), //$NON-NLS-1$
+                                        req.queryParam("class"), req.queryParam("withAssignments"), //$NON-NLS-1$ //$NON-NLS-2$
+                                        req.queryParam("withPath"), req.queryParam("cursor"), //$NON-NLS-1$ //$NON-NLS-2$
+                                        req.queryParam("limit"))), //$NON-NLS-1$
+                        "taxonomy", "class", "withAssignments", "withPath", "cursor", "limit"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
+
+        router.add("GET", "/v1/files/{file}/transactions", read(resolver, ui, //$NON-NLS-1$ //$NON-NLS-2$
+                        (client, req) -> TransactionsHandler.list(client, req.queryParam("from"), //$NON-NLS-1$
+                                        req.queryParam("to"), req.queryParam("cashAccount"), //$NON-NLS-1$ //$NON-NLS-2$
+                                        req.queryParam("investmentAccount"), //$NON-NLS-1$
+                                        req.queryParam("instrument"), //$NON-NLS-1$
+                                        req.queryParam("type"), req.queryParam("cursor"), //$NON-NLS-1$ //$NON-NLS-2$
+                                        req.queryParam("limit"))), //$NON-NLS-1$
+                        "from", "to", "cashAccount", "investmentAccount", "instrument", "type", "cursor", "limit"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$
+
+        // what the file intends to do next: the savings plans, their rate, their
+        // rhythm and the two accounts between which they move money
+        router.add("GET", "/v1/files/{file}/investment-plans", read(resolver, ui, //$NON-NLS-1$ //$NON-NLS-2$
+                        (client, req) -> InvestmentPlansHandler.list(client, req.queryParam("investmentAccount"), //$NON-NLS-1$
+                                        req.queryParam("cashAccount"), req.queryParam("instrument"))), //$NON-NLS-1$ //$NON-NLS-2$
+                        "investmentAccount", "cashAccount", "instrument"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+
+        // the file's own facts: what it counts in, the currencies it moves in, and
+        // how many of each kind of thing it holds - the answer to read before
+        // asking for any of the larger reports
+        router.add("GET", "/v1/files/{file}/info", read(resolver, ui, //$NON-NLS-1$ //$NON-NLS-2$
+                        (client, req) -> FileInfoHandler.info(client)));
+
+        // the named baskets of instruments: how full each one is, and which of
+        // them holds one instrument
+        router.add("GET", "/v1/files/{file}/watchlists", read(resolver, ui, //$NON-NLS-1$ //$NON-NLS-2$
+                        (client, req) -> WatchlistsHandler.list(client, req.queryParam("instrument"), //$NON-NLS-1$
+                                        req.queryParam("withInstruments"))), //$NON-NLS-1$
+                        "instrument", "withInstruments"); //$NON-NLS-1$ //$NON-NLS-2$
+
         router.add("GET", "/v1/files/{file}/performance", calc(resolver, ui, calculation, //$NON-NLS-1$ //$NON-NLS-2$
                         (context, req) -> Response.json(200, PerformanceHandler.list(context.client(),
                                         context.factory(), req.queryParam("openingDate"), //$NON-NLS-1$
@@ -454,6 +509,19 @@ public final class ApiRoutes
                                         req.queryParam("costMethod"), req.queryParam("taxesAndFees"), //$NON-NLS-1$ //$NON-NLS-2$
                                         req.queryParam("metrics")))), //$NON-NLS-1$
                         INSTRUMENT_PERFORMANCE_PARAMS);
+
+        // one class of a taxonomy reported on its own: the same terms as
+        // /files/{file}/performance, over what that class holds instead of over
+        // the file. Segment 4 is a literal in both and they differ, so as with the
+        // instruments above, first-match routing cannot confuse the two
+        router.add("GET", "/v1/files/{file}/performance/categories/{classification}", //$NON-NLS-1$ //$NON-NLS-2$
+                        calc(resolver, ui, calculation, (context, req) -> Response.json(200, //$NON-NLS-1$
+                                        CategoryPerformanceHandler.get(context.client(), context.factory(), //$NON-NLS-1$
+                                                        req.queryParam("taxonomy"), req.pathParam("classification"), //$NON-NLS-1$ //$NON-NLS-2$
+                                                        req.queryParam("openingDate"), req.queryParam("closingDate"), //$NON-NLS-1$ //$NON-NLS-2$
+                                                        req.queryParam("reportingCurrency"), //$NON-NLS-1$
+                                                        req.queryParam("costMethod")))), //$NON-NLS-1$
+                        "taxonomy", "openingDate", "closingDate", "reportingCurrency", "costMethod"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
 
         // matched trades for the whole file or one instrument sub-collection
         router.add("GET", "/v1/files/{file}/trades", calc(resolver, ui, calculation, //$NON-NLS-1$ //$NON-NLS-2$
