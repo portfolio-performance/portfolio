@@ -43,6 +43,7 @@ import name.abuchen.portfolio.rest.internal.PerformanceHandler;
 import name.abuchen.portfolio.rest.internal.PortfoliosHandler;
 import name.abuchen.portfolio.rest.internal.PricesHandler;
 import name.abuchen.portfolio.rest.internal.Progress;
+import name.abuchen.portfolio.rest.internal.QuoteUpdateHandler;
 import name.abuchen.portfolio.rest.internal.Request;
 import name.abuchen.portfolio.rest.internal.Response;
 import name.abuchen.portfolio.rest.internal.Router;
@@ -455,6 +456,30 @@ public final class ApiRoutes
                                         req.queryParam("from"), req.queryParam("to"), req.queryParam("cursor"), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
                                         req.queryParam("limit"))), //$NON-NLS-1$
                         "from", "to", "cursor", "limit"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+
+        // the application's own price update, started for a chosen part of the file:
+        // the same job its menu item schedules, so its progress dialog, its providers
+        // and its own markDirty() stay the application's. The answer says what was
+        // started and not what arrived - the job runs on past this request, which is
+        // why the answer is 202
+        router.add("POST", "/v1/files/{file}/quotes/update", write(resolver, ui, approvals, "pp_update_quotes", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+                        (file, req) -> QuoteUpdateHandler.describe(file.getClient(), optionalObject(req), file.getLabel()),
+                        (file, req) -> {
+                            var started = QuoteUpdateHandler.run(file.getClient(), optionalObject(req), ui.host());
+                            // whether a quote can arrive at all decides whether the file can
+                            // end up unsaved; the job itself reports what actually came
+                            return wrote(Response.json(202, started.answer()), started.mightChange());
+                        }));
+
+        router.add("GET", "/v1/files/{file}/cash-accounts", read(resolver, ui, //$NON-NLS-1$ //$NON-NLS-2$
+                        (client, req) -> AccountsHandler.list(client)));
+        router.add("GET", "/v1/files/{file}/cash-accounts/{uuid}", read(resolver, ui, //$NON-NLS-1$ //$NON-NLS-2$
+                        (client, req) -> AccountsHandler.get(client, req.pathParam("uuid")))); //$NON-NLS-1$
+
+        router.add("GET", "/v1/files/{file}/investment-accounts", read(resolver, ui, //$NON-NLS-1$ //$NON-NLS-2$
+                        (client, req) -> PortfoliosHandler.list(client)));
+        router.add("GET", "/v1/files/{file}/investment-accounts/{uuid}", read(resolver, ui, //$NON-NLS-1$ //$NON-NLS-2$
+                        (client, req) -> PortfoliosHandler.get(client, req.pathParam("uuid")))); //$NON-NLS-1$
 
         router.add("GET", "/v1/files/{file}/holdings", calc(resolver, ui, calculation, //$NON-NLS-1$ //$NON-NLS-2$
                         (context, req) -> Response.json(200, HoldingsHandler.list(context.client(), context.factory(),

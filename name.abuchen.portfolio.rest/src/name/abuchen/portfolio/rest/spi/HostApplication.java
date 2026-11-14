@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CompletableFuture;
 
+import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.Security;
 
 /**
  * Services the hosting application provides to the REST plugin. Implemented
@@ -34,6 +36,22 @@ public interface HostApplication
      * must be called on the UI thread
      */
     boolean isUserEditing();
+
+    /**
+     * Starts the application's own price update for exactly these securities -
+     * the same job its "Update quotes" menu item schedules, with its own progress
+     * dialog and its own {@code markDirty()} when a quote arrives. Called on the
+     * UI thread, and returns as soon as the job is scheduled rather than when it
+     * is done: the update outlives the request that asked for it, which is why the
+     * caller is told 202 and not 200.
+     */
+    void updateQuotes(Client client, List<Security> securities);
+
+    /**
+     * The same for the whole file: everything the plain menu item covers, indices
+     * and exchange rates along with the securities.
+     */
+    void updateAllQuotes(Client client);
 
     /**
      * Asks the user to approve an API access request. Called on an HTTP worker

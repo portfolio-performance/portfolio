@@ -13,6 +13,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
 import name.abuchen.portfolio.rest.spi.ApiAccessRequest;
 import name.abuchen.portfolio.rest.spi.WriteConfirmation;
@@ -259,5 +260,37 @@ public class FakeHost implements HostApplication
     public void setWriteApprovalAutoAllows(boolean autoAllows)
     {
         this.writeApprovalAutoAllows = autoAllows;
+    }
+
+    // what a price update was asked for: no job runs here, so the only thing a
+    // test can check is which securities were handed over, and whether the
+    // whole-file variant was chosen instead of a list
+    private volatile boolean quotesRequestedForAll;
+    private volatile List<Security> quotesRequested;
+
+    @Override
+    public void updateQuotes(Client client, List<Security> securities)
+    {
+        this.quotesRequestedForAll = false;
+        this.quotesRequested = List.copyOf(securities);
+    }
+
+    @Override
+    public void updateAllQuotes(Client client)
+    {
+        this.quotesRequestedForAll = true;
+        this.quotesRequested = List.of();
+    }
+
+    /** the securities of the last price update; null until one was asked for */
+    public List<Security> quotesRequested()
+    {
+        return quotesRequested;
+    }
+
+    /** whether the last price update asked for the whole file rather than for a list */
+    public boolean quotesRequestedForAll()
+    {
+        return quotesRequestedForAll;
     }
 }

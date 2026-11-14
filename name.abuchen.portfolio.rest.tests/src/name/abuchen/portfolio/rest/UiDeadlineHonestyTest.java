@@ -747,6 +747,26 @@ public class UiDeadlineHonestyTest
             {
                 // not asked for here
             }
+
+            @Override
+            public void requestModelWriteApproval(name.abuchen.portfolio.rest.spi.WriteConfirmation request)
+            {
+                // not asked for here
+                request.allowOnce();
+            }
+
+            @Override
+            public void updateQuotes(name.abuchen.portfolio.model.Client client,
+                            java.util.List<name.abuchen.portfolio.model.Security> securities)
+            {
+                // never reached: this host is only used to keep the queue full
+            }
+
+            @Override
+            public void updateAllQuotes(name.abuchen.portfolio.model.Client client)
+            {
+                // never reached: this host is only used to keep the queue full
+            }
         };
 
         // the bound is process-wide: tasks another test left queued would take places
