@@ -41,6 +41,17 @@ public final class InstrumentChangeLog
         PortfolioLog.info(deletionSummary(fileLabel, instrumentName), List.of());
     }
 
+    /**
+     * An instrument that did not exist before. Logged like the others, because the
+     * desktop user reads one list of what the API did and should not have to guess
+     * which verbs it holds.
+     */
+    public static void recordCreation(String fileLabel, String instrumentName, List<Change> changes)
+    {
+        PortfolioLog.info(creationSummary(fileLabel, instrumentName),
+                        changes.stream().map(InstrumentChangeLog::detail).toList());
+    }
+
     /* package */ static String summary(String fileLabel, String instrumentName)
     {
         return MessageFormat.format(Messages.MsgApiInstrumentChanged, instrumentName, fileLabel);
@@ -49,6 +60,11 @@ public final class InstrumentChangeLog
     /* package */ static String deletionSummary(String fileLabel, String instrumentName)
     {
         return MessageFormat.format(Messages.MsgApiInstrumentDeleted, instrumentName, fileLabel);
+    }
+
+    /* package */ static String creationSummary(String fileLabel, String instrumentName)
+    {
+        return MessageFormat.format(Messages.MsgApiInstrumentCreated, instrumentName, fileLabel);
     }
 
     /* package */ static String detail(Change change)

@@ -47,4 +47,15 @@ public class InstrumentChangeLogTest
         assertThat(InstrumentChangeLog.deletionSummary("portfolio.xml", "Apple Inc."),
                         is(MessageFormat.format(Messages.MsgApiInstrumentDeleted, "Apple Inc.", "portfolio.xml")));
     }
+
+    @Test
+    public void testCreationSummaryIsItsOwnKindOfNews()
+    {
+        assertThat(InstrumentChangeLog.creationSummary("portfolio.xml", "Apple Inc."),
+                        is(MessageFormat.format(Messages.MsgApiInstrumentCreated, "Apple Inc.", "portfolio.xml")));
+
+        // a user reading the log should tell an addition from a modification
+        assertThat(InstrumentChangeLog.creationSummary("portfolio.xml", "Apple Inc.") //
+                        .equals(InstrumentChangeLog.summary("portfolio.xml", "Apple Inc.")), is(false));
+    }
 }
