@@ -14,6 +14,7 @@ import name.abuchen.portfolio.model.AttributeType;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.money.CurrencyUnit;
+import name.abuchen.portfolio.rest.WriteApprovals;
 import name.abuchen.portfolio.util.Isin;
 
 public final class SecuritiesHandler
@@ -138,7 +139,7 @@ public final class SecuritiesHandler
 
         // only the page is rendered; the rest of the list is counted, not built
         var response = new JsonObject();
-        paging.apply(Paging.Kind.INSTRUMENTS, response, securities, Security::getUUID,
+        paging.apply(Paging.Kind.INSTRUMENTS, response, "items", securities, Security::getUUID, //$NON-NLS-1$
                         security -> EntityJson.toJson(client, security));
         return response;
     }
@@ -188,18 +189,39 @@ public final class SecuritiesHandler
                             items.add(item);
                         });
 
-        return EntityJson.envelope(items);
+        return EntityJson.envelope(items, "this file defines no custom attributes for instruments"); //$NON-NLS-1$
     }
 
     /**
-     * Applies a JSON Merge Patch (RFC 7386) to the security: absent fields stay
-     * untouched, null clears optional fields. All violations are collected and
-     * reported at once; nothing is applied unless everything validates.
+     * What the prompt will be about, with the patch already read and rejected if it
+     * cannot be carried out: a user is not asked to approve a change the request
+     * could not have made, and an instrument the file does not have is turned away
+     * before anybody is interrupted.
      */
-    public static PatchResult patch(Client client, String uuid, JsonObject body)
+    public static WriteApprovals.Facts describe(Client client, String uuid, JsonObject body, String fileLabel)
     {
         var security = find(client, uuid);
 
+        var check = check(client, security, body);
+        if (!check.errors().isEmpty())
+            throw ApiException.validation(check.errors());
+
+        return new WriteApprovals.Facts(null, fileLabel, "instrument", security.getName(), null, //$NON-NLS-1$
+                        String.join(", ", body.keySet())); //$NON-NLS-1$
+    }
+
+    /** the fields a patch or a creation names that are staged but not yet applied, and the violations */
+    private record Check(List<AttributeAssignment> assignments, List<ApiException.FieldError> errors)
+    {
+    }
+
+    /**
+     * Reads a merge patch without touching the security: the same verdict the change
+     * comes to, reached before anything is applied, so that prompt and change cannot
+     * disagree about whether a request was possible.
+     */
+    private static Check check(Client client, Security security, JsonObject body)
+    {
         var errors = new ArrayList<ApiException.FieldError>();
         var assignments = new ArrayList<AttributeAssignment>();
 
@@ -223,6 +245,22 @@ public final class SecuritiesHandler
                 errors.add(error);
         }
 
+        return new Check(assignments, errors);
+    }
+
+    /**
+     * Applies a JSON Merge Patch (RFC 7386) to the security: absent fields stay
+     * untouched, null clears optional fields. All violations are collected and
+     * reported at once; nothing is applied unless everything validates.
+     */
+    public static PatchResult patch(Client client, String uuid, JsonObject body)
+    {
+        var security = find(client, uuid);
+
+        var check = check(client, security, body);
+        var errors = check.errors();
+        var assignments = check.assignments();
+
         if (!errors.isEmpty())
             throw ApiException.validation(errors);
 
@@ -232,6 +270,23 @@ public final class SecuritiesHandler
         if (!hasWritableField && assignments.isEmpty())
             return new PatchResult(EntityJson.toJson(client, security), security.getName(), List.of());
 
+        var changes = apply(security, body, check.assignments());
+
+        // a patch that only restates stored values changes nothing, so the user
+        // is not asked to save a file the API did not change
+        if (!changes.isEmpty())
+            client.markDirty();
+        return new PatchResult(EntityJson.toJson(client, security), security.getName(), changes);
+    }
+
+    /**
+     * Writes validated fields and staged attributes onto a security, and reports
+     * what moved. Shared with creation, so that both paths reach a security by
+     * exactly the same steps - only one of them has values to compare against.
+     */
+    private static List<InstrumentChangeLog.Change> apply(Security security, JsonObject body,
+                    List<AttributeAssignment> assignments)
+    {
         var changes = new ArrayList<InstrumentChangeLog.Change>();
 
         for (var entry : body.entrySet())
@@ -240,6 +295,9 @@ public final class SecuritiesHandler
                 continue;
 
             var field = WRITABLE_FIELDS.get(entry.getKey());
+            if (field == null)
+                continue;
+
             var before = field.getter().get(security);
             field.setter().set(security, entry.getValue());
             var after = field.getter().get(security);
@@ -270,11 +328,7 @@ public final class SecuritiesHandler
             }
         }
 
-        // a patch that only restates stored values changes nothing, so the user
-        // is not asked to save a file the API did not change
-        if (!changes.isEmpty())
-            client.markDirty();
-        return new PatchResult(EntityJson.toJson(client, security), security.getName(), changes);
+        return changes;
     }
 
     /**
@@ -424,6 +478,22 @@ public final class SecuritiesHandler
     }
 
     /**
+     * What a deletion prompt will be about, refused first if the instrument is
+     * referenced: the block is the whole verdict of a delete, so asking about a
+     * deletion that cannot happen would only train the user to approve refusals.
+     */
+    public static WriteApprovals.Facts describeDeletion(Client client, String uuid, String fileLabel)
+    {
+        var security = find(client, uuid);
+
+        var errors = refusals(client, security);
+        if (!errors.isEmpty())
+            throw ApiException.conflict("delete-blocked", "Instrument is referenced and cannot be deleted", null, errors); //$NON-NLS-1$ //$NON-NLS-2$
+
+        return new WriteApprovals.Facts(null, fileLabel, "instrument", security.getName(), null, null); //$NON-NLS-1$
+    }
+
+    /**
      * Deletes the security only if it is not referenced by transactions or
      * investment plans; Client#removeSecurity would cascade into deleting
      * transaction history the API client may never have seen.
@@ -432,19 +502,24 @@ public final class SecuritiesHandler
     {
         var security = find(client, uuid);
 
+        var errors = refusals(client, security);
+        if (!errors.isEmpty())
+            throw ApiException.conflict("delete-blocked", "Instrument is referenced and cannot be deleted", null, errors); //$NON-NLS-1$ //$NON-NLS-2$
+
+        client.removeSecurity(security);
+        client.markDirty();
+        return security.getName();
+    }
+
+    /** what stands in the way of removing this instrument, as field violations */
+    private static List<ApiException.FieldError> refusals(Client client, Security security)
+    {
         var errors = new ArrayList<ApiException.FieldError>();
         if (security.hasTransactions(client))
             errors.add(new ApiException.FieldError("transactions", "referenced", "instrument has transactions")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         if (client.getPlans().stream().anyMatch(plan -> security.equals(plan.getSecurity())))
             errors.add(new ApiException.FieldError("plans", "referenced", "instrument is used by investment plans")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-
-        if (!errors.isEmpty())
-            throw ApiException.conflict("delete-blocked", "Instrument is referenced and cannot be deleted", null, //$NON-NLS-1$ //$NON-NLS-2$
-                            errors);
-
-        client.removeSecurity(security);
-        client.markDirty();
-        return security.getName();
+        return errors;
     }
 
     /* package */ static Security find(Client client, String uuid)

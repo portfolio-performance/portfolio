@@ -116,9 +116,25 @@ public class ApiException extends RuntimeException
                         Map.of("Retry-After", String.valueOf(retryAfterSeconds))); //$NON-NLS-1$
     }
 
-    public static ApiException locked()
+    /**
+     * The user looked at the change and refused it. That is an answer, not a
+     * failure to reach the application: nothing will change by asking again, so
+     * this carries no {@code Retry-After}.
+     */
+    public static ApiException writeDeclined(String detail)
     {
-        return new ApiException(423, "user-interaction", "User interaction in progress, retry later", null, //$NON-NLS-1$ //$NON-NLS-2$
+        return new ApiException(403, "write-declined", "Refused by the user in the application", detail, //$NON-NLS-1$ //$NON-NLS-2$
+                        List.of(), Map.of());
+    }
+
+    /**
+     * Nobody answered - the prompt expired while the user was away. Nothing was
+     * changed, so this is retryable, unlike a refusal.
+     */
+    public static ApiException writeUnanswered(String operation)
+    {
+        return new ApiException(423, "write-unanswered", "The user did not answer in time", //$NON-NLS-1$ //$NON-NLS-2$
+                        operation + " was not applied: the request to approve it expired", //$NON-NLS-1$
                         List.of(), Map.of("Retry-After", "5")); //$NON-NLS-1$ //$NON-NLS-2$
     }
 

@@ -83,7 +83,37 @@ public record Paging(boolean given, String scope, String after, Integer limit)
         TRADES("t", Pattern.compile(UUIDS + "\\|" //$NON-NLS-1$
                         + "\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\|" //$NON-NLS-1$
                         + UUIDS + "\\|(" + UUIDS + ")?\\|" //$NON-NLS-1$ //$NON-NLS-2$
-                        + "-?\\d{1,19}\\|[A-Z]{3} -?\\d{1,19}\\|(" + UUIDS + "|\\d{4,})")); //$NON-NLS-1$
+                        + "-?\\d{1,19}\\|[A-Z]{3} -?\\d{1,19}\\|(" + UUIDS + "|\\d{4,})")), //$NON-NLS-1$
+        /**
+         * the date of the last price a page was rendered to: at most one price
+         * per day is stored, so the date alone names an entry of the series
+         */
+        PRICES("p", Pattern.compile("\\d{4}-\\d{2}-\\d{2}")), //$NON-NLS-1$
+        /**
+         * taxonomy id | the ranks from the root down, three digits per level |
+         * class id. The rank path is what puts a page back into the order the
+         * application shows: sorted by it, every class follows its parent and
+         * its own subtree stays together. A class keeps its key while it keeps
+         * its place; reordering a branch moves it, as it moves on screen.
+         */
+        CLASSES("c", Pattern.compile("[^|]+\\|\\d{3}(\\}\\d{3})*\\|[^|]+")), //$NON-NLS-1$
+
+        /**
+         * A booking, keyed by the day and the time it was recorded and by its
+         * uuid. Day and time are fixed width, so the text order of the keys is
+         * the order of the bookings; the uuid of a booking never repeats, and
+         * the two sides of a transfer are two bookings with two uuids.
+         */
+        TRANSACTIONS("x", Pattern.compile("\\d{4}-\\d{2}-\\d{2}\\|\\d{2}:\\d{2}:\\d{2}\\|[^|]+")), //$NON-NLS-1$
+
+        /**
+         * the rank an assignment holds within its class, then the uuid of the
+         * vehicle. Sorted by it, a page of a class's vehicles reads in the order
+         * of the application's table rather than by identifier - and the uuid
+         * behind the rank, because a rank is only unique among the vehicles of
+         * one class and never names a row of the file.
+         */
+        VEHICLES("v", Pattern.compile("\\d{3}\\|" + UUIDS)); //$NON-NLS-1$
 
         private final String tag;
         private final Pattern key;
@@ -186,25 +216,30 @@ public record Paging(boolean given, String scope, String after, Integer limit)
 
         errors.add(new ApiException.FieldError("cursor", "invalid-value", //$NON-NLS-1$ //$NON-NLS-2$
                         "cursor must be a page.nextCursor or an item's cursor from this same list, " //$NON-NLS-1$
-                                        + "with the same file, instrument and filters")); //$NON-NLS-1$
+                                        + "taken under the same arguments")); //$NON-NLS-1$
         return null;
     }
 
     /**
-     * Puts the page of {@code items} into the response: the items whose key
-     * follows the cursor, in key order, at most {@code limit} of them, each
-     * with its {@code cursor}, and a {@code page} that says where the next one
-     * starts - or all of them, in the order given and with no {@code page},
-     * when no paging was asked for. Only the items of the page are rendered.
+     * Puts the page of {@code items} into the response under {@code listKey}: the
+     * items whose key follows the cursor, in key order, at most {@code limit} of
+     * them, each with its {@code cursor}, and a {@code page} that says where the
+     * next one starts - or all of them, in the order given and with no
+     * {@code page}, when no paging was asked for. Only the items of the page are
+     * rendered.
+     * <p/>
+     * {@code listKey} is {@code "items"} for a plain list and something else for a
+     * report that pages one array among others: the taxonomies keep their headers
+     * in {@code items} and page their {@code classes} beside them.
      */
-    public <T> void apply(Kind kind, JsonObject response, List<T> items, Function<T, String> key,
+    public <T> void apply(Kind kind, JsonObject response, String listKey, List<T> items, Function<T, String> key,
                     Function<T, JsonElement> render)
     {
         var rendered = new JsonArray();
         if (!given)
         {
             items.forEach(item -> rendered.add(render.apply(item)));
-            response.add("items", rendered); //$NON-NLS-1$
+            response.add(listKey, rendered);
             return;
         }
 
@@ -229,7 +264,7 @@ public record Paging(boolean given, String scope, String after, Integer limit)
 
         var next = end < ordered.size() && end > start ? encode(kind, scope, key.apply(ordered.get(end - 1))) : null;
         response.add("page", describe(limit, items.size(), next)); //$NON-NLS-1$
-        response.add("items", rendered); //$NON-NLS-1$
+        response.add(listKey, rendered);
     }
 
     /**

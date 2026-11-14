@@ -2,6 +2,7 @@ package name.abuchen.portfolio.rest.internal;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.nullValue;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -59,6 +60,69 @@ public class DeleteSecurityTest
             assertThat(e.getType(), is("delete-blocked"));
             assertThat(e.getErrors().get(0).field(), is("transactions"));
             assertThat(client.getSecurities().size(), is(1));
+        }
+    }
+
+    /**
+     * The block belongs before the question: nobody is asked to approve a deletion
+     * that could not happen. Measured live on the sibling route, which asked first
+     * and refused afterwards - the habit this is meant to avoid.
+     */
+    @Test
+    public void testDescribeRefusesAReferencedSecurityBeforeAnyoneIsAsked()
+    {
+        var client = new Client();
+        var security = new SecurityBuilder().addTo(client);
+        new PortfolioBuilder().buy(security, "2024-01-02", Values.Share.factorize(100), Values.Amount.factorize(1000))
+                        .addTo(client);
+
+        try
+        {
+            SecuritiesHandler.describeDeletion(client, security.getUUID(), "datei");
+            Assert.fail("a deletion that cannot happen was accepted for the prompt");
+        }
+        catch (ApiException e)
+        {
+            assertThat(e.getStatus(), is(409));
+            assertThat(e.getType(), is("delete-blocked"));
+            assertThat(e.getErrors().get(0).field(), is("transactions"));
+        }
+
+        assertThat(client.getSecurities().size(), is(1));
+    }
+
+    @Test
+    public void testDescribeNamesTheInstrumentItWouldDelete()
+    {
+        var client = new Client();
+        var security = new SecurityBuilder().addTo(client);
+        security.setName("ACME");
+
+        var facts = SecuritiesHandler.describeDeletion(client, security.getUUID(), "datei");
+
+        assertThat(facts.fileLabel(), is("datei"));
+        assertThat(facts.subjectType(), is("instrument"));
+        assertThat(facts.subjectName(), is("ACME"));
+        // a delete has no second side to name, and the describer does not decide
+        // which operation a session grant is remembered under
+        assertThat(facts.detail(), is(nullValue()));
+        assertThat(facts.operation(), is(nullValue()));
+
+        assertThat("describing does not delete", client.getSecurities().size(), is(1));
+    }
+
+    /** an instrument the file does not have is turned away, not named by its uuid */
+    @Test
+    public void testDescribeRefusesAnInstrumentNobodyHas()
+    {
+        try
+        {
+            SecuritiesHandler.describeDeletion(new Client(), "00000000-0000-0000-0000-000000000000", "datei");
+            Assert.fail("an unknown instrument was accepted for the prompt");
+        }
+        catch (ApiException e)
+        {
+            assertThat(e.getStatus(), is(404));
         }
     }
 }

@@ -293,7 +293,8 @@ public final class TradesHandler
         // always present so clients can detect partial success
         json.add("warnings", warnings); //$NON-NLS-1$
         var keys = keys(collected.trades());
-        params.paging().apply(Paging.Kind.TRADES, json, collected.trades(), keys::get, rendered::get);
+        params.paging().apply(Paging.Kind.TRADES, json, "items", collected.trades(), keys::get, //$NON-NLS-1$
+                        rendered::get);
         return json;
     }
 

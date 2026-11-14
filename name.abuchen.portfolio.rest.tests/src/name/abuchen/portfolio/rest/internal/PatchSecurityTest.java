@@ -1,7 +1,9 @@
 package name.abuchen.portfolio.rest.internal;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
 
 import java.nio.charset.StandardCharsets;
@@ -25,6 +27,7 @@ import name.abuchen.portfolio.rest.ApiRoutes;
 import name.abuchen.portfolio.rest.ClientStore;
 import name.abuchen.portfolio.rest.FileAccessRegistry;
 import name.abuchen.portfolio.rest.PairingService;
+import name.abuchen.portfolio.rest.spi.WriteConfirmation;
 import name.abuchen.portfolio.rest.testsupport.FakeHost;
 
 @SuppressWarnings("nls")
@@ -311,5 +314,148 @@ public class PatchSecurityTest
         {
             node.removeNode();
         }
+    }
+
+    /**
+     * A change the user refuses is refused in words the caller can act on: the
+     * operation named, because an agent has to know which of its own calls a "no"
+     * belonged to - and because that same name is what "allow for this session" is
+     * remembered under, so getting it wrong would let one yes cover a different
+     * operation. The prompt is asked before the change is queued, so refusing
+     * leaves the file exactly as it was.
+     */
+    @Test
+    public void testARefusalNamesTheOperationItRefuses() throws Exception
+    {
+        var client = new Client();
+        var security = new SecurityBuilder().addTo(client);
+        security.setName("ACME");
+
+        var node = InstanceScope.INSTANCE.getNode("rest-test-" + UUID.randomUUID());
+        try
+        {
+            var registry = new FileAccessRegistry(node);
+            registry.setEnabled("/tmp/x.portfolio", true);
+            var host = new FakeHost(List.of(new FakeHost.FakeOpenFile("/tmp/x.portfolio", "x", client)));
+            host.setWriteApprovalAutoAllows(false);
+
+            var router = ApiRoutes.create(registry, host,
+                            new PairingService(new ClientStore(Path.of("target", "unused-client-store")), host));
+            var uuid = registry.byPath("/tmp/x.portfolio").orElseThrow().uuid();
+            var match = router.match("PATCH", "/v1/files/" + uuid + "/instruments/" + security.getUUID());
+
+            // the route parks on the answer, so the answer comes from elsewhere
+            var answering = new Thread(() ->
+            {
+                WriteConfirmation seen = null;
+                for (int i = 0; i < 2000 && seen == null; i++)
+                {
+                    seen = host.lastWriteRequest();
+                    try
+                    {
+                        Thread.sleep(5);
+                    }
+                    catch (InterruptedException e)
+                    {
+                        Thread.currentThread().interrupt();
+                        return;
+                    }
+                }
+                if (seen != null)
+                    seen.decline();
+            });
+            answering.setDaemon(true);
+            answering.start();
+
+            try
+            {
+                match.handler().handle(new Request("PATCH", "irrelevant", match.pathParams(),
+                                "{\"note\":\"anders\"}".getBytes(StandardCharsets.UTF_8)));
+                Assert.fail("a refused write went through");
+            }
+            catch (ApiException e)
+            {
+                assertThat(e.getStatus(), is(403));
+                assertThat(e.getType(), is("write-declined"));
+                assertThat(e.getDetail(), containsString("pp_update_instrument"));
+            }
+
+            var prompt = host.lastWriteRequest();
+            assertThat(prompt, is(notNullValue()));
+            assertThat(prompt.getOperation(), is("pp_update_instrument"));
+            assertThat(prompt.getSubjectName(), is("ACME"));
+            assertThat(prompt.getFileLabel(), is("x"));
+
+            // and the refusal did not grant anything, to this or any other call
+            assertThat(host.writeRequests(), is(1));
+            assertThat(security.getNote(), is(nullValue()));
+        }
+        finally
+        {
+            node.removeNode();
+        }
+    }
+
+    /**
+     * The prompt is asked only about a change that could be carried out: the fields
+     * are read - and rejected - before anybody is interrupted. A user who is asked
+     * to approve a patch that fails afterwards has learned that approving teaches
+     * nothing, which is exactly the habit this prompt is meant to keep.
+     */
+    @Test
+    public void testDescribeRefusesAnUnknownFieldBeforeThePrompt()
+    {
+        var client = new Client();
+        var security = new SecurityBuilder().addTo(client);
+        security.setName("ACME");
+
+        try
+        {
+            SecuritiesHandler.describe(client, security.getUUID(), json("{\"konnomen\":\"x\"}"), "x");
+            Assert.fail("a patch naming a field it cannot write was accepted for the prompt");
+        }
+        catch (ApiException e)
+        {
+            assertThat(e.getStatus(), is(422));
+            assertThat(e.getErrors().get(0).field(), is("konnomen"));
+            assertThat(e.getErrors().get(0).code(), is("unknown-field"));
+        }
+
+        assertThat("the instrument was not touched", security.getNote(), is(nullValue()));
+    }
+
+    /** an instrument the file does not have is turned away before anybody is asked */
+    @Test
+    public void testDescribeRefusesAnInstrumentNobodyHas()
+    {
+        var client = new Client();
+
+        try
+        {
+            SecuritiesHandler.describe(client, UUID.randomUUID().toString(), json("{\"note\":\"x\"}"), "x");
+            Assert.fail("an unknown instrument was accepted for the prompt");
+        }
+        catch (ApiException e)
+        {
+            assertThat(e.getStatus(), is(404));
+        }
+    }
+
+    @Test
+    public void testDescribeOfAGoodPatchNamesTheInstrumentAndItsFields()
+    {
+        var client = new Client();
+        var security = new SecurityBuilder().addTo(client);
+        security.setName("ACME");
+
+        var facts = SecuritiesHandler.describe(client, security.getUUID(), json("{\"note\":\"anders\"}"), "datei");
+
+        assertThat(facts.fileLabel(), is("datei"));
+        assertThat(facts.subjectType(), is("instrument"));
+        assertThat(facts.subjectName(), is("ACME"));
+        assertThat(facts.detail(), is("note"));
+        // the operation is the key a session grant is remembered under, and the
+        // describer is not the one who decides it
+        assertThat(facts.operation(), is(nullValue()));
     }
 }

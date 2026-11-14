@@ -15,6 +15,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
 import name.abuchen.portfolio.rest.spi.ApiAccessRequest;
+import name.abuchen.portfolio.rest.spi.WriteConfirmation;
 import name.abuchen.portfolio.rest.spi.HostApplication;
 import name.abuchen.portfolio.rest.spi.OpenFile;
 
@@ -56,6 +57,11 @@ public class FakeHost implements HostApplication
     private final List<OpenFile> openFiles;
     private boolean userEditing = false;
     private ApiAccessRequest lastAccessRequest;
+
+    /** answers write prompts on its own, so that route tests are not held up */
+    private boolean writeApprovalAutoAllows = true;
+    private WriteConfirmation lastWriteRequest;
+    private int writeRequests;
 
     /** marks the thread that runs a callable as this host's UI thread while it does */
     private final ThreadLocal<Boolean> onUiThread = ThreadLocal.withInitial(() -> Boolean.FALSE);
@@ -223,5 +229,35 @@ public class FakeHost implements HostApplication
     public ApiAccessRequest lastAccessRequest()
     {
         return lastAccessRequest;
+    }
+
+    @Override
+    public void requestModelWriteApproval(WriteConfirmation request)
+    {
+        this.writeRequests++;
+        this.lastWriteRequest = request;
+        if (writeApprovalAutoAllows)
+            request.allowOnce();
+    }
+
+    /** how often the routes asked the user about a change */
+    public int writeRequests()
+    {
+        return writeRequests;
+    }
+
+    /** the most recent change the routes asked the user about; null until one did */
+    public WriteConfirmation lastWriteRequest()
+    {
+        return lastWriteRequest;
+    }
+
+    /**
+     * Whether write prompts answer themselves. Off, a prompt stays unanswered
+     * and the caller is refused - which is what a test of the refusal needs.
+     */
+    public void setWriteApprovalAutoAllows(boolean autoAllows)
+    {
+        this.writeApprovalAutoAllows = autoAllows;
     }
 }

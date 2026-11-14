@@ -275,14 +275,17 @@ save.
 | 401 | `unauthorized` | missing or wrong bearer token; the body's `pairingEndpoint` says where to pair |
 | 403 | `forbidden-host` | not addressed as loopback |
 | 403 | `browser-origin-forbidden` | request carries an `Origin` header |
+| 403 | `write-declined` | the user answered *no* to this write in the application — that answer stands, sending it again asks again |
 | 404 | `not-found` | unknown file, **file not enabled**, or unknown entity |
 | 409 | `file-not-open` | file is enabled but not currently open — a human has to open it |
 | 409 | `ambiguous-alias` | alias matches several records; use the UUID |
 | 409 | `delete-blocked` | instrument is referenced by transactions or plans |
 | 422 | `validation` | one or more fields rejected; see `errors` |
 | 423 | `user-interaction` | a dialog is open in the app — **retry**, see `Retry-After` |
+| 423 | `write-unanswered` | the approval question was not answered within two minutes — nothing changed, **retry** |
 | 429 | `pairing-pending` | another pairing request awaits the user — retry after `Retry-After` |
 | 429 | `pairing-cooldown` | a pairing request was declined — retry after `Retry-After` |
+| 429 | `write-pending` | another write still awaits the user's answer — retry after `Retry-After` |
 | 503 | `ui-busy` | the app's UI thread did not take the request on in time; it was not executed (or it was a read) — **retry**, see `Retry-After` |
 | 503 | `ui-request-underway` | a write was already running on the UI thread and will finish — **do not retry**, read the state back |
 | 503 | `calculation-timeout` | a calculation did not finish in time — ask a smaller question (shorter interval, one instrument) |
