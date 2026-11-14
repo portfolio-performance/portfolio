@@ -632,13 +632,18 @@ public final class McpEndpoint
             var payload = payloadOf(response);
             // A delete answers 204, which leaves a model unable to say what it
             // removed. The route hands over the record it read in the UI task
-            // that removed it - so no edit can fall between what is described
-            // and what is gone.
+            // that removed it - named by the route, because only it knows what
+            // its own delete takes away - so no edit can fall between what is
+            // described and what is gone.
             if ("DELETE".equals(tool.method()) && payload.isJsonNull())
             {
                 var deleted = new JsonObject();
                 deleted.addProperty("deleted", true);
-                deleted.add("instrument", response.inProcess() == null ? JsonNull.INSTANCE : response.inProcess());
+                if (response.inProcess() != null && response.inProcess().isJsonObject())
+                {
+                    for (var entry : response.inProcess().getAsJsonObject().entrySet())
+                        deleted.add(entry.getKey(), entry.getValue());
+                }
                 payload = deleted;
             }
 
@@ -1054,7 +1059,7 @@ public final class McpEndpoint
         return McpEnvelope.render(tool, arguments, payload, List.of(), advice, maxChars, changed);
     }
 
-    /** a 204 carries nothing to render; {@code pp_delete_instrument} is the one */
+    /** an empty body carries nothing to render, which is what a delete answers */
     private static JsonElement payloadOf(Response response)
     {
         return response.body().length == 0 ? JsonNull.INSTANCE

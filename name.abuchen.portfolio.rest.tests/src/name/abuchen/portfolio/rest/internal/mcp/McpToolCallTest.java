@@ -29,8 +29,10 @@ import com.google.gson.JsonPrimitive;
 import name.abuchen.portfolio.junit.AccountBuilder;
 import name.abuchen.portfolio.junit.PortfolioBuilder;
 import name.abuchen.portfolio.junit.SecurityBuilder;
+import name.abuchen.portfolio.model.Classification;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.model.Taxonomy;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.rest.ApiRoutes;
 import name.abuchen.portfolio.rest.ClientStore;
@@ -272,6 +274,33 @@ public class McpToolCallTest
 
         assertThat(isError(result), is(true));
         assertThat(text(result), not(containsString("\"deleted\":true")));
+    }
+
+    /**
+     * The other 204 of this surface. What was removed is named by the route that
+     * removed it: an answer that called every removed thing an instrument would
+     * describe an assignment as a security.
+     */
+    @Test
+    public void testADeleteNamesItsOwnKindOfRemoval()
+    {
+        var taxonomy = new Taxonomy("Asset classes");
+        var root = new Classification("root", "Asset classes");
+        var equity = new Classification(root, "equity", "Equities");
+        root.addChild(equity);
+        taxonomy.setRootNode(root);
+        equity.addAssignment(new Classification.Assignment(security));
+        client.addTaxonomy(taxonomy);
+
+        var result = call("pp_unassign_vehicle", "{\"file\":\"sample\",\"taxonomy\":\"" + taxonomy.getId()
+                        + "\",\"class\":\"equity\",\"vehicle\":\"" + security.getUUID() + "\"}");
+
+        assertThat(isError(result), is(false));
+        assertThat(text(result), containsString("\"deleted\":true"));
+        assertThat(text(result), containsString("\"assignment\""));
+        assertThat(text(result), containsString("\"name\":\"ACME\""));
+        assertThat(text(result), not(containsString("\"instrument\":")));
+        assertThat(equity.getAssignments().size(), is(0));
     }
 
     /** `query` and the trade period reach their routes as query parameters */

@@ -48,6 +48,7 @@ import name.abuchen.portfolio.rest.internal.Response;
 import name.abuchen.portfolio.rest.internal.Router;
 import name.abuchen.portfolio.rest.internal.SecuritiesHandler;
 import name.abuchen.portfolio.rest.internal.TaxonomiesHandler;
+import name.abuchen.portfolio.rest.internal.TaxonomyAssignmentHandler;
 import name.abuchen.portfolio.rest.internal.TradesHandler;
 import name.abuchen.portfolio.rest.internal.TransactionsHandler;
 import name.abuchen.portfolio.rest.internal.VersionHandler;
@@ -429,7 +430,7 @@ public final class ApiRoutes
                             var name = SecuritiesHandler.delete(file.getClient(), req.pathParam("uuid")); //$NON-NLS-1$
                             InstrumentChangeLog.recordDeletion(file.getLabel(), name);
                             // something was removed, so the file holds unsaved changes
-                            return wrote(Response.noContent().withInProcess(removed), true);
+                            return wrote(Response.noContent().withInProcess("instrument", removed), true);
                         }));
 
         // the stored quotes of one instrument: a series rather than a list of
@@ -454,6 +455,40 @@ public final class ApiRoutes
                                         req.queryParam("withPath"), req.queryParam("cursor"), //$NON-NLS-1$ //$NON-NLS-2$
                                         req.queryParam("limit"))), //$NON-NLS-1$
                         "taxonomy", "class", "withAssignments", "withPath", "cursor", "limit"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
+
+        // The one write this file's classification tree takes: one vehicle into
+        // one class, and back out. A PUT rather than a POST, so that sending it
+        // twice has done exactly what sending it once did - which is the property
+        // an agent needs before it will place things on a user's behalf. Both are
+        // asked about first, naming the vehicle and the class the user knows.
+        router.add("PUT", //$NON-NLS-1$
+                        "/v1/files/{file}/taxonomies/{taxonomy}/classes/{classification}/vehicles/{vehicle}", //$NON-NLS-1$
+                        write(resolver, ui, approvals, "pp_assign_vehicle", //$NON-NLS-1$
+                                        (file, req) -> TaxonomyAssignmentHandler.describe(file.getClient(), //$NON-NLS-1$
+                                                        req.pathParam("taxonomy"), req.pathParam("classification"), //$NON-NLS-1$ //$NON-NLS-2$
+                                                        req.pathParam("vehicle"), false, file.getLabel()), //$NON-NLS-1$
+                                        (file, req) -> {
+                            var body = parseObject(req);
+                            var placed = TaxonomyAssignmentHandler.put(file.getClient(), //$NON-NLS-1$
+                                            req.pathParam("taxonomy"), req.pathParam("classification"), //$NON-NLS-1$ //$NON-NLS-2$
+                                            req.pathParam("vehicle"), body.get("weight")); //$NON-NLS-1$
+                            return wrote(Response.json(200, placed), changedOf(placed));
+                        }));
+        router.add("DELETE", //$NON-NLS-1$
+                        "/v1/files/{file}/taxonomies/{taxonomy}/classes/{classification}/vehicles/{vehicle}", //$NON-NLS-1$
+                        write(resolver, ui, approvals, "pp_unassign_vehicle", //$NON-NLS-1$
+                                        (file, req) -> TaxonomyAssignmentHandler.describe(file.getClient(), //$NON-NLS-1$
+                                                        req.pathParam("taxonomy"), req.pathParam("classification"), //$NON-NLS-1$ //$NON-NLS-2$
+                                                        req.pathParam("vehicle"), true, file.getLabel()), //$NON-NLS-1$
+                                        (file, req) -> {
+                            // read in the task that removes it, so that it is the
+                            // assignment that is gone: the MCP result describes it
+                            var removed = TaxonomyAssignmentHandler.remove(file.getClient(), //$NON-NLS-1$
+                                            req.pathParam("taxonomy"), req.pathParam("classification"), //$NON-NLS-1$ //$NON-NLS-2$
+                                            req.pathParam("vehicle")); //$NON-NLS-1$
+                            // an assignment that is gone is a change, whatever else
+                            return wrote(Response.noContent().withInProcess("assignment", removed), true);
+                        }));
 
         router.add("GET", "/v1/files/{file}/transactions", read(resolver, ui, //$NON-NLS-1$ //$NON-NLS-2$
                         (client, req) -> TransactionsHandler.list(client, req.queryParam("from"), //$NON-NLS-1$

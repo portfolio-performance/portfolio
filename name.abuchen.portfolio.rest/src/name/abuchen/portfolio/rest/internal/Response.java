@@ -6,6 +6,8 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import com.google.gson.JsonElement;
+import com.google.gson.JsonNull;
+import com.google.gson.JsonObject;
 
 /**
  * One response as a handler returns it: a body written at once, or - for a
@@ -15,7 +17,7 @@ import com.google.gson.JsonElement;
  * {@code inProcess} is for a caller inside this process only - the MCP
  * endpoint dispatching into the routes - and is never written to the wire: what
  * a route can say about its own work that the HTTP answer does not carry, such
- * as the record a delete removed.
+ * as the record a delete removed, under the name that route gives it.
  */
 public record Response(int status, String contentType, byte[] body, Map<String, String> headers, Stream stream,
                 JsonElement inProcess)
@@ -74,9 +76,16 @@ public record Response(int status, String contentType, byte[] body, Map<String, 
         return new Response(status, contentType, body, Map.copyOf(merged), stream, inProcess);
     }
 
-    /** the same response, telling an in-process caller what it may need besides */
-    public Response withInProcess(JsonElement element)
+    /**
+     * the same response, telling an in-process caller what it may need besides:
+     * one record under the name the route gives it, so that an answer can say
+     * what a delete removed without the endpoint knowing what each of its routes
+     * deletes
+     */
+    public Response withInProcess(String name, JsonElement record)
     {
-        return new Response(status, contentType, body, headers, stream, element);
+        var named = new JsonObject();
+        named.add(name, record == null ? JsonNull.INSTANCE : record);
+        return new Response(status, contentType, body, headers, stream, named);
     }
 }
