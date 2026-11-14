@@ -56,7 +56,7 @@ public class OpenApiSpecDriftTest
      * not described here. {@code POST /mcp} speaks JSON-RPC, not REST, and
      * {@code DELETE /mcp} only ends its session: it sits
      * outside {@code /v1} on purpose, because MCP negotiates its own version,
-     * and describing one JSON-RPC endpoint as sixteen operations would make
+     * and describing one JSON-RPC endpoint as nineteen operations would make
      * this document claim a contract it does not define. The specification's
      * prose points at it instead.
      */

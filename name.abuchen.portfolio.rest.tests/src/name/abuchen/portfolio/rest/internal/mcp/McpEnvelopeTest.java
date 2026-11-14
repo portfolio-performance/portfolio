@@ -28,6 +28,7 @@ public class McpEnvelopeTest
     private static final McpTool TRADES = McpTools.byName("pp_list_trades").orElseThrow();
     private static final McpTool INSTRUMENTS = McpTools.byName("pp_list_instruments").orElseThrow();
     private static final McpTool UPDATE = McpTools.byName("pp_update_instrument").orElseThrow();
+    private static final McpTool ASSIGN = McpTools.byName("pp_assign_vehicle").orElseThrow();
     private static final McpTool PERFORMANCE = McpTools.byName("pp_list_instrument_performance").orElseThrow();
     private static final McpTool OVERALL = McpTools.byName("pp_get_overall_performance").orElseThrow();
 
@@ -146,6 +147,22 @@ public class McpEnvelopeTest
     public void testAnEmptyPatchDoesNotClaimAnEditHappened()
     {
         var rendered = renderWith(UPDATE, "{}", "{\"uuid\":\"x\"}"); //$NON-NLS-1$ //$NON-NLS-2$
+
+        assertThat(rendered, containsString("Nothing changed"));
+        assertThat(rendered, containsString("not** marked dirty"));
+        assertThat(rendered, not(containsString("not saved to disk")));
+    }
+
+    /**
+     * The same honesty for a write that is not a patch: a repeated assignment or a
+     * watchlist selection the list already had changed nothing, the route says so
+     * in the header, and the note follows the header rather than the method.
+     */
+    @Test
+    public void testAWriteTheModelAlreadyMatchedDoesNotClaimAnEditHappened()
+    {
+        var rendered = McpEnvelope.render(ASSIGN, new JsonObject(), new JsonObject(), List.of(), null,
+                        Integer.MAX_VALUE, Boolean.FALSE);
 
         assertThat(rendered, containsString("Nothing changed"));
         assertThat(rendered, containsString("not** marked dirty"));

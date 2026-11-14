@@ -119,7 +119,7 @@ public class McpEndpointTest
     {
         var tools = rpc(null, "{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"tools/list\"}");
         assertThat(tools.statusCode(), is(200));
-        assertThat(body(tools).getAsJsonObject().getAsJsonObject("result").getAsJsonArray("tools").size(), is(16));
+        assertThat(body(tools).getAsJsonObject().getAsJsonObject("result").getAsJsonArray("tools").size(), is(18));
 
         var ping = rpc(null, "{\"jsonrpc\":\"2.0\",\"id\":2,\"method\":\"ping\"}");
         assertThat(ping.statusCode(), is(200));

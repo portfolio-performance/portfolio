@@ -281,13 +281,36 @@ public final class McpEnvelope
         var notes = new ArrayList<String>();
 
         if (compacted.tabulated())
-            notes.add("`items` is a table: each row holds its values in the order of `columns`.");
+        {
+            var tables = compacted.tables();
+            var named = tables.size() == 1 ? "`" + tables.get(0) + "` is a table"
+                            : "`" + String.join("`, `", tables.subList(0, tables.size() - 1)) + "` and `"
+                                            + tables.get(tables.size() - 1) + "` are tables";
+            notes.add(named + ": each row holds its values in the order of `columns`.");
+        }
+
+        // the payload a model actually reads: tables, and the page beside them
+        var body = compacted.payload() != null && compacted.payload().isJsonObject()
+                        ? compacted.payload().getAsJsonObject()
+                        : null;
+
+        // a table that names its repeated uuids once speaks about them in
+        // `references`; worth saying before a model quotes one of the aliases
+        for (var name : compacted.tables())
+        {
+            var table = body != null ? body.get(name) : null;
+            if (table != null && table.isJsonObject() && table.getAsJsonObject().has("references")) //$NON-NLS-1$
+            {
+                notes.add("A cell like `#1` - or one entry inside a list cell - is an identifier spelled out once "
+                                + "under `references` of that table, because it returns on many rows: expand it "
+                                + "before using it as an argument, and never present the alias as a name.");
+                break;
+            }
+        }
 
         // a page the caller asked for says where the next one starts; one that
         // was paged to fit says so in its own guidance, before this
-        var page = compacted.payload() != null && compacted.payload().isJsonObject()
-                        ? compacted.payload().getAsJsonObject().get("page")
-                        : null;
+        var page = body != null ? body.get("page") : null;
         var next = page != null && page.isJsonObject() ? page.getAsJsonObject().get("nextCursor") : null;
         if (next != null && !next.isJsonNull() && (advice == null || advice.isEmpty()))
         {
@@ -370,11 +393,14 @@ public final class McpEnvelope
                 notes.add("Nothing changed: this patch named no field the API can write, so the file was **not** "
                         + "marked dirty and there is nothing for the user to save.");
             }
-            else if ("PATCH".equals(tool.method()) && Boolean.FALSE.equals(changed))
+            else if (Boolean.FALSE.equals(changed))
             {
-                // the same for a patch that only restated stored values
-                notes.add("Nothing changed: every value this patch named already had that value, so the file was "
-                        + "**not** marked dirty and there is nothing for the user to save.");
+                // any write that was asked to make a state that already holds: a
+                // restated patch, the same assignment put again, a selection the
+                // list already had. None of them marks the file dirty, and saying
+                // one did is its own kind of lie.
+                notes.add("Nothing changed: the model already looked exactly like what this call asked for, so the "
+                        + "file was **not** marked dirty and there is nothing for the user to save.");
             }
             else
             {
@@ -783,12 +809,15 @@ public final class McpEnvelope
             return null;
 
         var report = payload.getAsJsonObject();
-        var items = report.get("items");
-        if (items == null || !items.isJsonArray() || items.getAsJsonArray().size() < 2)
+
+        // the array the page is cut from is the one whose items carry a cursor;
+        // its name cannot be assumed, see pagedKey
+        var paged = pagedKey(report);
+        if (paged == null)
             return null;
 
-        var all = items.getAsJsonArray();
-        if (cursorOf(all.get(0)) == null)
+        var all = report.get(paged).getAsJsonArray();
+        if (all.size() < 2)
             return null;
 
         var total = intOf(report.get("page"), "total", all.size());
@@ -801,7 +830,7 @@ public final class McpEnvelope
         while (low <= high)
         {
             var count = (low + high) >>> 1;
-            var rendered = renderPage(tool, arguments, report, all, count, total, changed);
+            var rendered = renderPage(tool, arguments, report, paged, all, count, total, changed);
             if (rendered.length() <= maxChars)
             {
                 best = rendered;
@@ -815,8 +844,30 @@ public final class McpEnvelope
         return best;
     }
 
-    private static String renderPage(McpTool tool, JsonObject arguments, JsonObject report, JsonArray all, int count,
-                    int total, Boolean changed)
+    /**
+     * The name of the array a page is cut from: the one whose items carry the
+     * cursor that paging wrote. A plain list calls it {@code items}; the
+     * taxonomies keep their headers in {@code items}, which are never paged, and
+     * page the {@code classes} beside them - so which one is paged is told by the
+     * cursors and not by the name. Null when nothing carries a cursor, which
+     * leaves the answer to be cut.
+     */
+    private static String pagedKey(JsonObject report)
+    {
+        for (var entry : report.entrySet())
+        {
+            if (!entry.getValue().isJsonArray())
+                continue;
+
+            var array = entry.getValue().getAsJsonArray();
+            if (array.size() > 0 && cursorOf(array.get(0)) != null)
+                return entry.getKey();
+        }
+        return null;
+    }
+
+    private static String renderPage(McpTool tool, JsonObject arguments, JsonObject report, String paged,
+                    JsonArray all, int count, int total, Boolean changed)
     {
         var slice = new JsonArray();
         for (var ii = 0; ii < count; ii++)
@@ -824,17 +875,19 @@ public final class McpEnvelope
         var next = cursorOf(all.get(count - 1));
 
         // the page first, then the items: what the reader needs to ask for
-        // the rest must not sit behind them
-        var paged = new JsonObject();
+        // the rest must not sit behind them. Everything the response holds
+        // besides the paged array - the taxonomy headers, the totals - stays
+        // whole: a page narrows one list, not the report around it.
+        var kept = new JsonObject();
         for (var entry : report.entrySet())
         {
-            if (!"items".equals(entry.getKey()) && !"page".equals(entry.getKey()))
-                paged.add(entry.getKey(), entry.getValue());
+            if (!paged.equals(entry.getKey()) && !"page".equals(entry.getKey()))
+                kept.add(entry.getKey(), entry.getValue());
         }
-        paged.add("page", Paging.describe(count, total, next));
-        paged.add("items", withoutCursors(slice));
+        kept.add("page", Paging.describe(count, total, next));
+        kept.add(paged, withoutCursors(slice));
 
-        return render(tool, arguments, paged, List.of(), pageAdvice(tool, count, total, next), Integer.MAX_VALUE,
+        return render(tool, arguments, kept, List.of(), pageAdvice(tool, count, total, next), Integer.MAX_VALUE,
                         changed);
     }
 
@@ -892,16 +945,24 @@ public final class McpEnvelope
     }
 
     /** the payload with its items' cursors removed, as it is shown */
+    /**
+     * The payload with its items' cursors removed, as it is shown. Every array of
+     * the response is stripped, not just {@code items}: a report may page an
+     * array of its own, and a reader continues with {@code page.nextCursor}
+     * whichever list that is.
+     */
     public static JsonElement withoutItemCursors(JsonElement payload)
     {
-        if (payload == null || !payload.isJsonObject() || !payload.getAsJsonObject().has("items") //$NON-NLS-1$
-                        || !payload.getAsJsonObject().get("items").isJsonArray()) //$NON-NLS-1$
+        if (payload == null || !payload.isJsonObject())
             return payload;
+
         var copy = new JsonObject();
         for (var entry : payload.getAsJsonObject().entrySet())
-            copy.add(entry.getKey(), "items".equals(entry.getKey()) //$NON-NLS-1$
+        {
+            copy.add(entry.getKey(), entry.getValue().isJsonArray()
                             ? withoutCursors(entry.getValue().getAsJsonArray())
                             : entry.getValue());
+        }
         return copy;
     }
 
@@ -1023,12 +1084,22 @@ public final class McpEnvelope
                             + "name, or the ISIN, WKN or ticker symbol - to get just the matching instruments and their "
                             + "`uuid`, then pp_get_instrument for one of them. pp_list_holdings names every instrument "
                             + "currently held.";
-            case "pp_list_holdings" -> "This portfolio has more positions than fit in one answer. Ask the user which "
-                            + "part of it they mean, and use pp_get_instrument for individual positions.";
+            case "pp_list_holdings" -> "This portfolio has more positions than fit in one answer. Narrow it: call again "
+                            + "with `investmentAccount` set to one account from pp_list_investment_accounts, or with "
+                            + "`cashAccount` for a single balance - either values that one account and states it once, "
+                            + "in `scope`. pp_get_instrument answers for an individual position.";
             case "pp_list_instrument_performance" -> "This report has more instruments than fit in one answer. What "
                             + "dominates the size is the number of instruments, not the metric groups - each instrument "
                             + "carries a handful of figures whatever is asked for: shorten the interval, or use "
                             + "pp_get_instrument_performance for one instrument at a time.";
+            case "pp_list_taxonomies" -> "This file has more classes than fit in one answer. The taxonomy headers in "
+                            + "`items` are always whole - read them, then page the classes with `limit` and "
+                            + "`page.nextCursor`, narrow to one tree with `taxonomy`, or to one class with `class`. "
+                            + "`withAssignments` is off by default and is the option that can make a single class "
+                            + "enormous: send it together with `class` to get that one class and all of its vehicles.";
+            case "pp_list_instrument_prices" -> "A price history is longer than one answer can carry. Ask for a window: "
+                            + "`from` and `to` bound the series and `limit` how much of it comes back; `firstDate` and "
+                            + "`lastDate` say what span is actually there, and `count` how many prices it holds.";
             case "pp_get_overall_performance" -> "This response is larger than one answer can carry, and it cannot be "
                             + "narrowed further. Read the `breakdown` figures you need from what is below, say the "
                             + "rest was cut, and use pp_list_instrument_performance for a per-instrument view.";
