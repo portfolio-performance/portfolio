@@ -91,6 +91,9 @@ import name.abuchen.portfolio.ui.util.CommandAction;
         answer.add(new CommandElement(context, BundleMessages.getString(BundleMessages.Label.Command.exportTaxonomy),
                         Images.EXPORT_FILE, UIConstants.Command.EXPORT_TAXONOMY));
 
+        answer.add(new CommandElement(context, BundleMessages.getString(BundleMessages.Label.Command.exportMarkdown),
+                        Images.EXPORT_FILE, UIConstants.Command.EXPORT_MARKDOWN));
+
         return answer;
     }
 }
