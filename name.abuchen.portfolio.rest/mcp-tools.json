@@ -1616,6 +1616,78 @@
       ]
     },
     {
+      "name": "pp_create_class",
+      "operationId": "createClass",
+      "method": "POST",
+      "pathTemplate": "/v1/files/{file}/taxonomies/{taxonomy}/classes",
+      "description": "Adds one class to one taxonomy - the other half of pp_update_class, which can only move the target weight of a class that already has an id; this one gives the class its id. What the application's `New category` does, given as a name and the parent to hang it under.\n\n`parent` is the id of one class of the same tree, from pp_list_taxonomies; left out, the class hangs under the root. `targetWeight` is the fraction the read gives back - and left out, the class starts at a whole, `1`, exactly as a fresh class of the application does.\n\nThe answer carries the class with its new id, which pp_assign_vehicle and pp_update_class accept at once. **A name the parent already carries is refused as `409 name-taken`:** classes do have ids, so two of one name could be told apart - but only by a caller that went and looked, which is the mistake this refuses to let through quietly. Another parent makes another class, and that pair is ordinary: `growth` under `equity` and `growth` under the root are two classes.\n\nNothing is saved to disk, and there is no undo - this API creates classes and never removes one. Before the class is created the application asks the user, naming the new class and the tree it joins: `403 write-declined` is a no that stands, `423 write-unanswered` means nobody answered within two minutes and nothing was created, and `429 write-pending` means another change is still waiting for an answer. Reads are never asked about.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "file": {
+            "type": "string",
+            "description": "The `use` value from pp_list_files, sent exactly as given. Required: there is no default file."
+          },
+          "taxonomy": {
+            "type": "string",
+            "description": "The taxonomy's `id`, from the `items` of pp_list_taxonomies."
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "description": "What the class is to be called. Required in practice although no body property can be declared required: left out, the call is refused naming this field."
+          },
+          "parent": {
+            "type": "string",
+            "description": "The id of the class the new one hangs under, from the classes of pp_list_taxonomies. Optional: left out it is the taxonomy's root."
+          },
+          "targetWeight": {
+            "type": "number",
+            "minimum": 0,
+            "description": "The target weight as a fraction: `0.6` is the 60 % the application shows. Optional: left out the class starts at a whole (`1`), as a fresh class of the application does. 0 is allowed; more than 1 is stored as given; negative is refused."
+          }
+        },
+        "required": [
+          "file",
+          "taxonomy"
+        ],
+        "additionalProperties": false
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": false,
+        "openWorldHint": false
+      },
+      "bindings": [
+        {
+          "arg": "file",
+          "where": "path",
+          "wire": "file"
+        },
+        {
+          "arg": "taxonomy",
+          "where": "path",
+          "wire": "taxonomy"
+        },
+        {
+          "arg": "name",
+          "where": "body",
+          "wire": "name"
+        },
+        {
+          "arg": "parent",
+          "where": "body",
+          "wire": "parent"
+        },
+        {
+          "arg": "targetWeight",
+          "where": "body",
+          "wire": "targetWeight"
+        }
+      ]
+    },
+    {
       "name": "pp_get_overall_performance",
       "operationId": "getPerformance",
       "method": "GET",

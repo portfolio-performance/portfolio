@@ -129,6 +129,8 @@ public class ModelWriteApprovalDialog extends Dialog
                 return Messages.ApiWriteOpCreateInvestmentAccount;
             case "pp_create_cash_account": //$NON-NLS-1$
                 return Messages.ApiWriteOpCreateCashAccount;
+            case "pp_create_class": //$NON-NLS-1$
+                return Messages.ApiWriteOpCreateClass;
             case "pp_create_watchlist": //$NON-NLS-1$
                 return Messages.ApiWriteOpCreateWatchlist;
             case "pp_unassign_vehicle": //$NON-NLS-1$
