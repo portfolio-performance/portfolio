@@ -257,6 +257,7 @@ tags:
   - name: Performance
     description: Return and value-change of the file over an interval
   - name: Trades
+    description: Buys and sells matched into positions with their gain
   - name: Transactions
     description: Matched buy/sell pairs, computed from the transactions
 
@@ -1086,7 +1087,7 @@ paths:
                     description: Always `true`; a start that did not happen is an error, not this answer.
                   savedToDisk:
                     type: boolean
-                    description: Always `false`: the file holds unsaved changes, and saving stays the user's.
+                    description: Always `false` - the file holds unsaved changes, and saving stays the user's.
         "400":
           $ref: "#/components/responses/BadRequest"
         "401":
@@ -2168,7 +2169,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Errors"
+                $ref: "#/components/schemas/Problem"
 
   /v1/files/{file}/holdings:
     parameters:
@@ -3625,7 +3626,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Errors"
+                $ref: "#/components/schemas/Problem"
 
   /v1/files/{file}/trades:
     parameters:
@@ -5397,16 +5398,16 @@ components:
             it was, unsaved changes included.
         instrumentCountBefore:
           type: integer
-          description: On an update: how full the list was before.
+          description: How full the list was before the update.
         instrumentCountAfter:
           type: integer
-          description: On an update: how full it is after.
+          description: How full it is after the update.
         watchlistsBefore:
           type: integer
-          description: On a creation: how many lists the file had before this one.
+          description: How many lists the file had before this one was created.
         watchlistsAfter:
           type: integer
-          description: On a creation: how many it has now.
+          description: How many lists the file has now.
         notHeld:
           type: array
           description: |
