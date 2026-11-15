@@ -94,7 +94,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
 
                         // Is type --> "Verkauf" change from BUY to SELL
                         .section("type").optional() //
-                        .match("^(?i)((Limit|Stop\\-Market|Market)\\-Order(\\s)?)?" //
+                        .match("^(?i)((Limit|Stop\\-Market|Market|Trailing\\ Stop)\\-Order(\\s)?)?" //
                                         + "(?<type>(Kauf" //
                                         + "|Buy" //
                                         + "|Achat" //
@@ -394,6 +394,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         // Limit-Order Verkauf am 21.07.2020, um 09:30 Uhr an der Lang & Schwarz Exchange.
                                         // Limit-Order Buy on 28.04.2023 at 11:13 (Europe/Berlin).
                                         // Verkauf am 26.02.2021, um 11:44 Uhr.
+                                        // Trailing Stop-Order Verkauf am 06.11.2026, um 11:31 Uhr mit Bestpreis unter allen relevanten Börsen gegen Trade Republic Bank GmbH
                                         // Market-OrderAcquisto il 01.06.2023 alle 10:46 (Europe/Berlin) su Lang & Schwarz Exchange.
                                         // Market-Order Sell on 02.05.2023 at 18:18 (Europe/Berlin).
                                         // Market-Order Achat le 10/04/2024 à 17:33 (Europe/Berlin).
@@ -403,7 +404,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("date", "time") //
-                                                        .match("^(?i)((Limit|Stop\\-Market|Market)\\-Order(\\s)?)?(Buy|Achat|Acquisto|Kauf|Verkauf|Sell|Compra|Venta|Vente) .*" //
+                                                        .match("^(?i)((Limit|Stop\\-Market|Market|Trailing\\ Stop)\\-Order(\\s)?)?(Buy|Achat|Acquisto|Kauf|Verkauf|Sell|Compra|Venta|Vente) .*" //
                                                                         + "(?<date>([\\d]{2}\\.[\\d]{2}\\.[\\d]{4}" //
                                                                         + "|[\\d]{4}\\-[\\d]{2}\\-[\\d]{2}" //
                                                                         + "|[\\d]{2}\\/[\\d]{2}\\/[\\d]{4}))" //
@@ -971,12 +972,13 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                         // Stop-Market-Order Verkauf am 10.06.2020, um 11:42 Uhr.
                         // Limit-Order Verkauf am 21.07.2020, um 09:30 Uhr an der Lang & Schwarz Exchange.
                         // Verkauf am 26.02.2021, um 11:44 Uhr.
+                        // Trailing Stop-Order Verkauf am 06.11.2026, um 11:31 Uhr mit Bestpreis unter allen relevanten Börsen gegen Trade Republic Bank GmbH
                         // Market-Order Sell on 02.05.2023 at 18:18 (Europe/Berlin).
                         // Market-OrderVenta a día 15.02.2024, a las 16:15 (Europe/Berlin) en Lang & Schwarz Exchange.
                         // Market-Order Vente avec le numéro d'ordre 185e-c098 a été exécuté le 16/11/2023 à 16:41 (Europe/Berlin) sur la place de négociation
                         // @formatter:on
                         .section("date", "time") //
-                        .match("^(?i)((Limit|Stop\\-Market|Market)\\-Order(\\s)?)?(Verkauf|Sell|Venta|Vente) .*" //
+                        .match("^(?i)((Limit|Stop\\-Market|Market|Trailing\\ Stop)\\-Order(\\s)?)?(Verkauf|Sell|Venta|Vente) .*" //
                                         + "(?<date>([\\d]{2}\\.[\\d]{2}\\.[\\d]{4}" //
                                         + "|[\\d]{4}\\-[\\d]{2}\\-[\\d]{2}" //
                                         + "|[\\d]{2}\\/[\\d]{2}\\/[\\d]{4}))" //
@@ -4522,10 +4524,11 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         // Market-OrderCompra el día 01.12.2022 a las 11:56 (Europe/Berlin).
                                         // Market-OrderVenta a día 15.02.2024, a las 16:15 (Europe/Berlin) en Lang & Schwarz Exchange.
                                         // Market-Order Vente avec le numéro d'ordre 185e-c098 a été exécuté le 16/11/2023 à 16:41 (Europe/Berlin) sur la place de négociation
+                                        // Trailing Stop-Order Verkauf am 06.11.2026, um 11:31 Uhr mit Bestpreis unter allen relevanten Börsen gegen Trade Republic Bank GmbH
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("date", "time") //
-                                                        .match("^(?i)((Limit|Stop\\-Market|Market)\\-Order(\\s)?)?(Buy|Achat|Acquisto|Kauf|Verkauf|Sell|Compra|Venta|Vente) .* " //
+                                                        .match("^(?i)((Limit|Stop\\-Market|Market|Trailing\\ Stop)\\-Order(\\s)?)?(Buy|Achat|Acquisto|Kauf|Verkauf|Sell|Compra|Venta|Vente) .* " //
                                                                         + "(?<date>([\\d]{2}\\.[\\d]{2}\\.[\\d]{4}" //
                                                                         + "|[\\d]{4}\\-[\\d]{2}\\-[\\d]{2}" //
                                                                         + "|[\\d]{2}\\/[\\d]{2}\\/[\\d]{4}))" //

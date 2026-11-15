@@ -1,0 +1,55 @@
+PDFBox Version: 3.0.8
+Portfolio Performance Version: 0.90.0
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+TRADE REPUBLIC BANK GMBH  BRUNNENSTRASSE 19-21  10119 BERLIN
+prCBHJam MwJtegyNO bDTDnu DATUM 06.11.2026
+pxsgRpuUBJtNNDG 56 AUFTRAG 4318-1b82
+79455 fIQz AUSFÜHRUNG 22dd-ehm9
+DEPOT 4326489632
+WERTPAPIERABRECHNUNG
+ÜBERSICHT
+Trailing Stop-Order Verkauf am 06.11.2026, um 11:31 Uhr mit Bestpreis unter allen relevanten Börsen gegen Trade Republic Bank GmbH 
+(MIC: TRBX) 
+POSITION ANZAHL PREIS BETRAG
+Adidas 2 Stk. 173,60 EUR 347,20 EUR
+ISIN: DE000A1EWWW0
+GESAMT 347,20 EUR
+ABRECHNUNG
+POSITION BETRAG
+Abwicklungspauschale -1,00 EUR
+Kapitalertragsteuer -5,20 EUR
+Solidaritätszuschlag -0,28 EUR
+GESAMT 340,72 EUR
+BUCHUNG
+VERRECHNUNGSKONTO WERTSTELLUNG BETRAG
+ED35692491377953316305 2026-11-10 340,72 EUR
+Diese Abrechnung wird maschinell erstellt und daher nicht unterschrieben.
+Trade Republic Bank GmbH www.traderepublic.com Sitz der Gesellschaft: Berlin Geschäftsführer
+Brunnenstraße 19-21 AG Charlottenburg HRB 244347 B Andreas Torner
+10119 Berlin Umsatzsteuer-ID DE307510626 Gernot Mittendorfer
+Christian Hecker
+Thomas Pischke
+Seite 1 von 2
+TRADE REPUBLIC BANK GMBH BRUNNENSTRASSE 19-21 10119 BERLIN
+STEUERLICHE BEHANDLUNG
+BERECHNUNG DER STEUERBEMESSUNGSGRUNDLAGE BETRAG
+Bruttogewinn 20,80 EUR
+STEUERBEMESSUNGSGRUNDLAGE 20,80 EUR
+BERECHNUNG DER STEUERN BETRAG
+Steuerbemessungsgrundlage 20,80 EUR
+Kapitalertragsteuer -5,20 EUR
+Solidaritätszuschlag -0,28 EUR
+GESAMTE STEUERN 5,48 EUR
+VERRECHNUNGSTÖPFE VORHER VERÄNDERUNG NACHHER
+Verlustverrechnungstopf Aktien 0,00 EUR 0,00 EUR 0,00 EUR
+Verlustverrechnungstopf 
+0,00 EUR 0,00 EUR 0,00 EUR
+Allgemein
+Freistellungsauftrag 0,00 EUR 0,00 EUR 0,00 EUR
+Quellensteuertopf 0,00 EUR 0,00 EUR 0,00 EUR
+Trade Republic Bank GmbH www.traderepublic.com Sitz der Gesellschaft: Berlin Geschäftsführer
+Brunnenstraße 19-21 AG Charlottenburg HRB 244347 B Andreas Torner
+10119 Berlin Umsatzsteuer-ID DE307510626 Gernot Mittendorfer
+Christian Hecker
+Thomas Pischke
