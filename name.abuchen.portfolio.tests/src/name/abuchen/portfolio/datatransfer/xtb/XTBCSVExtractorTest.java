@@ -171,6 +171,66 @@ public class XTBCSVExtractorTest
     }
 
     @Test
+    public void testTradeCommentIncludesTicker() throws IOException
+    {
+        var resource = TestExtractorHelper.loadResourceAsInputFile(getClass(), "EUR_account_sample.csv");
+        var content = Files.readString(resource.getFile().toPath())
+                        .replace("OPEN BUY 2 @ 25.125", "OPEN BUY EXAM.DE 2 @ 25.125")
+                        .replace("CLOSE BUY 0.5 @ 49.5", "CLOSE BUY EXAM.DE 0.5 @ 49.5");
+        var file = Files.createTempFile("xtb-ticker-in-comment-", ".csv");
+        Files.writeString(file, content);
+
+        var client = new Client();
+        var errors = new ArrayList<Exception>();
+        var items = new XTBCSVExtractor(client).extract(new SecurityCache(client), new InputFile(file.toFile())
+        {
+            @Override
+            public String getName()
+            {
+                return "EUR_account_sample.csv";
+            }
+        }, errors);
+
+        assertThat(errors, empty());
+        assertCashOperations(items);
+    }
+
+    @Test
+    public void testIkeDepositAndUnmatchedTransfers() throws IOException
+    {
+        var content = String.join("\n", //
+                        "Account number;0000000;;;;;;", //
+                        "Cash Operations;;;;;;;", //
+                        "Date from (UTC);2025-01-01 00:00:00;;;;;;", //
+                        "Date to (UTC);2025-06-04 17:32:50;;;;;;", //
+                        "Type;Ticker;Instrument;Time;Amount;ID;Comment;Product", //
+                        "IKE deposit;;;2025-01-02 09:00:00;100;1;IKE deposit;My IKE", //
+                        "Transfer;;;2025-01-06 08:40:00;5;2;Transfer between accounts;My Trades", //
+                        "Transfer;;;2025-01-07 08:40:00;-7;3;Transfer between accounts;My Trades", //
+                        "Total;;;;98;;;", //
+                        "");
+        var file = Files.createTempFile("xtb-ike-transfer-", ".csv");
+        Files.writeString(file, content);
+
+        var client = new Client();
+        var errors = new ArrayList<Exception>();
+        var items = new XTBCSVExtractor(client).extract(new SecurityCache(client), new InputFile(file.toFile())
+        {
+            @Override
+            public String getName()
+            {
+                return "EUR_account_sample.csv";
+            }
+        }, errors);
+
+        assertThat(errors, empty());
+        assertThat(items, hasItem(deposit(hasAmount("EUR", 100.00))));
+        assertThat(items, hasItem(deposit(hasAmount("EUR", 5.00))));
+        assertThat(items, hasItem(removal(hasAmount("EUR", 7.00))));
+        new AssertImportActions().check(items, "EUR");
+    }
+
+    @Test
     public void testWindows1250Encoding() throws IOException
     {
         var resource = TestExtractorHelper.loadResourceAsInputFile(getClass(), "EUR_account_sample.csv");
