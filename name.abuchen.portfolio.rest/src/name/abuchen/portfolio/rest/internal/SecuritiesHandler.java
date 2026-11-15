@@ -174,9 +174,11 @@ public final class SecuritiesHandler
 
     /**
      * The attribute-type definitions that apply to an instrument, so a client
-     * can resolve an id to its name and value type. Compound types are listed
-     * but flagged unsupported; a type whose converter this API does not
-     * recognise is omitted entirely, as it is not part of the contract.
+     * can resolve an id to its name and value type. A compound type is listed
+     * but flagged by what the API cannot do with it: limit price and bookmark
+     * neither read nor write; an image writes, yet never reads back. A type
+     * whose converter this API does not recognise is omitted entirely, as it is
+     * not part of the contract.
      */
     public static JsonElement attributeTypes(Client client)
     {
@@ -195,7 +197,8 @@ public final class SecuritiesHandler
                             if (type.getColumnLabel() != null)
                                 item.addProperty("columnLabel", type.getColumnLabel()); //$NON-NLS-1$
                             item.addProperty("type", AttributeCodec.wireType(fieldType)); //$NON-NLS-1$
-                            item.addProperty("supported", AttributeCodec.isSupported(fieldType)); //$NON-NLS-1$
+                            item.addProperty("supported", AttributeCodec.isReadable(fieldType)); //$NON-NLS-1$
+                            item.addProperty("writable", AttributeCodec.isWritable(fieldType)); //$NON-NLS-1$
                             items.add(item);
                         });
 
@@ -591,7 +594,7 @@ public final class SecuritiesHandler
             }
 
             var fieldType = AttributeCodec.fieldType(type);
-            if (fieldType == null || !AttributeCodec.isSupported(fieldType))
+            if (fieldType == null || !AttributeCodec.isWritable(fieldType))
             {
                 errors.add(new ApiException.FieldError(field, "unsupported-attribute-type", //$NON-NLS-1$
                                 "attribute type is not supported by the API")); //$NON-NLS-1$

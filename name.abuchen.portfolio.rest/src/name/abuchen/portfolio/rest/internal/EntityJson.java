@@ -110,9 +110,9 @@ public final class EntityJson
 
     /**
      * The security's custom attributes, only those that are set and of a
-     * supported scalar type, keyed by attribute id. Iterating the type
-     * definitions (rather than the stored map) gives a stable order and skips
-     * orphaned or unsupported entries.
+     * readable type, keyed by attribute id. Iterating the type definitions
+     * (rather than the stored map) gives a stable order and skips orphaned
+     * entries - and an image's bytes, which never travel out.
      */
     private static JsonObject attributesJson(Client client, Security security)
     {
@@ -127,7 +127,7 @@ public final class EntityJson
                                 return;
 
                             var fieldType = AttributeCodec.fieldType(type);
-                            if (fieldType == null || !AttributeCodec.isSupported(fieldType))
+                            if (fieldType == null || !AttributeCodec.isReadable(fieldType))
                                 return;
 
                             // A single attribute whose stored value is inconsistent with its

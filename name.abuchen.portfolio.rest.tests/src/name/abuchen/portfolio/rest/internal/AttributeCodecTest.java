@@ -26,12 +26,76 @@ public class AttributeCodecTest
     }
 
     @Test
-    public void testSupportedExcludesCompound()
+    public void testReadableAndWritableGatesDifferByOneType()
     {
-        assertThat(AttributeCodec.isSupported(AttributeFieldType.PERCENT), is(true));
-        assertThat(AttributeCodec.isSupported(AttributeFieldType.IMAGE), is(false));
-        assertThat(AttributeCodec.isSupported(AttributeFieldType.BOOKMARK), is(false));
-        assertThat(AttributeCodec.isSupported(AttributeFieldType.LIMIT_PRICE), is(false));
+        assertThat(AttributeCodec.isReadable(AttributeFieldType.PERCENT), is(true));
+        assertThat(AttributeCodec.isWritable(AttributeFieldType.PERCENT), is(true));
+
+        // an image travels in and never back out
+        assertThat(AttributeCodec.isReadable(AttributeFieldType.IMAGE), is(false));
+        assertThat(AttributeCodec.isWritable(AttributeFieldType.IMAGE), is(true));
+
+        assertThat(AttributeCodec.isReadable(AttributeFieldType.BOOKMARK), is(false));
+        assertThat(AttributeCodec.isWritable(AttributeFieldType.BOOKMARK), is(false));
+        assertThat(AttributeCodec.isReadable(AttributeFieldType.LIMIT_PRICE), is(false));
+        assertThat(AttributeCodec.isWritable(AttributeFieldType.LIMIT_PRICE), is(false));
+    }
+
+    /** a genuine 32x32 PNG (the application ships it in kommer.xml) */
+    private static final String PNG_BASE64 = "iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAACXBIWXMAAA7EAAAOxAGVKw4bAAAA9klEQVRYw+1VOxKCMBB9oKXjeRibdJ7ADOewRiupHa/BwAUsU+l5PECgQdmE8A9QmDezA8OE3bdv9wHw7/DIvQ8AERcJgNOIRGGcsuzCxdHz8bkl7N3xivwV1R+OQV5d97nE8xqKwJBTkqi61lWYihzYERI0p0+iVlBhNhTlLOV3phoJaYgaASvdNyhxaDqjK2AdXSRsK2DM0UZi2yfBEMQpywBsepCcx4aGPK02tKnAOeKCtx3wgFecsgclRglMXcKg60Cp0r2pY+s27IPZbTiEwOoKLEVC+RfoLlhiDEqN1XeAKrDUDihfQjcCZ0O3A86GbgkdCrigXo85i+2YAAAAAElFTkSuQmCC";
+    private static final String DATA_URL = "data:image/png;base64," + PNG_BASE64;
+
+    @Test
+    public void testImageDecodesToTheRenderedForm()
+    {
+        // raw base64 in, the prefixed data-url the application renders from out
+        assertThat(AttributeCodec.decode(AttributeFieldType.IMAGE, new JsonPrimitive(PNG_BASE64)), is(DATA_URL));
+        // the prefixed form in, the very same bytes out: sending it twice changes nothing
+        assertThat(AttributeCodec.decode(AttributeFieldType.IMAGE, new JsonPrimitive(DATA_URL)), is(DATA_URL));
+    }
+
+    @Test
+    public void testImageRejectsTextThatIsNoPng()
+    {
+        try
+        {
+            AttributeCodec.decode(AttributeFieldType.IMAGE, new JsonPrimitive("not a logo"));
+            Assert.fail("expected InvalidValueException");
+        }
+        catch (AttributeCodec.InvalidValueException e)
+        {
+            // expected: no base64, no PNG
+        }
+
+        try
+        {
+            // valid base64 ("hello"), but no PNG behind it
+            AttributeCodec.decode(AttributeFieldType.IMAGE, new JsonPrimitive("aGVsbG8="));
+            Assert.fail("expected InvalidValueException");
+        }
+        catch (AttributeCodec.InvalidValueException e)
+        {
+            // expected
+        }
+    }
+
+    @Test
+    public void testImageRejectsMoreThanTheCap()
+    {
+        var padded = new byte[AttributeCodec.MAX_IMAGE_BYTES + 1];
+        var magic = new byte[] {(byte) 0x89, 'P', 'N', 'G', '\r', '\n', 0x1A, '\n'};
+        System.arraycopy(magic, 0, padded, 0, magic.length);
+
+        try
+        {
+            AttributeCodec.decode(AttributeFieldType.IMAGE,
+                            new JsonPrimitive(java.util.Base64.getEncoder().encodeToString(padded)));
+            Assert.fail("expected InvalidValueException");
+        }
+        catch (AttributeCodec.InvalidValueException e)
+        {
+            // expected
+        }
     }
 
     @Test
