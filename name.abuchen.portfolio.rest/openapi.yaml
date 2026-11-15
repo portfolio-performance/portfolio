@@ -2607,6 +2607,124 @@ paths:
         "503":
           $ref: "#/components/responses/ServiceUnavailable"
 
+  /v1/files/{file}/taxonomies/{taxonomy}/classes:
+    post:
+      operationId: createClass
+      tags: [Taxonomies]
+      summary: Add a class to a taxonomy
+      description: |
+        The other half of `updateClass`: that one moves the target weight of a
+        class that already has an id, this one gives the class its id - what the
+        application's `New category` does, given as a name and the parent to
+        hang it under.
+
+        `parent` is the id of one class of the same tree; left out, the class
+        hangs under the root. `targetWeight` left out starts the class at a
+        whole (`1`), exactly as a fresh class of the application does.
+
+        A name the parent already carries is refused as `409 name-taken`:
+        classes do have ids, so two of one name could be told apart - but only
+        by a caller that went and looked. Another parent makes another class,
+        and that pair is ordinary.
+
+        The user is asked before anything is created, naming the new class and
+        the tree it joins: `403 write-declined`, `423 write-unanswered`, `429
+        write-pending`. Nothing is saved to disk, and there is no undo - this
+        API creates classes and never removes one.
+      parameters:
+        - $ref: "#/components/parameters/File"
+        - name: taxonomy
+          in: path
+          required: true
+          description: The taxonomy's `id`, from the `items` of `GET /v1/files/{file}/taxonomies`.
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name]
+              additionalProperties: false
+              properties:
+                name:
+                  type: string
+                  description: What the class is to be called.
+                parent:
+                  type: string
+                  description: |
+                    The id of the class the new one hangs under. Optional: left
+                    out it is the taxonomy's root.
+                targetWeight:
+                  type: number
+                  minimum: 0
+                  description: |
+                    The target weight as a fraction. Optional: left out the
+                    class starts at a whole (1). Negative is refused.
+      responses:
+        "201":
+          description: |
+            The class as it now stands, with its new id - which the assignment
+            and weight writes accept at once - `created: true`, and the tree.
+          headers:
+            X-Portfolio-Changed:
+              description: |
+                Always `true`: a class that did not exist before is a change.
+              schema:
+                type: string
+                enum: ["true"]
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [taxonomy, class, targetWeight, created, changed]
+                properties:
+                  taxonomy:
+                    type: object
+                    required: [id, name]
+                    properties:
+                      id:
+                        type: string
+                      name:
+                        type: string
+                  class:
+                    type: object
+                    required: [id, name, parent]
+                    properties:
+                      id:
+                        type: string
+                      name:
+                        type: string
+                      parent:
+                        type: string
+                        description: The id of the class this one hangs under.
+                  targetWeight:
+                    type: number
+                    description: The class's target weight as a fraction.
+                  created:
+                    type: boolean
+                  changed:
+                    type: boolean
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "423":
+          $ref: "#/components/responses/Locked"
+        "429":
+          $ref: "#/components/responses/WritePending"
+        "500":
+          $ref: "#/components/responses/InternalError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
+
   /v1/files/{file}/taxonomies/{taxonomy}/classes/{classification}:
     patch:
       operationId: updateClass

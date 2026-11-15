@@ -535,6 +535,20 @@ public final class ApiRoutes
                             return wrote(Response.json(200, updated), changedOf(updated));
                         }));
 
+        // and the one class-write that brings something new: a class under a
+        // parent of the caller's choosing, getting its uuid here so that the
+        // assignment and weight writes accept it at once. A POST, the only
+        // class route that is not about a class that already has an id.
+        router.add("POST", "/v1/files/{file}/taxonomies/{taxonomy}/classes", //$NON-NLS-1$ //$NON-NLS-2$
+                        write(resolver, ui, approvals, "pp_create_class", //$NON-NLS-1$
+                                        (file, req) -> TaxonomyClassHandler.describeCreate(file.getClient(), //$NON-NLS-1$
+                                                        req.pathParam("taxonomy"), parseObject(req), file.getLabel()), //$NON-NLS-1$
+                                        (file, req) -> {
+                            var fresh = TaxonomyClassHandler.create(file.getClient(), req.pathParam("taxonomy"), //$NON-NLS-1$
+                                            parseObject(req));
+                            return wrote(Response.json(201, fresh), true);
+                        }));
+
         // The one write this file's classification tree takes: one vehicle into
         // one class, and back out. A PUT rather than a POST, so that sending it
         // twice has done exactly what sending it once did - which is the property
