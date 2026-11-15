@@ -133,6 +133,29 @@ public class PatchInstrumentAttributesTest
     }
 
     @Test
+    public void testLimitPriceAttributeRoundTripsThroughTheApi()
+    {
+        var client = new Client();
+        var limit = new AttributeType("stoploss");
+        limit.setName("Limit Preis");
+        limit.setTarget(name.abuchen.portfolio.model.Security.class);
+        limit.setType(name.abuchen.portfolio.model.LimitPrice.class);
+        limit.setConverter(AttributeType.LimitPriceConverter.class);
+        client.getSettings().addAttributeType(limit);
+        var security = new SecurityBuilder().addTo(client);
+
+        SecuritiesHandler.patch(client, security.getUUID(), json("{\"attributes\":{\"stoploss\":\">=123.45\"}}"));
+
+        var stored = (name.abuchen.portfolio.model.LimitPrice) security.getAttributes().get(limit);
+        assertThat(stored.getRelationalOperator().getOperatorString(), is(">="));
+        assertThat(stored.getValue(), is(12_345_000_000L)); // 123.45 at Quote precision 8
+
+        // unlike an image, a limit price reads right back - same wire form it came in
+        var read = SecuritiesHandler.get(client, security.getUUID()).getAsJsonObject();
+        assertThat(read.getAsJsonObject("attributes").get("stoploss").getAsString(), is(">=123.45"));
+    }
+
+    @Test
     public void testNotApplicableTypeRejected()
     {
         var client = new Client();

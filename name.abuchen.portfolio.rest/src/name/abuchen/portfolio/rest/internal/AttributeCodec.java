@@ -8,12 +8,15 @@ import java.util.Arrays;
 import java.util.Base64;
 import java.util.EnumSet;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonPrimitive;
 
 import name.abuchen.portfolio.model.AttributeFieldType;
 import name.abuchen.portfolio.model.AttributeType;
+import name.abuchen.portfolio.model.LimitPrice;
+import name.abuchen.portfolio.model.LimitPrice.RelationalOperator;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.util.ImageUtil;
 
@@ -40,7 +43,7 @@ public final class AttributeCodec
     }
 
     private static final Set<AttributeFieldType> READABLE = EnumSet.complementOf(EnumSet
-                    .of(AttributeFieldType.LIMIT_PRICE, AttributeFieldType.BOOKMARK, AttributeFieldType.IMAGE));
+                    .of(AttributeFieldType.BOOKMARK, AttributeFieldType.IMAGE));
 
     /**
      * Everything the API takes in - one type more than it hands out: an image
@@ -50,7 +53,7 @@ public final class AttributeCodec
      * of this API.
      */
     private static final Set<AttributeFieldType> WRITABLE = EnumSet.complementOf(EnumSet
-                    .of(AttributeFieldType.LIMIT_PRICE, AttributeFieldType.BOOKMARK));
+                    .of(AttributeFieldType.BOOKMARK));
 
     /** the largest PNG this API stores - a 64x64 logo, what the application itself saves, fits many times over */
     public static final int MAX_IMAGE_BYTES = 64 * 1024;
@@ -70,6 +73,9 @@ public final class AttributeCodec
      * enough to ask for gigabytes.
      */
     private static final int MAX_IMAGE_EDGE = 4096;
+
+    /** a limit price on the wire: an operator and a dot-decimal price, the model's own two halves, locale-free */
+    private static final Pattern LIMIT_PRICE_WIRE = Pattern.compile("^\\s*(<=|>=|<|>)\\s*(\\d+(?:\\.\\d{1,8})?)\\s*$"); //$NON-NLS-1$
 
     private AttributeCodec()
     {
@@ -143,6 +149,7 @@ public final class AttributeCodec
             case QUOTE -> EntityJson.decimal((Long) stored, Values.Quote.precision());
             case SHARE -> EntityJson.decimal((Long) stored, Values.Share.precision());
             case PERCENT, PERCENTPLAIN -> EntityJson.decimal(((Number) stored).doubleValue());
+            case LIMIT_PRICE -> new JsonPrimitive(wireLimit((LimitPrice) stored));
             // unreachable: callers (read serialization) filter to isReadable types first
             default -> throw new IllegalStateException("not an API-encodable attribute type: " + type);
         };
@@ -161,8 +168,41 @@ public final class AttributeCodec
             case SHARE -> scaledLong(value, Values.Share.precision());
             case PERCENT, PERCENTPLAIN -> finiteDouble(value);
             case IMAGE -> imageValue(value);
+            case LIMIT_PRICE -> parseLimit(value);
             default -> throw new InvalidValueException("not an API-writable attribute type: " + type);
         };
+    }
+
+    /**
+     * A limit price as {@code "<=62.5"} - the model's operator and price, dot
+     * decimal, trailing zeros dropped. The application's own string form carries
+     * the user's locale, which is why the API does not use it; this one means
+     * the same bytes in and out, in every locale.
+     */
+    private static String wireLimit(LimitPrice limit)
+    {
+        var price = BigDecimal.valueOf(limit.getValue(), Values.Quote.precision()).stripTrailingZeros();
+        return limit.getRelationalOperator().getOperatorString() + price.toPlainString();
+    }
+
+    private static LimitPrice parseLimit(JsonElement value)
+    {
+        var matcher = LIMIT_PRICE_WIRE.matcher(requireString(value));
+        if (!matcher.matches())
+            throw new InvalidValueException("expected a limit price like \"<=62.5\" - one of <, <=, >, >= "
+                            + "and a price with a dot as decimal separator");
+
+        var operator = RelationalOperator.findByOperator(matcher.group(1)).orElseThrow();
+        try
+        {
+            return new LimitPrice(operator, new BigDecimal(matcher.group(2)) //
+                            .movePointRight(Values.Quote.precision()) //
+                            .setScale(0, RoundingMode.HALF_UP).longValueExact());
+        }
+        catch (ArithmeticException e)
+        {
+            throw new InvalidValueException("price out of range");
+        }
     }
 
     /**

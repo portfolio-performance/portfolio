@@ -812,10 +812,11 @@ paths:
       description: |
         The user-defined and built-in attribute types that apply to an
         instrument. A client uses this to resolve an attribute id to its
-        display name and value `type`. Compound types are listed with
-        `supported: false`: `limit-price` and `bookmark` are neither read nor
-        written in v1, while `image` is written as base64 PNG (`writable:
-        true`) yet never read back — its bytes would bloat every listing.
+        display name and value `type`. Of the compound types, `limit-price` is
+        fully supported as a string (`<=62.5`), `image` is written as base64
+        PNG (`writable: true`) yet never read back — its bytes would bloat
+        every listing — and `bookmark` is neither read nor written
+        (`supported: false`, `writable: false`).
       responses:
         "200":
           description: The applicable attribute definitions.
@@ -4565,8 +4566,9 @@ components:
             takes a PNG as base64, with or without the `data:image/png;base64,`
             prefix and at most 64 KiB of bytes — the icon/symbol variant of a
             logo, not its full-size wordmark, which is what the cap refuses;
-            it is stored in that prefixed,
-            rendered form and never read back. Writing an unknown id, a
+            an `image` is stored in that prefixed,
+            rendered form and never read back, while a `limit-price` is the
+            string `` `<=62.5` `` and reads back unchanged. Writing an unknown id, a
             non-applicable attribute, one of the compound types this API cannot
             take, or a value of the wrong type is rejected with 422 `validation`.
           additionalProperties:
@@ -4597,9 +4599,10 @@ components:
             (ISO-8601), `amount`, `quote`, `shares`, `percent` (a fraction,
             e.g. 0.007 for 0.7%), `number` (an unscaled decimal; where the
             desktop reads such an attribute as a percentage — the expected
-            dividends column — 5 means 5%). Compound — `limit-price`,
-            `bookmark`, `image` — appear with `supported: false`; only
-            `limit-price` and `bookmark` also carry `writable: false`.
+            dividends column — 5 means 5%). Of the compound types, `image`
+            appears with `supported: false` (`writable: true`), `bookmark`
+            with both false; `limit-price` is fully supported as the string
+            `` `<=62.5` `` — operator `<`, `<=`, `>`, `>=` and a dot-decimal price.
 
             **Open set:** new types may be added within v1, as the application
             gains them. Treat an unknown type as `supported: false` and
