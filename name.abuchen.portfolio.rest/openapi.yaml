@@ -812,9 +812,10 @@ paths:
       description: |
         The user-defined and built-in attribute types that apply to an
         instrument. A client uses this to resolve an attribute id to its
-        display name and value `type`. Compound types (`limit-price`,
-        `bookmark`, `image`) are listed with `supported: false`; the API
-        does not read or write them in v1.
+        display name and value `type`. Compound types are listed with
+        `supported: false`: `limit-price` and `bookmark` are neither read nor
+        written in v1, while `image` is written as base64 PNG (`writable:
+        true`) yet never read back — its bytes would bloat every listing.
       responses:
         "200":
           description: The applicable attribute definitions.
@@ -4508,11 +4509,11 @@ components:
           type: object
           description: |
             The instrument's set custom attributes, keyed by attribute id.
-            Only attributes that have a value and a supported scalar type
-            appear; the key is omitted entirely when none do. Each value is
-            typed JSON — a string, number, or boolean (dates are ISO-8601
-            strings). Resolve an id to its precise type via
-            `GET /v1/files/{file}/instruments/attribute-types`.
+            Only attributes that have a value and a readable type appear; the
+            key is omitted entirely when none do — an image is never among
+            them. Each value is typed JSON — a string, number, or boolean
+            (dates are ISO-8601 strings). Resolve an id to its precise type
+            via `GET /v1/files/{file}/instruments/attribute-types`.
           additionalProperties:
             oneOf:
               - type: string
@@ -4560,9 +4561,14 @@ components:
             A nested merge patch over the custom attributes, keyed by attribute
             id: a present value sets the attribute, an explicit `null` clears it,
             an absent id is left untouched. Values are typed JSON per the
-            attribute's `type` (see the attribute-types endpoint). Writing an
-            unknown id, a non-applicable or compound-typed attribute, or a value
-            of the wrong type is rejected with 422 `validation`.
+            attribute's `type` (see the attribute-types endpoint). An `image`
+            takes a PNG as base64, with or without the `data:image/png;base64,`
+            prefix and at most 64 KiB of bytes — the icon/symbol variant of a
+            logo, not its full-size wordmark, which is what the cap refuses;
+            it is stored in that prefixed,
+            rendered form and never read back. Writing an unknown id, a
+            non-applicable attribute, one of the compound types this API cannot
+            take, or a value of the wrong type is rejected with 422 `validation`.
           additionalProperties:
             oneOf:
               - type: string
@@ -4573,7 +4579,7 @@ components:
     AttributeDefinition:
       type: object
       description: A custom attribute definition applicable to an instrument.
-      required: [id, name, type, supported]
+      required: [id, name, type, supported, writable]
       properties:
         id:
           type: string
@@ -4592,10 +4598,12 @@ components:
             e.g. 0.007 for 0.7%), `number` (an unscaled decimal; where the
             desktop reads such an attribute as a percentage — the expected
             dividends column — 5 means 5%). Compound — `limit-price`,
-            `bookmark`, `image` — appear with `supported: false`.
+            `bookmark`, `image` — appear with `supported: false`; only
+            `limit-price` and `bookmark` also carry `writable: false`.
 
             **Open set:** new types may be added within v1, as the application
-            gains them. Treat an unknown type as `supported: false`.
+            gains them. Treat an unknown type as `supported: false` and
+            `writable: false`.
           x-extensible-enum:
             - string
             - boolean
@@ -4610,7 +4618,12 @@ components:
             - image
         supported:
           type: boolean
-          description: Whether v1 can read and write this attribute.
+          description: |
+            Whether v1 reads this attribute back in a response. An image is
+            `false` although it is writable: its bytes travel in, never out.
+        writable:
+          type: boolean
+          description: Whether v1 accepts a value for this attribute.
 
     CashAccount:
       type: object

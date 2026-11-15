@@ -4,6 +4,8 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
+import java.util.Arrays;
+import java.util.Base64;
 import java.util.EnumSet;
 import java.util.Set;
 
@@ -13,6 +15,7 @@ import com.google.gson.JsonPrimitive;
 import name.abuchen.portfolio.model.AttributeFieldType;
 import name.abuchen.portfolio.model.AttributeType;
 import name.abuchen.portfolio.money.Values;
+import name.abuchen.portfolio.util.ImageUtil;
 
 /**
  * Translates a custom attribute's stored model value to and from typed JSON.
@@ -36,8 +39,37 @@ public final class AttributeCodec
         }
     }
 
-    private static final Set<AttributeFieldType> SUPPORTED = EnumSet.complementOf(EnumSet
+    private static final Set<AttributeFieldType> READABLE = EnumSet.complementOf(EnumSet
                     .of(AttributeFieldType.LIMIT_PRICE, AttributeFieldType.BOOKMARK, AttributeFieldType.IMAGE));
+
+    /**
+     * Everything the API takes in - one type more than it hands out: an image
+     * travels in as base64 and is stored in the file, but its bytes never
+     * travel back out. A response that lists the instruments of a file would
+     * otherwise carry every logo in it, and it is already the largest answer
+     * of this API.
+     */
+    private static final Set<AttributeFieldType> WRITABLE = EnumSet.complementOf(EnumSet
+                    .of(AttributeFieldType.LIMIT_PRICE, AttributeFieldType.BOOKMARK));
+
+    /** the largest PNG this API stores - a 64x64 logo, what the application itself saves, fits many times over */
+    public static final int MAX_IMAGE_BYTES = 64 * 1024;
+
+    private static final byte[] PNG_MAGIC = {(byte) 0x89, 'P', 'N', 'G', '\r', '\n', 0x1A, '\n'};
+
+    /**
+     * magic, then the IHDR chunk: four bytes of length, four of the name, the
+     * thirteen of the header itself and its four of CRC.
+     */
+    private static final int PNG_HEADER_BYTES = 8 + 4 + 4 + 13 + 4;
+
+    /**
+     * The largest edge an image may declare. The cap above bounds the bytes a
+     * caller sends; the application reads those bytes back with {@code ImageIO},
+     * which lays out memory by the size the header claims - a few bytes are
+     * enough to ask for gigabytes.
+     */
+    private static final int MAX_IMAGE_EDGE = 4096;
 
     private AttributeCodec()
     {
@@ -63,9 +95,16 @@ public final class AttributeCodec
         }
     }
 
-    public static boolean isSupported(AttributeFieldType type)
+    /** whether the stored value of this type travels out in a response */
+    public static boolean isReadable(AttributeFieldType type)
     {
-        return SUPPORTED.contains(type);
+        return READABLE.contains(type);
+    }
+
+    /** whether the API accepts a value of this type - wider than readable: see {@link #WRITABLE} */
+    public static boolean isWritable(AttributeFieldType type)
+    {
+        return WRITABLE.contains(type);
     }
 
     public static String wireType(AttributeFieldType type)
@@ -104,7 +143,7 @@ public final class AttributeCodec
             case QUOTE -> EntityJson.decimal((Long) stored, Values.Quote.precision());
             case SHARE -> EntityJson.decimal((Long) stored, Values.Share.precision());
             case PERCENT, PERCENTPLAIN -> EntityJson.decimal(((Number) stored).doubleValue());
-            // unreachable: callers (read serialization) filter to isSupported types first
+            // unreachable: callers (read serialization) filter to isReadable types first
             default -> throw new IllegalStateException("not an API-encodable attribute type: " + type);
         };
     }
@@ -121,8 +160,63 @@ public final class AttributeCodec
             case QUOTE -> scaledLong(value, Values.Quote.precision());
             case SHARE -> scaledLong(value, Values.Share.precision());
             case PERCENT, PERCENTPLAIN -> finiteDouble(value);
+            case IMAGE -> imageValue(value);
             default -> throw new InvalidValueException("not an API-writable attribute type: " + type);
         };
+    }
+
+    /**
+     * A logo as the model keeps it: the bytes of a PNG, base64'd behind the
+     * data-url prefix the application's renderer insists on. A caller may
+     * hand over raw base64 or the prefixed form - both end up stored the same
+     * way - and the size cap keeps what the API writes desktop-shaped, the way
+     * the application scales its own logos down to 64x64.
+     */
+    private static String imageValue(JsonElement value)
+    {
+        var text = requireString(value).trim();
+        var base64 = text.startsWith(ImageUtil.BASE64PREFIX) ? text.substring(ImageUtil.BASE64PREFIX.length()) : text;
+
+        byte[] bytes;
+        try
+        {
+            bytes = Base64.getDecoder().decode(base64);
+        }
+        catch (IllegalArgumentException e)
+        {
+            throw new InvalidValueException("expected a PNG as base64, with or without the " + ImageUtil.BASE64PREFIX
+                            + " prefix");
+        }
+
+        if (bytes.length < PNG_MAGIC.length || !Arrays.equals(Arrays.copyOf(bytes, PNG_MAGIC.length), PNG_MAGIC))
+            throw new InvalidValueException("the bytes are not a PNG image");
+
+        // the magic says what the bytes meant to be; the IHDR chunk that has to
+        // follow says how much the decoder will be asked to lay out. Checked
+        // here rather than left to the renderer, which reads these same bytes
+        // back in the UI and allocates by the declared size
+        if (bytes.length < PNG_HEADER_BYTES || bytes[12] != 'I' || bytes[13] != 'H' || bytes[14] != 'D'
+                        || bytes[15] != 'R' || bigEndian32(bytes, 8) != 13)
+            throw new InvalidValueException("the bytes are not a PNG image");
+
+        var width = bigEndian32(bytes, 16);
+        var height = bigEndian32(bytes, 20);
+        if (width < 1 || height < 1 || width > MAX_IMAGE_EDGE || height > MAX_IMAGE_EDGE)
+            throw new InvalidValueException("image measures " + width + " by " + height + " - at most "
+                            + MAX_IMAGE_EDGE + " by " + MAX_IMAGE_EDGE + " pixels, which a 64x64 logo fits into many times over");
+
+        if (bytes.length > MAX_IMAGE_BYTES)
+            throw new InvalidValueException("image too large - at most " + MAX_IMAGE_BYTES
+                            + " bytes of PNG, which a 64x64 logo fits into many times over");
+
+        return ImageUtil.BASE64PREFIX + Base64.getEncoder().encodeToString(bytes);
+    }
+
+    /** four bytes, big-endian, as PNG writes every count and dimension */
+    private static long bigEndian32(byte[] bytes, int at)
+    {
+        return ((long) (bytes[at] & 0xFF) << 24) | ((long) (bytes[at + 1] & 0xFF) << 16)
+                        | ((long) (bytes[at + 2] & 0xFF) << 8) | (long) (bytes[at + 3] & 0xFF);
     }
 
     private static String requireString(JsonElement value)

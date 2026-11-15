@@ -67,6 +67,7 @@ public class AttributeTypesEndpointTest
         var ids = new ArrayList<String>();
         String terType = null;
         boolean logoSupported = true;
+        boolean logoWritable = false;
         for (var element : items)
         {
             JsonObject item = element.getAsJsonObject();
@@ -74,12 +75,17 @@ public class AttributeTypesEndpointTest
             if ("ter".equals(item.get("id").getAsString()))
                 terType = item.get("type").getAsString();
             if ("logo".equals(item.get("id").getAsString()))
+            {
                 logoSupported = item.get("supported").getAsBoolean();
+                logoWritable = item.get("writable").getAsBoolean();
+            }
         }
 
         assertThat(ids, hasItem("ter"));
         assertThat(ids, hasItem("logo"));
         assertThat(terType, is("percent"));
-        assertThat(logoSupported, is(false)); // image is discoverable but unsupported
+        // the image is discoverable and writable, yet its bytes never read back
+        assertThat(logoSupported, is(false));
+        assertThat(logoWritable, is(true));
     }
 }

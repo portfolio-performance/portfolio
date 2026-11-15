@@ -92,20 +92,43 @@ public class PatchInstrumentAttributesTest
         }
     }
 
+    /** the application's own 32x32 sample (kommer.xml) - a real PNG, so real validation */
+    private static final String PNG_BASE64 = "iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAACXBIWXMAAA7EAAAOxAGVKw4bAAAA9klEQVRYw+1VOxKCMBB9oKXjeRibdJ7ADOewRiupHa/BwAUsU+l5PECgQdmE8A9QmDezA8OE3bdv9wHw7/DIvQ8AERcJgNOIRGGcsuzCxdHz8bkl7N3xivwV1R+OQV5d97nE8xqKwJBTkqi61lWYihzYERI0p0+iVlBhNhTlLOV3phoJaYgaASvdNyhxaDqjK2AdXSRsK2DM0UZi2yfBEMQpywBsepCcx4aGPK02tKnAOeKCtx3wgFecsgclRglMXcKg60Cp0r2pY+s27IPZbTiEwOoKLEVC+RfoLlhiDEqN1XeAKrDUDihfQjcCZ0O3A86GbgkdCrigXo85i+2YAAAAAElFTkSuQmCC";
+
     @Test
-    public void testUnsupportedTypeRejected()
+    public void testLogoImageIsStoredRenderableAndStaysOutOfEveryRead()
+    {
+        var client = new Client();
+        var security = new SecurityBuilder().addTo(client);
+
+        SecuritiesHandler.patch(client, security.getUUID(),
+                        json("{\"attributes\":{\"logo\":\"" + PNG_BASE64 + "\"}}"));
+
+        // stored the way the application's own renderer insists on reading it
+        var stored = (String) security.getAttributes().get(typeById(client, "logo"));
+        assertThat(stored, is("data:image/png;base64," + PNG_BASE64));
+
+        // and the bytes never travel back out: with the logo as its only set
+        // attribute, the read carries no attributes object at all
+        var read = SecuritiesHandler.get(client, security.getUUID()).getAsJsonObject();
+        assertThat(read.has("attributes"), is(false));
+    }
+
+    @Test
+    public void testGarbageAsLogoRejectedAndNothingApplied()
     {
         var client = new Client();
         var security = new SecurityBuilder().addTo(client);
         try
         {
-            // logo is an Image attribute -> unsupported
-            SecuritiesHandler.patch(client, security.getUUID(), json("{\"attributes\":{\"logo\":\"x\"}}"));
+            SecuritiesHandler.patch(client, security.getUUID(), json("{\"attributes\":{\"logo\":\"not-a-png\"}}"));
             Assert.fail("expected ApiException");
         }
         catch (ApiException e)
         {
-            assertThat(e.getErrors().get(0).code(), is("unsupported-attribute-type"));
+            assertThat(e.getErrors().get(0).field(), is("attributes.logo"));
+            assertThat(e.getErrors().get(0).code(), is("invalid-value"));
+            assertThat(security.getAttributes().get(typeById(client, "logo")), nullValue());
         }
     }
 
