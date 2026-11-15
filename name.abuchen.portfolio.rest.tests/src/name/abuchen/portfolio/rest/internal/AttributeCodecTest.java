@@ -35,10 +35,46 @@ public class AttributeCodecTest
         assertThat(AttributeCodec.isReadable(AttributeFieldType.IMAGE), is(false));
         assertThat(AttributeCodec.isWritable(AttributeFieldType.IMAGE), is(true));
 
+        // a limit price reads and writes; only the bookmark stays out entirely
+        assertThat(AttributeCodec.isReadable(AttributeFieldType.LIMIT_PRICE), is(true));
+        assertThat(AttributeCodec.isWritable(AttributeFieldType.LIMIT_PRICE), is(true));
+
         assertThat(AttributeCodec.isReadable(AttributeFieldType.BOOKMARK), is(false));
         assertThat(AttributeCodec.isWritable(AttributeFieldType.BOOKMARK), is(false));
-        assertThat(AttributeCodec.isReadable(AttributeFieldType.LIMIT_PRICE), is(false));
-        assertThat(AttributeCodec.isWritable(AttributeFieldType.LIMIT_PRICE), is(false));
+    }
+
+    @Test
+    public void testLimitPriceRoundTripsDotDecimalOperatorFirst()
+    {
+        var stored = (name.abuchen.portfolio.model.LimitPrice) AttributeCodec.decode(AttributeFieldType.LIMIT_PRICE,
+                        new JsonPrimitive("<=62.5"));
+        assertThat(stored.getRelationalOperator().getOperatorString(), is("<="));
+        // Quote precision 8: 62.5 -> 6_250_000_000
+        assertThat(stored.getValue(), is(6_250_000_000L));
+
+        // the answer drops trailing zeros and keeps one shape: same bytes in, same bytes out
+        assertThat(AttributeCodec.encode(AttributeFieldType.LIMIT_PRICE, stored).getAsString(), is("<=62.5"));
+        var whole = (name.abuchen.portfolio.model.LimitPrice) AttributeCodec.decode(AttributeFieldType.LIMIT_PRICE,
+                        new JsonPrimitive(">100"));
+        assertThat(AttributeCodec.encode(AttributeFieldType.LIMIT_PRICE, whole).getAsString(), is(">100"));
+    }
+
+    @Test
+    public void testLimitPriceRejectsAnythingNotInTheWireForm()
+    {
+        // no operator, comma decimal, wrong operator order, exponent, too precise - all refused
+        for (var wrong : new String[] { "62.5", "<=62,5", "=>62.5", "<= 6.25e1", "<=1.234567890" })
+        {
+            try
+            {
+                AttributeCodec.decode(AttributeFieldType.LIMIT_PRICE, new JsonPrimitive(wrong));
+                Assert.fail("expected InvalidValueException for " + wrong);
+            }
+            catch (AttributeCodec.InvalidValueException e)
+            {
+                // expected
+            }
+        }
     }
 
     /** a genuine 32x32 PNG (the application ships it in kommer.xml) */
