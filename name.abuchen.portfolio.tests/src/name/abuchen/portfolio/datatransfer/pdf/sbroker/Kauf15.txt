@@ -1,41 +1,38 @@
 PDFBox Version: 1.8.17
-Portfolio Performance Version: 0.64.1
+Portfolio Performance Version: 0.67.1
 -----------------------------------------
-~$~|WP|684844||||||||SBROKERL210803.WP||||20210803||8256|0000|||||~$~
-BELEGDRUCK=J
-ORIGINAL=1
-FAXVERSAND=N
-Wertpapierabrechnung EMAILVERSAND=N
-DEPOTNUMMER=749/8853/958
-Kauf Limitauftrag DEPOTUNTERBEZEICHNUNG=
-Kommissionsgesch ft VERSANDARTENSCHLUESSEL=0000ä
-ADRESSZEILE1=Herrn
-ADRESSZEILE2=NNaEPw PpYpH
-ADRESSZEILE3=rFynmVS. 25
-Herrn        Depot-Nr. Abrechnungs-Nr. ADRESSZEILE4=05917 LQxKsYPStU OT uVdRjZIP
-RKpqUX hQfYl 719/1894/019 53941243 ADRESSZEILE5=
-ecNsyMS. 17 ADRESSZEILE6=
-47449 BegRcjzROT OT UucqkwsL BELEGNUMMER=5570
-SEITENNUMMER=1
-Depotinhaber STEUERERSTATTUNG=N
-SrpNjb SOLCE
-Wiesbaden, 03.08.2021
-Wir haben für Sie gekauft
-Gattungsbezeichnung ISIN
-Reckitt Benckiser Group Registered Shares LS -,10 GB00B24CGK77
-Nominal Kurs
-STK 15,000 EUR 66,5000
-Handelstag 03.08.2021 Kurswert EUR 997,50 -
-Handelszeit 09:04 Orderentgelt EUR 9,97 -
-Handelsplatz auûerbörslich
-Lang & Schwarz
-Verwahrart Wertpapierrechnung
-Lagerland Groûbritannien
-Wert Betrag zu Ihren Lasten
-05.08.2021 EUR 1.007,47
-Mit freundlichen Grüûen
-S Broker AG & Co. KG
-Dieser Beleg wird maschinell erstellt und daher nicht unterschrieben.
-           
-3.18/ABREABHNHANDKFDI/POB1618/008125/040821/002412
-SBRO_WP_v1.7P.SBROKERL210803.WP_8256
+Sparkasse XXXXXX-XXXXXXXX-CtnlQvPO · 78124 nlpIAsBOK  
+rVtVqaYZAtS
+ 409091
+ Kundennummer 439533235
+ aNGtdbVRU kBfsYYmxlyNopiuDBTXzxIN 653106/05.00
+Herrn Datum 03.01.2024
+ZACHLoaUX xKzuzDrNO Ihr qLBgDoM jCzt dBkOSc sPkTEdqJjXs
+EIOlSVeca DIXK 8 hHlWWJa 70356 285-8031
+08000 sGzarYuKYZ pxvUeRV 25864 824-0107
+Rechnungsnummer F30279-0000000627/24
+Umsatzsteuer-ID JF587157503 
+ 
+Wertpapier Abrechnung Ausgabe Investmentfonds
+Nominale Wertpapierbezeichnung ISIN (WKN)
+Stück 0,7381 AGIF - ALLIANZ THEMATICA LU1479563717 (A2AQF1)
+INHABER-ANTEILE A(EUR) O.N. 
+Handels-/Ausführungsplatz RpNxJXuOTOjRy
+Schlusstag 02.01.2024 ObILYcFtzpdi XXXXXXXX, TppggXa
+Ausführungskurs 211,2495 EUR Auftragserteilung/ -ort Persönlich im Institut
+Girosammelverwahrung Sammelurkunde
+Kurswert 155,93- EUR
+Kundenbonifikation 3,8 % vom Kurswert 5,93 EUR
+Ausmachender Betrag 150,00- EUR
+Ausgabeaufschlag pro Anteil 5,00 %
+ 
+Den Gegenwert buchen wir mit Valuta 04.01.2024 zu Lasten des Kontos XXXXXXXX (NZdd mU66 0922 3219 1318 7899 20),
+BLZ 27975417 (BIC XXXXXXXXXX).
+Die Wertpapiere schreiben wir Ihrem Depotkonto gut.
+Sofern keine Umsatzsteuer ausgewiesen ist, handelt es sich um eine umsatzsteuerbefreite Finanzdienstleistung. 
+ 
+Ihr Fondssparplan Nr. 4
+Für das Geschäft wurde eine Anlageberatung erbracht.
+Initiator der Besprechung war der Kunde.
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+1151.01032043.0000271OR07

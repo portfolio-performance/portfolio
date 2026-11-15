@@ -1,50 +1,50 @@
 PDFBox Version: 1.8.16
 -----------------------------------------
-~$~|ER03|265484||||||||ERTRAEGE.D220103.AFP||||20220103||4126|0000|||||~$~
+~$~|ER01|265484||||||||ERTRAEGE.D220111.AFP||||20220111||1708|0000|||||~$~
 S Broker AG & Co. KG ´ Postfach 90 01 50 ´ 39133 Magdeburg Seite 1
 Depotnummer 
 Abrechnungsnr. 
-Datum 03.01.2022
-Ausschüttung Investmentfonds
+Datum 11.01.2022
+Dividendengutschrift
 Nominale Wertpapierbezeichnung ISIN (WKN)
-Stück 250 SIXTH STREET SPECIALITY LEND. US83012A1097 (A2P60W)
-REGISTERED SHARES DL -,01
-Zahlbarkeitstag 31.12.2021 Ausschüttung pro St. 0,070000000 USD
-Bestandsstichtag 26.11.2021 Herkunftsland USA
-Ex-Tag 29.11.2021
+Stück 100 ALTRIA GROUP INC. US02209S1033 (200417)
+REGISTERED SHARES DL -,333
+Zahlbarkeitstag 10.01.2022 Dividende pro Stück 0,90 USD
+Bestandsstichtag 21.12.2021 Herkunftsland USA
+Ex-Tag 22.12.2021 Art der Dividende Quartalsdividende
 Geschäftsjahr 01.01.2021 - 31.12.2021
-Devisenkurs EUR / USD 1,1396
-Devisenkursdatum 03.01.2022
-Ausschüttung 17,50 USD 15,36+ EUR
-Einbehaltene Quellensteuer 15 % auf 17,50 USD 2,30- EUR
-Anrechenbare Quellensteuer pro Stück 0,0105 USD 2,63 USD
-Kapitalertragsteuerpflichtiger Ertrag 17,50 USD
-Umrechnung in EUR 15,36 EUR
+Devisenkurs EUR / USD 1,1391
+Devisenkursdatum 11.01.2022
+Dividendengutschrift 90,00 USD 79,01+ EUR
+Umrechnung in EUR 79,01 EUR
+Einbehaltene Quellensteuer 15 % auf 90,00 USD 11,85- EUR
+Anrechenbare Quellensteuer 15 % auf 79,01 EUR 11,85 EUR
+Kapitalertragsteuerpflichtige Dividende 79,01 EUR
 Verrechnete anrechenbare ausländische Quellensteuer
-(Verhältnis 100/25) auf 2,31 EUR 9,24 - EUR
-Berechnungsgrundlage für die Kapitalertragsteuer 6,12 EUR
-Kapitalertragsteuer 24,51 % auf 6,12 EUR 1,50- EUR
-Solidaritätszuschlag 5,5 % auf 1,50 EUR 0,08- EUR
-Kirchensteuer 8 % auf 1,50 EUR 0,12- EUR
-Ausmachender Betrag 11,36+ EUR
-Lagerstelle Clearstream Banking Lux (849133 / 64003)
+(Verhältnis 100/25) auf 11,85 EUR 47,40 - EUR
+Berechnungsgrundlage für die Kapitalertragsteuer 31,61 EUR
+Kapitalertragsteuer 24,51 % auf 31,61 EUR 7,75- EUR
+Solidaritätszuschlag 5,5 % auf 7,75 EUR 0,42- EUR
+Kirchensteuer 8 % auf 7,75 EUR 0,62- EUR
+Ausmachender Betrag 58,37+ EUR
+Lagerstelle Clearstream Banking FFM (849000 / 40030000)
 Jahressteuerbescheinigung folgt.
 Bitte ggf. Rückseite beachten.
-5500.01032142.0010223ER03
-SBRO_ER03_v10.7P.ERTRAEGE.D220103.AFP_4126
+5500.01112139.0003466ER01
+SBRO_ER01_v10.7P.ERTRAEGE.D220111.AFP_1708
 
 Seite 2
 Depotnummer 
 Abrechnungsnr. 
-Datum 03.01.2022
+Datum 11.01.2022
 Nachrichtlich die Übersicht Ihrer Verrechnungs- und Steuertopfsalden zum Zeitpunkt der Erstellung der Abrechnung.
-Verrechnungstöpfe 2021 ohne Vorjahressaldo Berechnungsgrundlage
+Verrechnungstöpfe 2022 ohne Vorjahressaldo Berechnungsgrundlage
 der gezahlten Steuern
 Euro Aktien Sonstige Sparer- anrechenbare Aktien und Sonstige
 Pauschbetrag Quellensteuer
-Vorher 0,00 0,00 0,00 0,00 241,42
-Ertrag 2,31
-0,00 0,00 0,00 2,31- 6,12
-Nachher 0,00 0,00 0,00 0,00 247,54
+Vorher 0,00 0,00 0,00 0,00 0,00
+Ertrag 11,85
+0,00 0,00 0,00 11,85- 31,61
+Nachher 0,00 0,00 0,00 0,00 31,61
 Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
-5500.01032142.0010224ER03
+5500.01112139.0003467ER01

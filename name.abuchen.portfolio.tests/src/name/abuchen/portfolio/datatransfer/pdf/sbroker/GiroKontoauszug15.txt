@@ -1,152 +1,192 @@
 ```
-PDFBox Version: 1.8.17
-Portfolio Performance Version: 0.62.1
+PDFBox Version: 3.0.3 != 1.8.17
+Portfolio Performance Version: 0.74.0
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
 -----------------------------------------
 S Sparkasse
 Schweinfurt-Haßberge
-341 00 00 81
+341 00 00  81
 Herrn Ihr Ansprechpartner:
-Max Mustermann Manuel Jahna
-Strasse Kundenberatung Hofheim
-Strasse 7 Marktplatz 7
-99999 Stadt 97461 Hofheim
-Telefon 09521 58-764
-Fax 09521 58-499
-manuel.jahna@sparkasse-sw-has.de
+Max Max Max Max
+Egerländerstr. 8 Kundenberatung Hofheim
+96250 Ebensfeld Marktplatz 7
+97461 Hofheim i.UFr.
+Telefon 09721 721-7752
+Fax 09721 721-7755
+Max.Max@sparkasse-sw-has.de
  
  
  
-1. April 2019
-. Kontoauszug 6/2019 Seite 1 von 4
-Giro Sm@rt 190743781, DE34 7935 0101 0190 9999 99
-  
+1. Juni 2021
+Kontoauszug 5/2021 Seite 1 von 4
+G  iro Plus 190999999, DE78 9999 0101 0190 9999 99
 Datum Wert Erläuterung Betrag Soll EUR Betrag Haben EUR
- Kontostand am 01.03.2019, Auszug Nr.    5            7.483,71+
-
-04.03.2019 04.03.2019 Überweisung online            3.000,00-
-Max Mustermann
-88000
-DATUM 03.03.2019, 14.41 UHR
-1.TAN 748770
-. 3e22aef0-77999812-14404008-20190303
-
-05.03.2019 05.03.2019 Überweisung online            2.200,00-
-Ingrid Klauser
-DATUM 05.03.2019, 19.05 UHR
-1.TAN 668182
-e6a25a8-266631734-19043602-20190305
-
-18.03.2019 18.03.2019 Bargeldausz.Debitk.GA              750,00-
-GA NR00002015 BLZ79350101 5
-18.03/14.34UHR HOFHEIM02
-
-18.03.2019 18.03.2019 Kartenzahlung               64,71-
-EDEKA FOODSERVICE GMBH+CO.//SCHWEIN
-FURT/DE
-2019-03-15T14:16 Debitk.5 2022-12
-
-18.03.2019 18.03.2019 Überweisung online               25,75-
-Re-In Retail Int. GmbH
-Ref. 2157880514 Kdnr. 428169322
-DATUM 17.03.2019, 21.20 UHR
-1.TAN 364747
-Ref. 2157880514 Kdnr. 428169322
-P20190317201939
-Übertrag:            1.319,59+
+ Kontostand am 30.04.2021, Auszug Nr.    4            1.495,04+
+03.05.2021 03.05.2021 Dauerauftrag              400,00-
+Max Max
+Miete Max und Max
+03.05.2021 03.05.2021 Dauerauftrag              300,00-
+Max Max
+Einzahlung Depot
+03.05.2021 03.05.2021 Lastschrift              198,33-
+HUK-COBURG UNTERNEHMENSGRUPPE
+HUK24 AG
+HUK24, KRAFTFAHRT-VERSICHERUNG 699/
+999999-X, XXX-S 999
+210+ZKLE 29.04.21 699/999999-X F
+MG036279920
+Gläubiger-ID: DE17ZZZ00000031285
+03.05.2021 03.05.2021 Dauerauftrag               25,00-
+Max Max
+Taschengeld
+03.05.2021 03.05.2021 GutschriftÜberweisung              242,49+
+Max Max
+Handyvertrag, Max Taschengeld, S
+trom und Miete
+06.05.2021 06.05.2021 Lastschrift              330,14-
+Spk Schweinfurt-Haßberge
+KREDITKARTENABRECHNUNG VISA-ABR. 49
+0762XXXXXX0842
+AD08-D-2021-05-05-20.22.29.260123
+07.05.2021 07.05.2021 GutschriftÜberweisung                7,00+
+Bundeskasse - Dienstort Weiden -
+HAS S 2504 KFZ-STEUER ERSTATTUNG
+03197092-2021-BP000020-K11310237053
+07.05.2021 07.05.2021 GutschriftÜberweisung               77,00+
+PAYPAL (EUROPE) S.A.R.L ET CIE,S.C.
+YYW1013540996060 PAYPAL
+Übertrag:              568,06+
 Sparkasse Schweinfurt-Haßberge Anstalt des öffentlichen Rechts Telefon 09721/721-0 www.sparkasse-sw-has.de
 Jägersbrunnen 1-7 HR Nr. A/1124 (AG Schweinfurt) Telefax 09721/721-3229 info@sparkasse-sw-has.de
 97421 Schweinfurt USt-IdNr. DE 133 906 578 BLZ: 793 501 01 BIC: BYLADEM1KSW
 Sparkassen-Finanzgruppe
-0.53.2.3940904 910581.0.10.02 9(F5a5ssung November 2013) - (V1) 
-Finanz Informatik 
-Urheberrechtlich geschützt
 S Sparkasse
 Schweinfurt-Haßberge
-Kontoauszug 6/2019 Seite 2 von 4
-Giro Sm@rt 190743781, DE34 7935 0101 0190 9999 99 Max Mustermann
+Kontoauszug 5/2021 Seite 2 von 4
+Giro Plus 190999999, DE78 9999 0101 0190 9999 99,  Max Max
 Datum Wert Erläuterung Betrag Soll EUR Betrag Haben EUR
-Übertrag:            1.319,59+
-
-22.03.2019 22.03.2019 Bargeldeinzahlung            2.092,00+
-
-1005228550849 PP.9962.PP PAYPAL
-4CU2224VNSRPG
-Gläubiger-ID:
-LU96ZZZ0000000000000000058
-
-28.03.2019 28.03.2019 GutschriftÜberweisung               25,75+
-Re-In Retail Intern. GmbH
-//9118483329/ 25,75 //voelkner-ReIn
-/ 157880514
-0428169322/0006609550/2019
-
-29.03.2019 30.03.2019 Entgeltabrechnung                5,00-
+Übertrag:              568,06+
+07.05.2021 07.05.2021 GutschriftÜberweisung              197,35+
+PAYPAL (EUROPE) S.A.R.L ET CIE,S.C.
+YYW1013537100536 PAYPAL
+10.05.2021 10.05.2021 Dauerauftrag               42,00-
+Max Max
+Bausparbeitrag 801124844
+10.05.2021 10.05.2021 GutschriftÜberweisung               43,48+
+Max Max und Max Max
+Max u. Max Max
+Wischerarm + Zafira
+10.05.2021 10.05.2021 GutschriftÜberweisung               90,00+
+PAYPAL (EUROPE) S.A.R.L ET CIE,S.C.
+YYW1013553779123 PAYPAL
+10.05.2021 10.05.2021 GutschriftÜberweisung            1.701,89+
+  Autohaus Eberhardt GmbH
+Maerz
+CT-1-07.05.2021
+10.05.2021 09.05.2021 Bargeldeinzahlung SB            2.000,00+
+SB-EINZAHLUNG EBERN 02
+GA 2016 / 09.05.21 13.33.16
+0190999999 / 2212 /0 / 2
+11.05.2021 11.05.2021 Lastschrift              136,14-
+REIFEN NIK-MUeLLER KG
+RE 1287492 / 28.04.21 ,
+26850
+Gläubiger-ID: DE77ZZZ00000010708
+11.05.2021 11.05.2021 Lastschrift              121,65-
+PSA Bank Deutschland GmbH
+REF. 0003817110/0071229007 RATE 30/
+04/21 VERTRAG 999999999 WWW.PSA-BA
+NK-DEUTSCHLAND.DE
+999999999.1 PEUGEOT BANK
+DE000488996400000
+Gläubiger-ID: DE84PBD00001734951
+11.05.2021 11.05.2021 Lastschrift               16,60-
+Lotto24 by Adyen
+Lotto24 C95558853 T851899918990
+C7936203644409265C
+1316070971783437
+Gläubiger-ID: NL48ZZZ342764500000
+17.05.2021 17.05.2021 Lastschrift               59,97-
+Telefonica Germany GmbH + Co. OHG
+Kd-Nr.: 6054893681, Rg-Nr.: 1013411
+371/7, Ihre Tarifrechnung
+3403285039390001013411371007RCUR
+T0010001B000006054893681
+Gläubiger-ID: DE9700000000142462
+17.05.2021 17.05.2021 GutschriftÜberweisung               15,00+
+Vladimir Max
+Bekannt
+Übertrag:            4.239,42+
+Sparkasse Schweinfurt-Haßberge Anstalt des öffentlichen Rechts Telefon 09721/721-0 www.sparkasse-sw-has.de
+Jägersbrunnen 1-7 HR Nr. A/1124 (AG Schweinfurt) Telefax 09721/721-3229 info@sparkasse-sw-has.de
+97421 Schweinfurt USt-IdNr. DE 133 906 578 BLZ: 793 501 01 BIC: BYLADEM1KSW
+Sparkassen-Finanzgruppe
+S Sparkasse
+Schweinfurt-Haßberge
+Kontoauszug 5/2021 Seite 3 von 4
+Giro Plus 190999999, DE78 9999 0101 0190 9999 99,  Max Max
+Datum Wert Erläuterung Betrag Soll EUR Betrag Haben EUR
+Übertrag:            4.239,42+
+20.05.2021 20.05.2021 Lastschrift               99,04-
+PSA Bank Deutschland GmbH
+REF. 0003823549/0071375794 RATE 20/
+05/21 VERTRAG 999999999 WWW.PSA-BA
+NK-DEUTSCHLAND.DE
+999999999.2 PEUGEOT BANK
+DE000488996400000
+Gläubiger-ID: DE84PBD00001734951
+20.05.2021 20.05.2021 GutschriftÜberweisung              216,06+
+Richard Max
+Max Richard
+Reifen
+26.05.2021 26.05.2021 Kartenzahlung              216,06-
+  Autohaus Eberhardt GmbH//Lichtenfel
+s/DE
+2021-05-21T17:57 Debitk.2 2022-12
+28.05.2021 28.05.2021 Lastschrift               55,00-
+eprimo GmbH
+eprimo sagt danke
+Beleg 089022322243
+43716587
+Gläubiger-ID: DE12ZZZ00000080651
+31.05.2021 31.05.2021 Kartenzahlung               45,98-
+DEICHMANN - Schuhe//Lichtenfels/DE
+2021-05-29T13:29 Debitk.2 2022-12
+31.05.2021 31.05.2021 Kartenzahlung               26,69-
+Kaufland Lichtenfels//Lichtenfels/D
+E
+2021-05-29T14:53 Debitk.2 2022-12
+31.05.2021 31.05.2021 Lastschrift               25,20-
+Lotto24 by Adyen
+Lotto24 C95558853 T702109908952
+C7936221047885006C
+1316070971783437
+Gläubiger-ID: NL48ZZZ342764500000
+31.05.2021 01.06.2021 Entgeltabrechnung                8,50-
 siehe Anlage Nr. 1
-
-29.03.2019 01.04.2019 Abrechnung 29.03.2019                0,00+
-siehe Anlage Nr. 2
- Kontostand am 29.03.2019 um 20:01 Uhr            5.489,56+
+31.05.2021 31.05.2021 GutschriftÜberweisung              125,00+
+Max, Natalia
+bekannt
+ Kontostand am 31.05.2021 um 20:04 Uhr            4.104,01+
 Der Kontostand kann Beträge mit späterer Wertstellung enthalten, bitte Hinweise zum Kontoauszug beachten.
-Anzahl Anlagen 2
-Ihr Dispositionskredit EUR: 2.000,00
+Anzahl Anlagen 1
 Sparkasse Schweinfurt-Haßberge Anstalt des öffentlichen Rechts Telefon 09721/721-0 www.sparkasse-sw-has.de
 Jägersbrunnen 1-7 HR Nr. A/1124 (AG Schweinfurt) Telefax 09721/721-3229 info@sparkasse-sw-has.de
 97421 Schweinfurt USt-IdNr. DE 133 906 578 BLZ: 793 501 01 BIC: BYLADEM1KSW
 Sparkassen-Finanzgruppe
-0.53.2.3940904 910581.0.10.02 9(F5a5ssung November 2013) - (V1) 
-Finanz Informatik 
-Urheberrechtlich geschützt
 S Sparkasse
 Schweinfurt-Haßberge
-Kontoauszug 6/2019 Seite 3 von 4
-Giro Sm@rt 190743781, DE34 7935 0101 0190 9999 99 Max Mustermann
+Kontoauszug 5/2021 Seite 4 von 4
+Giro Plus 190999999, DE78 9999 0101 0190 9999 99,  Max Max
 Entgeltabschluss: Anlage     1
- 
-Entgelte vom 01.03.2019 bis 29.03.2019                               5,00-
- 
-Entgelte / Auslagen                                    5,00-
+Entgelte vom 01.05.2021 bis 31.05.2021                               8,50-
+Grundpreis (Kontoführung)                              8,50-
                                                             --------------
-Abrechnung 29.03.2019                                                5,00-
-Rechnungsnummer: 20190329-BY044-00007262907
- 
- 
-Bitte beachten Sie die Hinweise zum Kontoauszug.
-.
-  
-.
-Sparkasse Schweinfurt-Haßberge Anstalt des öffentlichen Rechts Telefon 09721/721-0 www.sparkasse-sw-has.de
-Jägersbrunnen 1-7 HR Nr. A/1124 (AG Schweinfurt) Telefax 09721/721-3229 info@sparkasse-sw-has.de
-97421 Schweinfurt USt-IdNr. DE 133 906 578 BLZ: 793 501 01 BIC: BYLADEM1KSW
-Sparkassen-Finanzgruppe
-0.53.2.3940904 910581.0.10.02 9(F5a5ssung November 2013) - (V1) 
-Finanz Informatik 
-Urheberrechtlich geschützt
-S Sparkasse
-Schweinfurt-Haßberge
-Kontoauszug 6/2019 Seite 4 von 4
-Giro Sm@rt 190743781, DE34 7935 0101 0190 9999 99 Max Mustermann
-Rechnungsabschluss: Anlage     2
- 
-Kontostand in EUR am 29.03.2019                                 5.489,56 +
-                                                            --------------
-Abrechnungszeitraum vom 01.01.2019 bis 31.03.2019
-Abrechnung 31.03.2019                                                0,00+
- 
-Sollzinssätze am 30.03.2019
-10,0500 v.H. für eingeräumte Kontoüberziehung
-(aktuell eingeräumte Kontoüberziehung       2.000,00)
-10,0500 v.H. für geduldete Kontoüberziehung
-über die eingeräumte Kontoüberziehung hinaus
-.  
-  Die Anpassungen des Zinssatzes für Kontoüberziehungen sind abhängig von
-der Entwicklung des 3-Monats-Euribor.
- 
-Kontostand/Rechnungsabschluss in EUR am 29.03.2019              5.489,56 +
-Rechnungsnummer: 20190329-BY044-00007262906
- 
-Bitte beachten Sie die Hinweise zum Kontoauszug.
+Abrechnung 31.05.2021                                                8,50-
+Es handelt sich hierbei um eine umsatzsteuerfreie Leistung.
+Rechnungsnummer: 20210531-BY044-00012542219
+  Bitte beachten Sie die Hinweise zum Kontoauszug.
 Hinweise zum Kontoauszug:
-.
 Sehr geehrte Kundin, sehr geehrter Kunde,
 bitte prüfen Sie die Buchungen und Berechnungen in diesem Kontoauszug. Eventuelle Rückfragen besprechen Sie bitte mit Ihrem
 Kundenberater.
@@ -177,8 +217,5 @@ Sparkasse Schweinfurt-Haßberge Anstalt des öffentlichen Rechts Telefon 09721/7
 Jägersbrunnen 1-7 HR Nr. A/1124 (AG Schweinfurt) Telefax 09721/721-3229 info@sparkasse-sw-has.de
 97421 Schweinfurt USt-IdNr. DE 133 906 578 BLZ: 793 501 01 BIC: BYLADEM1KSW
 Sparkassen-Finanzgruppe
-0.53.2.3940904 910581.0.10.02 9(F5a5ssung November 2013) - (V1) 
-Finanz Informatik 
-Urheberrechtlich geschützt
 
 ```
