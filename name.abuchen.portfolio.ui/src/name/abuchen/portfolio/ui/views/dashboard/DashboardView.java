@@ -363,6 +363,7 @@ public class DashboardView extends AbstractHistoricView
     public void notifyModelUpdated()
     {
         this.dashboardData.clearCache();
+        setToContext(UIConstants.Context.FILTERED_CLIENT, dashboardData.getFilteredClient());
         updateWidgets();
     }
 
@@ -395,7 +396,7 @@ public class DashboardView extends AbstractHistoricView
 
     private void updateClientFilter(ClientFilter filter)
     {
-        dashboardData.setClientFilter(filter);
+        dashboardData.setClientFilter(filter, clientFilter.getClientFilterMenu().getSelectedItem().getId());
         dashboardData.clearCache();
         setToContext(UIConstants.Context.FILTERED_CLIENT, dashboardData.getFilteredClient());
         updateWidgets();
@@ -473,7 +474,8 @@ public class DashboardView extends AbstractHistoricView
         dashboardData = make(DashboardData.class);
         dashboardData.setDefaultReportingPeriods(getPart().getClientInput().getReportingPeriods());
         dashboardData.setDefaultReportingPeriod(getReportingPeriod());
-        dashboardData.setClientFilter(clientFilter.getSelectedFilter());
+        dashboardData.setClientFilter(clientFilter.getSelectedFilter(),
+                        clientFilter.getClientFilterMenu().getSelectedItem().getId());
         setToContext(UIConstants.Context.FILTERED_CLIENT, dashboardData.getFilteredClient());
 
         int indexOfSelectedDashboard = Math.max(0, persistedState.getInt(SELECTED_DASHBOARD_KEY));

@@ -90,8 +90,8 @@ public abstract class AbstractMonthlyHeatmapWidget extends AbstractHeatmapWidget
 
         // iterate over transactions and add to model
 
-        Client filteredClient = get(ClientFilterConfig.class).getSelectedFilter()
-                        .filter(getDashboardData().getFilteredClient());
+        Client filteredClient = getDashboardData()
+                        .getFilteredClient(get(ClientFilterConfig.class).getSelectedFilter());
 
         processTransactions(startYear, calcInterval, model, filteredClient);
 

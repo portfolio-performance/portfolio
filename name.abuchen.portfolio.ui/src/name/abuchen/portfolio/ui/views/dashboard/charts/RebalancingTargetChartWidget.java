@@ -59,8 +59,8 @@ public class RebalancingTargetChartWidget extends CircularChartWidget<TaxonomyMo
                                 getClient(), taxonomy);
 
                 // apply filter if applicable
-                Client filteredClient = get(ClientFilterConfig.class).getSelectedFilter()
-                                .filter(getDashboardData().getFilteredClient());
+                Client filteredClient = getDashboardData()
+                                .getFilteredClient(get(ClientFilterConfig.class).getSelectedFilter());
                 if (filteredClient != getClient())
                     model.updateClientSnapshot(filteredClient);
 

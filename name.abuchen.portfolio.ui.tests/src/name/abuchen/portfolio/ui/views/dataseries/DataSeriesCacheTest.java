@@ -16,8 +16,10 @@ import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.snapshot.PerformanceIndex;
 import name.abuchen.portfolio.snapshot.filter.PortfolioClientFilter;
+import name.abuchen.portfolio.ui.util.ClientFilterMenu;
 import name.abuchen.portfolio.util.Interval;
 
+@SuppressWarnings("nls")
 public class DataSeriesCacheTest
 {
     private static final Interval INTERVAL = Interval.of(LocalDate.of(2024, 1, 2), LocalDate.of(2024, 1, 5));
@@ -46,5 +48,23 @@ public class DataSeriesCacheTest
         cache.setClientFilter(new PortfolioClientFilter(Collections.emptyList(), List.of(accountA)));
 
         assertThat(lastTotal(cache.lookup(series, INTERVAL)), is(Values.Amount.factorize(100)));
+    }
+
+    @Test
+    public void testSavedClientFilterIsBoundedBySelectedClientFilter()
+    {
+        Client client = new Client();
+
+        Account accountA = new AccountBuilder().deposit_("2024-01-01", Values.Amount.factorize(100)).addTo(client);
+        Account accountB = new AccountBuilder().deposit_("2024-01-01", Values.Amount.factorize(100)).addTo(client);
+
+        DataSeriesCache cache = new DataSeriesCache(client, new ExchangeRateProviderFactory(client));
+        cache.setClientFilter(new PortfolioClientFilter(Collections.emptyList(), List.of(accountA)));
+
+        ClientFilterMenu.Item item = new ClientFilterMenu.Item("b", "b", accountB.getUUID(),
+                        new PortfolioClientFilter(Collections.emptyList(), List.of(accountB)));
+        DataSeries series = new DataSeries(DataSeries.Type.CLIENT_FILTER, item, "b", null);
+
+        assertThat(lastTotal(cache.lookup(series, INTERVAL)), is(0L));
     }
 }
