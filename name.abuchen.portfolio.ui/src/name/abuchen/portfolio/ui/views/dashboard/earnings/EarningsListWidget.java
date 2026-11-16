@@ -248,7 +248,7 @@ public class EarningsListWidget extends WidgetDelegate<Model>
             for (int ii = 0; ii < 12; ii++)
                 months.add(new MonthData(ii + 1, Money.of(converter.getTermCurrency(), 0)));
 
-            Client filteredClient = clientFilter.filter(getClient());
+            Client filteredClient = clientFilter.filter(getDashboardData().getFilteredClient());
             Interval interval = new ReportingPeriod.YearX(calculationYear).toInterval(LocalDate.now());
 
             for (Account account : filteredClient.getAccounts())

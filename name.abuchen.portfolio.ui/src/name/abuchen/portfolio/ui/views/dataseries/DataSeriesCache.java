@@ -19,6 +19,7 @@ import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.CurrencyConverterImpl;
 import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
 import name.abuchen.portfolio.snapshot.PerformanceIndex;
+import name.abuchen.portfolio.snapshot.filter.ClientFilter;
 import name.abuchen.portfolio.snapshot.filter.ReadOnlyAccount;
 import name.abuchen.portfolio.snapshot.filter.ReadOnlyPortfolio;
 import name.abuchen.portfolio.snapshot.filter.WithoutTaxesFilter;
@@ -38,10 +39,14 @@ public class DataSeriesCache
 
     private CurrencyConverter converter;
 
+    private ClientFilter clientFilter = ClientFilter.NO_FILTER;
+    private volatile Client filteredClient;
+
     @Inject
     public DataSeriesCache(Client client, ExchangeRateProviderFactory factory)
     {
         this.client = client;
+        this.filteredClient = client;
         this.converter = new CurrencyConverterImpl(factory, client.getBaseCurrency());
     }
 
@@ -50,7 +55,29 @@ public class DataSeriesCache
         // the base currency might have changed
         this.converter = this.converter.with(client.getBaseCurrency());
 
+        // re-apply the filter so that changes to the client are reflected
+        this.filteredClient = clientFilter.filter(client);
+
         this.cache.clear();
+    }
+
+    /**
+     * Sets the filter used to calculate the data series. Passing
+     * {@link ClientFilter#NO_FILTER} resets to the unfiltered client.
+     */
+    public void setClientFilter(ClientFilter filter)
+    {
+        this.clientFilter = filter == null ? ClientFilter.NO_FILTER : filter;
+        clear();
+    }
+
+    /**
+     * Returns the client used for the calculations, i.e. the client with the
+     * currently selected filter applied.
+     */
+    public Client getFilteredClient()
+    {
+        return filteredClient;
     }
 
     public PerformanceIndex lookup(DataSeries series, Interval reportingPeriod)
@@ -83,15 +110,15 @@ public class DataSeriesCache
             switch (series.getType())
             {
                 case CLIENT:
-                    return PerformanceIndex.forClient(client, converter, reportingPeriod, warnings);
+                    return PerformanceIndex.forClient(filteredClient, converter, reportingPeriod, warnings);
 
                 case CLIENT_PRETAX:
-                    return PerformanceIndex.forClient(new WithoutTaxesFilter().filter(client), converter,
+                    return PerformanceIndex.forClient(new WithoutTaxesFilter().filter(filteredClient), converter,
                                     reportingPeriod, warnings);
 
                 case SECURITY:
-                    return PerformanceIndex.forInvestment(client, converter, (Security) series.getInstance(),
-                                    reportingPeriod, warnings);
+                    return PerformanceIndex.forInvestment(filteredClient, converter,
+                                    (Security) series.getInstance(), reportingPeriod, warnings);
 
                 case SECURITY_BENCHMARK:
                     return PerformanceIndex.forSecurity(
@@ -99,41 +126,43 @@ public class DataSeriesCache
                                     (Security) series.getInstance());
 
                 case PORTFOLIO:
-                    return PerformanceIndex.forPortfolio(client, converter, (Portfolio) series.getInstance(),
-                                    reportingPeriod, warnings);
+                    return PerformanceIndex.forPortfolio(filteredClient, converter,
+                                    findPortfolio(filteredClient, (Portfolio) series.getInstance()), reportingPeriod,
+                                    warnings);
 
                 case PORTFOLIO_PRETAX:
                     return calculatePortfolioPretax(series, reportingPeriod, warnings);
 
                 case PORTFOLIO_PLUS_ACCOUNT:
-                    return PerformanceIndex.forPortfolioPlusAccount(client, converter, (Portfolio) series.getInstance(),
-                                    reportingPeriod, warnings);
+                    return PerformanceIndex.forPortfolioPlusAccount(filteredClient, converter,
+                                    findPortfolio(filteredClient, (Portfolio) series.getInstance()), reportingPeriod,
+                                    warnings);
 
                 case PORTFOLIO_PLUS_ACCOUNT_PRETAX:
                     return calculatePortfolioPlusAccountPretax(series, reportingPeriod, warnings);
 
                 case ACCOUNT:
-                    Account account = (Account) series.getInstance();
-                    return PerformanceIndex.forAccount(client, converter, account, reportingPeriod, warnings);
+                    Account account = findAccount(filteredClient, (Account) series.getInstance());
+                    return PerformanceIndex.forAccount(filteredClient, converter, account, reportingPeriod, warnings);
 
                 case ACCOUNT_PRETAX:
                     return calculateAccountPretax(series, reportingPeriod, warnings);
 
                 case CLASSIFICATION:
                     Classification classification = (Classification) series.getInstance();
-                    return PerformanceIndex.forClassification(client, converter, classification, reportingPeriod,
-                                    warnings);
+                    return PerformanceIndex.forClassification(filteredClient, converter, classification,
+                                    reportingPeriod, warnings);
 
                 case CLIENT_FILTER:
                     ClientFilterMenu.Item item = (ClientFilterMenu.Item) series.getInstance();
-                    return PerformanceIndex.forClient(item.getFilter().filter(client), converter, reportingPeriod,
-                                    warnings);
+                    return PerformanceIndex.forClient(item.getFilter().filter(filteredClient), converter,
+                                    reportingPeriod, warnings);
 
                 case CLIENT_FILTER_PRETAX:
                     ClientFilterMenu.Item pretax = (ClientFilterMenu.Item) series.getInstance();
                     return PerformanceIndex.forClient(
-                                    new WithoutTaxesFilter().filter(pretax.getFilter().filter(client)), converter,
-                                    reportingPeriod, warnings);
+                                    new WithoutTaxesFilter().filter(pretax.getFilter().filter(filteredClient)),
+                                    converter, reportingPeriod, warnings);
 
                 case DERIVED_DATA_SERIES:
                     // redirect to the #lookup method to use the cached data, if
@@ -155,33 +184,49 @@ public class DataSeriesCache
     private PerformanceIndex calculatePortfolioPretax(DataSeries series, Interval reportingPeriod,
                     List<Exception> warnings)
     {
-        Client filteredClient = new WithoutTaxesFilter().filter(client);
-        Portfolio portfolio = filteredClient.getPortfolios().stream()
-                        .filter(p -> ((ReadOnlyPortfolio) p).getSource().equals(series.getInstance())).findAny()
-                        .orElseThrow(IllegalArgumentException::new);
+        Client pretaxClient = new WithoutTaxesFilter().filter(filteredClient);
+        Portfolio portfolio = findPortfolio(pretaxClient, (Portfolio) series.getInstance());
 
-        return PerformanceIndex.forPortfolio(filteredClient, converter, portfolio, reportingPeriod, warnings);
+        return PerformanceIndex.forPortfolio(pretaxClient, converter, portfolio, reportingPeriod, warnings);
     }
 
     private PerformanceIndex calculatePortfolioPlusAccountPretax(DataSeries series, Interval reportingPeriod,
                     List<Exception> warnings)
     {
-        Client filteredClient = new WithoutTaxesFilter().filter(client);
-        Portfolio portfolio = filteredClient.getPortfolios().stream()
-                        .filter(p -> ((ReadOnlyPortfolio) p).getSource().equals(series.getInstance())).findAny()
-                        .orElseThrow(IllegalArgumentException::new);
+        Client pretaxClient = new WithoutTaxesFilter().filter(filteredClient);
+        Portfolio portfolio = findPortfolio(pretaxClient, (Portfolio) series.getInstance());
 
-        return PerformanceIndex.forPortfolioPlusAccount(client, converter, portfolio, reportingPeriod, warnings);
+        return PerformanceIndex.forPortfolioPlusAccount(pretaxClient, converter, portfolio, reportingPeriod, warnings);
     }
 
     private PerformanceIndex calculateAccountPretax(DataSeries series, Interval reportingPeriod,
                     List<Exception> warnings)
     {
-        Client filteredClient = new WithoutTaxesFilter().filter(client);
-        Account account = filteredClient.getAccounts().stream()
-                        .filter(a -> ((ReadOnlyAccount) a).getSource().equals(series.getInstance())).findAny()
-                        .orElseThrow(IllegalArgumentException::new);
+        Client pretaxClient = new WithoutTaxesFilter().filter(filteredClient);
+        Account account = findAccount(pretaxClient, (Account) series.getInstance());
 
-        return PerformanceIndex.forAccount(client, converter, account, reportingPeriod, warnings);
+        return PerformanceIndex.forAccount(pretaxClient, converter, account, reportingPeriod, warnings);
+    }
+
+    /**
+     * Returns the portfolio of the (possibly filtered) client matching the
+     * given original portfolio. Falls back to the original portfolio if it is
+     * not part of the filtered client.
+     */
+    private static Portfolio findPortfolio(Client client, Portfolio portfolio)
+    {
+        return client.getPortfolios().stream().filter(p -> ReadOnlyPortfolio.unwrap(p).equals(portfolio)).findAny()
+                        .orElse(portfolio);
+    }
+
+    /**
+     * Returns the account of the (possibly filtered) client matching the given
+     * original account. Falls back to the original account if it is not part of
+     * the filtered client.
+     */
+    private static Account findAccount(Client client, Account account)
+    {
+        return client.getAccounts().stream().filter(a -> ReadOnlyAccount.unwrap(a).equals(account)).findAny()
+                        .orElse(account);
     }
 }

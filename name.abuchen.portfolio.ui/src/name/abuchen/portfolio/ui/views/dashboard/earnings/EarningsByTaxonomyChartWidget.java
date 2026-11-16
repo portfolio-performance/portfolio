@@ -151,7 +151,7 @@ public class EarningsByTaxonomyChartWidget extends CircularChartWidget<Map<Inves
 
             CurrencyConverter converter = getDashboardData().getCurrencyConverter();
 
-            Client filteredClient = clientFilter.filter(getClient());
+            Client filteredClient = clientFilter.filter(getDashboardData().getFilteredClient());
 
             for (Account account : filteredClient.getAccounts())
             {
