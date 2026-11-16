@@ -66,7 +66,7 @@ public class StakeshopPtyLtdPDFExtractorTest
                         hasCurrencyCode("AUD"))));
 
         assertThat(results, hasItem(purchase( //
-                        hasDate("2022-05-27"), hasShares(512), //
+                        hasDate("2022-05-27T00:00"), hasShares(512.00), //
                         hasSource("Buy01.txt"), //
                         hasNote("0000001"), //
                         hasAmount("AUD", 10458.04), hasGrossValue("AUD", 10455.04), //
@@ -99,7 +99,7 @@ public class StakeshopPtyLtdPDFExtractorTest
         new AssertImportActions().check(results, "AUD");
 
         assertThat(results, hasItem(purchase( //
-                        hasDate("2022-05-27"), hasShares(512), //
+                        hasDate("2022-05-27T00:00"), hasShares(512.00), //
                         hasSource("Buy01.txt"), //
                         hasNote("0000001"), //
                         hasAmount("AUD", 10458.04), hasGrossValue("AUD", 10455.04), //
@@ -131,10 +131,10 @@ public class StakeshopPtyLtdPDFExtractorTest
                         hasCurrencyCode("AUD"))));
 
         assertThat(results, hasItem(purchase( //
-                        hasDate("2023-04-05"), hasShares(1000), //
+                        hasDate("2023-04-05T00:00"), hasShares(1000.00), //
                         hasSource("Buy02.txt"), //
                         hasNote("0000002"), //
-                        hasAmount("AUD", 503.00), hasGrossValue("AUD", 500), //
+                        hasAmount("AUD", 503.00), hasGrossValue("AUD", 500.00), //
                         hasTaxes("AUD", 0.00), hasFees("AUD", 3.00))));
     }
 
@@ -163,7 +163,7 @@ public class StakeshopPtyLtdPDFExtractorTest
                         hasCurrencyCode("AUD"))));
 
         assertThat(results, hasItem(sale( //
-                        hasDate("2022-09-30"), hasShares(512), //
+                        hasDate("2022-09-30T00:00"), hasShares(512.00), //
                         hasSource("Sell01.txt"), //
                         hasNote("0000003"), //
                         hasAmount("AUD", 7267.40), hasGrossValue("AUD", 7270.40), //
@@ -195,7 +195,7 @@ public class StakeshopPtyLtdPDFExtractorTest
                         hasCurrencyCode("AUD"))));
 
         assertThat(results, hasItem(sale( //
-                        hasDate("2023-03-13"), hasShares(105), //
+                        hasDate("2023-03-13T00:00"), hasShares(105.00), //
                         hasSource("Sell02.txt"), //
                         hasNote("0000004"), //
                         hasAmount("AUD", 2278.65), hasGrossValue("AUD", 2281.65), //
