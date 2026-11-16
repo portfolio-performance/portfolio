@@ -1237,6 +1237,7 @@ public class Messages extends NLS
     public static String PDFImportDebugTextExtraction;
     public static String PDFImportErrorParsingDocument;
     public static String PDFImportFilterName;
+    public static String PDFImportFilterNameWithText;
     public static String PDFImportWizardAssistant;
     public static String PDFImportWizardDescription;
     public static String PDFImportWizardErroneousFiles;
