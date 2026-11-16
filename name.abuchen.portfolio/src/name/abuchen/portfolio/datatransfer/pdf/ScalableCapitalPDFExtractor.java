@@ -141,7 +141,7 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("shares") //
-                                                        .match("^Acquisto .* (?<shares>[\\.,\\d]+) unit. [\\.,\\d]+ [A-Z]{3} [\\.,\\d]+ [A-Z]{3}$") //
+                                                        .match("^Acquisto .* (?<shares>[\\.,\\d]+) unit. [\\.,\\d]+ [A-Z]{3} [\\.,\\d]+ [A-Z]{3}[\\s]*$") //
                                                         .assign((t, v) -> t.setShares(
                                                                         asShares(v.get("shares"), "en", "US"))),
                                         // @formatter:off
@@ -149,7 +149,7 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("shares") //
-                                                        .match("^Kopen .* (?<shares>[\\.,\\d]+) stk\\. [\\.,\\d]+ [A-Z]{3} [\\.,\\d]+ [A-Z]{3}$") //
+                                                        .match("^Kopen .* (?<shares>[\\.,\\d]+) stk\\. [\\.,\\d]+ [A-Z]{3} [\\.,\\d]+ [A-Z]{3}[\\s]*$") //
                                                         .assign((t, v) -> t.setShares(
                                                                         asShares(v.get("shares"), "en", "US"))),
                                         // @formatter:off
@@ -158,7 +158,7 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("shares") //
-                                                        .match("^(Kauf|Verkauf) .* (?<shares>[\\.,\\d]+) Stk\\. [\\.,\\d]+ [A-Z]{3} [\\.,\\d]+ [A-Z]{3}$") //
+                                                        .match("^(Kauf|Verkauf) .* (?<shares>[\\.,\\d]+) Stk\\. [\\.,\\d]+ [A-Z]{3} [\\.,\\d]+ [A-Z]{3}[\\s]*$") //
                                                         .assign((t, v) -> t.setShares(asShares(v.get("shares")))),
                                         // @formatter:off
                                         // Buy Amundi Stoxx Europe 600 (Acc) 22.650225 pc. 919.45 EUR 2,788.00 EUR
@@ -167,7 +167,7 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("shares") //
-                                                        .match("^(Buy|Sell|Acheter) .* (?<shares>[\\.,\\d]+) pc\\. [\\.,\\d]+ [A-Z]{3} [\\.,\\d]+ [A-Z]{3}$") //
+                                                        .match("^(Buy|Sell|Acheter) .* (?<shares>[\\.,\\d]+) pc\\. [\\.,\\d]+ [A-Z]{3} [\\.,\\d]+ [A-Z]{3}[\\s]*$") //
                                                         .assign((t, v) -> t.setShares(
                                                                         asShares(v.get("shares"), "en", "US"))),
 
@@ -189,7 +189,7 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("date", "time") //
-                                                        .match("^(Ausf.hrung|Execution|Ex.cution|Uitvoering|Esecuzione) (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}:[\\d]{2}).*$")
+                                                        .match("^(Ausf.hrung|Execution|Ex.cution|Uitvoering|Esecuzione) (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<time>[\\d]{2}\\:[\\d]{2}\\:[\\d]{2}).*$") //
                                                         .assign((t, v) -> {
                                                             t.setDate(asDate(v.get("date"), v.get("time")));
 
@@ -202,14 +202,12 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("date") //
-                                                        .match("^(?<date>[\\d]{2}\\.[\\w]{2}\\.[\\d]{4}) [\\d]{2}\\.[\\w]{2}\\.[\\d]{4} Gutschrift .*$")
+                                                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) Gutschrift .*$") //
                                                         .assign((t, v) -> {
                                                             t.setDate(asDate(v.get("date")));
 
                                                             context.put("date", v.get("date"));
-                                                        })
-
-                        )
+                                                        }))
 
                         // @formatter:off
                         // Total 19,49 EUR
@@ -400,7 +398,7 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("date") //
-                                                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) Krediet [\\.,\\d]+ [A-Z]{3} [\\.,\\d]+ [\\.,\\d]+ [A-Z]{3}.*$")
+                                                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) Krediet [\\.,\\d]+ [A-Z]{3} [\\.,\\d]+ [\\.,\\d]+ [A-Z]{3}.*$") //
                                                         .assign((t, v) -> t.setDateTime(asDate(v.get("date")))),
                                         // @formatter:off
                                         // 15.01.2025 15.01.2025 Gutschrift 0,12 USD 0,663129 0,08 EUR
@@ -408,26 +406,27 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("date") //
-                                                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (Gutschrift|Belastung) [\\.,\\d]+ [A-Z]{3} [\\.,\\d]+ [\\.,\\d]+ [A-Z]{3}.*$")
+                                                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (Gutschrift|Belastung) [\\.,\\d]+ [A-Z]{3} [\\.,\\d]+ [\\.,\\d]+ [A-Z]{3}.*$") //
                                                         .assign((t, v) -> t.setDateTime(asDate(v.get("date")))),
                                         // @formatter:off
                                         // 27.04.2026 28.04.2026 Credit 0.57 EUR 17 9.69 EUR
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("date") //
-                                                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) Credit [\\.,\\d]+ [A-Z]{3} [\\.,\\d]+ [\\.,\\d]+ [A-Z]{3}.*$")
+                                                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) Credit [\\.,\\d]+ [A-Z]{3} [\\.,\\d]+ [\\.,\\d]+ [A-Z]{3}.*$") //
                                                         .assign((t, v) -> t.setDateTime(asDate(v.get("date")))))
 
-                        .optionalOneOf(//
-                        // @formatter:off
+                        .optionalOneOf( //
+                                        // @formatter:off
                                         // Ex Tag 12.12.2025
                                         // Ex-dag 04.06.2025
                                         // Ex day 24.04.2026
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("exDate") //
-                                                        .match("^(Ex Tag|Ex-dag|Ex day) (?<exDate>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})[\\s]*$")
+                                                        .match("^(Ex Tag|Ex-dag|Ex day) (?<exDate>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})[\\s]*$") //
                                                         .assign((t, v) -> t.setExDate(asDate(v.get("exDate")))))
+
                         .oneOf( //
                                         // @formatter:off
                                         // Gesamtbetrag 0,07 EUR
@@ -572,13 +571,11 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
                         .wrap(TransactionItem::new));
 
         // @formatter:off
-        // 03.04.2025 04.04.2025 Prime-Abonnementgebühr -4,99 EUR
         // 13.08.2026 13.08.2026 Überweisung -50,00 EUR
         // 10.09.2026 10.09.2026 Abhebung vom Geldkonto -300,00 EUR
         // @formatter:on
         var removalBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} " //
-                        + "(Prime\\-Abonnementgeb.hr" //
-                        + "|Abhebung vom Geldkonto" //
+                        + "(Abhebung vom Geldkonto" //
                         + "|.berweisung) " //
                         + "\\-[\\.,\\d]+ [A-Z]{3}[\\s]*$");
         type.addBlock(removalBlock);
@@ -588,9 +585,32 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
 
                         .section("date", "note", "amount", "currency") //
                         .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) " //
-                                        + "(?<note>(Prime\\-Abonnementgeb.hr" //
-                                        + "|Abhebung vom Geldkonto" //
+                                        + "(?<note>(Abhebung vom Geldkonto" //
                                         + "|.berweisung)) " //
+                                        + "\\-(?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3})[\\s]*$") //
+                        .assign((t, v) -> {
+                            t.setDateTime(asDate(v.get("date")));
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setNote(v.get("note"));
+                        })
+
+                        .wrap(TransactionItem::new));
+
+        // @formatter:off
+        // 03.04.2025 04.04.2025 Prime-Abonnementgebühr -4,99 EUR
+        // @formatter:on
+        var feeBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} " //
+                        + "Prime\\-Abonnementgeb.hr " //
+                        + "\\-[\\.,\\d]+ [A-Z]{3}[\\s]*$");
+        type.addBlock(feeBlock);
+        feeBlock.set(new Transaction<AccountTransaction>()
+
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.FEES))
+
+                        .section("date", "note", "amount", "currency") //
+                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) " //
+                                        + "(?<note>Prime\\-Abonnementgeb.hr) " //
                                         + "\\-(?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3})[\\s]*$") //
                         .assign((t, v) -> {
                             t.setDateTime(asDate(v.get("date")));
@@ -751,7 +771,7 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
         type.addBlock(skippedBlock);
         skippedBlock.set(new Transaction<AccountTransaction>()
 
-                        .subject(() -> new AccountTransaction(AccountTransaction.Type.INTEREST))
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.TAXES))
 
                         .section("date", "amount", "currency") //
                         .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) Vorabpauschale " //
@@ -796,7 +816,7 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
                         // Gutschrift 3,65 EUR
                         // @formatter:on
                         .section("amount", "currency") //
-                        .match("^Gutschrift (?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3})\\s?$") //
+                        .match("^Gutschrift (?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3})[\\s]*$") //
                         .assign((t, v) -> {
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(asAmount(v.get("amount")));
@@ -833,16 +853,14 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
                         .match("^f.r (?<name>.*) \\((?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])\\)[\\s]*$") //
                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
-
-                        .oneOf(
-                        // @formatter:off
+                        .oneOf( //
+                                        // @formatter:off
                                         // Berechtigte Anzahl 1 Angefallen im
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("shares") //
                                                         .match("^Berechtigte Anzahl (?<shares>[\\.,\\d]+) .*$") //
-                                                        .assign((t, v) -> t.setShares(asShares(v.get(
-                                                                        "shares")))),
+                                                        .assign((t, v) -> t.setShares(asShares(v.get("shares")))),
 
                                         // @formatter:off
                                         // Entitled quantity 613 Considered year 2025
@@ -850,13 +868,10 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("shares") //
                                                         .match("^Entitled quantity (?<shares>[\\.,\\d]+) .*$") //
-                                                        .assign((t, v) -> t.setShares(asShares(v.get("shares"), "en",
-                                                                                        "US")))
-                        )
-
+                                                        .assign((t, v) -> t.setShares(asShares(v.get("shares"), "en", "US"))))
 
                         .oneOf( //
-                        // @formatter:off
+                                        // @formatter:off
                                         // 24.01.2026 02.01.2026 Steuerabbuchung 0,09 EUR 0,01 EUR
                                         // 24.01.2026 02.01.2026 Tax deduction 596.41 EUR 110.11 EUR
                                         // @formatter:on
@@ -871,11 +886,10 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("date") //
                                                         .match("^Ex-Tag (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) .*$") //
-                                                        .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
-                        )
+                                                        .assign((t, v) -> t.setDateTime(asDate(v.get("date")))))
 
                         .oneOf( //
-                        // @formatter:off
+                                        // @formatter:off
                                         // 24.01.2026 02.01.2026 Steuerabbuchung 0,09 EUR 0,01 EUR
                                         // 24.01.2026 02.01.2026 Tax deduction 596.41 EUR 110.11 EUR
                                         // @formatter:on
@@ -896,8 +910,7 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
                                                         .assign((t, v) -> {
                                                             t.setAmount(asAmount(v.get("amount")));
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                                                        })
-                        )
+                                                        }))
 
                         .wrap(t -> {
                             if (t.getCurrencyCode() != null && t.getAmount() == 0)
@@ -1082,7 +1095,7 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("currency", "fee").optional() //
                         .find("[A-Z]{2}[A-Z0-9]{9}[0-9]") //
-                        .match("^[\\-|\\+](?<fee>[\\.,\\d]+)$") //
+                        .match("^[\\-\\+](?<fee>[\\.,\\d]+)$") //
                         .match("^Ordergeb.hren$") //
                         .match("^(?<currency>[A-Z]{3})$") //
                         .assign((t, v) -> processFeeEntries(t, v, type))
@@ -1092,14 +1105,14 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
                         // Ordergebühren -0,99 EUR
                         // @formatter:on
                         .section("currency", "fee").optional() //
-                        .match("^Ordergeb.hren [\\-|\\+](?<fee>[\\.,\\d]+) (?<currency>[A-Z]{3}).*$") //
+                        .match("^Ordergeb.hren [\\-\\+](?<fee>[\\.,\\d]+) (?<currency>[A-Z]{3}).*$") //
                         .assign((t, v) -> processFeeEntries(t, v, type))
 
                         // @formatter:off
                         // Order fees +0.99 EUR
                         // @formatter:on
                         .section("currency", "fee").optional() //
-                        .match("^Order fees [\\-|\\+](?<fee>[\\.,\\d]+) (?<currency>[A-Z]{3}).*$") //
+                        .match("^Order fees [\\-\\+](?<fee>[\\.,\\d]+) (?<currency>[A-Z]{3}).*$") //
                         .assign((t, v) -> processFeeEntries(t, v, type));
     }
 
