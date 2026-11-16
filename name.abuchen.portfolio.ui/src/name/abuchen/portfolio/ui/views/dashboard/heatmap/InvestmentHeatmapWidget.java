@@ -156,8 +156,8 @@ public class InvestmentHeatmapWidget extends AbstractHeatmapWidget<Long>
 
         // iterate over transactions and add to model
 
-        Client filteredClient = get(ClientFilterConfig.class).getSelectedFilter()
-                        .filter(getDashboardData().getFilteredClient());
+        Client filteredClient = getDashboardData()
+                        .getFilteredClient(get(ClientFilterConfig.class).getSelectedFilter());
 
         filteredClient.getPortfolios().stream() //
                         .flatMap(a -> a.getTransactions().stream()) //

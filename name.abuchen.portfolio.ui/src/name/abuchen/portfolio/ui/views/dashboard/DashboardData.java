@@ -21,6 +21,7 @@ import name.abuchen.portfolio.snapshot.PerformanceIndex;
 import name.abuchen.portfolio.snapshot.ReportingPeriod;
 import name.abuchen.portfolio.snapshot.filter.ClientFilter;
 import name.abuchen.portfolio.ui.editor.ReportingPeriods;
+import name.abuchen.portfolio.ui.util.ClientFilterMenu;
 import name.abuchen.portfolio.ui.views.dataseries.DataSeries;
 import name.abuchen.portfolio.ui.views.dataseries.DataSeriesCache;
 import name.abuchen.portfolio.ui.views.dataseries.DataSeriesSet;
@@ -47,6 +48,7 @@ public class DashboardData
     private Map<Widget, Object> resultCache = Collections.synchronizedMap(new HashMap<>());
 
     private Dashboard dashboard;
+    private String clientFilterId = ""; //$NON-NLS-1$
 
     @VisibleForTesting
     public DashboardData(Client client)
@@ -83,8 +85,24 @@ public class DashboardData
         return dataSeriesCache != null ? dataSeriesCache.getFilteredClient() : client;
     }
 
+    public Client getFilteredClient(ClientFilter filter)
+    {
+        return ClientFilterMenu.applyFilter(filter, getFilteredClient());
+    }
+
+    public String getClientFilterId()
+    {
+        return clientFilterId;
+    }
+
     public synchronized void setClientFilter(ClientFilter filter)
     {
+        setClientFilter(filter, ""); //$NON-NLS-1$
+    }
+
+    public synchronized void setClientFilter(ClientFilter filter, String filterId)
+    {
+        this.clientFilterId = filterId != null ? filterId : ""; //$NON-NLS-1$
         if (dataSeriesCache != null)
             dataSeriesCache.setClientFilter(filter);
     }

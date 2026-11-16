@@ -108,7 +108,7 @@ import name.abuchen.portfolio.util.TextUtil;
             TradeDetailsView.Input input = (TradeDetailsView.Input) getDashboardData().getCache().computeIfAbsent(key,
                             k -> {
 
-                                Client filteredClient = clientFilter.filter(getDashboardData().getFilteredClient());
+                                Client filteredClient = getDashboardData().getFilteredClient(clientFilter);
 
                                 List<Trade> trades = new ArrayList<>();
                                 List<TradeCollectorException> errors = new ArrayList<>();

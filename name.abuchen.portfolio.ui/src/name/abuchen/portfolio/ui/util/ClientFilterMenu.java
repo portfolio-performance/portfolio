@@ -34,6 +34,8 @@ import name.abuchen.portfolio.model.ConfigurationSet.WellKnownConfigurationSets;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.snapshot.filter.ClientFilter;
 import name.abuchen.portfolio.snapshot.filter.PortfolioClientFilter;
+import name.abuchen.portfolio.snapshot.filter.ReadOnlyAccount;
+import name.abuchen.portfolio.snapshot.filter.ReadOnlyPortfolio;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.dialogs.EditClientFilterDialog;
 import name.abuchen.portfolio.ui.dialogs.ListSelectionDialog;
@@ -352,6 +354,52 @@ public final class ClientFilterMenu implements IMenuListener
             int weight = filter.getWeight(o);
             return weight == Classification.ONE_HUNDRED_PERCENT ? uuid : uuid + ":" + weight; //$NON-NLS-1$
         }).collect(Collectors.joining(",")); //$NON-NLS-1$
+    }
+
+    /**
+     * Applies a filter on top of an already filtered client. Stored portfolio
+     * and account elements are resolved against the read-only objects of the
+     * filtered client, so the filtered client remains the outer boundary.
+     * Elements not contained in the filtered client are dropped. Ownership
+     * weights of retained elements are preserved.
+     */
+    public static Client applyFilter(ClientFilter filter, Client filteredClient)
+    {
+        if (filter == null || filter == ClientFilter.NO_FILTER)
+            return filteredClient;
+
+        if (!(filter instanceof PortfolioClientFilter portfolioFilter))
+            return filter.filter(filteredClient);
+
+        var portfolios = new ArrayList<Portfolio>();
+        var accounts = new ArrayList<Account>();
+        var weights = new HashMap<Object, Integer>();
+
+        for (Object element : portfolioFilter.getAllElements())
+        {
+            if (element instanceof Portfolio portfolio)
+            {
+                Portfolio resolved = filteredClient.getPortfolios().stream()
+                                .filter(p -> ReadOnlyPortfolio.unwrap(p).equals(portfolio)).findAny().orElse(null);
+                if (resolved != null)
+                {
+                    portfolios.add(resolved);
+                    weights.put(resolved, portfolioFilter.getWeight(portfolio));
+                }
+            }
+            else if (element instanceof Account account)
+            {
+                Account resolved = filteredClient.getAccounts().stream()
+                                .filter(a -> ReadOnlyAccount.unwrap(a).equals(account)).findAny().orElse(null);
+                if (resolved != null)
+                {
+                    accounts.add(resolved);
+                    weights.put(resolved, portfolioFilter.getWeight(account));
+                }
+            }
+        }
+
+        return new PortfolioClientFilter(portfolios, accounts, weights).filter(filteredClient);
     }
 
     public boolean hasActiveFilter()

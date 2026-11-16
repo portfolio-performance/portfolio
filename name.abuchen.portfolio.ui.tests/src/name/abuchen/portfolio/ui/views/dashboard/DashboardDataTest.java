@@ -22,7 +22,7 @@ public class DashboardDataTest
         Client client = new Client();
 
         Account accountA = new AccountBuilder().deposit_("2024-01-01", Values.Amount.factorize(100)).addTo(client);
-        new AccountBuilder().deposit_("2024-01-01", Values.Amount.factorize(100)).addTo(client);
+        Account accountB = new AccountBuilder().deposit_("2024-01-01", Values.Amount.factorize(100)).addTo(client);
 
         var data = new DashboardData(client);
 
@@ -31,5 +31,13 @@ public class DashboardDataTest
         data.setClientFilter(new PortfolioClientFilter(Collections.emptyList(), List.of(accountA)));
 
         assertThat(data.getFilteredClient().getAccounts().size(), is(1));
+
+        // A widget filter is resolved against the dashboard-filtered client.
+        assertThat(data.getFilteredClient(new PortfolioClientFilter(Collections.emptyList(), List.of(accountA)))
+                        .getAccounts().size(), is(1));
+
+        // Elements excluded by the dashboard filter cannot be recovered.
+        assertThat(data.getFilteredClient(new PortfolioClientFilter(Collections.emptyList(), List.of(accountB)))
+                        .getAccounts().size(), is(0));
     }
 }
