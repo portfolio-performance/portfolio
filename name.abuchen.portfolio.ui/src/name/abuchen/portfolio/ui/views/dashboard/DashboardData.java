@@ -159,8 +159,8 @@ public class DashboardData
 
     public synchronized void clearCache()
     {
-        cache.clear();
         dataSeriesCache.clear();
+        cache.clear();
 
         clearResultCache();
 
