@@ -34,6 +34,7 @@ public class InvestmentPlan implements Named, Adaptable, Attributable
     private Security security;
     private Portfolio portfolio;
     private Account account;
+    private WeekendAdjustment weekendAdjustment = WeekendAdjustment.NEXT_BUSINESS_DAY;
 
     private Attributes attributes;
 
@@ -154,6 +155,49 @@ public class InvestmentPlan implements Named, Adaptable, Attributable
     public LocalDate getStart()
     {
         return start.toLocalDate();
+    }
+
+    public WeekendAdjustment getWeekendAdjustment()
+    {
+        // Fallback for existing XML files where this might be null
+        return weekendAdjustment == null ? WeekendAdjustment.NEXT_BUSINESS_DAY : weekendAdjustment;
+    }
+
+    private Object readResolve()
+    {
+        if (weekendAdjustment == null)
+            weekendAdjustment = WeekendAdjustment.NEXT_BUSINESS_DAY;
+        return this;
+    }
+
+    private LocalDate adjustForWeekend(LocalDate date, TradeCalendar tradeCalendar)
+    {
+        if (date == null)
+            return null;
+
+        var adjustment = getWeekendAdjustment();
+        if (adjustment == null || adjustment == WeekendAdjustment.NEXT_BUSINESS_DAY)
+        {
+            // Push forward (Next business day / Monday)
+            while (tradeCalendar.isHoliday(date))
+            {
+                date = date.plusDays(1);
+            }
+        }
+        else if (adjustment == WeekendAdjustment.PREVIOUS_BUSINESS_DAY)
+        {
+            // Pull backward (Previous business day / Friday)
+            while (tradeCalendar.isHoliday(date))
+            {
+                date = date.minusDays(1);
+            }
+        }
+        return date;
+    }
+
+    public void setWeekendAdjustment(WeekendAdjustment weekendAdjustment)
+    {
+        this.weekendAdjustment = weekendAdjustment;
     }
 
     public void setStart(LocalDate start)
@@ -382,10 +426,8 @@ public class InvestmentPlan implements Named, Adaptable, Attributable
         // do not generate a investment plan transaction on a public holiday
         TradeCalendar tradeCalendar = security != null ? TradeCalendarManager.getInstance(security)
                         : TradeCalendarManager.getDefaultInstance();
-        while (tradeCalendar.isHoliday(next))
-            next = next.plusDays(1);
 
-        return next;
+        return adjustForWeekend(next, tradeCalendar);
     }
 
     public LocalDate getDateOfNextTransactionToBeGenerated()
@@ -400,13 +442,12 @@ public class InvestmentPlan implements Named, Adaptable, Attributable
         {
             LocalDate startDate = start.toLocalDate();
 
-            // do not generate a investment plan transaction on a public holiday
+            // do not generate an investment plan transaction on a
+            // holiday/weekend, and apply push/pull adjustment
             TradeCalendar tradeCalendar = security != null ? TradeCalendarManager.getInstance(security)
                             : TradeCalendarManager.getDefaultInstance();
-            while (tradeCalendar.isHoliday(startDate))
-                startDate = startDate.plusDays(1);
 
-            return startDate;
+            return adjustForWeekend(startDate, tradeCalendar);
         }
     }
 
