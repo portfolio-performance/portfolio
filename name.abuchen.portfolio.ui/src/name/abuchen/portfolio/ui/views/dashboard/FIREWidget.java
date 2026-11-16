@@ -46,13 +46,14 @@ import name.abuchen.portfolio.util.TextUtil;
 public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
 {
     private static final double DEFAULT_RETURNS = 0.07;
+    private static final double DEFAULT_WITHDRAWAL = 0.04;
     private static final double MAX_TIME_TO_FIRE_YEARS = 50;
     private static final double EPSILON_MONTHS = 0.01;
     private static final String DEFAULT_FIRE_NUMBER_INPUT = "1500000"; //$NON-NLS-1$
     private static final String DEFAULT_MONTHLY_SAVINGS_INPUT = "5000"; //$NON-NLS-1$
 
     public record FIREData(Money fireNumber, Money currentValue, Money monthlySavings, double twror, double timeToFire,
-                    LocalDate targetDate)
+                    LocalDate targetDate, Money yearlyWithdrawal, Money currentYearlyWithdrawal)
     {
     }
 
@@ -109,8 +110,7 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
         public void menuAboutToShow(IMenuManager manager)
         {
             var currency = delegate.getClient().getBaseCurrency();
-            String display = money != null ? Values.MoneyShort.format(money, currency)
-                            : Messages.LabelFIREClickToSet;
+            String display = money != null ? Values.MoneyShort.format(money, currency) : Messages.LabelFIREClickToSet;
             manager.appendToGroup(DashboardView.INFO_MENU_GROUP_NAME,
                             new LabelOnly(MessageFormat.format(Messages.LabelColonSeparated, label, display)));
 
@@ -179,64 +179,77 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
         }
     }
 
-    private static class FIREReturnsConfig implements WidgetConfig
+    private abstract static class PercentWidgetConfig implements WidgetConfig
     {
         private final WidgetDelegate<?> delegate;
-        private Double returns;
+        private final Dashboard.Config configurationKey;
+        private final String label;
+        private Double value;
 
-        public FIREReturnsConfig(WidgetDelegate<?> delegate)
+        protected PercentWidgetConfig(WidgetDelegate<?> delegate, Dashboard.Config configurationKey, String label)
         {
             this.delegate = delegate;
+            this.configurationKey = configurationKey;
+            this.label = label;
 
-            String returnsStr = delegate.getWidget().getConfiguration().get(Dashboard.Config.FIRE_RETURNS.name());
-            if (returnsStr != null && !returnsStr.isEmpty())
+            String str = delegate.getWidget().getConfiguration().get(configurationKey.name());
+            if (str != null && !str.isEmpty())
             {
                 try
                 {
-                    this.returns = Double.parseDouble(returnsStr);
+                    this.value = Double.parseDouble(str);
                 }
                 catch (NumberFormatException e)
                 {
-                    this.returns = null;
+                    this.value = null;
                 }
             }
             else
             {
-                this.returns = null;
+                this.value = null;
             }
         }
 
-        public Double getReturns()
+        protected Double getValue()
         {
-            return returns;
+            return value;
         }
 
-        public void setReturns(Double returns)
+        protected void setValue(Double value)
         {
-            this.returns = returns;
-            delegate.getWidget().getConfiguration().put(Dashboard.Config.FIRE_RETURNS.name(), String.valueOf(returns));
+            this.value = value;
+            delegate.getWidget().getConfiguration().put(configurationKey.name(), String.valueOf(value));
             delegate.update();
             delegate.getClient().touch();
+        }
+
+        /**
+         * Hook to restrict a parsed value before it is stored. Returns the
+         * value unchanged by default.
+         */
+        protected double normalize(double value)
+        {
+            return value;
         }
 
         @Override
         public void menuAboutToShow(IMenuManager manager)
         {
-            String display = returns != null ? Values.Percent2.format(returns) : Messages.LabelFIREClickToSet;
-            manager.appendToGroup(DashboardView.INFO_MENU_GROUP_NAME, new LabelOnly(
-                            MessageFormat.format(Messages.LabelColonSeparated, Messages.LabelFIREReturns, display)));
+            String display = value != null ? Values.Percent2.format(value) : Messages.LabelFIREClickToSet;
 
-            manager.add(new SimpleAction(Messages.LabelFIREReturns + "...", a -> { //$NON-NLS-1$
-                var initial = returns != null ? Values.Percent.format(returns) : ""; //$NON-NLS-1$
-                var dialog = new InputDialog(Display.getCurrent().getActiveShell(), Messages.LabelFIREReturns,
-                                Messages.LabelFIREReturns, initial, null);
+            manager.appendToGroup(DashboardView.INFO_MENU_GROUP_NAME,
+                            new LabelOnly(MessageFormat.format(Messages.LabelColonSeparated, label, display)));
+
+            manager.add(new SimpleAction(label + "...", a -> { //$NON-NLS-1$
+                var initial = value != null ? Values.Percent.format(value) : ""; //$NON-NLS-1$
+                var dialog = new InputDialog(Display.getCurrent().getActiveShell(), label, label, initial, null);
 
                 if (dialog.open() != Window.OK)
                     return;
 
                 try
                 {
-                    setReturns(parseReturns(dialog.getValue()));
+                    setValue(normalize(parsePercents(dialog.getValue())));
                 }
                 catch (IllegalArgumentException ignore)
                 {
@@ -248,8 +261,51 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
         @Override
         public String getLabel()
         {
-            String display = returns != null ? Values.Percent2.format(returns) : Messages.LabelFIREClickToSet;
-            return MessageFormat.format(Messages.LabelColonSeparated, Messages.LabelFIREReturns, display);
+            String display = value != null ? Values.Percent2.format(value) : Messages.LabelFIREClickToSet;
+
+            return MessageFormat.format(Messages.LabelColonSeparated, label, display);
+        }
+    }
+
+    private static class FIREReturnsConfig extends PercentWidgetConfig
+    {
+        public FIREReturnsConfig(WidgetDelegate<?> delegate)
+        {
+            super(delegate, Dashboard.Config.FIRE_RETURNS, Messages.LabelFIREReturns);
+        }
+
+        public Double getReturns()
+        {
+            return getValue();
+        }
+
+        public void setReturns(Double returns)
+        {
+            setValue(returns);
+        }
+    }
+
+    private static class FIREWithdrawalConfig extends PercentWidgetConfig
+    {
+        public FIREWithdrawalConfig(WidgetDelegate<?> delegate)
+        {
+            super(delegate, Dashboard.Config.FIRE_WITHDRAWAL, Messages.LabelFIREWithdrawal);
+        }
+
+        public Double getWithdrawal()
+        {
+            return getValue();
+        }
+
+        public void setWithdrawal(Double withdrawal)
+        {
+            setValue(withdrawal);
+        }
+
+        @Override
+        protected double normalize(double value)
+        {
+            return capWithdrawal(value);
         }
     }
 
@@ -264,6 +320,12 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
     private Text twrorInput;
     private ColoredLabel timeToFireLabel;
     private ColoredLabel targetDateLabel;
+    private ColoredLabel withdrawalLabel;
+    private Text withdrawalInput;
+    private ColoredLabel yearlyWithdrawalLabel;
+    private ColoredLabel monthlyWithdrawalLabel;
+    private ColoredLabel currentYearlyWithdrawalLabel;
+    private ColoredLabel currentMonthlyWithdrawalLabel;
 
     public FIREWidget(Widget widget, DashboardData dashboardData)
     {
@@ -272,6 +334,7 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
         addConfig(new FIRENumberConfig(this));
         addConfig(new FIREMonthlySavingsConfig(this));
         addConfig(new FIREReturnsConfig(this));
+        addConfig(new FIREWithdrawalConfig(this));
         addConfig(new DataSeriesConfig(this, false));
     }
 
@@ -385,6 +448,70 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
         targetDateLabel.setData(UIConstants.CSS.CLASS_NAME, UIConstants.CSS.HEADING2);
         GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).applyTo(targetDateLabel);
 
+        // Est. withdrawal (editable)
+        EditableRow withdrawalRow = createEditableRow(Messages.LabelFIREWithdrawal, null, this::commitWithdrawal,
+                        this::cancelWithdrawalEditing);
+        withdrawalLabel = withdrawalRow.valueLabel();
+        withdrawalInput = withdrawalRow.input();
+
+        showWithdrawal(getEffectiveWithdrawal());
+
+        // Yearly Withdrawal
+        new Label(container, SWT.NONE); // Empty sign column
+        Label yearlyWithdrawalLbl = new Label(container, SWT.NONE);
+        yearlyWithdrawalLbl
+                        .setText(MessageFormat.format(Messages.LabelColonSeparated, Messages.LabelFIREYearlyWithdrawal,
+                                        "")); //$NON-NLS-1$
+        yearlyWithdrawalLbl.setBackground(container.getBackground());
+        GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).applyTo(yearlyWithdrawalLbl);
+
+        yearlyWithdrawalLabel = new ColoredLabel(container, SWT.RIGHT);
+        yearlyWithdrawalLabel.setBackground(Colors.theme().defaultBackground());
+        yearlyWithdrawalLabel.setText(""); //$NON-NLS-1$
+        GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).applyTo(yearlyWithdrawalLabel);
+
+        // Monthly Withdrawal
+        new Label(container, SWT.NONE); // Empty sign column
+        Label monthlyWithdrawalLbl = new Label(container, SWT.NONE);
+        monthlyWithdrawalLbl
+                        .setText(MessageFormat.format(Messages.LabelColonSeparated, Messages.LabelFIREMonthlyWithdrawal,
+                                        "")); //$NON-NLS-1$
+        monthlyWithdrawalLbl.setBackground(container.getBackground());
+        GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).applyTo(monthlyWithdrawalLbl);
+
+        monthlyWithdrawalLabel = new ColoredLabel(container, SWT.RIGHT);
+        monthlyWithdrawalLabel.setBackground(Colors.theme().defaultBackground());
+        monthlyWithdrawalLabel.setText(""); //$NON-NLS-1$
+        GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).applyTo(monthlyWithdrawalLabel);
+
+        // Current Yearly Withdrawal
+        new Label(container, SWT.NONE); // Empty sign column
+        Label currentYearlyWithdrawalLbl = new Label(container, SWT.NONE);
+        currentYearlyWithdrawalLbl
+                        .setText(MessageFormat.format(Messages.LabelColonSeparated,
+                                        Messages.LabelFIRECurrentYearlyWithdrawal, "")); //$NON-NLS-1$
+        currentYearlyWithdrawalLbl.setBackground(container.getBackground());
+        GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).applyTo(currentYearlyWithdrawalLbl);
+
+        currentYearlyWithdrawalLabel = new ColoredLabel(container, SWT.RIGHT);
+        currentYearlyWithdrawalLabel.setBackground(Colors.theme().defaultBackground());
+        currentYearlyWithdrawalLabel.setText(""); //$NON-NLS-1$
+        GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).applyTo(currentYearlyWithdrawalLabel);
+
+        // Current Monthly Withdrawal
+        new Label(container, SWT.NONE); // Empty sign column
+        Label currentMonthlyWithdrawalLbl = new Label(container, SWT.NONE);
+        currentMonthlyWithdrawalLbl
+                        .setText(MessageFormat.format(Messages.LabelColonSeparated,
+                                        Messages.LabelFIRECurrentMonthlyWithdrawal, "")); //$NON-NLS-1$
+        currentMonthlyWithdrawalLbl.setBackground(container.getBackground());
+        GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).applyTo(currentMonthlyWithdrawalLbl);
+
+        currentMonthlyWithdrawalLabel = new ColoredLabel(container, SWT.RIGHT);
+        currentMonthlyWithdrawalLabel.setBackground(Colors.theme().defaultBackground());
+        currentMonthlyWithdrawalLabel.setText(""); //$NON-NLS-1$
+        GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).applyTo(currentMonthlyWithdrawalLabel);
+
         Listener clickOutsideCancelListener = this::handleClickOutsideActiveEditor;
         container.getDisplay().addFilter(SWT.MouseDown, clickOutsideCancelListener);
         container.addDisposeListener(
@@ -444,7 +571,13 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
                 }
             }
 
-            return new FIREData(fireNumber, currentValue, monthlySavings, twror, timeToFire, targetDate);
+            double withdrawal = getEffectiveWithdrawal();
+
+            Money yearlyWithdrawal = fireNumber != null ? fireNumber.multiplyAndRound(withdrawal) : null;
+            Money currentYearlyWithdrawal = currentValue != null ? currentValue.multiplyAndRound(withdrawal) : null;
+
+            return new FIREData(fireNumber, currentValue, monthlySavings, twror, timeToFire, targetDate,
+                            yearlyWithdrawal, currentYearlyWithdrawal);
         };
     }
 
@@ -543,7 +676,7 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
 
         try
         {
-            var returns = parseReturns(twrorInput.getText());
+            var returns = parsePercents(twrorInput.getText());
 
             if (currentReturns == null || Double.compare(currentReturns, returns) != 0)
                 get(FIREReturnsConfig.class).setReturns(returns);
@@ -566,7 +699,7 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
         }
     }
 
-    private static double parseReturns(String input)
+    private static double parsePercents(String input)
     {
         var text = input.replace("%", "").trim(); //$NON-NLS-1$ //$NON-NLS-2$
         var converter = new StringToCurrencyConverter(Values.WeightPercent, true);
@@ -586,6 +719,58 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
     private String getDefaultReturnsInput()
     {
         return Values.Percent.format(DEFAULT_RETURNS);
+    }
+
+    private void commitWithdrawal()
+    {
+        Double currentWithdrawal = get(FIREWithdrawalConfig.class).getWithdrawal();
+
+        try
+        {
+            var withdrawal = parsePercents(withdrawalInput.getText());
+
+            withdrawal = capWithdrawal(withdrawal);
+
+            if (currentWithdrawal == null || Double.compare(currentWithdrawal, withdrawal) != 0)
+                get(FIREWithdrawalConfig.class).setWithdrawal(withdrawal);
+
+            showWithdrawal(withdrawal);
+        }
+        catch (IllegalArgumentException e)
+        {
+            showWithdrawal(getEffectiveWithdrawal());
+        }
+    }
+
+    private void cancelWithdrawalEditing()
+    {
+        withdrawalInput.setText(Values.Percent.format(getEffectiveWithdrawal()));
+    }
+
+    /**
+     * Returns the saved withdrawal rate, or the default (4% rule) if none has
+     * been saved yet. Used for both display and calculation so they stay
+     * consistent.
+     */
+    private double getEffectiveWithdrawal()
+    {
+        Double saved = get(FIREWithdrawalConfig.class).getWithdrawal();
+        return saved != null ? saved : DEFAULT_WITHDRAWAL;
+    }
+
+    /**
+     * Caps a withdrawal rate at 100%. Shared by the inline editor and the
+     * configuration menu so both apply the same limit.
+     */
+    private static double capWithdrawal(double withdrawal)
+    {
+        return Double.min(withdrawal, 1);
+    }
+
+    private void showWithdrawal(double withdrawal)
+    {
+        withdrawalLabel.setText(Values.Percent2.format(withdrawal));
+        withdrawalInput.setText(Values.Percent.format(withdrawal));
     }
 
     private void commitMoneyField(Text input, ColoredLabel label, Money currentValue, Consumer<Money> setter,
@@ -729,6 +914,12 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
             cancelReturnsEditing();
             showLabel(twrorLabel, twrorInput);
         }
+
+        if (withdrawalInput.isVisible() && !isSameOrDescendant(clickedControl, withdrawalInput))
+        {
+            cancelWithdrawalEditing();
+            showLabel(withdrawalLabel, withdrawalInput);
+        }
     }
 
     private boolean isSameOrDescendant(Control control, Control possibleParent)
@@ -868,6 +1059,31 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
             timeToFireLabel.setTextColor(Colors.theme().redForeground());
             targetDateLabel.setText("-"); //$NON-NLS-1$
             targetDateLabel.setTextColor(Colors.theme().defaultForeground());
+        }
+
+        showWithdrawal(getEffectiveWithdrawal());
+
+        if (data.yearlyWithdrawal() == null)
+        {
+            yearlyWithdrawalLabel.setText("-"); //$NON-NLS-1$
+            monthlyWithdrawalLabel.setText("-"); //$NON-NLS-1$
+        }
+        else
+        {
+            yearlyWithdrawalLabel.setText(Values.MoneyShort.format(data.yearlyWithdrawal(), currency));
+            monthlyWithdrawalLabel.setText(Values.MoneyShort.format(data.yearlyWithdrawal().divide(12), currency));
+        }
+
+        if (data.currentYearlyWithdrawal() == null)
+        {
+            currentYearlyWithdrawalLabel.setText("-"); //$NON-NLS-1$
+            currentMonthlyWithdrawalLabel.setText("-"); //$NON-NLS-1$
+        }
+        else
+        {
+            currentYearlyWithdrawalLabel.setText(Values.MoneyShort.format(data.currentYearlyWithdrawal(), currency));
+            currentMonthlyWithdrawalLabel
+                            .setText(Values.MoneyShort.format(data.currentYearlyWithdrawal().divide(12), currency));
         }
 
         container.layout();
