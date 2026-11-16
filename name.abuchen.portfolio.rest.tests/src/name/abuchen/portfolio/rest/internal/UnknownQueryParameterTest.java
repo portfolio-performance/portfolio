@@ -170,11 +170,21 @@ public class UnknownQueryParameterTest
         assertThat(response.get("reportingCurrency").getAsString(), is("USD"));
     }
 
+    @Test
+    public void testInstrumentFilterIsAcceptedByTheRestRoute() throws Exception
+    {
+        var response = get("/v1/files/" + fileId + "/instruments",
+                        "filter=%7B%22name%22%3A%22ACME%22%7D");
+
+        assertThat(response.getAsJsonArray("items").size(), is(1));
+        assertThat(response.getAsJsonArray("items").get(0).getAsJsonObject().get("name").getAsString(), is("ACME"));
+    }
+
     /** a route that declares no parameters accepts none, and says so */
     @Test
     public void testRouteWithoutParametersAcceptsNone()
     {
-        var problem = expectRejection("/v1/files/" + fileId + "/instruments", "limit=10");
+        var problem = expectRejection("/v1/files/" + fileId + "/cash-accounts", "limit=10");
 
         assertThat(problem.getStatus(), is(400));
         assertThat(problem.getErrors().get(0).field(), is("limit"));

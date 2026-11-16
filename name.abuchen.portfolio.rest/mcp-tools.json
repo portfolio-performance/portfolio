@@ -33,13 +33,48 @@
       "operationId": "listInstruments",
       "method": "GET",
       "pathTemplate": "/v1/files/{file}/instruments",
-      "description": "List every instrument in a file — what the application itself labels a *security*: stocks, funds, bonds, crypto, and currency-less series such as an index. Each entry is the complete record, identical to what pp_get_instrument returns, including any custom attributes that are set.\n\nThis is how a name, ISIN, WKN or ticker becomes the `uuid` that every other instrument tool requires.",
+      "description": "List instruments in a file — what the application itself labels a *security*: stocks, funds, bonds, crypto, and currency-less series such as an index. Each entry is the complete record, identical to what pp_get_instrument returns, including any custom attributes that are set.\n\nPass `filter` to fetch only matching records and reduce large responses. Every criterion is combined with AND; give an array of values for OR within one criterion. Fixed fields such as name, currencyCode, ISIN, WKN and tickerSymbol match exactly. Put custom attribute ids under `attributes` (resolve ids with pp_list_instrument_attribute_types). Match watch-list membership by its name, or a taxonomy classification by its name and optionally taxonomy name.\n\nWithout a filter, this lists every instrument. Use the returned `uuid` with the other instrument tools.",
       "inputSchema": {
         "type": "object",
         "properties": {
           "file": {
             "type": "string",
             "description": "Which portfolio file to work in — the `id` or `alias` from pp_list_files. Required; there is no default file."
+          },
+          "filter": {
+            "type": "object",
+            "description": "Optional exact-match criteria. Criteria are ANDed; an array of values means any listed value may match. Fixed fields: uuid, name, currencyCode, isin, wkn, tickerSymbol, note. Custom attributes: nest opaque ids under attributes. Watch lists: watchlist is a name. Taxonomy: classification is {name, taxonomy?}.",
+            "properties": {
+              "uuid": { "description": "Instrument UUID.", "oneOf": [{ "type": "string" }, { "type": "array", "items": { "type": "string" } }] },
+              "name": { "description": "Instrument name.", "oneOf": [{ "type": "string" }, { "type": "array", "items": { "type": "string" } }] },
+              "currencyCode": { "description": "Instrument currency code.", "oneOf": [{ "type": "string" }, { "type": "array", "items": { "type": "string" } }] },
+              "isin": { "description": "ISIN.", "oneOf": [{ "type": "string" }, { "type": "array", "items": { "type": "string" } }] },
+              "wkn": { "description": "WKN.", "oneOf": [{ "type": "string" }, { "type": "array", "items": { "type": "string" } }] },
+              "tickerSymbol": { "description": "Ticker symbol.", "oneOf": [{ "type": "string" }, { "type": "array", "items": { "type": "string" } }] },
+              "note": { "description": "Instrument note.", "oneOf": [{ "type": "string" }, { "type": "array", "items": { "type": "string" } }] },
+              "attributes": {
+                "type": "object",
+                "description": "Custom attributes keyed by ids from pp_list_instrument_attribute_types.",
+                "additionalProperties": {
+                  "oneOf": [
+                    { "type": "string" }, { "type": "number" }, { "type": "boolean" }, { "type": "null" },
+                    { "type": "array", "items": { "oneOf": [{ "type": "string" }, { "type": "number" }, { "type": "boolean" }, { "type": "null" }] } }
+                  ]
+                }
+              },
+              "watchlist": { "description": "Name of a watch list containing the instrument.", "oneOf": [{ "type": "string" }, { "type": "array", "items": { "type": "string" } }] },
+              "classification": {
+                "type": "object",
+                "description": "A taxonomy assignment, for example {name: Technology, taxonomy: Sectors}.",
+                "properties": {
+                  "name": { "type": "string", "description": "Classification name, for example Technology." },
+                  "taxonomy": { "type": "string", "description": "Optional taxonomy name to disambiguate classifications." }
+                },
+                "required": ["name"],
+                "additionalProperties": false
+              }
+            },
+            "additionalProperties": false
           }
         },
         "required": [
@@ -58,6 +93,11 @@
           "arg": "file",
           "where": "path",
           "wire": "file"
+        },
+        {
+          "arg": "filter",
+          "where": "query",
+          "wire": "filter"
         }
       ]
     },

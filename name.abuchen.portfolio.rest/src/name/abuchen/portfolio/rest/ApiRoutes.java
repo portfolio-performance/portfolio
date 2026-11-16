@@ -78,7 +78,8 @@ public final class ApiRoutes
         router.add("GET", "/v1/files", onUiThread(host, files::list)); //$NON-NLS-1$ //$NON-NLS-2$
 
         router.add("GET", "/v1/files/{file}/instruments", read(resolver, host, //$NON-NLS-1$ //$NON-NLS-2$
-                        (client, req) -> Response.json(200, SecuritiesHandler.list(client))));
+                        (client, req) -> Response.json(200, SecuritiesHandler.list(client, req.queryParam("filter")))), //$NON-NLS-1$
+                        "filter"); //$NON-NLS-1$
         // literal sub-collection: must precede the {uuid} route (Router is first-match)
         router.add("GET", "/v1/files/{file}/instruments/attribute-types", read(resolver, host, //$NON-NLS-1$ //$NON-NLS-2$
                         (client, req) -> Response.json(200, SecuritiesHandler.attributeTypes(client))));
