@@ -57,7 +57,7 @@ class MeasurementTool implements ChartTool
             start = end = Spot.from(e, chart);
 
         redrawOnMove = true;
-        chart.redraw();
+        chart.getChartToolsManager().requestRepaint();
     }
 
     @Override
@@ -67,7 +67,7 @@ class MeasurementTool implements ChartTool
             return;
 
         end = Spot.from(e, chart);
-        chart.redraw();
+        chart.getChartToolsManager().requestRepaint();
     }
 
     @Override
@@ -82,7 +82,7 @@ class MeasurementTool implements ChartTool
             redrawOnMove = false;
 
         end = Spot.from(e, chart);
-        chart.redraw();
+        chart.getChartToolsManager().requestRepaint();
     }
 
     @Override
