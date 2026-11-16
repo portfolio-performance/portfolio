@@ -148,10 +148,11 @@ public class EarningsChartWidget extends WidgetDelegate<PaymentsViewModel>
         CacheKey key = new CacheKey(PaymentsViewModel.class, clientFilter, startYear, earningsType, grossNetType);
 
         return () -> (PaymentsViewModel) getDashboardData().getCache().computeIfAbsent(key, k -> {
-            PaymentsViewModel model = new PaymentsViewModel(getDashboardData().getCurrencyConverter(), getClient());
+            PaymentsViewModel model = new PaymentsViewModel(getDashboardData().getCurrencyConverter(),
+                            getDashboardData().getFilteredClient());
             PaymentsViewModel.Mode mode = earningsType.getPaymentsViewModelMode();
             model.configure(startYear, mode, grossNetType == GrossNetType.GROSS, false, CostMethod.FIFO);
-            model.setFilteredClient(clientFilter.filter(getClient()));
+            model.setFilteredClient(clientFilter.filter(getDashboardData().getFilteredClient()));
             model.recalculate();
             return model;
         });

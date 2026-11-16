@@ -19,6 +19,7 @@ import name.abuchen.portfolio.money.CurrencyConverterImpl;
 import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
 import name.abuchen.portfolio.snapshot.PerformanceIndex;
 import name.abuchen.portfolio.snapshot.ReportingPeriod;
+import name.abuchen.portfolio.snapshot.filter.ClientFilter;
 import name.abuchen.portfolio.ui.editor.ReportingPeriods;
 import name.abuchen.portfolio.ui.views.dataseries.DataSeries;
 import name.abuchen.portfolio.ui.views.dataseries.DataSeriesCache;
@@ -55,6 +56,7 @@ public class DashboardData
         this.stylingEngine = null;
         this.factory = new ExchangeRateProviderFactory(client);
         this.converter = new CurrencyConverterImpl(factory, client.getBaseCurrency());
+        this.dataSeriesCache = new DataSeriesCache(client, factory);
     }
 
     @Inject
@@ -74,6 +76,17 @@ public class DashboardData
     public Client getClient()
     {
         return client;
+    }
+
+    public Client getFilteredClient()
+    {
+        return dataSeriesCache != null ? dataSeriesCache.getFilteredClient() : client;
+    }
+
+    public synchronized void setClientFilter(ClientFilter filter)
+    {
+        if (dataSeriesCache != null)
+            dataSeriesCache.setClientFilter(filter);
     }
 
     public IPreferenceStore getPreferences()

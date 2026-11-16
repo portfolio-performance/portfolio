@@ -108,7 +108,7 @@ import name.abuchen.portfolio.util.TextUtil;
             TradeDetailsView.Input input = (TradeDetailsView.Input) getDashboardData().getCache().computeIfAbsent(key,
                             k -> {
 
-                                Client filteredClient = clientFilter.filter(getClient());
+                                Client filteredClient = clientFilter.filter(getDashboardData().getFilteredClient());
 
                                 List<Trade> trades = new ArrayList<>();
                                 List<TradeCollectorException> errors = new ArrayList<>();
@@ -117,7 +117,7 @@ import name.abuchen.portfolio.util.TextUtil;
                                 // only by the trades that use it
                                 var snapshotCache = new SnapshotCache();
 
-                                getClient().getSecurities().forEach(s -> {
+                                filteredClient.getSecurities().forEach(s -> {
                                     try
                                     {
                                         var converter = getDashboardData().getCurrencyConverter();

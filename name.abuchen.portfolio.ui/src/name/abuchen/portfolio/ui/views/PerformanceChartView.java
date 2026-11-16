@@ -34,6 +34,7 @@ import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.util.AbstractCSVExporter;
+import name.abuchen.portfolio.ui.util.ClientFilterDropDown;
 import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.DropDown;
 import name.abuchen.portfolio.ui.util.SimpleAction;
@@ -64,6 +65,7 @@ public class PerformanceChartView extends AbstractHistoricView
     private Aggregation.Period aggregationPeriod;
 
     private PerformanceChartSeriesBuilder seriesBuilder;
+    private ClientFilterDropDown clientFilter;
 
     @Override
     protected String getDefaultTitle()
@@ -100,7 +102,13 @@ public class PerformanceChartView extends AbstractHistoricView
     protected void addButtons(ToolBarManager toolBar)
     {
         super.addButtons(toolBar);
+
         toolBar.add(new AggregationPeriodDropDown());
+
+        this.clientFilter = new ClientFilterDropDown(getClient(), getPreferenceStore(),
+                        PerformanceChartView.class.getSimpleName(), filter -> notifyModelUpdated());
+        toolBar.add(clientFilter);
+
         toolBar.add(new ExportDropDown());
         toolBar.add(new DropDown(Messages.MenuConfigureChart, Images.CONFIG, SWT.NONE,
                         manager -> picker.configMenuAboutToShow(manager)));
@@ -121,7 +129,9 @@ public class PerformanceChartView extends AbstractHistoricView
         chart.getToolTip().reverseLabels(true);
 
         DataSeriesCache cache = make(DataSeriesCache.class);
+        cache.setClientFilter(clientFilter.getSelectedFilter());
         seriesBuilder = new PerformanceChartSeriesBuilder(chart, cache);
+        setToContext(UIConstants.Context.FILTERED_CLIENT, cache.getFilteredClient());
 
         picker = new DataSeriesConfigurator(this, DataSeries.UseCase.PERFORMANCE);
         if (chartViewConfig != null)
@@ -176,7 +186,9 @@ public class PerformanceChartView extends AbstractHistoricView
     @Override
     public void notifyModelUpdated()
     {
-        seriesBuilder.getCache().clear();
+        var cache = seriesBuilder.getCache();
+        cache.setClientFilter(clientFilter.getSelectedFilter());
+        setToContext(UIConstants.Context.FILTERED_CLIENT, cache.getFilteredClient());
         updateChart();
     }
 

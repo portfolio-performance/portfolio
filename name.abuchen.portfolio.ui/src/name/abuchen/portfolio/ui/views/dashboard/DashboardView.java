@@ -54,12 +54,14 @@ import org.eclipse.swt.widgets.Display;
 
 import name.abuchen.portfolio.model.Dashboard;
 import name.abuchen.portfolio.model.Dashboard.Widget;
+import name.abuchen.portfolio.snapshot.filter.ClientFilter;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.editor.PartPersistedState;
 import name.abuchen.portfolio.ui.util.Colors;
+import name.abuchen.portfolio.ui.util.ClientFilterDropDown;
 import name.abuchen.portfolio.ui.util.ConfirmAction;
 import name.abuchen.portfolio.ui.util.ContextMenu;
 import name.abuchen.portfolio.ui.util.DropDown;
@@ -333,6 +335,7 @@ public class DashboardView extends AbstractHistoricView
 
     private Dashboard dashboard;
     private DashboardData dashboardData;
+    private ClientFilterDropDown clientFilter;
 
     private ExecutorService executor;
     private BlockingQueue<Map<WidgetDelegate<Object>, Supplier<Object>>> workQueue;
@@ -382,8 +385,20 @@ public class DashboardView extends AbstractHistoricView
     {
         super.addButtons(toolBar);
 
+        this.clientFilter = new ClientFilterDropDown(getClient(), getPreferenceStore(),
+                        DashboardView.class.getSimpleName(), this::updateClientFilter);
+        toolBar.add(clientFilter);
+
         toolBar.add(new DropDown(Messages.MenuConfigureCurrentDashboard, Images.CONFIG, SWT.NONE, manager -> manager
                         .add(new SimpleAction(Messages.MenuNewDashboardColumn, a -> createNewColumn()))));
+    }
+
+    private void updateClientFilter(ClientFilter filter)
+    {
+        dashboardData.setClientFilter(filter);
+        dashboardData.clearCache();
+        setToContext(UIConstants.Context.FILTERED_CLIENT, dashboardData.getFilteredClient());
+        updateWidgets();
     }
 
     private void createDashboardToolItems(ToolBarManager toolBar)
@@ -458,6 +473,8 @@ public class DashboardView extends AbstractHistoricView
         dashboardData = make(DashboardData.class);
         dashboardData.setDefaultReportingPeriods(getPart().getClientInput().getReportingPeriods());
         dashboardData.setDefaultReportingPeriod(getReportingPeriod());
+        dashboardData.setClientFilter(clientFilter.getSelectedFilter());
+        setToContext(UIConstants.Context.FILTERED_CLIENT, dashboardData.getFilteredClient());
 
         int indexOfSelectedDashboard = Math.max(0, persistedState.getInt(SELECTED_DASHBOARD_KEY));
 

@@ -48,7 +48,8 @@ public class TaxonomyChartWidget extends CircularChartWidget<TaxonomyModel>
                                 getClient(), taxonomy);
 
                 // apply filter if applicable
-                Client filteredClient = get(ClientFilterConfig.class).getSelectedFilter().filter(getClient());
+                Client filteredClient = get(ClientFilterConfig.class).getSelectedFilter()
+                                .filter(getDashboardData().getFilteredClient());
                 if (filteredClient != getClient())
                     model.updateClientSnapshot(filteredClient);
 
