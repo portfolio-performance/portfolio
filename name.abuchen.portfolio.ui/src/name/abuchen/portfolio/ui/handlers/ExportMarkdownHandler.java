@@ -84,6 +84,7 @@ public class ExportMarkdownHandler
 
             var exporter = new PortfolioMarkdownExporter(client, converter, name)
                             .withTransactionScope(optionsDialog.getTransactionScope()) //
+                            .withDiscreetMode(optionsDialog.isDiscreetMode()) //
                             .withGenerator(getGenerator());
 
             // the performance calculations for all periods and years can take

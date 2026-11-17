@@ -30,6 +30,7 @@ import name.abuchen.portfolio.model.InvestmentPlan;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.PortfolioTransferEntry;
 import name.abuchen.portfolio.model.Watchlist;
+import name.abuchen.portfolio.money.DiscreetMode;
 import name.abuchen.portfolio.money.Money;
 
 @SuppressWarnings("nls")
@@ -587,6 +588,52 @@ public class PortfolioMarkdownExporterTest
         // shortened before escaping: no dangling backslash before "..."
         var longText = "a".repeat(296) + "\\|" + "b".repeat(10);
         assertThat(MarkdownFormat.text(longText), is("a".repeat(296) + "\\\\..."));
+    }
+
+    @Test
+    public void testDiscreetModeHidesAmountsSharesAndNotes()
+    {
+        var client = createClient();
+        var alpha = client.getSecurities().get(0);
+        alpha.setNote("bought for 5010 EUR");
+        client.getAccounts().get(0).setNote("IBAN and balance");
+
+        var markdown = exporter(client).withDiscreetMode(true).generate();
+
+        assertThat(markdown, containsString("- Discreet mode: amounts and numbers of shares are hidden"));
+        assertThat(markdown, containsString("The report was created in discreet mode"));
+
+        // shares and value hidden; price, date and weights are real
+        assertThat(markdown, containsString(
+                        "| Alpha \\| World ETF | IE00ALPHA001 | ALPH | EUR | *** | 120.00 | 2026-06-30 | *** | 53.48% | *** | *** | 19.76% |"));
+        assertThat(markdown, containsString("| equity | *** | 53.48% | 70.00% | *** | *** |"));
+        assertThat(markdown, containsString("| Since first transaction | 2025-01-01 | 2026-06-30 | *** | *** |"));
+        assertThat(markdown, containsString("| 2025-01-03 | BUY | Alpha \\| World ETF | *** | 100.00 | *** | *** |"));
+
+        for (var amount : new String[] { "| 6000.00 |", "| 5010.00 |", "| 10000.00 |", "| 500.00 |", "| 30.00 |",
+                        "| 50 |", "| 990.00 |" })
+            assertThat(amount, markdown, not(containsString(amount)));
+
+        assertThat(markdown, not(containsString("bought for 5010 EUR")));
+        assertThat(markdown, not(containsString("IBAN and balance")));
+    }
+
+    @Test
+    public void testGlobalDiscreetModeDoesNotChangeTheExport()
+    {
+        var client = createClient();
+        try
+        {
+            DiscreetMode.setActive(true);
+            var markdown = exporter(client).generate();
+
+            assertThat(markdown, containsString("| 2026-06-30 | 6000.00 |"));
+            assertThat(markdown, not(containsString("- Discreet mode:")));
+        }
+        finally
+        {
+            DiscreetMode.setActive(false);
+        }
     }
 
     private static int count(String text, String token)

@@ -458,6 +458,7 @@ public class Messages extends NLS
     public static String ExperimentalColumnExpectedDividends_MenuLabel;
     public static String ExportMarkdownDialogMessage;
     public static String ExportMarkdownDialogTitle;
+    public static String ExportMarkdownDiscreetMode;
     public static String ExportMarkdownFileFilter;
     public static String ExportMarkdownTransactions;
     public static String ExportMarkdownTransactionsAll;

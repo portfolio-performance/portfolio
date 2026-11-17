@@ -12,6 +12,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 
 import name.abuchen.portfolio.datatransfer.markdown.PortfolioMarkdownExporter.TransactionScope;
+import name.abuchen.portfolio.money.DiscreetMode;
 import name.abuchen.portfolio.ui.Messages;
 
 /**
@@ -24,6 +25,12 @@ public class ExportMarkdownDialog extends Dialog
 
     private TransactionScope transactionScope = TransactionScope.LAST_12_MONTHS;
 
+    /**
+     * Preset with the discreet mode of the application; changing it only
+     * affects the export, not the application.
+     */
+    private boolean discreetMode = DiscreetMode.isActive();
+
     public ExportMarkdownDialog(Shell parentShell)
     {
         super(parentShell);
@@ -32,6 +39,11 @@ public class ExportMarkdownDialog extends Dialog
     public TransactionScope getTransactionScope()
     {
         return transactionScope;
+    }
+
+    public boolean isDiscreetMode()
+    {
+        return discreetMode;
     }
 
     @Override
@@ -74,6 +86,13 @@ public class ExportMarkdownDialog extends Dialog
                     transactionScope = scope;
             }));
         }
+
+        var discreet = new Button(area, SWT.CHECK);
+        discreet.setText(Messages.ExportMarkdownDiscreetMode);
+        discreet.setSelection(discreetMode);
+        discreet.addSelectionListener(
+                        SelectionListener.widgetSelectedAdapter(e -> discreetMode = discreet.getSelection()));
+        GridDataFactory.fillDefaults().span(2, 1).applyTo(discreet);
 
         return composite;
     }
