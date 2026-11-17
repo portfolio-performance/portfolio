@@ -5,7 +5,7 @@ import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionListener;
-import org.eclipse.swt.widgets.Combo;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
@@ -56,14 +56,24 @@ public class ExportMarkdownDialog extends Dialog
 
         var label = new Label(area, SWT.NONE);
         label.setText(Messages.ExportMarkdownTransactions);
+        GridDataFactory.fillDefaults().align(SWT.BEGINNING, SWT.BEGINNING).applyTo(label);
 
-        var combo = new Combo(area, SWT.READ_ONLY | SWT.DROP_DOWN);
+        // radio buttons instead of a drop-down: the native drop-down list of a
+        // read-only combo is not readable in the dark theme on Windows
+        var scopes = new Composite(area, SWT.NONE);
+        GridDataFactory.fillDefaults().grab(true, false).applyTo(scopes);
+        GridLayoutFactory.fillDefaults().numColumns(1).applyTo(scopes);
+
         for (var scope : SCOPES)
-            combo.add(label(scope));
-        combo.select(0);
-        combo.addSelectionListener(SelectionListener
-                        .widgetSelectedAdapter(e -> transactionScope = SCOPES[Math.max(0, combo.getSelectionIndex())]));
-        GridDataFactory.fillDefaults().grab(true, false).applyTo(combo);
+        {
+            var button = new Button(scopes, SWT.RADIO);
+            button.setText(label(scope));
+            button.setSelection(scope == transactionScope);
+            button.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+                if (button.getSelection())
+                    transactionScope = scope;
+            }));
+        }
 
         return composite;
     }
