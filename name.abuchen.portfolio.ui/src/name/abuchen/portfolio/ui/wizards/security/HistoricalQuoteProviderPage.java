@@ -49,6 +49,7 @@ import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.util.BindingHelper;
 import name.abuchen.portfolio.ui.util.QuotesTableViewer;
+import name.abuchen.portfolio.ui.util.viewers.SafeTableColumnLayout;
 
 public class HistoricalQuoteProviderPage extends AbstractQuoteProviderPage
 {
@@ -216,7 +217,7 @@ public class HistoricalQuoteProviderPage extends AbstractQuoteProviderPage
     protected void createSampleArea(Composite container)
     {
         Composite composite = new Composite(container, SWT.NONE);
-        TableColumnLayout layout = new TableColumnLayout();
+        TableColumnLayout layout = new SafeTableColumnLayout();
         composite.setLayout(layout);
 
         tableSampleData = new QuotesTableViewer(composite);

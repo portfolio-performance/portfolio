@@ -2560,6 +2560,10 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         // 01 Dez.
                                         // Bonus Cash reward allocation 0,06 € 659,83 €
                                         // 2025
+                                        //
+                                        // 01 Okt.
+                                        // Bonus Saveback cash reward 8,51 € 110,91 €
+                                        // 2026
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("date", "note", "amount", "currency", "year") //
@@ -2579,6 +2583,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                                                         + "|Your Saveback" //
                                                                         + "|Your Saveback payment" //
                                                                         + "|Cash reward allocation" //
+                                                                        + "|Saveback cash reward" //
                                                                         + "|Incoming transfer from" //
                                                                         + "|Reembolso)" //
                                                                         + ".*) (?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}) [\\.,\\d]+ \\p{Sc}$") //

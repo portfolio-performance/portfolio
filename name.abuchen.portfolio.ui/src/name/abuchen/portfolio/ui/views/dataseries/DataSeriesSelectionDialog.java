@@ -33,6 +33,7 @@ import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.viewers.CopyPasteSupport;
 import name.abuchen.portfolio.ui.util.viewers.LocaleSenstiveViewerComparator;
+import name.abuchen.portfolio.ui.util.viewers.SafeTreeColumnLayout;
 import name.abuchen.portfolio.ui.views.dataseries.DataSeries.Type;
 
 public class DataSeriesSelectionDialog extends Dialog
@@ -284,7 +285,7 @@ public class DataSeriesSelectionDialog extends Dialog
         GridDataFactory.fillDefaults().grab(false, true).applyTo(treeArea);
         treeArea.setLayout(new FillLayout());
 
-        TreeColumnLayout layout = new TreeColumnLayout();
+        TreeColumnLayout layout = new SafeTreeColumnLayout();
         treeArea.setLayout(layout);
 
         elementFilter = new ElementFilter();

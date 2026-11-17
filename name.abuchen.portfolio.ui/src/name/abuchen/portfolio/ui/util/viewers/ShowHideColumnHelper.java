@@ -265,15 +265,20 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
         {
             TableViewerColumn col = new TableViewerColumn(table, column.getStyle());
 
+            // a column configuration can carry an invalid width: a negative
+            // value makes JFace assert (see SafeTableColumnLayout) and a width
+            // of 0 would hide the column, so fall back to the default width
+            int columnWidth = width > 0 ? width : column.getDefaultWidth();
+
             TableColumn tableColumn = col.getColumn();
             tableColumn.setMoveable(true);
-            tableColumn.setWidth(width);
+            tableColumn.setWidth(columnWidth);
             tableColumn.setData(Column.class.getName(), column);
 
             // register column data immediately after creation so that
             // TableColumnLayout never encounters a column without layout data
             // (even if a later step in this method triggers a layout cascade)
-            layout.setColumnData(tableColumn, new ColumnPixelData(width));
+            layout.setColumnData(tableColumn, new ColumnPixelData(columnWidth));
 
             if (column.getImage() != null)
                 tableColumn.setImage(column.getImage().image());
@@ -400,7 +405,19 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
         @Override
         public int getWidth(Item col)
         {
-            return ((TreeColumn) col).getWidth();
+            int width = ((TreeColumn) col).getWidth();
+            if (width >= 0)
+                return width;
+
+            // on GTK a tree column that has no fixed width reports -1 (see
+            // SafeTreeColumnLayout). Never write such a value into the column
+            // configuration, but the width the layout keeps for the column
+            int storedWidth = SafeTreeColumnLayout.storedWidth((TreeColumn) col);
+            if (storedWidth >= 0)
+                return storedWidth;
+
+            Object column = col.getData(Column.class.getName());
+            return column instanceof Column c ? c.getDefaultWidth() : 0;
         }
 
         @Override
@@ -436,15 +453,20 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
         {
             TreeViewerColumn col = new TreeViewerColumn(tree, column.getStyle());
 
+            // a column configuration can carry an invalid width: a negative
+            // value makes JFace assert (see SafeTreeColumnLayout) and a width
+            // of 0 would hide the column, so fall back to the default width
+            int columnWidth = width > 0 ? width : column.getDefaultWidth();
+
             TreeColumn treeColumn = col.getColumn();
             treeColumn.setMoveable(true);
-            treeColumn.setWidth(width);
+            treeColumn.setWidth(columnWidth);
             treeColumn.setData(Column.class.getName(), column);
 
             // register column data immediately after creation so that
             // TreeColumnLayout never encounters a column without layout data
             // (even if a later step in this method triggers a layout cascade)
-            layout.setColumnData(treeColumn, new ColumnPixelData(width));
+            layout.setColumnData(treeColumn, new ColumnPixelData(columnWidth));
 
             if (column.getImage() != null)
                 treeColumn.setImage(column.getImage().image());

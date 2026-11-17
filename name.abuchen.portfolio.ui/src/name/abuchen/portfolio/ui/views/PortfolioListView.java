@@ -52,6 +52,7 @@ import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport.ModificationL
 import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
 import name.abuchen.portfolio.ui.util.viewers.CopyPasteSupport;
 import name.abuchen.portfolio.ui.util.viewers.ListEditingSupport;
+import name.abuchen.portfolio.ui.util.viewers.SafeTableColumnLayout;
 import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
 import name.abuchen.portfolio.ui.views.columns.AttributeColumn;
 import name.abuchen.portfolio.ui.views.columns.LastTransactionDateColumn;
@@ -202,7 +203,7 @@ public class PortfolioListView extends AbstractFinanceView implements Modificati
     protected Control createBody(Composite parent)
     {
         Composite container = new Composite(parent, SWT.NONE);
-        TableColumnLayout layout = new TableColumnLayout();
+        TableColumnLayout layout = new SafeTableColumnLayout();
         container.setLayout(layout);
 
         portfolios = new TableViewer(container, SWT.FULL_SELECTION);

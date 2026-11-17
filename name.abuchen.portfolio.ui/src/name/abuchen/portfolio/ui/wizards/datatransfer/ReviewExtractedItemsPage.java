@@ -56,6 +56,7 @@ import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.jobs.AbstractClientJob;
 import name.abuchen.portfolio.ui.util.FormDataFactory;
 import name.abuchen.portfolio.ui.util.viewers.CopyPasteSupport;
+import name.abuchen.portfolio.ui.util.viewers.SafeTableColumnLayout;
 import name.abuchen.portfolio.ui.wizards.AbstractWizardPage;
 import name.abuchen.portfolio.util.Pair;
 import name.abuchen.portfolio.util.TextUtil;
@@ -278,7 +279,7 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
         itemsTable = new ExtractedItemsTable(compositeTable, client, allEntries);
         itemsTable.setOnEntriesChanged(() -> checkEntriesAndRefresh(allEntries));
 
-        TableColumnLayout layout = new TableColumnLayout();
+        TableColumnLayout layout = new SafeTableColumnLayout();
         errorTable.setLayout(layout);
         errorTableViewer = new TableViewer(errorTable, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI);
         ColumnViewerToolTipSupport.enableFor(errorTableViewer, ToolTip.NO_RECREATE);

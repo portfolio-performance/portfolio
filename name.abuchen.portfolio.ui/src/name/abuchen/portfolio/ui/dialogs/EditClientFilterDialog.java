@@ -57,6 +57,7 @@ import name.abuchen.portfolio.ui.util.LogoManager;
 import name.abuchen.portfolio.ui.util.viewers.Column;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.CopyPasteSupport;
+import name.abuchen.portfolio.ui.util.viewers.SafeTreeColumnLayout;
 import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
 import name.abuchen.portfolio.ui.util.viewers.StringEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.ValueEditingSupport;
@@ -218,7 +219,7 @@ public class EditClientFilterDialog extends Dialog
         Composite treeArea = new Composite(container, SWT.NONE);
         GridDataFactory.fillDefaults().grab(true, true).minSize(400, 400).applyTo(treeArea);
 
-        TreeColumnLayout layout = new TreeColumnLayout();
+        TreeColumnLayout layout = new SafeTreeColumnLayout();
         treeArea.setLayout(layout);
 
         treeViewer = new TreeViewer(treeArea, SWT.BORDER);

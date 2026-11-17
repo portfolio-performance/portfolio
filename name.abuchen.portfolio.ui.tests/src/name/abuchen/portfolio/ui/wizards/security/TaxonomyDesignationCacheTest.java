@@ -22,6 +22,7 @@ import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.wizards.security.EditSecurityModel.ClassificationLink;
 import name.abuchen.portfolio.ui.wizards.security.EditSecurityModel.TaxonomyDesignation;
 
+@SuppressWarnings("nls")
 public class TaxonomyDesignationCacheTest
 {
     private Client client;

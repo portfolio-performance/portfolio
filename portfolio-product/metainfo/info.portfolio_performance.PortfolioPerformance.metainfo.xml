@@ -37,6 +37,46 @@
 	    <keyword>investment</keyword>
   </keywords>
   <releases>
+    <release version="0.90.0" date="2026-11-01">
+      <description>
+        <ul>
+          <li>New: The dashboard has a new "Volatility (annualized)" widget. It always scales to one year, so you can compare the value across reporting periods and with published figures.</li>
+          <li>New: CSV importer for XTB (cash operations), including CFD results and spin-off payments.</li>
+          <li>New: PDF importer for Alpac Capital.</li>
+          <li>Improvement: Improved PDF importers for Arkéa Direct Bank, Bank11, Bison, Commerzbank, Debitum, DEGIRO, FKB, Findependent, Ford Money, GenoBroker, Hypothekarbank Lenzburg, Liberty Vorsorge, MeDirect, N26, NIBC, OLB, Orange Bank, Quirin Privatbank and Scalable Capital.</li>
+          <li>Improvement: The Edit Security dialog opens much faster with large taxonomies. Classifications are now picked from a searchable list, and ones already assigned are grayed out.</li>
+          <li>Improvement: Faster performance calculation, and faster taxonomy and price change columns in security lists.</li>
+          <li>Improvement: Views are recalculated less often while prices are updated, so the application stays responsive.</li>
+          <li>Improvement: Renaming or copying a taxonomy now also renames its top-level node, and copying keeps the notes of all categories.</li>
+          <li>Fix: The Sharpe ratio widget now uses annualized volatility. Before, the value depended on the length of the reporting period.</li>
+          <li>Fix: CSV import of dividends, taxes and fees now works when only the exchange rate column is mapped, and no longer aborts for securities without a currency.</li>
+          <li>Fix: An error ("ConcurrentModificationException") no longer occurs when investment plans run at startup. Transactions created before a missing price stops a plan are now reported and saved.</li>
+          <li>Fix: On Linux, table headers and toolbar labels stay readable when the window is not focused.</li>
+          <li>Fix: On Linux, the error "Unknown column layout data" no longer appears in the payments matrix.</li>
+          <li>Fix: Changing the currency no longer causes an error while "Show amount to invest" is turned on in rebalancing.</li>
+          <li>Fix: The donut chart now starts at the same angle as the pie chart.</li>
+          <li>Fix: The Trade Republic and XTB CSV imports now show the correct wizard title.</li>
+          <li>Fix: Closing the "Find quote provider" dialog no longer causes an error.</li>
+          <li xml:lang="de">Neu: Das Dashboard hat ein neues Widget "Volatilität (annualisiert)". Es rechnet immer auf ein Jahr hoch, sodass du den Wert über verschiedene Berichtszeiträume hinweg und mit veröffentlichten Kennzahlen vergleichen kannst.</li>
+          <li xml:lang="de">Neu: CSV-Importer für XTB (Cash Operations), einschließlich CFD-Ergebnissen und Spin-off-Zahlungen.</li>
+          <li xml:lang="de">Neu: PDF-Importer für Alpac Capital.</li>
+          <li xml:lang="de">Verbesserung: PDF-Importer für Arkéa Direct Bank, Bank11, Bison, Commerzbank, Debitum, DEGIRO, FKB, Findependent, Ford Money, GenoBroker, Hypothekarbank Lenzburg, Liberty Vorsorge, MeDirect, N26, NIBC, OLB, Orange Bank, Quirin Privatbank und Scalable Capital wurden verbessert.</li>
+          <li xml:lang="de">Verbesserung: Der Dialog zum Bearbeiten eines Wertpapiers öffnet sich bei großen Klassifizierungen deutlich schneller. Kategorien wählst du jetzt aus einer durchsuchbaren Liste aus, und bereits zugeordnete Kategorien werden ausgegraut.</li>
+          <li xml:lang="de">Verbesserung: Die Performanceberechnung sowie die Spalten für Klassifizierungen und Kursveränderungen in Wertpapierlisten sind schneller.</li>
+          <li xml:lang="de">Verbesserung: Während der Kursaktualisierung werden die Ansichten seltener neu berechnet, sodass die Anwendung reaktionsfähig bleibt.</li>
+          <li xml:lang="de">Verbesserung: Beim Umbenennen oder Kopieren einer Klassifizierung wird jetzt auch der oberste Knoten umbenannt, und beim Kopieren bleiben die Notizen aller Kategorien erhalten.</li>
+          <li xml:lang="de">Fehlerbehebung: Das Widget für die Sharpe Ratio verwendet jetzt die annualisierte Volatilität. Bisher hing der Wert von der Länge des Berichtszeitraums ab.</li>
+          <li xml:lang="de">Fehlerbehebung: Der CSV-Import von Dividenden, Steuern und Gebühren funktioniert jetzt auch, wenn nur die Spalte für den Wechselkurs zugeordnet ist, und bricht bei Wertpapieren ohne Währung nicht mehr ab.</li>
+          <li xml:lang="de">Fehlerbehebung: Beim Ausführen von Sparplänen während des Programmstarts tritt kein Fehler ("ConcurrentModificationException") mehr auf. Buchungen, die erstellt wurden, bevor ein fehlender Kurs einen Sparplan abbricht, werden jetzt angezeigt und gespeichert.</li>
+          <li xml:lang="de">Fehlerbehebung: Unter Linux bleiben Tabellenüberschriften und Beschriftungen der Werkzeugleiste lesbar, wenn das Fenster nicht im Fokus ist.</li>
+          <li xml:lang="de">Fehlerbehebung: Unter Linux erscheint in der Zahlungsmatrix nicht mehr der Fehler "Unknown column layout data".</li>
+          <li xml:lang="de">Fehlerbehebung: Ein Wechsel der Währung verursacht keinen Fehler mehr, wenn beim Rebalancing "Anlagebetrag anzeigen" eingeschaltet ist.</li>
+          <li xml:lang="de">Fehlerbehebung: Das Ringdiagramm beginnt jetzt am selben Winkel wie das Kreisdiagramm.</li>
+          <li xml:lang="de">Fehlerbehebung: Die CSV-Importe für Trade Republic und XTB zeigen jetzt den richtigen Titel im Assistenten.</li>
+          <li xml:lang="de">Fehlerbehebung: Das Schließen des Dialogs zur Suche nach Kurslieferanten verursacht keinen Fehler mehr.</li>
+        </ul>
+      </description>
+    </release>
     <release version="0.89.0" date="2026-10-11">
       <description>
         <ul>

@@ -1,4 +1,3 @@
-```
 PDFBox Version: 1.8.17
 Portfolio Performance Version: 0.72.2
 -----------------------------------------
@@ -38,5 +37,3 @@ Vorsitzender des Aufsichtsrates:  René Dangel | Sitz der Gesellschaft: Düsseld
 Handelsregister Amtsgericht Düsseldorf HRB 83351 | USt-ID-Nr.: DE 811 285 485
 USt-ID-Nr. des umsatzsteuerlichen Organträgers: DE 811 623 326
 KH.20241220.020646.5002.0001.12042 X 0 R
-
-```

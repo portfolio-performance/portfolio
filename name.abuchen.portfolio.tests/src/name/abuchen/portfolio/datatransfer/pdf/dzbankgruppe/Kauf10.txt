@@ -1,0 +1,38 @@
+PDFBox Version: 3.0.8
+Portfolio Performance Version: 0.89.0
+System: macosx | aarch64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+   
+Volksbank in der Region eG · Herrenberger Straße 1-5· 72070 Tübingen
+Depotnummer 12345678
+ 
+ Kundennummer 12345
+Max Mustermann
+ Auftragsnummer 710707/78.00
+Max Mustermann Datum 10.07.2026
+Musterstr. 12 Ihr Berater Herr Bernd Berater
+01234 Musterstadt Telefon 07032/940-0000
+Rechnungsnummer W06746-0000017903/26
+Steuernummer 008615500609  
+ 
+Wertpapier Abrechnung Kauf-Festpreisgeschäft 
+Auftrag vom 08.07.2026 09:21:15 Uhr
+Nominale Wertpapierbezeichnung ISIN (WKN)
+Stück 61 ANTECEDO INDEPENDENT INVEST        DE000A0RAD42 (A0RAD4)
+INHABER-ANTEILE A                  
+Handels-/Ausführungsplatz Außerbörslich
+Schlusstag 08.07.2026 Auftraggeber Max Mustermann
+Ausführungskurs 166,47 EUR Auftragserteilung/ -ort Online-Banking
+Girosammeldepot Sammelurkunde/-eintragung
+Kurswert 10.154,67- EUR
+Ausmachender Betrag 10.154,67- EUR
+Ausgabeaufschlag pro Anteil 3,00 %
+ 
+Den Gegenwert buchen wir mit Valuta 10.07.2026 zu Lasten des Kontos 0012345678
+(IBAN DE99 6039 1310 0012 3456 78), BLZ 60391310 (BIC GENODES1VBH).
+Die Wertpapiere schreiben wir Ihrem Depotkonto gut.
+Sofern keine Umsatzsteuer ausgewiesen ist, handelt es sich um eine umsatzsteuerbefreite Finanzdienstleistung. 
+ 
+Gegenpartei bei diesem Geschäft war das Institut selbst.
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+6746.07102727.0000017OR07

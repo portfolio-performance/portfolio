@@ -61,7 +61,10 @@ public final class PairingHandler
         var json = new JsonObject();
         json.addProperty("status", result.status().toJsonValue()); //$NON-NLS-1$
         if (result.token() != null)
+        {
             json.addProperty("token", result.token()); //$NON-NLS-1$
+            json.addProperty("persistent", result.persistent()); //$NON-NLS-1$
+        }
         return Response.json(200, json);
     }
 }

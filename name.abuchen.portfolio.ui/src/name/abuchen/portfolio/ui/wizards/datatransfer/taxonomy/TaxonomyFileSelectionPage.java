@@ -45,6 +45,7 @@ import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.util.ContextMenu;
 import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.util.action.MenuContribution;
+import name.abuchen.portfolio.ui.util.viewers.SafeTableColumnLayout;
 import name.abuchen.portfolio.ui.wizards.AbstractWizardPage;
 import name.abuchen.portfolio.ui.wizards.datatransfer.taxonomy.TaxonomyImportModel.ImportAction;
 import name.abuchen.portfolio.ui.wizards.datatransfer.taxonomy.TaxonomyImportModel.ImportItem;
@@ -132,7 +133,7 @@ public class TaxonomyFileSelectionPage extends AbstractWizardPage
         Composite tableContainer = new Composite(parent, SWT.NONE);
         tableContainer.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
-        TableColumnLayout layout = new TableColumnLayout();
+        TableColumnLayout layout = new SafeTableColumnLayout();
         tableContainer.setLayout(layout);
 
         Table table = new Table(tableContainer, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI);

@@ -119,7 +119,7 @@ public class TargobankPDFExtractor extends AbstractPDFExtractor
                         .section("name", "wkn", "isin", "currency") //
                         .match("^Wertpapier (?<name>.*)$") //
                         .match("^WKN \\/ ISIN (?<wkn>[A-Z0-9]{6}) \\/ (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
-                        .match("^(Kurs|Preis vom) .* (?<currency>[A-Z]{3})$")
+                        .match("^(Kurs|Preis vom) .* (?<currency>[A-Z]{3})$") //
                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
                         // @formatter:off
@@ -135,7 +135,7 @@ public class TargobankPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("date", "time") //
-                                                        .match("^Schlusstag \\/ Handelszeit (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) \\/ (?<time>[\\d]{2}:[\\d]{2}:[\\d]{2})$") //
+                                                        .match("^Schlusstag \\/ Handelszeit (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) \\/ (?<time>[\\d]{2}\\:[\\d]{2}\\:[\\d]{2})$") //
                                                         .assign((t, v) -> t.setDate(asDate(v.get("date"), v.get("time")))),
                                         // @formatter:off
                                         // Schlusstag 10.01.2020
@@ -468,7 +468,7 @@ public class TargobankPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("date", "time") //
-                                                        .match("^Schlusstag \\/ Handelszeit (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) \\/ (?<time>[\\d]{2}:[\\d]{2}:[\\d]{2})$") //
+                                                        .match("^Schlusstag \\/ Handelszeit (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) \\/ (?<time>[\\d]{2}\\:[\\d]{2}\\:[\\d]{2})$") //
                                                         .assign((t, v) -> t.setDateTime(asDate(v.get("date"), v.get("time")))),
                                         // @formatter:off
                                         // Schlusstag 10.01.2020
@@ -491,7 +491,7 @@ public class TargobankPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("date") //
-                                                        .match("^Ex-Tag (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$") //
+                                                        .match("^Ex\\-Tag (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$") //
                                                         .assign((t, v) -> t.setDateTime(asDate(v.get("date")))))
 
                         .oneOf( //
@@ -884,15 +884,15 @@ public class TargobankPDFExtractor extends AbstractPDFExtractor
 
     private <T extends Transaction<?>> void addFeesSectionsTransaction(T transaction, DocumentType type)
     {
-        transaction
-                // @formatter:off
-                // Provision 8,90 EUR
-                // @formatter:on
-                .section("fee", "currency").optional()
-                .match("^Provision (?<fee>[\\.,\\d]+) (?<currency>[A-Z]{3})$")
-                .assign((t, v) -> processFeeEntries(t, v, type));
-    }
+        transaction //
 
+                        // @formatter:off
+                        // Provision 8,90 EUR
+                        // @formatter:on
+                        .section("fee", "currency").optional() //
+                        .match("^Provision (?<fee>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
+                        .assign((t, v) -> processFeeEntries(t, v, type));
+    }
 
     /**
      * @formatter:off
@@ -993,15 +993,15 @@ public class TargobankPDFExtractor extends AbstractPDFExtractor
         }
 
         // @formatter:off
-         // This loop processes a list of dividend and tax pairs, adjusting the gross amount of dividend transactions as needed.
-         //
-         // For each pair, it checks if there is a corresponding tax transaction. If present, it considers the gross taxes treatment
-         // and sets the dividend amount to that gross amount, reduced by the withholding tax that has already been deducted
-         // in the dividend document. If taxes amount is zero and gross taxes treatment is less than the dividend gross value,
-         // the difference is added as an additional tax unit.
-         //
-         // If there is no tax transaction, it simply fixes the gross value of the dividend transaction.
-         // @formatter:on
+        // This loop processes a list of dividend and tax pairs, adjusting the gross amount of dividend transactions as needed.
+        //
+        // For each pair, it checks if there is a corresponding tax transaction. If present, it considers the gross taxes treatment
+        // and sets the dividend amount to that gross amount, reduced by the withholding tax that has already been deducted
+        // in the dividend document. If taxes amount is zero and gross taxes treatment is less than the dividend gross value,
+        // the difference is added as an additional tax unit.
+        //
+        // If there is no tax transaction, it simply fixes the gross value of the dividend transaction.
+        // @formatter:on
         for (TransactionTaxesPair pair : dividendTaxPairs)
         {
             var dividendTransaction = (AccountTransaction) pair.transaction().getSubject();

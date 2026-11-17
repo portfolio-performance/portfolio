@@ -40,6 +40,7 @@ import name.abuchen.portfolio.ui.util.swt.ColoredLabel;
 import name.abuchen.portfolio.ui.util.swt.TabularLayout;
 import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
 import name.abuchen.portfolio.ui.util.viewers.CopyPasteSupport;
+import name.abuchen.portfolio.ui.util.viewers.SafeTableColumnLayout;
 import name.abuchen.portfolio.ui.views.AccountContextMenu;
 import name.abuchen.portfolio.ui.views.SecurityContextMenu;
 import name.abuchen.portfolio.ui.views.TransactionContextMenu;
@@ -373,7 +374,7 @@ public class TabularDataSource implements Named
 
         Composite container = new Composite(parent, SWT.NONE);
 
-        TableColumnLayout tableLayout = new TableColumnLayout();
+        TableColumnLayout tableLayout = new SafeTableColumnLayout();
         container.setLayout(tableLayout);
 
         TableViewer tableViewer = new TableViewer(container, SWT.FULL_SELECTION);

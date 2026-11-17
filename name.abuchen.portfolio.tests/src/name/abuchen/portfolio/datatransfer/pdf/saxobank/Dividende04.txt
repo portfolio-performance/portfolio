@@ -1,0 +1,46 @@
+PDFBox Version: 3.0.7
+Portfolio Performance Version: 0.87.0
+System: macosx | aarch64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+hWzQ bHMkvwAhD - 48690369
+Corporate Action Detail Report
+Reporting period: 10-Sep-2026 - 10-Sep-2026
+Generated at: 11-Sep-2026 11:17:17 11:17:17 (GMT+01)
+zbkl SAOaEEycN
+mqFvjpPE 14a 21
+13-929 WGSqNjfl
+STeapa
+Saxo Bank / Philip Heymans Alle 15 / 2900 Hellerup / Denmark qPfx lgwvkcBng Reporting period
+/ Phone No.: +45 39 77 40 00 / Fax No.: +45 39 77 42 00 / Email: info@saxobank.com Currency: EUR 10-Sep-2026 - 10-Sep-2026
+Page 1 of 3 Account(s): EUR 816245rvnL Generated at: 11-Sep-2026
+Corporate Action Detail, EUR
+Reporting period
+10-Sep-2026 to 10-Sep-2026
+Corporate Action
+Event Cash dividend Dividend per share 0.40 EUR
+VanEck Morningstar Dvlp Mkts Dvd Leaders
+Description Conversion Rate 1.000000
+UCITS ETF
+Symbol VDIV:xetr Corporate Actions - Cash Dividends 21.60 EUR
+ISIN NL0011683594 Corporate Actions - Withholding Tax -3.24 EUR
+Corporate Actions - Withholding Tax (%) 15%
+Transaction description Event Id 9593275
+Saxo Bank / Philip Heymans Alle 15 / 2900 Hellerup / Denmark wTDB JjMqIpWSi Reporting period
+/ Phone No.: +45 39 77 40 00 / Fax No.: +45 39 77 42 00 / Email: info@saxobank.com Currency: EUR 10-Sep-2026 - 10-Sep-2026
+Page 2 of 3 Account(s): EUR 811952ENzD Generated at: 11-Sep-2026
+Corporate Action Detail, EUR
+Reporting period
+10-Sep-2026 to 10-Sep-2026
+Amount Booked Amount
+Booking amount ID Ex date Record Date Posting Date Pay Date Conversion Rate
+EUR EUR
+Corporate Actions -
+59442506168 02-Sep-2026 03-Sep-2026 - 10-Sep-2026 21.60 1.000000 21.60
+Cash Dividends
+Corporate Actions -
+59442506169 02-Sep-2026 03-Sep-2026 - 10-Sep-2026 -3.24 1.000000 -3.24
+Withholding Tax
+Net Amount - - - - - 18.36 1.000000 18.36
+Saxo Bank / Philip Heymans Alle 15 / 2900 Hellerup / Denmark cOmv svqJKslkc Reporting period
+/ Phone No.: +45 39 77 40 00 / Fax No.: +45 39 77 42 00 / Email: info@saxobank.com Currency: EUR 10-Sep-2026 - 10-Sep-2026
+Page 3 of 3 Account(s): EUR 784245RifH Generated at: 11-Sep-2026

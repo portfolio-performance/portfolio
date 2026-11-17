@@ -2935,7 +2935,8 @@ public class DABPDFExtractorTest
                                         hasDate("2024-10-09"), //
                                         hasSource("Kontoumsaetze09.txt"), //
                                         hasNote("Ginmon Gebuehrenrechnung September 2024"), //
-                                        hasAmount("EUR", 0.02)))));
+                                        hasAmount("EUR", 0.02), hasGrossValue("EUR", 0.02), //
+                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
     }
 
     @Test

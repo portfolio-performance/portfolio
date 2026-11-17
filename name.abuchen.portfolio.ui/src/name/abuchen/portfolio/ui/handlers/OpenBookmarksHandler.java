@@ -34,6 +34,7 @@ import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.ui.selection.SecuritySelection;
 import name.abuchen.portfolio.ui.selection.SelectionService;
 import name.abuchen.portfolio.ui.util.DesktopAPI;
+import name.abuchen.portfolio.ui.util.viewers.SafeTableColumnLayout;
 
 public class OpenBookmarksHandler
 {
@@ -62,7 +63,7 @@ public class OpenBookmarksHandler
             Composite tableComposite = new Composite(composite, SWT.NONE);
             GridDataFactory.fillDefaults().grab(true, true).applyTo(tableComposite);
 
-            TableColumnLayout tableColumnLayout = new TableColumnLayout();
+            TableColumnLayout tableColumnLayout = new SafeTableColumnLayout();
             tableComposite.setLayout(tableColumnLayout);
 
             TableViewer tableViewer = new TableViewer(tableComposite, SWT.SINGLE | SWT.FULL_SELECTION | SWT.NO_SCROLL);

@@ -17,6 +17,7 @@ import org.eclipse.swt.widgets.Composite;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.viewers.CopyPasteSupport;
+import name.abuchen.portfolio.ui.util.viewers.SafeTreeColumnLayout;
 import name.abuchen.portfolio.ui.wizards.AbstractWizardPage;
 
 public class ErroneousImportFilesPage extends AbstractWizardPage
@@ -73,7 +74,7 @@ public class ErroneousImportFilesPage extends AbstractWizardPage
         Composite container = new Composite(parent, SWT.NULL);
         setControl(container);
 
-        TreeColumnLayout layout = new TreeColumnLayout();
+        TreeColumnLayout layout = new SafeTreeColumnLayout();
         container.setLayout(layout);
 
         TreeViewer treeViewer = new TreeViewer(container, SWT.BORDER | SWT.FULL_SELECTION);

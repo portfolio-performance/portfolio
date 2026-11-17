@@ -22,6 +22,7 @@ import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.util.viewers.SafeTableColumnLayout;
 import name.abuchen.portfolio.ui.wizards.AbstractWizardPage;
 
 public class NewAccountPage extends AbstractWizardPage
@@ -63,7 +64,7 @@ public class NewAccountPage extends AbstractWizardPage
 
         Composite tableContainer = new Composite(container, SWT.NONE);
         GridDataFactory.fillDefaults().span(3, 1).grab(true, true).applyTo(tableContainer);
-        TableColumnLayout layout = new TableColumnLayout();
+        TableColumnLayout layout = new SafeTableColumnLayout();
         tableContainer.setLayout(layout);
 
         tViewer = new TableViewer(tableContainer);

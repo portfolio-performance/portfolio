@@ -83,6 +83,7 @@ public class PairingRoutesTest
 
         var token = json(approved).get("token").getAsString();
         assertThat(store.authenticate(token).isPresent(), is(true));
+        assertThat(json(approved).get("persistent").getAsBoolean(), is(true));
 
         // one-shot: the token is delivered exactly once
         assertStatus("GET", "/v1/auth/requests/" + id, null, 404);
@@ -97,6 +98,7 @@ public class PairingRoutesTest
         var denied = json(call("GET", "/v1/auth/requests/" + id, null));
         assertThat(denied.get("status").getAsString(), is("denied"));
         assertThat(denied.has("token"), is(false));
+        assertThat(denied.has("persistent"), is(false));
     }
 
     @Test

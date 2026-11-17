@@ -5,11 +5,11 @@ import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 public class TradeCalendar implements Comparable<TradeCalendar>
@@ -25,7 +25,13 @@ public class TradeCalendar implements Comparable<TradeCalendar>
     private final boolean isSelectable;
 
     private final List<HolidayType> holidayTypes = new ArrayList<>();
-    private final Map<Integer, Map<LocalDate, Holiday>> cache = new HashMap<Integer, Map<LocalDate, Holiday>>()
+    /**
+     * The holidays per year, computed on first use. Concurrent: a calendar is
+     * shared, and is read from several threads at once - a HashMap whose
+     * computeIfAbsent runs on two threads throws
+     * ConcurrentModificationException.
+     */
+    private final Map<Integer, Map<LocalDate, Holiday>> cache = new ConcurrentHashMap<Integer, Map<LocalDate, Holiday>>()
     {
         private static final long serialVersionUID = 1L;
 

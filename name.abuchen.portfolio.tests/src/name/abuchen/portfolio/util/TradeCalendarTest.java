@@ -4,6 +4,11 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.ThreadLocalRandom;
 
 import org.junit.Test;
@@ -758,5 +763,44 @@ public class TradeCalendarTest
 
         // in the empty calendar, every day is a (potential) trading day
         assertThat(calendar.isHoliday(randomDate), is(false));
+    }
+
+    /**
+     * A calendar is shared; several threads asking it for holidays of years it
+     * has not computed yet must neither fail nor see a different answer.
+     */
+    @Test
+    public void testConcurrentLookupsOfUncomputedYears() throws Exception
+    {
+        // the shared instance, as the application uses it; years far ahead
+        // that nothing else asks for, so that their holidays are computed here
+        var calendar = TradeCalendarManager.getInstance("de"); //$NON-NLS-1$
+
+        var threads = 8;
+        var start = new CountDownLatch(1);
+        var pool = Executors.newFixedThreadPool(threads);
+        try
+        {
+            var results = new ArrayList<Future<Integer>>();
+            for (int ii = 0; ii < threads; ii++)
+                results.add(pool.submit(() -> {
+                    start.await();
+                    var holidays = 0;
+                    for (var day = LocalDate.of(2200, 1, 1); day.getYear() < 2260; day = day.plusDays(1))
+                        if (calendar.isHoliday(day))
+                            holidays++;
+                    return holidays;
+                }));
+
+            start.countDown();
+
+            var expected = results.get(0).get(30, TimeUnit.SECONDS);
+            for (var result : results)
+                assertThat(result.get(30, TimeUnit.SECONDS), is(expected));
+        }
+        finally
+        {
+            pool.shutdownNow();
+        }
     }
 }

@@ -35,6 +35,7 @@ import org.eclipse.swt.widgets.Text;
 
 import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.viewers.CopyPasteSupport;
+import name.abuchen.portfolio.ui.util.viewers.SafeTableColumnLayout;
 
 public class ListSelectionDialog extends Dialog
 {
@@ -201,7 +202,7 @@ public class ListSelectionDialog extends Dialog
         GridDataFactory.fillDefaults().span(2, 1).grab(false, true).applyTo(tableArea);
         tableArea.setLayout(new FillLayout());
 
-        TableColumnLayout layout = new TableColumnLayout();
+        TableColumnLayout layout = new SafeTableColumnLayout();
         tableArea.setLayout(layout);
 
         elementFilter = new ElementFilter();

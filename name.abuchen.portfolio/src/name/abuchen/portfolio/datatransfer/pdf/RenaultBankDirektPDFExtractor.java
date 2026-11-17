@@ -8,7 +8,6 @@ import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
 import name.abuchen.portfolio.model.AccountTransaction;
-import name.abuchen.portfolio.model.AccountTransaction.Type;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.Money;
@@ -59,14 +58,14 @@ public class RenaultBankDirektPDFExtractor extends AbstractPDFExtractor
                                                     section -> section //
                                                                     .attributes("currency") //
                                                                     .match("^.*N.*E.*U.*E.*R.*K.*O.*N.*T.*O.*S.*T.*A.*N.*D.*V.*O.*M.*I.*N* (?<currency>[A-Z_]{3,}).*$") //
-                                                                    .assign((ctx, v) -> ctx.put("currency", asCurrencyCode(stripBlanksAndUnderscores(v.get( "currency"))))),
+                                                                    .assign((ctx, v) -> ctx.put("currency", asCurrencyCode(stripBlanksAndUnderscores(v.get("currency"))))),
                                                     // @formatter:off
                                                     //                        Abschlusssaldo am    30.11.2019: 14.323,94 EUR
                                                     // @formatter:on
                                                     section -> section //
                                                                     .attributes("currency") //
-                                                                    .match("^[\\s]*Abschlusssaldo am .* (?<currency>[A-Z]{3}).*") //
-                                                                    .assign((ctx, v) -> ctx.put("currency", asCurrencyCode(v.get( "currency")))),
+                                                                    .match("^[\\s]*Abschlusssaldo am .* (?<currency>[A-Z]{3}).*$") //
+                                                                    .assign((ctx, v) -> ctx.put("currency", asCurrencyCode(v.get("currency")))),
                                                     // @formatter:off
                                                     // EUR-Konto Kontonummer 123456789
                                                     // @formatter:on
@@ -85,9 +84,10 @@ public class RenaultBankDirektPDFExtractor extends AbstractPDFExtractor
                                             // @formatter:off
                                             //                                 KONTOAUSZUG  Nr. 1/2019
                                             // Renault Bank direkt - Postfach 269 - 45952 Gladbeck Kontoauszug Nr.   2/2021
+                                            // Renault Bank direkt - Postfach 269 - 45952 Gladbeck K o n to a u s z u g Nr.  1/2026
                                             // @formatter:on
                                             .section("year").optional() //
-                                            .match("^.*(KONTOAUSZUG|Kontoauszug)[\\s]*Nr\\.[\\s]*[\\d]{1,2}\\/(?<year>[\\d]{4}).*$") //
+                                            .match("^.*(KONTOAUSZUG|K[\\s]*o[\\s]*n[\\s]*t[\\s]*o[\\s]*a[\\s]*u[\\s]*s[\\s]*z[\\s]*u[\\s]*g)[\\s]*Nr\\.[\\s]*[\\d]{1,2}\\/(?<year>[\\d]{4}).*$") //
                                             .assign((ctx, v) -> ctx.put("year", v.get("year"))));
 
         this.addDocumentTyp(type);
@@ -98,7 +98,7 @@ public class RenaultBankDirektPDFExtractor extends AbstractPDFExtractor
         // 17.02.  Dauerauftrag-Gutschrift                                                              210,00+
         // 31.08.  Wertstellung: 30.08. Internet-Euro-Überweisung                     1.500,00-
         // @formatter:on
-        var depositRemovalBlock_Format01 = new Block("^[\\d]{2}\\.[\\d]{2}\\. .*(.berweisung|Gutschrift).* [\\.,\\d]+[\\-|\\+][\\s]*$");
+        var depositRemovalBlock_Format01 = new Block("^[\\d]{2}\\.[\\d]{2}\\. .*(.berweisung|Gutschrift).* [\\.,\\d]+[\\-\\+][\\s]*$");
         type.addBlock(depositRemovalBlock_Format01);
         depositRemovalBlock_Format01.set(new Transaction<AccountTransaction>()
 
@@ -106,7 +106,7 @@ public class RenaultBankDirektPDFExtractor extends AbstractPDFExtractor
 
                         .section("date", "note", "amount", "type") //
                         .documentContext("currency", "year") //
-                        .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.)[\\s]{1,}(.*[\\d]{2}\\.[\\d]{2}\\.)?(?<note>.*) (?<amount>[\\.,\\d]+)(?<type>[\\-|\\+])[\\s]*$") //
+                        .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.)[\\s]{1,}(.*[\\d]{2}\\.[\\d]{2}\\.)?(?<note>.*) (?<amount>[\\.,\\d]+)(?<type>[\\-\\+])[\\s]*$") //
                         .assign((t, v) -> {
                             // @formatter:off
                             // Is type --> "-" change from DEPOSIT to REMOVAL
@@ -126,7 +126,15 @@ public class RenaultBankDirektPDFExtractor extends AbstractPDFExtractor
         // 17.02. 17.02. Dauerauftragsgutschr                                                          150,00 H
         // 22.02. 22.02. Überweisungsgutschr.                                                        7.547,85 H
         // @formatter:on
-        var depositRemovalBlock_Format02 = new Block("^[\\d]{2}\\.[\\d]{2}\\. [\\d]{2}\\.[\\d]{2}\\.[\\s]{1,}(?!Abschluss).* [\\.,\\d]+ [H|S][\\s]*$");
+        // @formatter:off
+        // The closing entry and the withholding taxes deducted from it are handled by interestBlock_Format02
+        // and must not be booked a second time as deposit or removal:
+        //
+        // 05.08. 31.07. Storno Abschluss                                                      3,59 S
+        // 26.02. 30.02. Solid.-Zuschlag aus                                                   0,04 S
+        // 26.02. 30.02. Kapitalertragsteuer aus                                               0,68 S
+        // @formatter:on
+        var depositRemovalBlock_Format02 = new Block("^[\\d]{2}\\.[\\d]{2}\\. [\\d]{2}\\.[\\d]{2}\\.[\\s]{1,}(?!(Storno )?Abschluss|Kapitalertrags(s)?teuer aus|Solid\\.\\-Zuschlag aus|Kirchensteuer aus).* [\\.,\\d]+ [HS][\\s]*$");
         type.addBlock(depositRemovalBlock_Format02);
         depositRemovalBlock_Format02.set(new Transaction<AccountTransaction>()
 
@@ -134,13 +142,13 @@ public class RenaultBankDirektPDFExtractor extends AbstractPDFExtractor
 
                         .section("date", "amount", "type") //
                         .documentContext("currency", "year") //
-                        .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.) [\\d]{2}\\.[\\d]{2}\\. .* (?<amount>[\\.,\\d]+) (?<type>[H|S])[\\s]*$") //
+                        .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.) [\\d]{2}\\.[\\d]{2}\\. .* (?<amount>[\\.,\\d]+) (?<type>[HS])[\\s]*$") //
                         .assign((t, v) -> {
                             // @formatter:off
                             // Is type --> "S" change from DEPOSIT to REMOVAL
                             // @formatter:on
                             if ("S".equals(v.get("type")))
-                                t.setType(Type.REMOVAL);
+                                t.setType(AccountTransaction.Type.REMOVAL);
 
                             t.setDateTime(asDate(v.get("date") + v.get("year")));
                             t.setAmount(asAmount(v.get("amount")));
@@ -161,7 +169,7 @@ public class RenaultBankDirektPDFExtractor extends AbstractPDFExtractor
 
                         .section("type", "amount", "date") //
                         .documentContext("currency") //
-                        .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) .*(?<type>[\\s|\\-]{1,})(?<amount>[\\.,\\d]+) [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\.,\\d]+[\\s]*$") //
+                        .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) .*(?<type>[\\s\\-]{1,})(?<amount>[\\.,\\d]+) [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\.,\\d]+[\\s]*$") //
                         .assign((t, v) -> {
                             // @formatter:off
                             // Is type --> "-" change from DEPOSIT to REMOVAL
@@ -180,7 +188,7 @@ public class RenaultBankDirektPDFExtractor extends AbstractPDFExtractor
         // 29.11.  Wertstellung: 30.11. Zinsen/Kontoführung                                               2,44+
         // 30.06.  Zinsen/Kontoführung                                                                    0,21+
         // @formatter:on
-        var interestBlock_Format01 = new Block("^[\\d]{2}\\.[\\d]{2}\\. .*Zinsen\\/Kontof.hrung.* [\\.,\\d]+[\\-|\\+][\\s]*$");
+        var interestBlock_Format01 = new Block("^[\\d]{2}\\.[\\d]{2}\\. .*Zinsen\\/Kontof.hrung.* [\\.,\\d]+[\\-\\+][\\s]*$");
         type.addBlock(interestBlock_Format01);
         interestBlock_Format01.set(new Transaction<AccountTransaction>()
 
@@ -188,7 +196,7 @@ public class RenaultBankDirektPDFExtractor extends AbstractPDFExtractor
 
                         .section("date", "note", "amount", "type") //
                         .documentContext("currency", "year") //
-                        .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.)[\\s]{1,}(Wertstellung: [\\s]*[\\d]{2}\\.[\\d]{2}\\.)?(?<note>.*) (?<amount>[\\.,\\d]+)(?<type>[\\-|\\+])[\\s]*$") //
+                        .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.)[\\s]{1,}(Wertstellung: [\\s]*[\\d]{2}\\.[\\d]{2}\\.)?(?<note>.*) (?<amount>[\\.,\\d]+)(?<type>[\\-\\+])[\\s]*$") //
                         .assign((t, v) -> {
                             // @formatter:off
                             // Is type --> "-" change from INTEREST to INTEREST_CHARGE
@@ -230,7 +238,7 @@ public class RenaultBankDirektPDFExtractor extends AbstractPDFExtractor
         // 26.02. 30.02. Kapitalertragsteuer aus                                               0,68 S
         //               EUR        4,72 Habenzins  per 25.02.2021 KT5619994500
         // @formatter:on
-        var interestBlock_Format02 = new Block("^[\\d]{2}\\.[\\d]{2}\\. [\\d]{2}\\.[\\d]{2}\\.[\\s]{1,}(Storno )?Abschluss.* [\\.,\\d]+ [H|S][\\s]*$");
+        var interestBlock_Format02 = new Block("^[\\d]{2}\\.[\\d]{2}\\. [\\d]{2}\\.[\\d]{2}\\.[\\s]{1,}(Storno )?Abschluss.* [\\.,\\d]+ [HS][\\s]*$");
         type.addBlock(interestBlock_Format02);
         interestBlock_Format02.set(new Transaction<AccountTransaction>()
 
@@ -240,12 +248,12 @@ public class RenaultBankDirektPDFExtractor extends AbstractPDFExtractor
                         // 05.08. 31.07. Storno Abschluss                                                      3,59 S
                         // @formatter:on
                         .section("type").optional() //
-                        .match("^[\\d]{2}\\.[\\d]{2}\\. [\\d]{2}\\.[\\d]{2}\\.[\\s]{1,}(?<type>Storno) Abschluss.* [\\.,\\d]+ [H|S][\\s]*$") //
+                        .match("^[\\d]{2}\\.[\\d]{2}\\. [\\d]{2}\\.[\\d]{2}\\.[\\s]{1,}(?<type>Storno) Abschluss.* [\\.,\\d]+ [HS][\\s]*$") //
                         .assign((t, v) -> v.markAsFailure(Messages.MsgErrorTransactionOrderCancellationUnsupported))
 
                         .section("date", "amount", "type") //
                         .documentContext("currency", "year") //
-                        .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.) [\\d]{2}\\.[\\d]{2}\\.[\\s]{1,}(Storno )?Abschluss.* (?<amount>[\\.,\\d]+) (?<type>[H|S])[\\s]*$") //
+                        .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.) [\\d]{2}\\.[\\d]{2}\\.[\\s]{1,}(Storno )?Abschluss.* (?<amount>[\\.,\\d]+) (?<type>[HS])[\\s]*$") //
                         .assign((t, v) -> {
                             // @formatter:off
                             // Is type --> "S" change from INTEREST to INTEREST_CHARGE
@@ -276,7 +284,7 @@ public class RenaultBankDirektPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("tax").optional() //
                         .documentContext("currency") //
-                        .match("^[\\d]{2}\\.[\\d]{2}\\. [\\d]{2}\\.[\\d]{2}\\.[\\s]{1,}Solid\\.\\-Zuschlag aus[\s]{1,}(?<tax>[\\.,\\d]+) [S].*$") //
+                        .match("^[\\d]{2}\\.[\\d]{2}\\. [\\d]{2}\\.[\\d]{2}\\.[\\s]{1,}Solid\\.\\-Zuschlag aus[\\s]{1,}(?<tax>[\\.,\\d]+) [S].*$") //
                         .assign((t, v) -> {
                             var tax = Money.of(v.get("currency"), asAmount(v.get("tax")));
 
@@ -343,7 +351,7 @@ public class RenaultBankDirektPDFExtractor extends AbstractPDFExtractor
 
                         .section("type", "amount", "date") //
                         .documentContext("currency") //
-                        .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) .*(?<type>[\\s|\\-]{1,})(?<amount>[\\.,\\d]+) [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\.,\\d]+[\\s]*$") //
+                        .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) .*(?<type>[\\s\\-]{1,})(?<amount>[\\.,\\d]+) [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\.,\\d]+[\\s]*$") //
                         .assign((t, v) -> {
                             // @formatter:off
                             // Is type --> "-" change from INTEREST to INTEREST_CHARGE

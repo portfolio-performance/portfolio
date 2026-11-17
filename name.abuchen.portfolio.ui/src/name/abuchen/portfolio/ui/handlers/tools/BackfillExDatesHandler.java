@@ -21,7 +21,6 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.dialogs.TitleAreaDialog;
 import org.eclipse.jface.layout.GridDataFactory;
-import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
@@ -52,6 +51,7 @@ import name.abuchen.portfolio.ui.handlers.MenuHelper;
 import name.abuchen.portfolio.ui.util.LogoManager;
 import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
 import name.abuchen.portfolio.ui.util.viewers.CopyPasteSupport;
+import name.abuchen.portfolio.ui.util.viewers.SafeTableColumnLayout;
 
 public class BackfillExDatesHandler
 {
@@ -227,7 +227,7 @@ public class BackfillExDatesHandler
             var tableArea = new Composite(composite, SWT.NONE);
             GridDataFactory.fillDefaults().grab(true, true).hint(900, 400).applyTo(tableArea);
 
-            var layout = new TableColumnLayout();
+            var layout = new SafeTableColumnLayout();
             tableArea.setLayout(layout);
 
             var tableViewer = new TableViewer(tableArea, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI);

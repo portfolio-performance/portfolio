@@ -130,8 +130,12 @@ public final class Risk
 
     public static class Volatility
     {
+        private static final int TRADING_DAYS_PER_YEAR = 252;
+
         private final double stdDeviation;
         private final double semiDeviation;
+        private final double annualizedStdDeviation;
+        private final int count;
 
         public Volatility(double[] returns, IntPredicate filter)
         {
@@ -158,15 +162,19 @@ public final class Risk
                     tempSemi += add;
             }
 
+            this.count = count;
+
             if (count <= 1)
             {
                 stdDeviation = 0d;
                 semiDeviation = 0d;
+                annualizedStdDeviation = 0d;
             }
             else
             {
                 stdDeviation = Math.sqrt(tempStandard / (count - 1) * count);
                 semiDeviation = Math.sqrt(tempSemi / (count - 1) * count);
+                annualizedStdDeviation = Math.sqrt(tempStandard / (count - 1) * TRADING_DAYS_PER_YEAR);
             }
         }
 
@@ -187,9 +195,33 @@ public final class Risk
             return count == 0 ? 0 : sum / count;
         }
 
+        /**
+         * How many returns the filter accepted. With fewer than two, both
+         * deviations are 0 - not a measured absence of risk, but nothing to
+         * measure a spread from.
+         */
+        public int getCount()
+        {
+            return count;
+        }
+
         public double getStandardDeviation()
         {
             return stdDeviation;
+        }
+
+        /**
+         * Returns the annualized standard deviation: the standard deviation of
+         * the daily returns scaled to one year by the square root of the number
+         * of trading days per year (252). In contrast to
+         * {@link #getStandardDeviation()}, which scales to the length of the
+         * reporting period, this value is independent of the period and
+         * therefore comparable across periods and with externally quoted
+         * (annualized) volatility figures.
+         */
+        public double getAnnualizedStandardDeviation()
+        {
+            return annualizedStdDeviation;
         }
 
         public double getSemiDeviation()

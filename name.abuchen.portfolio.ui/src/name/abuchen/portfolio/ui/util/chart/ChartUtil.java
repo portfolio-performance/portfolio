@@ -1,5 +1,7 @@
 package name.abuchen.portfolio.ui.util.chart;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.ImageData;
@@ -53,11 +55,24 @@ public final class ChartUtil
 
         Point chartSize = chart.getSize();
 
+        // GC.copyArea() fills the image of the GC's zoom only, while getImageData()
+        // reads the zoom it is asked for - above 100 % an untouched, black buffer.
+        // Windows asks the provider while copying, cocoa and GTK while the image is
+        // set up, and only the first request of a phase counts because SWT asks the
+        // remaining zooms as soon as it gets null.
+        AtomicInteger firstRequest = new AtomicInteger();
+
         ImageDataProvider chartImageDataProvider = zoom -> {
+            firstRequest.compareAndSet(0, zoom);
+
+            // supply the 100 % image and let SWT scale it, using its own rounding.
+            // A buffer of its own would stay alive as an image representation and
+            // cocoa would hand that out instead of the copied pixels.
             if (zoom != 100)
                 return null;
+
             PaletteData palette = new PaletteData(0xFF, 0xFF00, 0xFF0000);
-            return new ImageData(chartSize.x, chartSize.y, 32, palette);
+            return new ImageData(Math.max(1, chartSize.x), Math.max(1, chartSize.y), 32, palette);
         };
 
         Image image = null;
@@ -65,9 +80,15 @@ public final class ChartUtil
         try
         {
             image = new Image(chart.getDisplay(), chartImageDataProvider);
+            int zoom = firstRequest.getAndSet(0); // cocoa and GTK: the zoom set up at creation
+
             gc = new GC(chart);
             gc.copyArea(image, 0, 0);
-            return image.getImageData();
+
+            if (firstRequest.get() > 0)
+                zoom = firstRequest.get(); // Windows: the zoom copyArea created and filled
+
+            return image.getImageData(zoom);
         }
         finally
         {

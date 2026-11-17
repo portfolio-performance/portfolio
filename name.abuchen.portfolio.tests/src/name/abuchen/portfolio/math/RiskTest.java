@@ -122,6 +122,22 @@ public class RiskTest
     }
 
     /**
+     * Tests the annualized volatility calculation with a set of returns.
+     * Scenario: The same return values as {@link #testVolatility()} are used.
+     * Expects: The annualized standard deviation equals the daily standard
+     * deviation scaled by the square root of 252 trading days, i.e. it is
+     * independent of the number of observations in the period.
+     */
+    @Test
+    public void testAnnualizedVolatility()
+    {
+        double[] delta = { 0.005, -1 / 300d, -0.005, 0.01, 0.01, -0.005 };
+        Volatility volatility = new Volatility(delta, index -> true);
+
+        assertThat(volatility.getAnnualizedStandardDeviation(), closeTo(0.114946904780, TOLERANCE));
+    }
+
+    /**
      * Tests the Volatility calculation while skipping the first return value.
      * Scenario: The first return value is skipped in the volatility calculation.
      * Expects: Volatility to be consistent with calculations that include the first value, within specified tolerance.
@@ -151,6 +167,18 @@ public class RiskTest
 
         assertThat(volatility.getStandardDeviation(), closeTo(0d, TOLERANCE));
         assertThat(volatility.getSemiDeviation(), closeTo(0d, TOLERANCE));
+    }
+
+    /** the count is that of the returns the filter accepts, not of all returns */
+    @Test
+    public void testVolatilityCountsTheAcceptedReturns()
+    {
+        double[] returns = new double[] { 0.01, 0.02, -0.01, 0.03 };
+
+        assertThat(new Volatility(returns, index -> true).getCount(), is(4));
+        assertThat(new Volatility(returns, index -> index > 1).getCount(), is(2));
+        assertThat(new Volatility(returns, index -> index == 3).getCount(), is(1));
+        assertThat(new Volatility(new double[0], index -> true).getCount(), is(0));
     }
 
     /**

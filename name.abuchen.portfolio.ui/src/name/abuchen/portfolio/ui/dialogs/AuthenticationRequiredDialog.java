@@ -21,6 +21,7 @@ import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.util.DesktopAPI;
 import name.abuchen.portfolio.ui.util.LogoManager;
+import name.abuchen.portfolio.ui.util.viewers.SafeTableColumnLayout;
 
 public class AuthenticationRequiredDialog
 {
@@ -36,7 +37,7 @@ public class AuthenticationRequiredDialog
                 Composite container = new Composite(parent, SWT.NONE);
                 GridDataFactory.fillDefaults().grab(true, false).hint(SWT.DEFAULT, 100).applyTo(container);
 
-                TableColumnLayout tableLayout = new TableColumnLayout();
+                TableColumnLayout tableLayout = new SafeTableColumnLayout();
                 container.setLayout(tableLayout);
 
                 var table = new Table(container, SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL);

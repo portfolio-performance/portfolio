@@ -73,6 +73,7 @@ import name.abuchen.portfolio.ui.util.viewers.DateTimeEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.DateTimeLabelProvider;
 import name.abuchen.portfolio.ui.util.viewers.ExDateEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.MoneyColorLabelProvider;
+import name.abuchen.portfolio.ui.util.viewers.SafeTableColumnLayout;
 import name.abuchen.portfolio.ui.util.viewers.SharesLabelProvider;
 import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
 import name.abuchen.portfolio.ui.util.viewers.StringEditingSupport;
@@ -147,7 +148,7 @@ public class AccountTransactionsPane implements InformationPanePage, Modificatio
         accountMenu = new AccountContextMenu(view);
 
         Composite container = new Composite(parent, SWT.NONE);
-        TableColumnLayout layout = new TableColumnLayout();
+        TableColumnLayout layout = new SafeTableColumnLayout();
         container.setLayout(layout);
 
         transactions = new TableViewer(container, SWT.FULL_SELECTION | SWT.MULTI | SWT.VIRTUAL);

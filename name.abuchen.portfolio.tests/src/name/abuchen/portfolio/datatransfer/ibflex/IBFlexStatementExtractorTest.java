@@ -1,7 +1,9 @@
 package name.abuchen.portfolio.datatransfer.ibflex;
 
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.check;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.dividend;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.fee;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.feeRefund;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasAccount;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasAmount;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasDate;
@@ -9,6 +11,7 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasFees;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasForexGrossValue;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasGrossValue;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasIsin;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasName;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasNote;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasPortfolio;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasSecondaryAccount;
@@ -16,12 +19,14 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasSecurity;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasShares;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTaxes;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTicker;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasWkn;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.inboundCash;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.outboundCash;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.purchase;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.sale;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.withFailureMessage;
-import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransfers;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransactions;
+import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransfers;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countBuySell;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countSecurities;
 import static org.hamcrest.CoreMatchers.hasItem;
@@ -46,8 +51,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.TimeZone;
 import java.util.stream.Collectors;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 
 import name.abuchen.portfolio.Messages;
@@ -75,6 +83,20 @@ import name.abuchen.portfolio.online.impl.YahooFinanceQuoteFeed;
 @SuppressWarnings("nls")
 public class IBFlexStatementExtractorTest
 {
+    private TimeZone defaultTZ;
+
+    @Before
+    public void saveDefaultTZ()
+    {
+        this.defaultTZ = TimeZone.getDefault();
+    }
+
+    @After
+    public void restoreDefaultTZ()
+    {
+        TimeZone.setDefault(defaultTZ);
+    }
+
     private Extractor.InputFile createTempFile(InputStream input) throws IOException
     {
         File tempFile = Files.createTempFile("IBFlexStatementExtractorTest", null).toFile();
@@ -3679,6 +3701,7 @@ public class IBFlexStatementExtractorTest
     @Test
     public void testParseDateTimeFormats()
     {
+        TimeZone.setDefault(TimeZone.getTimeZone("Europe/Berlin"));
         // Compact format yyyyMMdd - date only
         assertThat(IBFlexStatementExtractor.parseDateTime("20240115"), is(LocalDateTime.of(2024, 1, 15, 0, 0, 0)));
 
@@ -3690,9 +3713,9 @@ public class IBFlexStatementExtractorTest
         assertThat(IBFlexStatementExtractor.parseDateTime("20240115;14:30:52"),
                         is(LocalDateTime.of(2024, 1, 15, 14, 30, 52)));
 
-        // Compact format with timezone (timezone is dropped)
+        // Compact format with timezone
         assertThat(IBFlexStatementExtractor.parseDateTime("20240115;143052 EST"),
-                        is(LocalDateTime.of(2024, 1, 15, 14, 30, 52)));
+                        is(LocalDateTime.of(2024, 1, 15, 20, 30, 52)));
 
         // ISO format yyyy-MM-dd - date only
         assertThat(IBFlexStatementExtractor.parseDateTime("2024-01-15"), is(LocalDateTime.of(2024, 1, 15, 0, 0, 0)));
@@ -3738,9 +3761,9 @@ public class IBFlexStatementExtractorTest
         assertThat(IBFlexStatementExtractor.parseDateTime("15-Jan-24;14:30:52"),
                         is(LocalDateTime.of(2024, 1, 15, 14, 30, 52)));
 
-        // With timezone (should be dropped)
+        // With timezone
         assertThat(IBFlexStatementExtractor.parseDateTime("15-Jan-24;143052 UTC"),
-                        is(LocalDateTime.of(2024, 1, 15, 14, 30, 52)));
+                        is(LocalDateTime.of(2024, 1, 15, 15, 30, 52)));
 
         // Null and empty handling
         assertThat(IBFlexStatementExtractor.parseDateTime(null), is(nullValue()));
@@ -3748,6 +3771,13 @@ public class IBFlexStatementExtractorTest
 
         // Invalid format should return null
         assertThat(IBFlexStatementExtractor.parseDateTime("invalid"), is(nullValue()));
+
+        // from a given sample that failed to be parsed correctly
+        assertThat(IBFlexStatementExtractor.parseDateTime("20261005;06:11:35 EDT"),
+                        is(LocalDateTime.of(2026, 10, 05, 12, 11, 35)));
+        TimeZone.setDefault(TimeZone.getTimeZone("Asia/Tokyo"));
+        assertThat(IBFlexStatementExtractor.parseDateTime("20261005;06:11:35 EDT"),
+                        is(LocalDateTime.of(2026, 10, 05, 19, 11, 35)));
     }
 
     @Test
@@ -3959,5 +3989,198 @@ public class IBFlexStatementExtractorTest
         assertThat(krdivTransaction.getCurrencyCode(), is("KRW"));
         assertThat(krdivTransaction.getAmount(), is(Values.Amount.factorize(3100)));
         assertThat(krdivTransaction.getShares(), is(Values.Share.factorize(2)));
+    }
+
+    @Test
+    public void testIBFlexStatementFile32() throws IOException
+    {
+        TimeZone.setDefault(TimeZone.getTimeZone("Europe/Berlin"));
+        var client = new Client();
+
+        var referenceAccountAwithUSD = new Account("A");
+        referenceAccountAwithUSD.setCurrencyCode("USD");
+        client.addAccount(referenceAccountAwithUSD);
+
+        var portfolioA = new Portfolio("A");
+        portfolioA.setReferenceAccount(referenceAccountAwithUSD);
+        client.addPortfolio(portfolioA);
+
+        var extractor = new IBFlexStatementExtractor(client);
+        var activityStatement = getClass().getResourceAsStream("testIBFlexStatementFile32.xml");
+        var tempFile = createTempFile(activityStatement);
+        var errors = new ArrayList<Exception>();
+
+        var results = extractor.extract(Collections.singletonList(tempFile), errors);
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+
+        assertThat(results, hasItem(allOf( //
+                        hasPortfolio(portfolioA), //
+                        hasAccount(referenceAccountAwithUSD), //
+                        purchase( //
+                                        hasDate("2026-10-05T12:11:35"), hasShares(26), //
+                                        hasSecurity(hasTicker("AUUSIUSD"), hasIsin("CH0106027193")), //
+                                        hasAmount("USD", 3454.2), //
+                                        hasTaxes("USD", 0.00), hasFees("USD", 4.00), //
+                                        hasNote("Trade-ID: 1234567890 | Transaction-ID: 1234567890") //
+                        ))));
+    }
+
+    @Test
+    public void testIBFlexStatementFile33() throws IOException
+    {
+        // Commission Adjustments: refund of a commission charged on an earlier
+        // trade (issue #5933). The security of that trade is already known.
+        var client = new Client();
+
+        var security = new Security("PIMCO Active Bond ETF", CurrencyUnit.USD);
+        security.setTickerSymbol("BOND");
+        security.setIsin("US72201R7750");
+        security.setWkn("103562908");
+        client.addSecurity(security);
+
+        var extractor = new IBFlexStatementExtractor(client);
+
+        var activityStatement = getClass().getResourceAsStream("testIBFlexStatementFile33.xml");
+        var tempFile = createTempFile(activityStatement);
+
+        var errors = new ArrayList<Exception>();
+
+        var results = extractor.extract(Collections.singletonList(tempFile), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, CurrencyUnit.USD);
+
+        // check fee refund transaction
+        assertThat(results, hasItem(feeRefund( //
+                        hasDate("2026-07-23"), hasShares(0), //
+                        hasSecurity(hasName("PIMCO Active Bond ETF"), hasIsin("US72201R7750"), //
+                                        hasWkn("103562908"), hasTicker("BOND")), //
+                        hasNote("Transaction-ID: 41560910443 | Trade-ID: 9760868262 | Refund (BOND, 200, 2026-06-23)"), //
+                        hasAmount("USD", 1.00), //
+                        hasTaxes("USD", 0.00), hasFees("USD", 0.00))));
+    }
+
+    @Test
+    public void testIBFlexStatementFile33WithoutSecurity() throws IOException
+    {
+        // Commission Adjustments for a security that is not known yet: no
+        // security is created from the refund description, the refund stays
+        // unlinked (issue #5933).
+        var extractor = new IBFlexStatementExtractor(new Client());
+
+        var activityStatement = getClass().getResourceAsStream("testIBFlexStatementFile33.xml");
+        var tempFile = createTempFile(activityStatement);
+
+        var errors = new ArrayList<Exception>();
+
+        var results = extractor.extract(Collections.singletonList(tempFile), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, CurrencyUnit.USD);
+
+        // check fee refund transaction
+        assertThat(results, hasItem(feeRefund( //
+                        hasDate("2026-07-23"), hasShares(0), //
+                        check(t -> assertNull(t.getSecurity())), //
+                        hasNote("Transaction-ID: 41560910443 | Trade-ID: 9760868262 | Refund (BOND, 200, 2026-06-23)"), //
+                        hasAmount("USD", 1.00), //
+                        hasTaxes("USD", 0.00), hasFees("USD", 0.00))));
+    }
+
+    @Test
+    public void testIBFlexStatementFile34() throws IOException
+    {
+        // Cancel and rebook of an execution within one statement (issue
+        // #5915): only the rebooked execution is imported. The cancellation
+        // does not refund the commission of the canceled execution, so it is
+        // booked as a fee.
+        var extractor = new IBFlexStatementExtractor(new Client());
+
+        var activityStatement = getClass().getResourceAsStream("testIBFlexStatementFile34.xml");
+        var tempFile = createTempFile(activityStatement);
+
+        var errors = new ArrayList<Exception>();
+
+        var results = extractor.extract(Collections.singletonList(tempFile), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(results.size(), is(3));
+        new AssertImportActions().check(results, "AUD");
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2025-09-11T10:00"), hasShares(5000), //
+                        hasSecurity(hasIsin("CA38501D2041")), //
+                        hasNote("Trade-ID: 2001 | Transaction-ID: 1003"), //
+                        hasAmount("AUD", 1600.00), hasGrossValue("AUD", 1600.00), //
+                        hasTaxes("AUD", 0.00), hasFees("AUD", 0.00))));
+
+        // check fee transaction
+        assertThat(results, hasItem(fee( //
+                        hasDate("2025-09-11T10:00"), hasShares(0), //
+                        hasSecurity(hasIsin("CA38501D2041")), //
+                        hasNote("Trade-ID: 2001 | Transaction-ID: 1001"), //
+                        hasAmount("AUD", 6.00), //
+                        hasTaxes("AUD", 0.00), hasFees("AUD", 0.00))));
+    }
+
+    @Test
+    public void testIBFlexStatementFile35() throws IOException
+    {
+        // Cancellation of an execution that is not part of the statement, for
+        // example because it was imported with an earlier statement: the
+        // cancellation stays visible as unsupported, because the user may have
+        // to correct the existing transaction.
+        var extractor = new IBFlexStatementExtractor(new Client());
+
+        var activityStatement = getClass().getResourceAsStream("testIBFlexStatementFile35.xml");
+        var tempFile = createTempFile(activityStatement);
+
+        var errors = new ArrayList<Exception>();
+
+        var results = extractor.extract(Collections.singletonList(tempFile), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(2L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(results.size(), is(3));
+        new AssertImportActions().check(results, "AUD");
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2025-09-11T10:00"), hasShares(5000), //
+                        hasSecurity(hasIsin("CA38501D2041")), //
+                        hasNote("Trade-ID: 2001 | Transaction-ID: 1003"), //
+                        hasAmount("AUD", 1600.00), hasGrossValue("AUD", 1600.00), //
+                        hasTaxes("AUD", 0.00), hasFees("AUD", 0.00))));
+
+        // check cancellation (Storno) transaction
+        assertThat(results, hasItem(withFailureMessage( //
+                        Messages.MsgErrorTransactionOrderCancellationUnsupported, //
+                        purchase( //
+                                        hasDate("2025-09-11T10:00"), hasShares(5000), //
+                                        hasSecurity(hasIsin("CA38501D2041")), //
+                                        hasNote(Messages.MsgErrorTransactionOrderCancellationUnsupported), //
+                                        hasAmount("AUD", 1600.00), hasGrossValue("AUD", 1600.00), //
+                                        hasTaxes("AUD", 0.00), hasFees("AUD", 0.00)))));
     }
 }

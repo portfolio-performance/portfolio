@@ -222,7 +222,7 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("time").optional() //
                         .match("^(Ausf.hrungstag|Schlusstag) \\/ \\-zeit [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} .* (?<time>[\\d]{2}:[\\d]{2}:[\\d]{2}) .*$") //
-                        .assign((t, v) -> type.getCurrentContext().put("time", v.get("time")))
+                        .assign((t, v) -> v.getTransactionContext().putString("time", v.get("time")))
 
                         .oneOf( //
                                         // @formatter:off
@@ -241,8 +241,8 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                                                         .attributes("date").multipleTimes() //
                                                         .match("^(Ausf.hrungstag|Schlusstag|F.lligkeit)( \\/ -zeit)? (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})( .*)?$") //
                                                         .assign((t, v) -> {
-                                                            if (type.getCurrentContext().get("time") != null)
-                                                                t.setDate(asDate(v.get("date"), type.getCurrentContext().get("time")));
+                                                            if (v.getTransactionContext().getString("time") != null)
+                                                                t.setDate(asDate(v.get("date"), v.getTransactionContext().getString("time")));
                                                             else
                                                                 t.setDate(asDate(v.get("date")));
                                                         }))
@@ -253,7 +253,7 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("currency", "amount") //
-                                                        .match("[\\.,\\d]+ .* (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) .* (?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
+                                                        .match("^[\\.,\\d]+ .* (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) .* (?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
                                                         .assign((t, v) -> {
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                                             t.setAmount(asAmount(v.get("amount")));
@@ -593,7 +593,7 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                         // Nominale 378,00 Stück
                         // @formatter:on
                         .section("shares") //
-                        .match("^Nominale (?<shares>[\\.,\\d]+) .*") //
+                        .match("^Nominale (?<shares>[\\.,\\d]+) .*$") //
                         .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
                         // @formatter:off
@@ -690,7 +690,7 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
 
         // @formatter:off
         // 13.07.2016 Ueberweisung Mustermann -5.000,00
-        // 13.02.2020 Gutschrift/Dauerauftrag Max Mustermann 1,01
+        // 14.02.2020 Dauerauftrag/Terminueberw. Max Mustermann -30,00
         // 16.02.2020 Lastschrift XYZ GmbH -10,00
         // 16.02.2020 Abbuchung XYZ GmbH -10,00
         // 16.03.2026 Echtzeitüberweisung Peter Pan Bla -1.000,00
@@ -742,7 +742,7 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
 
         // @formatter:off
         // 27.06.2016 Gutschrift Max Mustermann 10.000,00
-        // 14.02.2020 Dauerauftrag/Terminueberw. Max Mustermann -30,00
+        // 13.02.2020 Gutschrift/Dauerauftrag Max Mustermann 1,01
         // 29.04.2021 Gehalt/Rente Hauptkasse des Freistaates Sachsen 806,83
         // 13.10.2020 Gutschrift-VWL 40,00
         // 13.10.2020 Retoure XYZ GmbH 40,00
@@ -791,10 +791,12 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
 
         // @formatter:off
         // 03.11.10 Lastschrift SB-TANK. 5128, uKava -54,52 445,48
+        // 03.01.11 Dauerauftrag NlVGY XqGftpNsedJToJhgza -210,00 613,23
         // @formatter:on
         var removalBlock_Format02 = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{2} " //
                         + "(Ueberweisung" //
                         + "|Dauerauftrag\\/Terminueberw\\." //
+                        + "|Dauerauftrag" //
                         + "|Lastschrift" //
                         + "|Abbuchung" //
                         + "|Echtzeit.berweisung" //
@@ -810,6 +812,7 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                         .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{2}) " //
                                         + "(?<note>(Ueberweisung" //
                                         + "|Dauerauftrag\\/Terminueberw\\." //
+                                        + "|Dauerauftrag" //
                                         + "|Lastschrift" //
                                         + "|Abbuchung" //
                                         + "|Echtzeit.berweisung" //
@@ -1081,7 +1084,7 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
 
                         .section("amount", "type") //
-                        .find("^[\\s]*Erstattung\\/Belastung \\(\\-\\) von Steuern.*") //
+                        .find("[\\s]*Erstattung\\/Belastung \\(\\-\\) von Steuern.*") //
                         .match("^[\\s]*Erstattung\\/Belastung\\(\\-\\)[\\s]+(?<type>\\-?)(?<amount>[\\.,\\d]+).*$") //
                         .assign((t, v) -> {
                             // @formatter:off
@@ -1338,42 +1341,42 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                         // Handelsplatzgebühr EUR 2,50
                         // @formatter:on
                         .section("currency", "fee").optional() //
-                        .match("^Handelsplatzgeb.hr (?<currency>[A-Z]{3}) (?<fee>[\\.,\\d]+)") //
+                        .match("^Handelsplatzgeb.hr (?<currency>[A-Z]{3}) (?<fee>[\\.,\\d]+)$") //
                         .assign((t, v) -> processFeeEntries(t, v, type))
 
                         // @formatter:off
                         // Provision EUR 9,90
                         // @formatter:on
                         .section("currency", "fee").optional() //
-                        .match("^Provision (?<currency>[A-Z]{3}) (?<fee>[\\.,\\d]+)") //
+                        .match("^Provision (?<currency>[A-Z]{3}) (?<fee>[\\.,\\d]+)$") //
                         .assign((t, v) -> processFeeEntries(t, v, type))
 
                         // @formatter:off
                         // Handelsentgelt EUR 3,00
                         // @formatter:on
                         .section("currency", "fee").optional() //
-                        .match("^Handelsentgelt (?<currency>[A-Z]{3}) (?<fee>[\\.,\\d]+)") //
+                        .match("^Handelsentgelt (?<currency>[A-Z]{3}) (?<fee>[\\.,\\d]+)$") //
                         .assign((t, v) -> processFeeEntries(t, v, type))
 
                         // @formatter:off
                         // Börsenentgelt EUR 0,39
                         // @formatter:on
                         .section("currency", "fee").optional() //
-                        .match("^B.rsenentgelt (?<currency>[A-Z]{3}) (?<fee>[\\.,\\d]+)") //
+                        .match("^B.rsenentgelt (?<currency>[A-Z]{3}) (?<fee>[\\.,\\d]+)$") //
                         .assign((t, v) -> processFeeEntries(t, v, type))
 
                         // @formatter:off
                         // Variables Transaktionsentgelt EUR 2,82
                         // @formatter:on
                         .section("currency", "fee").optional() //
-                        .match("^Variables Transaktionsentgelt (?<currency>[A-Z]{3}) (?<fee>[\\.,\\d]+)") //
+                        .match("^Variables Transaktionsentgelt (?<currency>[A-Z]{3}) (?<fee>[\\.,\\d]+)$") //
                         .assign((t, v) -> processFeeEntries(t, v, type))
 
                         // @formatter:off
                         // Courtage EUR 3,20
                         // @formatter:on
                         .section("currency", "fee").optional() //
-                        .match("^Courtage (?<currency>[A-Z]{3}) (?<fee>[\\.,\\d]+)") //
+                        .match("^Courtage (?<currency>[A-Z]{3}) (?<fee>[\\.,\\d]+)$") //
                         .assign((t, v) -> processFeeEntries(t, v, type))
 
                         // @formatter:off

@@ -46,6 +46,7 @@ import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.LogoManager;
 import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
 import name.abuchen.portfolio.ui.util.viewers.CopyPasteSupport;
+import name.abuchen.portfolio.ui.util.viewers.SafeTableColumnLayout;
 
 public class ConsistencyChecksJob extends AbstractClientJob
 {
@@ -140,7 +141,7 @@ public class ConsistencyChecksJob extends AbstractClientJob
             GridDataFactory.fillDefaults().grab(true, true).applyTo(tableArea);
             tableArea.setLayout(new FillLayout());
 
-            TableColumnLayout layout = new TableColumnLayout();
+            TableColumnLayout layout = new SafeTableColumnLayout();
             tableArea.setLayout(layout);
 
             tableViewer = new TableViewer(tableArea, SWT.BORDER | SWT.FULL_SELECTION);

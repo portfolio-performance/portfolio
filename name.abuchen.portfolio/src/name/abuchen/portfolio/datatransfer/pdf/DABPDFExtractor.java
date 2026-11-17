@@ -193,7 +193,7 @@ public class DABPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("time").optional() //
                         .match("^Handelszeit (?<time>[\\d]{2}:[\\d]{2}).*$") //
-                        .assign((t, v) -> type.getCurrentContext().put("time", v.get("time")))
+                        .assign((t, v) -> v.getTransactionContext().putString("time", v.get("time")))
 
                         .oneOf( //
                                         // @formatter:off
@@ -203,8 +203,10 @@ public class DABPDFExtractor extends AbstractPDFExtractor
                                                         .attributes("date") //
                                                         .match("^Handelstag (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) .*$") //
                                                         .assign((t, v) -> {
-                                                            if (type.getCurrentContext().get("time") != null)
-                                                                t.setDate(asDate(v.get("date"), type.getCurrentContext().get("time")));
+                                                            var time = v.getTransactionContext().getString("time");
+
+                                                            if (time != null)
+                                                                t.setDate(asDate(v.get("date"), time));
                                                             else
                                                                 t.setDate(asDate(v.get("date")));
                                                         }),
@@ -269,13 +271,7 @@ public class DABPDFExtractor extends AbstractPDFExtractor
 
                         .conclude(ExtractorUtils.fixGrossValueBuySell())
 
-                        .wrap(t -> {
-                            // If we have multiple entries in the document,
-                            // then the "negative" flag must be removed.
-                            type.getCurrentContext().remove("negative");
-
-                            return new BuySellEntryItem(t);
-                        });
+                        .wrap(BuySellEntryItem::new);
 
         addTaxesSectionsTransaction(pdfTransaction, type);
         addFeesSectionsTransaction(pdfTransaction, type);
@@ -347,7 +343,7 @@ public class DABPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("shares") //
-                                                        .match("(?<shares>[\\.,\\d]+) St.ck") //
+                                                        .match("^(?<shares>[\\.,\\d]+) St.ck$") //
                                                         .assign((t, v) -> t.setShares(asShares(v.get("shares")))),
                                         // @formatter:off
                                         // Nominal Zahltag Zinssatz
@@ -583,13 +579,7 @@ public class DABPDFExtractor extends AbstractPDFExtractor
 
                         .conclude(ExtractorUtils.fixGrossValueA())
 
-                        .wrap(t -> {
-                            // If we have multiple entries in the document, then
-                            // the "negative" flag must be removed.
-                            type.getCurrentContext().remove("negative");
-
-                            return new TransactionItem(t);
-                        });
+                        .wrap(TransactionItem::new);
 
         addTaxesSectionsTransaction(pdfTransaction, type);
         addFeesSectionsTransaction(pdfTransaction, type);
@@ -629,8 +619,8 @@ public class DABPDFExtractor extends AbstractPDFExtractor
                                                         .attributes("name", "isin", "name1", "currency") //
                                                         .find("Gattungsbezeichnung ISIN") //
                                                         .match("^(?<name>.*) (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
-                                                        .match("^(?<name1>.*)") //
-                                                        .match("STK [\\.,\\d]+ (?<currency>[A-Z]{3}) [\\.,\\d]+$") //
+                                                        .match("^(?<name1>.*)$") //
+                                                        .match("^STK [\\.,\\d]+ (?<currency>[A-Z]{3}) [\\.,\\d]+$") //
                                                         .assign((t, v) -> {
                                                             if (!v.get("name1").startsWith("Nominal"))
                                                                 v.put("name", v.get("name") + " " + v.get("name1"));
@@ -646,7 +636,7 @@ public class DABPDFExtractor extends AbstractPDFExtractor
                                                         .attributes("name", "currency", "isin", "name1") //
                                                         .find("Gattungsbezeichnung ISIN") //
                                                         .match("^(?<name>.*) (?<currency>[A-Z]{3}) (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
-                                                        .match("^(?<name1>.*)") //
+                                                        .match("^(?<name1>.*)$") //
                                                         .assign((t, v) -> {
                                                             if (!v.get("name1").startsWith("Nominal"))
                                                                 v.put("name", v.get("name") + " " + v.get("name1"));
@@ -664,7 +654,7 @@ public class DABPDFExtractor extends AbstractPDFExtractor
                                                         .find("Gattungsbezeichnung ISIN") //
                                                         .match("^(?<name>.*) (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
                                                         .find("Nominal .*") //
-                                                        .match("STK [\\.,\\d]+ [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<currency>[A-Z]{3})$") //
+                                                        .match("^STK [\\.,\\d]+ [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<currency>[A-Z]{3})$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))))
 
                         .oneOf( //
@@ -677,7 +667,7 @@ public class DABPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("shares") //
                                                         .find("Nominal") //
-                                                        .match("STK (?<shares>[\\.,\\d]+)$") //
+                                                        .match("^STK (?<shares>[\\.,\\d]+)$") //
                                                         .assign((t, v) -> t.setShares(asShares(v.get("shares")))),
                                         // @formatter:off
                                         // STK 20,000 EUR 1,3500
@@ -685,7 +675,7 @@ public class DABPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("shares") //
-                                                        .match("STK (?<shares>[\\.,\\d]+) .*$") //
+                                                        .match("^STK (?<shares>[\\.,\\d]+) .*$") //
                                                         .assign((t, v) -> t.setShares(asShares(v.get("shares")))))
 
                         .oneOf( //
@@ -1324,7 +1314,7 @@ public class DABPDFExtractor extends AbstractPDFExtractor
                         .section("amount", "date", "note") //
                         .documentContext("currency", "year") //
                         .match("^[\\d]{2}\\.[\\d]{2}\\. (?<date>[\\d]{2}\\.[\\d]{2}\\.) Verwalterpreis (?<amount>[\\.,\\d]+)\\-$") //
-                        .match("^(?<note>.*) End to End\\-") //
+                        .match("^(?<note>.*) End to End\\-$") //
                         .assign((t, v) -> {
                             t.setDateTime(asDate(v.get("date") + v.get("year")));
                             t.setCurrencyCode(v.get("currency"));
@@ -1395,13 +1385,13 @@ public class DABPDFExtractor extends AbstractPDFExtractor
 
     private <T extends Transaction<?>> void addTaxesSectionsTransaction(T transaction, DocumentType type)
     {
-        // If we have a tax refunds,
-        // we set a flag and don't book tax below.
+        // If we have a tax refunds, we set a flag in the transaction
+        // context and don't book tax below.
         transaction //
 
                         .section("n").optional() //
                         .match("^zu versteuern \\(negativ\\) (?<n>.*)$") //
-                        .assign((t, v) -> type.getCurrentContext().putBoolean("negative", true));
+                        .assign((t, v) -> v.getTransactionContext().putBoolean("negative", true));
 
         transaction //
 
@@ -1411,7 +1401,7 @@ public class DABPDFExtractor extends AbstractPDFExtractor
                         .section("currency", "withHoldingTax").optional() //
                         .match("^ausl.ndische Quellensteuer .*\\s+(?<currency>[A-Z]{3})\\s+(?<withHoldingTax>[\\.,\\d]+)(\\-)?$") //
                         .assign((t, v) -> {
-                            if (!type.getCurrentContext().getBoolean("negative"))
+                            if (!v.getTransactionContext().getBoolean("negative"))
                                 processWithHoldingTaxEntries(t, v, "withHoldingTax", type);
                         })
 
@@ -1431,7 +1421,7 @@ public class DABPDFExtractor extends AbstractPDFExtractor
                         .section("currency", "creditableWithHoldingTax").optional() //
                         .match("^.*davon anrechenbare (US\\-)?Quellensteuer .*\\s+(?<currency>[A-Z]{3})\\s+(?<creditableWithHoldingTax>[\\.,\\d]+)(\\-|[\\s]+)?$") //
                         .assign((t, v) -> {
-                            if (!type.getCurrentContext().getBoolean("negative"))
+                            if (!v.getTransactionContext().getBoolean("negative"))
                                 processWithHoldingTaxEntries(t, v, "creditableWithHoldingTax", type);
                         })
 
@@ -1441,7 +1431,7 @@ public class DABPDFExtractor extends AbstractPDFExtractor
                         .section("label", "currency", "tax").optional() //
                         .match("^(?<label>.*) Kapitalertrags(s)?teuer\\s+(?<currency>[A-Z]{3})\\s+(?<tax>[\\.,\\d]+)(\\-)?[\\s]*$") //
                         .assign((t, v) -> {
-                            if (!type.getCurrentContext().getBoolean("negative")
+                            if (!v.getTransactionContext().getBoolean("negative")
                                             && !v.get("label").trim().startsWith("im laufenden Jahr einbehaltene"))
                                 processTaxEntries(t, v, type);
                         })
@@ -1452,7 +1442,7 @@ public class DABPDFExtractor extends AbstractPDFExtractor
                         .section("currency", "tax").optional() //
                         .match("^Kapitalertrags(s)?teuer\\s+(?<currency>[A-Z]{3})\\s+(?<tax>[\\.,\\d]+)(\\-)?[\\s]*$") //
                         .assign((t, v) -> {
-                            if (!type.getCurrentContext().getBoolean("negative"))
+                            if (!v.getTransactionContext().getBoolean("negative"))
                                 processTaxEntries(t, v, type);
                         })
 
@@ -1462,7 +1452,7 @@ public class DABPDFExtractor extends AbstractPDFExtractor
                         .section("label", "currency", "tax").optional() //
                         .match("^(?<label>.*) Solidarit.tszuschlag\\s+(?<currency>[A-Z]{3})\\s+(?<tax>[\\.,\\d]+)(\\-)?[\\s]*$") //
                         .assign((t, v) -> {
-                            if (!type.getCurrentContext().getBoolean("negative")
+                            if (!v.getTransactionContext().getBoolean("negative")
                                             && !v.get("label").trim().startsWith("im laufenden Jahr einbehaltener"))
                                 processTaxEntries(t, v, type);
                         })
@@ -1473,7 +1463,7 @@ public class DABPDFExtractor extends AbstractPDFExtractor
                         .section("currency", "tax").optional() //
                         .match("^Solidarit.tszuschlag\\s+(?<currency>[A-Z]{3})\\s+(?<tax>[\\.,\\d]+)(\\-)?[\\s]*$") //
                         .assign((t, v) -> {
-                            if (!type.getCurrentContext().getBoolean("negative"))
+                            if (!v.getTransactionContext().getBoolean("negative"))
                                 processTaxEntries(t, v, type);
                         })
 
@@ -1483,7 +1473,7 @@ public class DABPDFExtractor extends AbstractPDFExtractor
                         .section("label", "currency", "tax").optional() //
                         .match("^(?<label>.*) Kirchensteuer\\s+(?<currency>[A-Z]{3})\\s+(?<tax>[\\.,\\d]+)(\\-)?[\\s]*$") //
                         .assign((t, v) -> {
-                            if (!type.getCurrentContext().getBoolean("negative")
+                            if (!v.getTransactionContext().getBoolean("negative")
                                             && !v.get("label").trim().startsWith("im laufenden Jahr einbehaltene"))
                                 processTaxEntries(t, v, type);
                         })
@@ -1494,7 +1484,7 @@ public class DABPDFExtractor extends AbstractPDFExtractor
                         .section("currency", "tax").optional() //
                         .match("^Kirchensteuer\\s+(?<currency>[A-Z]{3})\\s+(?<tax>[\\.,\\d]+)(\\-)?[\\s]*$") //
                         .assign((t, v) -> {
-                            if (!type.getCurrentContext().getBoolean("negative"))
+                            if (!v.getTransactionContext().getBoolean("negative"))
                                 processTaxEntries(t, v, type);
                         })
 

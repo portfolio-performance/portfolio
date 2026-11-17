@@ -1,0 +1,77 @@
+PDFBox Version: 3.0.7
+Portfolio Performance Version: 0.86.1
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+Tagesgeld
+EUR-Konto Kontonummer 4916860403
+Renault Bank direkt - Postfach 269 - 45952 Gladbeck K o n to a u s z u g Nr.  1/2026
+erstellt am 31.07.2026 23:50 Blatt  1 von 1
+IBAN: CZ96 0142 0831 6911 2820 38 BIC: RCIDDE3NPAY
+Herrn
+jKjDODxV UnYUJ cFGXtKhgiUjw
+Musterstr. 88
+63043 KxErZH
+Bu-Tag Wert Vorgang
+alter Kontostand  0,00 H
+27.07. 27.07. Überweisungsgutschr.  50,00 H
+ HQkUOZrG dznZkJMhIujFS
+ Uebertrag Tagesgeld
+29.07. 29.07. Überweisungsgutschr.  500,00 H
+ iLiSbbOA XuvuKvredhTlj
+ Uebertrag Tagesgeld
+30.07. 30.07. Überweisungsgutschr.  2.000,00 H
+ jdaPOHZJ RaKyEEKpWtXSn
+ Uebertrag Tagesgeld
+30.07. 30.07. Überweisungsgutschr.  35.200,00 H
+ BpkGrhtz uJRQfQqvhZwul
+ Uebertrag Tagesgeld
+31.07. 31.07. Überweisungsgutschr.  60.000,00 H
+ nFwhierw kgnDQrmAHrUVU
+ Uebertrag Tagesgeld
+31.07. 31.07. Überweisungsgutschr.  2.250,00 H
+ MmyByWzU FLdoPtzWApjhE
+ Uebertrag Tagesgeld
+31.07. 31.07. Abschluss  0,07 H
+ 0,00000% Habenzins 3107 0,00H
+ 3,50000% Habenzins 3107 0,07H
+ Abschluss vom 27.07.2026 bis 31.07.2026
+ für Konto 0736045612
+ Rechnung Nr. 1111113311.20260731.003
+ USt. IdNr. - DE 812212244
+ USt.-befreite Finanzdienstleistung
+ > Kapitalertragsteuer 0,02 S
+ > aus 0,07 Habenzins
+31.07. 31.07. Kapitalertragsteuer aus 0,02 S
+ EUR 0,07 Habenzins per 31.07.2026 KT1111111111
+                                    ────────────────────────────────────────────────────────────────
+ neuer Kontostand vom 31.07.2026 100.000,05 H
+                                    ────────────────────────────────────────────────────────────────
+3724
+000
+K00325593
+5M Bitte beachten S ie die Hinweise auf der Rückseite oder am Ende des Dokuments
+Allgemeiner Hinweis:
+B itte prüfen Sie die vorstehenden Angaben auf ihre Vollständigkeit und Richtigkeit des Saldos und beachten Sie
+dabei die nachfolgenden Anmerkungen. Für die Zinsabrechnung verwenden wir, wie für alle Umsätze, das Datum
+der Wertstellung. Wird keine Wertstellung ausgewiesen, so gilt das B uchungsdatum als Wertstellungsdatum.
+Gegebenenfalls  ausgewiesene B ankdienstleistungen sind steuerfrei, sofern nichts Abweichendes angegeben ist.
+Soweit die vorstehende Aufstellung mit dem Hinweis "Rechnungsabschluss" gekennzeichnet ist, haben wir für Ihr
+Konto einen Rechnungsabschluss durchgeführt. Dabei werden die in dem Abrechnungszeitraum ggf. entstandenen
+beiderseitigen Ansprüche (einschließlich Zinsen und Entgelte)  verrechnet. Umsätze, die nach dem Erstellungsdatum
+anfallen und sich auf den Abrechnungssaldo des abgelaufenen Abrechnungszeitraums auswirken, werden erst in der
+folgenden Abrechnung berücksichtigt. Korrekturen, die s ich auf Zinsen beziehen, werden entsprechend gekennzeichnet.
+Einwendungen gegen Angaben im Kontoauszug oder den ausgewiesenen Saldo sind unverzüglich, spätestens
+jedoch innerhalb von sechs Wochen nach Zugang des Kontoauszugs ausschließlich der Innenrevision der
+Renault B ank direkt (Postfach 269, 45952 Gladbeck)  schriftlich zur Kenntnis  zu geben. Nach Ablauf dieser Frist gehen
+wir davon aus, dass S ie mit der Vollständigkeit und Richtigkeit der Angaben und des Saldos einverstanden sind.
+Vom Kunden erteilte Einzugsaufträge betreffend Lastschriften von seinem Referenzkonto werden unter dem
+Vorbehalt des Eingangs gutgeschrieben.
+Bitte beachten Sie: Kapitalerträge sind einkommensteuerpflichtig.
+Wichtiger Hinweis zur Einlagensicherung
+Einlagensicherung ist die B ezeichnung für die gesetzlichen und freiwilligen Maßnahmen zum Schutz der
+Einlagen (Guthaben)  von Kunden bei Kreditinstituten im Falle der Insolvenz. Die Renault B ank direkt ist dem
+französischen Einlagensicherungsfonds angeschlossen. Die französische Einlagensicherung sichert Einlagen in
+derselben Höhe ab wie die gesetzliche deutsche Einlagensicherung. B is  100.000 EUR pro Person sind zu 100 
+Prozent abgesichert.
+Nähere Informationen können Sie dem "Informationsbogen für den Einleger" entnehmen. Diesen finden sie auf unserer 
+Website unter dem Menüpunkt: AGB .

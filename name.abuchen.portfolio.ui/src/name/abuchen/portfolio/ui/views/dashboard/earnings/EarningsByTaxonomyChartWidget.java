@@ -183,11 +183,16 @@ public class EarningsByTaxonomyChartWidget extends CircularChartWidget<Map<Inves
     }
 
     @Override
-    protected void createCircularSeries(Map<InvestmentVehicle, Item> vehicle2money)
+    protected void createCircularSeries(Map<InvestmentVehicle, Item> data)
     {
         Taxonomy taxonomy = get(TaxonomyConfig.class).getTaxonomy();
         if (taxonomy == null)
             return;
+
+        // work on a copy: the dashboard caches the calculated data and passes
+        // the same map again when the widget is recreated (e.g. switching the
+        // dashboard tab). The items are distributed (and reduced) below.
+        var vehicle2money = new HashMap<>(data);
 
         // pie charts cannot have negative pie slides --> remember the removed
         // items in order to display them in the tool tip

@@ -45,6 +45,7 @@ import name.abuchen.portfolio.ui.editor.ClientInput;
 import name.abuchen.portfolio.ui.jobs.AbstractClientJob;
 import name.abuchen.portfolio.ui.util.swt.ActiveShell;
 import name.abuchen.portfolio.ui.util.viewers.CopyPasteSupport;
+import name.abuchen.portfolio.ui.util.viewers.SafeTableColumnLayout;
 
 public class UploadToMyDividends24Handler
 {
@@ -239,7 +240,7 @@ class MyDividends24PortfolioSelector extends Dialog
         GridDataFactory.fillDefaults().grab(false, true).applyTo(tableArea);
         tableArea.setLayout(new FillLayout());
 
-        TableColumnLayout layout = new TableColumnLayout();
+        TableColumnLayout layout = new SafeTableColumnLayout();
         tableArea.setLayout(layout);
 
         portfoliosTableViewer = new TableViewer(tableArea, SWT.BORDER | SWT.FULL_SELECTION | SWT.VIRTUAL);
@@ -266,7 +267,7 @@ class MyDividends24PortfolioSelector extends Dialog
         GridDataFactory.fillDefaults().grab(false, true).applyTo(tableArea);
         tableArea.setLayout(new FillLayout());
 
-        TableColumnLayout layout = new TableColumnLayout();
+        TableColumnLayout layout = new SafeTableColumnLayout();
         tableArea.setLayout(layout);
 
         myDividends24TableViewer = new TableViewer(tableArea, SWT.BORDER | SWT.FULL_SELECTION | SWT.VIRTUAL);

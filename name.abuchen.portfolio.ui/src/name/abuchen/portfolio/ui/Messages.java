@@ -998,6 +998,7 @@ public class Messages extends NLS
     public static String LabelViewTaxonomyDefinition;
     public static String LabelViewTreeMap;
     public static String LabelVolatility;
+    public static String LabelVolatilityAnnualized;
     public static String LabelWatchlist;
     public static String LabelWeeksAgo;
     public static String LabelWithoutClassification;
@@ -1319,11 +1320,14 @@ public class Messages extends NLS
     public static String PrefMsgCalendar;
     public static String PrefMsgConfigureUpdates;
     public static String PrefMsgLanguageConfig;
+    public static String PrefMsgRestApiClientNotPersisted;
     public static String PrefMsgRestApiConnectorSettings;
     public static String PrefMsgRestApiEnterClientName;
     public static String PrefMsgRestApiInvalidPort;
     public static String PrefMsgRestApiRejectedInvalidToken;
+    public static String PrefMsgRestApiRejectedNoBearerScheme;
     public static String PrefMsgRestApiRejectedNoToken;
+    public static String PrefMsgRestApiRevokeNotPersisted;
     public static String PrefMsgRestApiTokenShownOnce;
     public static String PrefMsgRestApiUnsavedFiles;
     public static String PrefMyDividends24APIKey;
@@ -1527,6 +1531,7 @@ public class Messages extends NLS
     public static String TooltipSharpeRatio;
     public static String TooltipTurnoverRate;
     public static String TooltipVolatility;
+    public static String TooltipVolatilityAnnualized;
     public static String TransactionFilter;
     public static String TransactionFilterBuy;
     public static String TransactionFilterBuyAndSell;
@@ -1543,7 +1548,6 @@ public class Messages extends NLS
     public static String TransactionFilterTaxes;
     public static String TransactionFilterTransfers;
     public static String Url;
-    public static String MsgWarningWayland;
     public static String ValueColorSchemeAsia;
     public static String ValueColorSchemeBlueOrange;
     public static String ValueColorSchemeStandard;

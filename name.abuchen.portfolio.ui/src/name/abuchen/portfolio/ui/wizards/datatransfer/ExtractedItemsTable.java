@@ -55,6 +55,7 @@ import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.util.action.MenuContribution;
 import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
 import name.abuchen.portfolio.ui.util.viewers.CopyPasteSupport;
+import name.abuchen.portfolio.ui.util.viewers.SafeTableColumnLayout;
 import name.abuchen.portfolio.util.TextUtil;
 
 public class ExtractedItemsTable
@@ -72,7 +73,7 @@ public class ExtractedItemsTable
         this.client = client;
         this.entries = entries;
 
-        var layout = new TableColumnLayout();
+        var layout = new SafeTableColumnLayout();
         parent.setLayout(layout);
 
         tableViewer = new TableViewer(parent, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI);

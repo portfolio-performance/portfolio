@@ -62,25 +62,23 @@ public class SydbankASPDFExtractor extends AbstractPDFExtractor
                                 t.setType(PortfolioTransaction.Type.SELL);
                         })
 
-                        .oneOf( //
-                                        // @formatter:off
-                                        // ISIN-kode DK0010068006
-                                        // Du har den 02.02.24 kl. 10:53:55 (UTC: 09:53:55.688) solgt: Sparinvest Danske Aktier KL A
-                                        // I alt
-                                        // DKK 26.036,89
-                                        //
-                                        // ISIN-kode DK0062498333
-                                        // Du har den 21.08.25 kl. 11:24:20 (UTC: 09:24:20.709) købt: Novo Nordisk A/S B , der noteres på navn
-                                        // I alt
-                                        // DKK 3.515,50
-                                        // @formatter:on
-                                        section -> section //
-                                                        .attributes("name", "isin", "currency") //
-                                                        .match("^ISIN\\-kode (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
-                                                        .match("^Du har den .* \\(UTC: .*\\) (k.bt|solgt): (?<name>[^,]+?)(?:\\s*,.*)?$") //
-                                                        .find("I alt") //
-                                                        .match("^(?<currency>[A-Z]{3}) [\\.,\\d]+$") //
-                                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))))
+                        // @formatter:off
+                        // ISIN-kode DK0010068006
+                        // Du har den 02.02.24 kl. 10:53:55 (UTC: 09:53:55.688) solgt: Sparinvest Danske Aktier KL A
+                        // I alt
+                        // DKK 26.036,89
+                        //
+                        // ISIN-kode DK0062498333
+                        // Du har den 21.08.25 kl. 11:24:20 (UTC: 09:24:20.709) købt: Novo Nordisk A/S B , der noteres på navn
+                        // I alt
+                        // DKK 3.515,50
+                        // @formatter:on
+                        .section("name", "isin", "currency") //
+                        .match("^ISIN\\-kode (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
+                        .match("^Du har den .* \\(UTC: .*\\) (k.bt|solgt): (?<name>[^,]+?)(?:\\s*,.*)?$") //
+                        .find("I alt") //
+                        .match("^(?<currency>[A-Z]{3}) [\\.,\\d]+$") //
+                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
                         // @formatter:off
                         // Antal stk Fondskurs Kursværdi
@@ -91,15 +89,13 @@ public class SydbankASPDFExtractor extends AbstractPDFExtractor
                         .match("^(?<shares>[\\.,\\d]+) [\\.,\\d]+ [\\.,\\d]+$") //
                         .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
-                        .oneOf( //
-                                        // @formatter:off
-                                        // Du har den 02.02.24 kl. 10:53:55 (UTC: 09:53:55.688) solgt: Sparinvest Danske Aktier KL A
-                                        // Du har den 21.08.25 kl. 11:24:20 (UTC: 09:24:20.709) købt: Novo Nordisk A/S B , der noteres på navn
-                                        // @formatter:on
-                                        section -> section //
-                                                        .attributes("date", "time") //
-                                                        .match("^Du har den (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{2}) kl. (?<time>[\\d]{2}:[\\d]{2}:[\\d]{2}) \\(UTC: .*\\) (k.bt|solgt):.*$") //
-                                                        .assign((t, v) -> t.setDate(asDate(v.get("date"), v.get("time")))))
+                        // @formatter:off
+                        // Du har den 02.02.24 kl. 10:53:55 (UTC: 09:53:55.688) solgt: Sparinvest Danske Aktier KL A
+                        // Du har den 21.08.25 kl. 11:24:20 (UTC: 09:24:20.709) købt: Novo Nordisk A/S B , der noteres på navn
+                        // @formatter:on
+                        .section("date", "time") //
+                        .match("^Du har den (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{2}) kl\\. (?<time>[\\d]{2}\\:[\\d]{2}\\:[\\d]{2}) \\(UTC: .*\\) (k.bt|solgt):.*$") //
+                        .assign((t, v) -> t.setDate(asDate(v.get("date"), v.get("time"))))
 
                         // @formatter:off
                         // I alt
@@ -161,10 +157,17 @@ public class SydbankASPDFExtractor extends AbstractPDFExtractor
                         .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
 
                         // @formatter:off
+                        // Pr.dato: 15.08.2025
+                        // @formatter:on
+                        .section("exDate").optional() //
+                        .match("^Pr\\.dato: (?<exDate>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$") //
+                        .assign((t, v) -> t.setExDate(asDate(v.get("exDate"))))
+
+                        // @formatter:off
                         // Afkast i alt kr. 104,50 indsættes den 07.02.2025 på konto 4375-6141965465.
                         // @formatter:on
                         .section("amount") //
-                        .match("^Afkast i alt kr\\. (?<amount>[\\.,\\d]+).*") //
+                        .match("^Afkast i alt kr\\. (?<amount>[\\.,\\d]+) .*$") //
                         .assign((t, v) -> {
                             t.setCurrencyCode(asCurrencyCode(DKK));
                             t.setAmount(asAmount(v.get("amount")));
