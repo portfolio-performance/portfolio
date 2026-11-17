@@ -381,6 +381,33 @@ public class PortfolioMarkdownExporterTest
         assertThat(markdown, containsString("| Broker A |  | Broker B |"));
     }
 
+    @Test
+    public void testRealizedGainIncludesFeesAndTaxes()
+    {
+        var client = new Client();
+        var cash = new AccountBuilder().deposit_("2025-01-02", 10_000_00).addTo(client);
+
+        var security = new SecurityBuilder() //
+                        .addPrice("2025-01-02", 100_00000000L) //
+                        .addPrice("2026-06-30", 120_00000000L) //
+                        .addTo(client);
+        security.setName("Delta Stock");
+
+        // gross 1000.00 + 10.00 fees; gross 1200.00 - 10.00 fees
+        new PortfolioBuilder(cash) //
+                        .buy(security, "2025-01-03", 10_00000000L, 1_010_00, 10_00, 0) //
+                        .sell(security, "2026-02-02", 10_00000000L, 1_190_00, 10_00) //
+                        .addTo(client);
+
+        var markdown = exporter(client).generate();
+
+        // total gain and realized gain are both after the fees of the buy
+        // and the sell: 1190.00 - 1010.00
+        assertThat(markdown, containsString("| Delta Stock | sold | 180.00 | 17.82% | 180.00 |  |"));
+        assertThat(markdown, containsString("Total gain = realized gain + unrealized gain + dividends - fees and taxes"));
+        assertThat(markdown, not(containsString("they are already reflected in the gains")));
+    }
+
     private static int count(String text, String token)
     {
         int count = 0;

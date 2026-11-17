@@ -841,7 +841,9 @@ public class PortfolioMarkdownExporter implements Exporter
                             new String[] { label(security), held ? "held" : "sold", //
                                             MarkdownFormat.money(record.getDelta()), //
                                             MarkdownFormat.percent(record.getDeltaPercent()), //
-                                            MarkdownFormat.money(record.getRealizedCapitalGains(COST_METHOD)
+                                            MarkdownFormat.money(record
+                                                            .getRealizedCapitalGains(COST_METHOD,
+                                                                            TaxesAndFees.INCLUDED)
                                                             .getCapitalGains()), //
                                             held ? MarkdownFormat.money(record.getCapitalGainsOnHoldings(COST_METHOD))
                                                             : "", //
@@ -858,8 +860,12 @@ public class PortfolioMarkdownExporter implements Exporter
             return;
 
         out.append("Results of each security since the first transaction, including securities that have been sold. ")
-                        .append("Total gain = realized gain + unrealized gain + dividends. Fees and taxes are shown for information; ")
-                        .append("they are already reflected in the gains. ")
+                        .append("Total gain is the result after all fees and taxes. ")
+                        .append("Realized and unrealized gain already include the fees and taxes of buys and sells. ")
+                        .append("Dividends are gross amounts (before taxes and fees). ")
+                        .append("Total gain = realized gain + unrealized gain + dividends - fees and taxes that are not part of a buy or sell ")
+                        .append("(for example withholding tax on dividends). ")
+                        .append("The fees and taxes columns contain all fees and taxes of the security and are shown for information only. ")
                         .append("IRR p.a. is only shown for securities that have been held for at least one year.\n\n");
         table.appendTo(out);
     }
