@@ -3,7 +3,9 @@ package name.abuchen.portfolio.ui.wizards.datatransfer;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.eclipse.swt.widgets.Display;
 
@@ -47,17 +49,23 @@ public class ImportController
             return List.of();
 
         var newSecurities = new ArrayList<Security>();
+        var retiredSecuritiesWithInbound = new LinkedHashSet<Security>();
 
         var isDirty = false;
         for (ReviewExtractedItemsPage page : pages)
         {
             page.afterPage();
-            var isPageDirty = importPage(page, newSecurities);
+            var isPageDirty = importPage(page, newSecurities, retiredSecuritiesWithInbound);
             isDirty |= isPageDirty;
         }
 
         if (isDirty)
         {
+            // reactivate retired securities that are held again after the
+            // import (checked once all pages are imported because a later
+            // document might sell the shares again)
+            InsertAction.reactivateSecuritiesWithHoldings(client, retiredSecuritiesWithInbound);
+
             client.markDirty();
 
             // run consistency checks in case bogus transactions have been
@@ -104,7 +112,8 @@ public class ImportController
         });
     }
 
-    private boolean importPage(ReviewExtractedItemsPage page, ArrayList<Security> newSecurities)
+    private boolean importPage(ReviewExtractedItemsPage page, ArrayList<Security> newSecurities,
+                    Set<Security> retiredSecuritiesWithInbound)
     {
         var isDirty = false;
 
@@ -136,6 +145,9 @@ public class ImportController
                 }
             }
         }
+
+        retiredSecuritiesWithInbound.addAll(action.getRetiredSecuritiesWithInbound());
+
         return isDirty;
     }
 
