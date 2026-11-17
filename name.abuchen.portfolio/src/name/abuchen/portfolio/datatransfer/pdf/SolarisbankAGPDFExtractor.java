@@ -34,21 +34,21 @@ public class SolarisbankAGPDFExtractor extends AbstractPDFExtractor
 
     private void addAccountStatementTransaction()
     {
-        final DocumentType type = new DocumentType("Rechnungsabschluss");
+        final var type = new DocumentType("Rechnungsabschluss");
         this.addDocumentTyp(type);
 
         // @formatter:off
         // 27.10.2022 26.10.2022 SEPA-Überweisunga141b0b25f9d etoken-google 150,00 EUR
         // 06.10.2022 06.04.2023 Kartenvorgang Visa Geld zurueck AktionVISACLP0324 GB 0,40 EUR
         // @formatter:on
-        Block depositBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}.*(SEPA\\-.berweisung|.berweisung|Kartenvorgang).* [\\.,\\d]+ [\\w]{3}$");
+        var depositBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}.*(SEPA\\-.berweisung|.berweisung|Kartenvorgang).* [\\.,\\d]+ [A-Z]{3}$");
         type.addBlock(depositBlock);
         depositBlock.set(new Transaction<AccountTransaction>()
 
                         .subject(() -> new AccountTransaction(AccountTransaction.Type.DEPOSIT))
 
                         .section("date", "note", "amount", "currency") //
-                        .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*(SEPA\\-.berweisung|.berweisung|Kartenvorgang)(?<note>.*) (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$") //
+                        .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*(SEPA\\-.berweisung|.berweisung|Kartenvorgang)(?<note>.*) (?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
                         .assign((t, v) -> {
                             t.setDateTime(asDate(v.get("date")));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
@@ -64,17 +64,17 @@ public class SolarisbankAGPDFExtractor extends AbstractPDFExtractor
         // 19.10.2022 19.10.2022 SEPA-Lastschrift 11,99 EUR -11,99 EUR
         // 20.10.2022 20.04.2023 SEPA-Überweisungan Peter Pan -18,78 EUR
         // @formatter:on
-        Block removalBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}.*(Kartenzahlung|.berweisung|SEPA\\-Lastschrift|SEPA\\-.berweisung).* \\-[\\.,\\d]+ [\\w]{3}$");
+        var removalBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}.*(Kartenzahlung|.berweisung|SEPA\\-Lastschrift|SEPA\\-.berweisung).* \\-[\\.,\\d]+ [A-Z]{3}$");
         type.addBlock(removalBlock);
         removalBlock.set(new Transaction<AccountTransaction>()
 
                         .subject(() -> new AccountTransaction(AccountTransaction.Type.REMOVAL))
 
                         .section("date", "note", "amount", "currency") //
-                        .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*(Kartenzahlung|.berweisung|SEPA\\-Lastschrift|SEPA\\-.berweisung)(?<note>.*) \\-(?<amount>[\\.,\\d]+) (?<currency>\\w{3})$") //
+                        .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*(Kartenzahlung|.berweisung|SEPA\\-Lastschrift|SEPA\\-.berweisung)(?<note>.*) \\-(?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
                         .assign((t, v) -> {
                             t.setDateTime(asDate(v.get("date")));
-                            t.setCurrencyCode(v.get("currency"));
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setNote(trim(v.get("note")));
                         })
@@ -84,7 +84,7 @@ public class SolarisbankAGPDFExtractor extends AbstractPDFExtractor
 
     private void addDepotStatementTransaction()
     {
-        final DocumentType type = new DocumentType("KONTOAUSZUG");
+        final var type = new DocumentType("KONTOAUSZUG");
         this.addDocumentTyp(type);
 
         // @formatter:off
@@ -92,7 +92,7 @@ public class SolarisbankAGPDFExtractor extends AbstractPDFExtractor
         // EUWAX Aktiengesellschaft 14.11.2024 14.11.2024 1105.19€
         // EUWAX Aktiengesellschaft 10.11.2024 10.11.2024 -1000€
         // @formatter:on
-        Block depositRemovalBlock = new Block("^.* [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} ([\\-])?[\\.,\\d]+\\p{Sc}$");
+        var depositRemovalBlock = new Block("^.* [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} ([\\-])?[\\.,\\d]+\\p{Sc}$");
         type.addBlock(depositRemovalBlock);
         depositRemovalBlock.set(new Transaction<AccountTransaction>()
 

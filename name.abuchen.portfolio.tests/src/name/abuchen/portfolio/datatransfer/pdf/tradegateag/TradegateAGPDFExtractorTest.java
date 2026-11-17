@@ -5,6 +5,7 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.dividend;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasAmount;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasCurrencyCode;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasDate;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasExDate;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasFees;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasForexGrossValue;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasGrossValue;
@@ -280,7 +281,8 @@ public class TradegateAGPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2024-06-26T00:00"), hasShares(76.00), //
+                        hasDate("2024-06-26T00:00"), hasExDate("2024-06-13T00:00"), //
+                        hasShares(76.00), //
                         hasSource("Dividende01.txt"), //
                         hasNote("Order-/Ref.nr. 9876543"), //
                         hasAmount("EUR", 7.16), hasGrossValue("EUR", 9.72), //
@@ -314,7 +316,8 @@ public class TradegateAGPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2024-09-25T00:00"), hasShares(59.00), //
+                        hasDate("2024-09-25T00:00"), hasExDate("2024-09-12T00:00"), //
+                        hasShares(59.00), //
                         hasSource("Dividende02.txt"), //
                         hasNote("Order-/Ref.nr. 9876543"), //
                         hasAmount("EUR", 7.21), hasGrossValue("EUR", 9.79), //
@@ -350,7 +353,8 @@ public class TradegateAGPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2024-09-25T00:00"), hasShares(59.00), //
+                        hasDate("2024-09-25T00:00"), hasExDate("2024-09-12T00:00"), //
+                        hasShares(59.00), //
                         hasSource("Dividende02.txt"), //
                         hasNote("Order-/Ref.nr. 9876543"), //
                         hasAmount("EUR", 7.21), hasGrossValue("EUR", 9.79), //
@@ -384,7 +388,8 @@ public class TradegateAGPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2025-09-18T00:00"), hasShares(3.00), //
+                        hasDate("2025-09-18T00:00"), hasExDate("2025-09-04T00:00"), //
+                        hasShares(3.00), //
                         hasSource("Dividende03.txt"), //
                         hasNote("Order-/Ref.nr. 35894402"), //
                         hasAmount("EUR", 2.81), hasGrossValue("EUR", 3.81), //
@@ -420,7 +425,8 @@ public class TradegateAGPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2025-09-18T00:00"), hasShares(3.00), //
+                        hasDate("2025-09-18T00:00"), hasExDate("2025-09-04T00:00"), //
+                        hasShares(3.00), //
                         hasSource("Dividende03.txt"), //
                         hasNote("Order-/Ref.nr. 35894402"), //
                         hasAmount("EUR", 2.81), hasGrossValue("EUR", 3.81), //
@@ -454,7 +460,8 @@ public class TradegateAGPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2025-07-07T00:00"), hasShares(12.00), //
+                        hasDate("2025-07-07T00:00"), hasExDate("2025-04-30T00:00"), //
+                        hasShares(12.00), //
                         hasSource("Dividende04.txt"), //
                         hasNote("Order-/Ref.nr. 35894402"), //
                         hasAmount("EUR", 46.21), hasGrossValue("EUR", 62.76), ////
@@ -488,7 +495,8 @@ public class TradegateAGPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2025-03-13T00:00"), hasShares(6.00), //
+                        hasDate("2025-03-13T00:00"), hasExDate("2025-02-20T00:00"), //
+                        hasShares(6.00), //
                         hasSource("Dividende05.txt"), //
                         hasNote("Order-/Ref.nr. 35894402"), //
                         hasAmount("EUR", 1.87), hasGrossValue("EUR", 2.20), //
@@ -524,7 +532,8 @@ public class TradegateAGPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2025-03-13T00:00"), hasShares(6.00), //
+                        hasDate("2025-03-13T00:00"), hasExDate("2025-02-20T00:00"), //
+                        hasShares(6.00), //
                         hasSource("Dividende05.txt"), //
                         hasNote("Order-/Ref.nr. 35894402"), //
                         hasAmount("EUR", 1.87), hasGrossValue("EUR", 2.20), //

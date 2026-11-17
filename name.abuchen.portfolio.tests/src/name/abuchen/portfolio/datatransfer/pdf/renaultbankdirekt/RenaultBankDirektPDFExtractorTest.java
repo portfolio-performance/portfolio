@@ -55,27 +55,27 @@ public class RenaultBankDirektPDFExtractorTest
         assertThat(results.size(), is(6));
         new AssertImportActions().check(results, "EUR");
 
-        // assert transaction
+        // check deposit transaction
         assertThat(results, hasItem(deposit(hasDate("2019-11-18"), hasAmount("EUR", 4480.00), //
                         hasSource("Kontoauszug01.txt"), hasNote("Überweisungs-Gutschrift"))));
 
-        // assert transaction
+        // check deposit transaction
         assertThat(results, hasItem(deposit(hasDate("2019-11-18"), hasAmount("EUR", 351.50), //
                         hasSource("Kontoauszug01.txt"), hasNote("Überweisungs-Gutschrift"))));
 
-        // assert transaction
+        // check deposit transaction
         assertThat(results, hasItem(deposit(hasDate("2019-11-18"), hasAmount("EUR", 10000.00), //
                         hasSource("Kontoauszug01.txt"), hasNote("Überweisungs-Gutschrift"))));
 
-        // assert transaction
+        // check removal transaction
         assertThat(results, hasItem(removal(hasDate("2019-11-21"), hasAmount("EUR", 210.00), //
                         hasSource("Kontoauszug01.txt"), hasNote("Internet-Euro-Überweisung"))));
 
-        // assert transaction
+        // check removal transaction
         assertThat(results, hasItem(removal(hasDate("2019-11-29"), hasAmount("EUR", 300.00), //
                         hasSource("Kontoauszug01.txt"), hasNote("Internet-Euro-Überweisung"))));
 
-        // assert transaction
+        // check interest transaction
         assertThat(results, hasItem(interest( //
                         hasDate("2019-11-29"), //
                         hasSource("Kontoauszug01.txt"), //
@@ -102,11 +102,11 @@ public class RenaultBankDirektPDFExtractorTest
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
-        // assert transaction
+        // check deposit transaction
         assertThat(results, hasItem(deposit(hasDate("2020-02-17"), hasAmount("EUR", 210.00), //
                         hasSource("Kontoauszug02.txt"), hasNote("Dauerauftrag-Gutschrift"))));
 
-        // assert transaction
+        // check interest transaction
         assertThat(results, hasItem(interest( //
                         hasDate("2020-02-28"), //
                         hasSource("Kontoauszug02.txt"), //
@@ -133,7 +133,7 @@ public class RenaultBankDirektPDFExtractorTest
         assertThat(results.size(), is(1));
         new AssertImportActions().check(results, "EUR");
 
-        // assert transaction
+        // check interest transaction
         assertThat(results, hasItem(interest( //
                         hasDate("2020-06-30"), //
                         hasSource("Kontoauszug03.txt"), //
@@ -160,15 +160,15 @@ public class RenaultBankDirektPDFExtractorTest
         assertThat(results.size(), is(3));
         new AssertImportActions().check(results, "EUR");
 
-        // assert transaction
+        // check deposit transaction
         assertThat(results, hasItem(deposit(hasDate("2021-02-17"), hasAmount("EUR", 150), //
                         hasSource("Kontoauszug04.txt"), hasNote(null))));
 
-        // assert transaction
+        // check deposit transaction
         assertThat(results, hasItem(deposit(hasDate("2021-02-22"), hasAmount("EUR", 7547.85), //
                         hasSource("Kontoauszug04.txt"), hasNote(null))));
 
-        // assert transaction
+        // check interest transaction
         assertThat(results, hasItem(interest( //
                         hasDate("2021-02-26"), //
                         hasSource("Kontoauszug04.txt"), //
@@ -195,15 +195,15 @@ public class RenaultBankDirektPDFExtractorTest
         assertThat(results.size(), is(3));
         new AssertImportActions().check(results, "EUR");
 
-        // assert transaction
+        // check deposit transaction
         assertThat(results, hasItem(deposit(hasDate("2021-04-19"), hasAmount("EUR", 10), //
                         hasSource("Kontoauszug05.txt"), hasNote(null))));
 
-        // assert transaction
+        // check removal transaction
         assertThat(results, hasItem(removal(hasDate("2021-04-19"), hasAmount("EUR", 10), //
                         hasSource("Kontoauszug05.txt"), hasNote(null))));
 
-        // assert transaction
+        // check interest transaction
         assertThat(results, hasItem(interest( //
                         hasDate("2021-04-30"), //
                         hasSource("Kontoauszug05.txt"), //
@@ -230,15 +230,15 @@ public class RenaultBankDirektPDFExtractorTest
         assertThat(results.size(), is(4));
         new AssertImportActions().check(results, "EUR");
 
-        // assert transaction
+        // check deposit transaction
         assertThat(results, hasItem(deposit(hasDate("2021-12-04"), hasAmount("EUR", 3200), //
                         hasSource("Kontoauszug06.txt"), hasNote(null))));
 
-        // assert transaction
+        // check removal transaction
         assertThat(results, hasItem(removal(hasDate("2021-12-22"), hasAmount("EUR", 5000), //
                         hasSource("Kontoauszug06.txt"), hasNote(null))));
 
-        // assert transaction
+        // check interest transaction
         assertThat(results, hasItem(interest( //
                         hasDate("2021-12-31"), //
                         hasSource("Kontoauszug06.txt"), //
@@ -246,7 +246,7 @@ public class RenaultBankDirektPDFExtractorTest
                         hasAmount("EUR", 1.23), hasGrossValue("EUR", 1.23), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
-        // assert transaction
+        // check interest transaction
         assertThat(results, hasItem(interest( //
                         hasDate("2021-12-31"), //
                         hasSource("Kontoauszug06.txt"), //
@@ -273,31 +273,31 @@ public class RenaultBankDirektPDFExtractorTest
         assertThat(results.size(), is(7));
         new AssertImportActions().check(results, "EUR");
 
-        // assert transaction
+        // check removal transaction
         assertThat(results, hasItem(removal(hasDate("2020-11-03"), hasAmount("EUR", 2300.00), //
                         hasSource("Kontoauszug07.txt"), hasNote("Internet-Euro-Überweisung"))));
 
-        // assert transaction
+        // check removal transaction
         assertThat(results, hasItem(removal(hasDate("2020-11-04"), hasAmount("EUR", 2200.00), //
                         hasSource("Kontoauszug07.txt"), hasNote("Internet-Euro-Überweisung"))));
 
-        // assert transaction
+        // check deposit transaction
         assertThat(results, hasItem(deposit(hasDate("2020-11-13"), hasAmount("EUR", 616.00), //
                         hasSource("Kontoauszug07.txt"), hasNote("Dauerauftrag-Gutschrift"))));
 
-        // assert transaction
+        // check removal transaction
         assertThat(results, hasItem(removal(hasDate("2020-11-13"), hasAmount("EUR", 400.00), //
                         hasSource("Kontoauszug07.txt"), hasNote("Internet-Euro-Überweisung"))));
 
-        // assert transaction
+        // check deposit transaction
         assertThat(results, hasItem(deposit(hasDate("2020-11-16"), hasAmount("EUR", 7000.00), //
                         hasSource("Kontoauszug07.txt"), hasNote("Überweisungs-Gutschrift"))));
 
-        // assert transaction
+        // check removal transaction
         assertThat(results, hasItem(removal(hasDate("2020-11-17"), hasAmount("EUR", 5800.00), //
                         hasSource("Kontoauszug07.txt"), hasNote("Internet-Euro-Überweisung"))));
 
-        // assert transaction
+        // check deposit transaction
         assertThat(results, hasItem(deposit(hasDate("2020-11-20"), hasAmount("EUR", 5400.00), //
                         hasSource("Kontoauszug07.txt"), hasNote("Überweisungs-Gutschrift"))));
     }
@@ -320,23 +320,23 @@ public class RenaultBankDirektPDFExtractorTest
         assertThat(results.size(), is(5));
         new AssertImportActions().check(results, "EUR");
 
-        // assert transaction
+        // check deposit transaction
         assertThat(results, hasItem(deposit(hasDate("2022-06-21"), hasAmount("EUR", 5000), //
                         hasSource("Kontoauszug08.txt"), hasNote(null))));
 
-        // assert transaction
+        // check removal transaction
         assertThat(results, hasItem(removal(hasDate("2022-06-10"), hasAmount("EUR", 1000), //
                         hasSource("Kontoauszug08.txt"), hasNote(null))));
 
-        // assert transaction
+        // check removal transaction
         assertThat(results, hasItem(removal(hasDate("2022-06-29"), hasAmount("EUR", 2500), //
                         hasSource("Kontoauszug08.txt"), hasNote(null))));
 
-        // assert transaction
+        // check removal transaction
         assertThat(results, hasItem(removal(hasDate("2022-06-30"), hasAmount("EUR", 2000), //
                         hasSource("Kontoauszug08.txt"), hasNote(null))));
 
-        // assert transaction
+        // check interest transaction
         assertThat(results, hasItem(interest( //
                         hasDate("2022-06-30"), //
                         hasSource("Kontoauszug08.txt"), //
@@ -363,27 +363,27 @@ public class RenaultBankDirektPDFExtractorTest
         assertThat(results.size(), is(6));
         new AssertImportActions().check(results, "EUR");
 
-        // assert transaction
+        // check removal transaction
         assertThat(results, hasItem(removal(hasDate("2020-08-04"), hasAmount("EUR", 500.00), //
                         hasSource("Kontoauszug09.txt"), hasNote("Internet-Euro-Überweisung"))));
 
-        // assert transaction
+        // check removal transaction
         assertThat(results, hasItem(removal(hasDate("2020-08-07"), hasAmount("EUR", 250.00), //
                         hasSource("Kontoauszug09.txt"), hasNote("Internet-Euro-Überweisung"))));
 
-        // assert transaction
+        // check removal transaction
         assertThat(results, hasItem(removal(hasDate("2020-08-10"), hasAmount("EUR", 400.00), //
                         hasSource("Kontoauszug09.txt"), hasNote("Internet-Euro-Überweisung"))));
 
-        // assert transaction
+        // check deposit transaction
         assertThat(results, hasItem(deposit(hasDate("2020-08-13"), hasAmount("EUR", 616.00), //
                         hasSource("Kontoauszug09.txt"), hasNote("Dauerauftrag-Gutschrift"))));
 
-        // assert transaction
+        // check removal transaction
         assertThat(results, hasItem(removal(hasDate("2020-08-31"), hasAmount("EUR", 1500), //
                         hasSource("Kontoauszug09.txt"), hasNote("Internet-Euro-Überweisung"))));
 
-        // assert transaction
+        // check interest transaction
         assertThat(results, hasItem(interest( //
                         hasDate("2020-08-31"), //
                         hasSource("Kontoauszug09.txt"), //
@@ -410,18 +410,15 @@ public class RenaultBankDirektPDFExtractorTest
         assertThat(results.size(), is(8));
         new AssertImportActions().check(results, "EUR");
 
-        // assert transaction
-        assertThat(results, hasItem(removal(hasDate("2022-08-23"), hasAmount("EUR", 1500.00), //
-                        hasSource("Kontoauszug10.txt"), hasNote(null))));
-
-        // assert transaction
+        // check removal transaction
         assertThat(results, hasItem(removal(hasDate("2022-08-05"), hasAmount("EUR", 600.00), //
                         hasSource("Kontoauszug10.txt"), hasNote(null))));
 
-        // assert transaction
+        // check removal transaction
         assertThat(results, hasItem(removal(hasDate("2022-08-01"), hasAmount("EUR", 1500.00), //
                         hasSource("Kontoauszug10.txt"), hasNote(null))));
 
+        // check failure message
         assertThat(results, hasItem(withFailureMessage( //
                         Messages.MsgErrorTransactionOrderCancellationUnsupported, //
                         interestCharge( //
@@ -431,7 +428,7 @@ public class RenaultBankDirektPDFExtractorTest
                                         hasAmount("EUR", 3.59), hasGrossValue("EUR", 3.59), //
                                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
 
-        // assert transaction
+        // check interest transaction
         assertThat(results, hasItem(interest( //
                         hasDate("2022-08-05"), //
                         hasSource("Kontoauszug10.txt"), //
@@ -439,19 +436,19 @@ public class RenaultBankDirektPDFExtractorTest
                         hasAmount("EUR", 1.62), hasGrossValue("EUR", 1.62), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
-        // assert transaction
+        // check deposit transaction
         assertThat(results, hasItem(deposit(hasDate("2022-08-12"), hasAmount("EUR", 4250.00), //
                         hasSource("Kontoauszug10.txt"), hasNote(null))));
 
-        // assert transaction
+        // check removal transaction
         assertThat(results, hasItem(removal(hasDate("2022-08-23"), hasAmount("EUR", 1500.00), //
                         hasSource("Kontoauszug10.txt"), hasNote(null))));
 
-        // assert transaction
+        // check removal transaction
         assertThat(results, hasItem(removal(hasDate("2022-08-30"), hasAmount("EUR", 3500.00), //
                         hasSource("Kontoauszug10.txt"), hasNote(null))));
 
-        // assert transaction
+        // check interest transaction
         assertThat(results, hasItem(interest( //
                         hasDate("2022-08-31"), //
                         hasSource("Kontoauszug10.txt"), //
@@ -478,7 +475,7 @@ public class RenaultBankDirektPDFExtractorTest
         assertThat(results.size(), is(1));
         new AssertImportActions().check(results, "EUR");
 
-        // assert transaction
+        // check interest transaction
         assertThat(results, hasItem(interest( //
                         hasDate("2025-11-28"), //
                         hasSource("Kontoauszug11.txt"), //
@@ -505,52 +502,43 @@ public class RenaultBankDirektPDFExtractorTest
         assertThat(results.size(), is(10));
         new AssertImportActions().check(results, "EUR");
 
-        // assert transaction
-        assertThat(results, hasItem(deposit( //
-                        hasDate("2026-01-08"), hasAmount("EUR", 2362.66), //
+        // check deposit transaction
+        assertThat(results, hasItem(deposit(hasDate("2026-01-08"), hasAmount("EUR", 2362.66), //
                         hasSource("Kontoauszug12.txt"), hasNote(null))));
 
-        // assert transaction
-        assertThat(results, hasItem(deposit( //
-                        hasDate("2026-01-08"), hasAmount("EUR", 2000.00), //
+        // check deposit transaction
+        assertThat(results, hasItem(deposit(hasDate("2026-01-08"), hasAmount("EUR", 2000.00), //
                         hasSource("Kontoauszug12.txt"), hasNote(null))));
 
-        // assert transaction
-        assertThat(results, hasItem(deposit( //
-                        hasDate("2026-01-09"), hasAmount("EUR", 1300.00), //
+        // check deposit transaction
+        assertThat(results, hasItem(deposit(hasDate("2026-01-09"), hasAmount("EUR", 1300.00), //
                         hasSource("Kontoauszug12.txt"), hasNote(null))));
 
-        // assert transaction
-        assertThat(results, hasItem(removal( //
-                        hasDate("2026-01-09"), hasAmount("EUR", 2500.00), //
+        // check removal transaction
+        assertThat(results, hasItem(removal(hasDate("2026-01-09"), hasAmount("EUR", 2500.00), //
                         hasSource("Kontoauszug12.txt"), hasNote(null))));
 
-        // assert transaction
-        assertThat(results, hasItem(deposit( //
-                        hasDate("2026-01-13"), hasAmount("EUR", 2531.91), //
+        // check deposit transaction
+        assertThat(results, hasItem(deposit(hasDate("2026-01-13"), hasAmount("EUR", 2531.91), //
                         hasSource("Kontoauszug12.txt"), hasNote(null))));
 
-        // assert transaction
-        assertThat(results, hasItem(deposit( //
-                        hasDate("2026-01-13"), hasAmount("EUR", 500.00), //
+        // check deposit transaction
+        assertThat(results, hasItem(deposit(hasDate("2026-01-13"), hasAmount("EUR", 500.00), //
                         hasSource("Kontoauszug12.txt"), hasNote(null))));
 
-        // assert transaction
-        assertThat(results, hasItem(deposit( //
-                        hasDate("2026-01-14"), hasAmount("EUR", 2500.00), //
+        // check deposit transaction
+        assertThat(results, hasItem(deposit(hasDate("2026-01-14"), hasAmount("EUR", 2500.00), //
                         hasSource("Kontoauszug12.txt"), hasNote(null))));
 
-        // assert transaction
-        assertThat(results, hasItem(removal( //
-                        hasDate("2026-01-19"), hasAmount("EUR", 5000.00), //
+        // check removal transaction
+        assertThat(results, hasItem(removal(hasDate("2026-01-19"), hasAmount("EUR", 5000.00), //
                         hasSource("Kontoauszug12.txt"), hasNote(null))));
 
-        // assert transaction
-        assertThat(results, hasItem(removal( //
-                        hasDate("2026-01-20"), hasAmount("EUR", 3700.00), //
+        // check removal transaction
+        assertThat(results, hasItem(removal(hasDate("2026-01-20"), hasAmount("EUR", 3700.00), //
                         hasSource("Kontoauszug12.txt"), hasNote(null))));
 
-        // assert transaction
+        // check interest transaction
         assertThat(results, hasItem(interest( //
                         hasDate("2026-01-30"), //
                         hasSource("Kontoauszug12.txt"), //
@@ -576,18 +564,17 @@ public class RenaultBankDirektPDFExtractorTest
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
-        // assert transaction
-        assertThat(results, hasItem(deposit( //
-                        hasDate("2021-02-05"), hasAmount("EUR", 10000.00), //
+        // check deposit transaction
+        assertThat(results, hasItem(deposit(hasDate("2021-02-05"), hasAmount("EUR", 10000.00), //
                         hasSource("Kontoauszug13.txt"), hasNote(null))));
 
-        // assert transaction
+        // check interest transaction
         assertThat(results, hasItem(interest( //
                         hasDate("2021-02-26"), //
                         hasSource("Kontoauszug13.txt"), //
                         hasNote("05.02.2021 bis 28.02.2021"), //
                         hasAmount("EUR", 4.00), hasGrossValue("EUR", 4.72), //
-                        hasTaxes("EUR", 0.72), hasFees("EUR", 0.00))));
+                        hasTaxes("EUR", 0.68 + 0.04), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -608,37 +595,31 @@ public class RenaultBankDirektPDFExtractorTest
         assertThat(results.size(), is(7));
         new AssertImportActions().check(results, "EUR");
 
-        // assert transaction
-        assertThat(results, hasItem(deposit( //
-                        hasDate("2026-07-27"), hasAmount("EUR", 50.00), //
+        // check deposit transaction
+        assertThat(results, hasItem(deposit(hasDate("2026-07-27"), hasAmount("EUR", 50.00), //
                         hasSource("Kontoauszug14.txt"), hasNote(null))));
 
-        // assert transaction
-        assertThat(results, hasItem(deposit( //
-                        hasDate("2026-07-29"), hasAmount("EUR", 500.00), //
+        // check deposit transaction
+        assertThat(results, hasItem(deposit(hasDate("2026-07-29"), hasAmount("EUR", 500.00), //
                         hasSource("Kontoauszug14.txt"), hasNote(null))));
 
-        // assert transaction
-        assertThat(results, hasItem(deposit( //
-                        hasDate("2026-07-30"), hasAmount("EUR", 2000.00), //
+        // check deposit transaction
+        assertThat(results, hasItem(deposit(hasDate("2026-07-30"), hasAmount("EUR", 2000.00), //
                         hasSource("Kontoauszug14.txt"), hasNote(null))));
 
-        // assert transaction
-        assertThat(results, hasItem(deposit( //
-                        hasDate("2026-07-30"), hasAmount("EUR", 35200.00), //
+        // check deposit transaction
+        assertThat(results, hasItem(deposit(hasDate("2026-07-30"), hasAmount("EUR", 35200.00), //
                         hasSource("Kontoauszug14.txt"), hasNote(null))));
 
-        // assert transaction
-        assertThat(results, hasItem(deposit( //
-                        hasDate("2026-07-31"), hasAmount("EUR", 60000.00), //
+        // check deposit transaction
+        assertThat(results, hasItem(deposit(hasDate("2026-07-31"), hasAmount("EUR", 60000.00), //
                         hasSource("Kontoauszug14.txt"), hasNote(null))));
 
-        // assert transaction
-        assertThat(results, hasItem(deposit( //
-                        hasDate("2026-07-31"), hasAmount("EUR", 2250.00), //
+        // check deposit transaction
+        assertThat(results, hasItem(deposit(hasDate("2026-07-31"), hasAmount("EUR", 2250.00), //
                         hasSource("Kontoauszug14.txt"), hasNote(null))));
 
-        // assert transaction
+        // check interest transaction
         assertThat(results, hasItem(interest( //
                         hasDate("2026-07-31"), //
                         hasSource("Kontoauszug14.txt"), //

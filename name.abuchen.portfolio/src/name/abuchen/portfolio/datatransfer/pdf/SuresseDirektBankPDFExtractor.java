@@ -7,8 +7,6 @@ import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.Client;
-import name.abuchen.portfolio.model.Transaction.Unit;
-import name.abuchen.portfolio.money.Money;
 
 @SuppressWarnings("nls")
 public class SuresseDirektBankPDFExtractor extends AbstractPDFExtractor
@@ -36,7 +34,7 @@ public class SuresseDirektBankPDFExtractor extends AbstractPDFExtractor
                                         // Neuer Saldo am 31-01-2023 : 5.011,05 EUR
                                         // @formatter:on
                                         .section("year") //
-                                        .match("^.* [\\d]{2}\\-[\\d]{2}\\-(?<year>[\\d]{4}) :[\\s|\\-]{1,}[\\.,\\d]+ [A-Z]{3}$") //
+                                        .match("^.* [\\d]{2}\\-[\\d]{2}\\-(?<year>[\\d]{4}) :[\\s\\-]+[\\.,\\d]+ [A-Z]{3}$") //
                                         .assign((ctx, v) -> ctx.put("year", v.get("year"))));
 
         this.addDocumentTyp(type);
@@ -45,7 +43,7 @@ public class SuresseDirektBankPDFExtractor extends AbstractPDFExtractor
         // 1 19-12 19-12 Uberweisung zu Ihren Gunsten 1,00 EUR
         // 2 20-12 20-12 Ihre U¨berweisung -1,00 EUR
         // @formatter:on
-        var depositBlock = new Block("^[\\d]+ [\\d]{2}\\-[\\d]{2} [\\d]{2}\\-[\\d]{2} .*.berweisung.*[\\s|\\-]{1,}[\\.,\\d]+ [A-Z]{3}$");
+        var depositBlock = new Block("^[\\d]+ [\\d]{2}\\-[\\d]{2} [\\d]{2}\\-[\\d]{2} .*.berweisung.*[\\s\\-]+[\\.,\\d]+ [A-Z]{3}$");
         type.addBlock(depositBlock);
         depositBlock.set(new Transaction<AccountTransaction>()
 
@@ -53,7 +51,7 @@ public class SuresseDirektBankPDFExtractor extends AbstractPDFExtractor
 
                         .section("date", "type", "amount", "currency", "note") //
                         .documentContext("year") //
-                        .match("^[\\d]+ (?<date>[\\d]{2}\\-[\\d]{2}) [\\d]{2}\\-[\\d]{2} .*.berweisung.*(?<type>[\\s|\\-]{1,})(?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
+                        .match("^[\\d]+ (?<date>[\\d]{2}\\-[\\d]{2}) [\\d]{2}\\-[\\d]{2} .*.berweisung.*(?<type>[\\s\\-]+)(?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
                         .match("^(?<note>Referenz : .*)$") //
                         .assign((t, v) -> {
                             // @formatter:off
@@ -90,17 +88,15 @@ public class SuresseDirektBankPDFExtractor extends AbstractPDFExtractor
                             t.setNote(v.get("note"));
                         })
 
+                        // The net interest already excludes the taxes, so the
+                        // taxes are only added as unit.
+
                         // @formatter:off
                         // Summe verschiedene Steuern 0,00 EUR
                         // @formatter:on
                         .section("tax", "currency").optional() //
                         .match("^Summe verschiedene Steuern \\-(?<tax>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
-                        .assign((t, v) -> {
-                            var tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")));
-
-                            t.setMonetaryAmount(t.getMonetaryAmount().subtract(tax));
-                            t.addUnit(new Unit(Unit.Type.TAX, tax));
-                        })
+                        .assign((t, v) -> processTaxEntries(t, v, type))
 
                         .wrap(TransactionItem::new));
     }

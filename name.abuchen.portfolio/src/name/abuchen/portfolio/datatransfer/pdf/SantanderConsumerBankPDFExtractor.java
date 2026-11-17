@@ -77,14 +77,14 @@ public class SantanderConsumerBankPDFExtractor extends AbstractPDFExtractor
 
                         // @formatter:off
                         // Schlusstag/-Zeit 17.03.2021 16:53:45 Auftraggeber NACHNAME VORNAME
-                        // @formatter:off
+                        // @formatter:on
                         .section("date", "time") //
-                        .match("^Schlusstag\\/\\-Zeit (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}:[\\d]{2}) .*$") //
+                        .match("^Schlusstag\\/\\-Zeit (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<time>[\\d]{2}\\:[\\d]{2}\\:[\\d]{2}) .*$") //
                         .assign((t, v) -> t.setDate(asDate(v.get("date"), v.get("time"))))
 
                         // @formatter:off
                         // Ausmachender Betrag 325,86- EUR
-                        // @formatter:off
+                        // @formatter:on
                         .section("amount", "currency") //
                         .match("^Ausmachender Betrag (?<amount>[\\.,\\d]+)\\- (?<currency>[A-Z]{3})$") //
                         .assign((t, v) -> {
@@ -101,7 +101,7 @@ public class SantanderConsumerBankPDFExtractor extends AbstractPDFExtractor
 
                         // @formatter:off
                         // Limit billigst
-                        // @formatter:off
+                        // @formatter:on
                         .section("note").optional() //
                         .match("^(?<note>Limit .*)$") //
                         .assign((t, v) -> t.setNote(concatenate(t.getNote(), v.get("note"), " | ")))
@@ -136,12 +136,12 @@ public class SantanderConsumerBankPDFExtractor extends AbstractPDFExtractor
                         // Stück 495 VANGUARD FTSE ALL-WORLD U.ETF IE00B3RBWM25 (A1JX52)
                         // REGISTERED SHARES USD DIS.ON
                         // Zahlbarkeitstag 28.06.2023 Ausschüttung pro St. 0,727274000 USD
-                        // @formatter:off
+                        // @formatter:on
                         .section("name", "isin", "wkn", "nameContinued", "currency") //
                         .find("Nominale Wertpapierbezeichnung ISIN \\(WKN\\)") //
                         .match("^St.ck [\\.,\\d]+ (?<name>.*) (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) (\\((?<wkn>[A-Z0-9]{6})\\))$") //
                         .match("^(?<nameContinued>.*)$") //
-                        .match("^Zahlbarkeitstag .* [\\.,\\d]+ (?<currency>[A-Z]{3})$")
+                        .match("^Zahlbarkeitstag .* [\\.,\\d]+ (?<currency>[A-Z]{3})$") //
                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
                         // @formatter:off
@@ -324,7 +324,7 @@ public class SantanderConsumerBankPDFExtractor extends AbstractPDFExtractor
 
                         .section("note", "date", "amount") //
                         .documentContext("currency") //
-                        .match("^(?<note>Einzahlung von Konto .*) lautend auf.*$")
+                        .match("^(?<note>Einzahlung von Konto .*) lautend auf.*$") //
                         .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<amount>[\\.,\\d]+) [\\.,\\d]+.*$") //
                         .assign((t, v) -> {
                             t.setDateTime(asDate(v.get("date")));
@@ -365,14 +365,14 @@ public class SantanderConsumerBankPDFExtractor extends AbstractPDFExtractor
                                         // Ihre IBAN: DE93  3 1 01  083 3  2 2 64  01 3 1  2 0 BIC: SCFBDE3 3 Ko nto -Nr.  2 2 64 01 3 1 2 0 EUR
                                         // @formatter:on
                                         .section("currency") //
-                                        .match("Ihre IBAN: .* (?<currency>\\w{3})$")
+                                        .match("^Ihre IBAN: .* (?<currency>[A-Z]{3})$") //
                                         .assign((ctx, v) -> ctx.put("currency", asCurrencyCode(v.get("currency"))))
 
                                         // @formatter:off
                                         // 04.01 .2 02 2  BIS 02 .01 .2 02 3
                                         // @formatter:on
                                         .section("year") //
-                                        .find("[\\s]*DIESER KONTOAUSZUG UMFASST DIE UMS.TZE VOM")
+                                        .find("[\\s]*DIESER KONTOAUSZUG UMFASST DIE UMS.TZE VOM") //
                                         .match("^[\\s]*[\\d]{2}[\\s]?\\.[\\d]{2}[\\s]?\\.(?<year>[\\d][\\s]?[\\d]{2}[\\s]?[\\d]).*BIS.*$") //
                                         .assign((ctx, v) -> ctx.put("year", stripBlanks(v.get("year")))));
 
@@ -429,14 +429,14 @@ public class SantanderConsumerBankPDFExtractor extends AbstractPDFExtractor
                         // Einbehaltene Quellensteuer 15 % auf 2,96 USD 0,37- EUR
                         // @formatter:on
                         .section("withHoldingTax", "currency").optional() //
-                        .match("^Einbehaltene Quellensteuer [\\d]+ % .* [\\.,\\d]+ [A-Z]{3} (?<withHoldingTax>[\\.,\\d]+)\\- (?<currency>[A-Z]{3})") //
+                        .match("^Einbehaltene Quellensteuer [\\d]+ % .* [\\.,\\d]+ [A-Z]{3} (?<withHoldingTax>[\\.,\\d]+)\\- (?<currency>[A-Z]{3})$") //
                         .assign((t, v) -> processWithHoldingTaxEntries(t, v, "withHoldingTax", type))
 
                         // @formatter:off
                         // Anrechenbare Quellensteuer 15 % auf 2,44 EUR 0,37 EUR
                         // @formatter:on
                         .section("creditableWithHoldingTax", "currency").optional() //
-                        .match("^Anrechenbare Quellensteuer [\\d]+ % .* [\\.,\\d]+ [A-Z]{3} (?<creditableWithHoldingTax>[\\.,\\d]+)\\- (?<currency>[A-Z]{3})") //
+                        .match("^Anrechenbare Quellensteuer [\\d]+ % .* [\\.,\\d]+ [A-Z]{3} (?<creditableWithHoldingTax>[\\.,\\d]+)(\\-)? (?<currency>[A-Z]{3})$") //
                         .assign((t, v) -> processWithHoldingTaxEntries(t, v, "creditableWithHoldingTax", type))
 
                         // @formatter:off
@@ -465,18 +465,18 @@ public class SantanderConsumerBankPDFExtractor extends AbstractPDFExtractor
     {
         transaction //
 
-                 // @formatter:off
-                 // Provision 7,90- EUR
-                 // @formatter:on
-                .section("fee", "currency").optional() //
-                .match("^Provision (?<fee>[.,\\d]+)\\- (?<currency>[A-Z]{3})$") //
-                .assign((t, v) -> processFeeEntries(t, v, type))
+                        // @formatter:off
+                        // Provision 7,90- EUR
+                        // @formatter:on
+                        .section("fee", "currency").optional() //
+                        .match("^Provision (?<fee>[\\.,\\d]+)\\- (?<currency>[A-Z]{3})$") //
+                        .assign((t, v) -> processFeeEntries(t, v, type))
 
-                // @formatter:off
-                // Fremde Abwicklungsgebühr für die Umschreibung von Namensaktien 0,60- EUR
-                // @formatter:on
-                .section("fee", "currency").optional() //
-                .match("^Fremde Abwicklungsgeb.hr .* (?<fee>[.,\\d]+)\\- (?<currency>[A-Z]{3})$") //
-                .assign((t, v) -> processFeeEntries(t, v, type));
+                        // @formatter:off
+                        // Fremde Abwicklungsgebühr für die Umschreibung von Namensaktien 0,60- EUR
+                        // @formatter:on
+                        .section("fee", "currency").optional() //
+                        .match("^Fremde Abwicklungsgeb.hr .* (?<fee>[\\.,\\d]+)\\- (?<currency>[A-Z]{3})$") //
+                        .assign((t, v) -> processFeeEntries(t, v, type));
     }
 }

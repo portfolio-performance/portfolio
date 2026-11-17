@@ -108,18 +108,7 @@ public class WelcomePart
                         .thenRight(title, 30).top(new FormAttachment(image, 0, SWT.TOP)) //
                         .thenBelow(version);
 
-        if (Platform.OS_LINUX.equals(Platform.getOS()) && System.getenv("WAYLAND_DISPLAY") != null) //$NON-NLS-1$
-        {
-            var info = new StyledLabel(composite, SWT.WRAP);
-            info.setText(Messages.MsgWarningWayland);
-
-            FormData data = new FormData();
-            data.left = new FormAttachment(title, 100);
-            data.top = new FormAttachment(image, 0, SWT.TOP);
-            data.width = 300;
-            info.setLayoutData(data);
-        }
-        else if (Platform.OS_MACOSX.equals(Platform.getOS()) && !PortfolioPlugin.getDefault().getPreferenceStore()
+        if (Platform.OS_MACOSX.equals(Platform.getOS()) && !PortfolioPlugin.getDefault().getPreferenceStore()
                         .getBoolean(UIConstants.Preferences.DOUBLE_CLICK_CELL_TO_EDIT))
         {
             var info = new StyledLabel(composite, SWT.WRAP);

@@ -57,10 +57,14 @@ var shares = asBigDecimal(v.get("shares"));
 ## Regular Expressions
 
 Beside general good practices for regular expressions, keep in mind:
-* all special characters in the PDF document (`äöüÄÖÜß` as well as e.g. circumflex or similar) should be matched by a `.` (dot) because the PDF to text conversion can create different results
+* match characters exactly as they appear in the sample text: if the sample shows `ü`, write `ü`. This holds for all non-ASCII characters (umlauts, `ß`, accents, `°`, `€`). Do not replace correct characters with `.` (dot) on suspicion.
+* use `.` only for a character that is evidently broken: either the sample shows a replacement character (`�`), or two samples of the same bank disagree at that spot (`ü` in one, `�` in another). Whether a character is broken is the human's call: point it out and ask, don't decide on your own. Mojibake such as `Ã¼` for `ü` replaces one character with two, so a dot does not fit; report the sample as suspect instead.
+* existing `.` patterns stay as they are; do not rewrite them to umlauts, or the other way around, in code you are not otherwise changing.
 * the special characters `$^{[(|)]}*+?\` in the PDF document are to be escaped
 * `.match(" ... ")` — always use anchors `^...$`
 * `.find(" ... ")` — do NOT add anchors (they are added automatically)
+
+**In reviews:** flag neither a literal umlaut nor an existing `.` in its place. A newly written `.` where the sample clearly shows the correct character gets a light note, not a required change.
 
 **Standard patterns for common values:**
 
@@ -276,7 +280,7 @@ assertThat(results, hasItem(withFailureMessage( //
 assertThat(results, hasItem(skippedItem( //
                 Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
                 purchase( //
-                                hasDate("2012-07-02T00:00"), hasShares(0.00), //
+                                hasDate("2012-07-02"), hasShares(0.00), //
                                 hasSource("Quartalsbericht06.txt"), //
                                 hasNote(null), //
                                 hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
@@ -303,8 +307,11 @@ assertThat(results, hasItem(interest( //
 
 - Each method has a starting `assertThat`-Block checking the counts. All 8 assertions need to be present.
 - Use `//` to enforce line-breaks when checking securities and transactions
-- Include time (hours, minutes, seconds) in `hasDate` when the source document provides it.
+- `hasDate(...)` and `hasExDate(...)` use the shortest form of the date. A date without time means midnight, and missing seconds mean `:00`:
+  - Midnight: write the date only, `hasDate("2025-04-30")`, not `"2025-04-30T00:00"`
+  - Otherwise include the time the document gives. Leave out the seconds if they are `:00`: `hasDate("2025-06-05T12:56")`, not `"2025-06-05T12:56:00"`. Keep real seconds: `hasDate("2024-12-05T11:21:27")`
+  - Do not shorten existing assertions that use `T00:00` or `:00` seconds unless you change that line anyway
 - The `ExtractorMatchers`-class contains test assertion helpers
 - The fees and taxes could consist of multiple values, do not merge or consolidate them for better understanding
 - Always use `0.00` (double literal) for zero amounts, never the integer `0`
-- Every `dividend(...)` assertion must include `hasExDate(...)`. The correct value comes from the JUnit test failure message: look for `dividend with exDate = <value>` in the mismatch output. Use that exact value. If the extractor does not extract an ex-date, the actual value will be `null`.
+- Every `dividend(...)` assertion must include `hasExDate(...)`. The correct value comes from the JUnit test failure message: look for `dividend with exDate = <value>` in the mismatch output. Use that date, written in the shortest form (see `hasDate` above). If the extractor does not extract an ex-date, the actual value will be `null`.

@@ -66,6 +66,7 @@ public class ExtractorUtils
                     createFormatter("d MMM yyyy", Locale.FRENCH), //
                     createFormatter("d MMMM yyyy", Locale.FRENCH), //
                     createFormatter("d MMM. yyyy", Locale.FRENCH), //
+                    createFormatter("d-MMM-yyyy", Locale.FRENCH), //
                     };
 
     // Date formatters with case-insensitive support for the United States

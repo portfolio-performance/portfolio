@@ -5,6 +5,7 @@ import static name.abuchen.portfolio.util.TextUtil.concatenate;
 import static name.abuchen.portfolio.util.TextUtil.trim;
 
 import java.math.BigDecimal;
+import java.util.Locale;
 
 import name.abuchen.portfolio.datatransfer.ExtractorUtils;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
@@ -80,13 +81,7 @@ public class ThurgauerKantonalbankPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("shares") //
                         .match("^[A-Z]{3} (?<shares>[\\.'\\d]+) .* Valoren\\-Nr\\. [A-Z0-9]{5,9}$") //
-                        .assign((t, v) -> {
-                            // @formatter:off
-                            // Percentage quotation, workaround for bonds
-                            // @formatter:on
-                            var shares = asExchangeRate(v.get("shares"));
-                            t.setShares(Values.Share.factorize(shares.doubleValue() / 100));
-                        })
+                        .assign((t, v) -> t.setShares(asBondNominal(v.get("shares"))))
 
                         // @formatter:off
                         // Wir haben für Sie am 20. Juli 2026, 9:33:00 Uhr gekauft (Ausserbörslich Ausland):
@@ -189,6 +184,12 @@ public class ThurgauerKantonalbankPDFExtractor extends AbstractPDFExtractor
     protected long asShares(String value)
     {
         return ExtractorUtils.convertToNumberLong(value, Values.Share, "de", "CH");
+    }
+
+    @Override
+    protected long asBondNominal(String value)
+    {
+        return asBondNominal(value, Locale.forLanguageTag("de-CH"));
     }
 
     @Override

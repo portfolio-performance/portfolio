@@ -169,6 +169,18 @@ public class RiskTest
         assertThat(volatility.getSemiDeviation(), closeTo(0d, TOLERANCE));
     }
 
+    /** the count is that of the returns the filter accepts, not of all returns */
+    @Test
+    public void testVolatilityCountsTheAcceptedReturns()
+    {
+        double[] returns = new double[] { 0.01, 0.02, -0.01, 0.03 };
+
+        assertThat(new Volatility(returns, index -> true).getCount(), is(4));
+        assertThat(new Volatility(returns, index -> index > 1).getCount(), is(2));
+        assertThat(new Volatility(returns, index -> index == 3).getCount(), is(1));
+        assertThat(new Volatility(new double[0], index -> true).getCount(), is(0));
+    }
+
     /**
      * Tests the Volatility calculation with a single return value.
      * Scenario: Only one return value is provided.
