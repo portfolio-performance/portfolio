@@ -1,0 +1,31 @@
+PDFBox Version: 3.0.8
+Portfolio Performance Version: 0.90.0
+System: macosx | aarch64 | 21.0.4+7-LTS | Amazon.com Inc.
+-----------------------------------------
+Riga, 01.10.2026
+INCOME STATEMENT
+for the period from 01.09.2026 to 30.09.2026
+- Account value on 01.09.2026: EUR 0.00
+• Investments (incl. reservations): EUR 0.00
+• Available funds: EUR 0.00
+- Deposits to the investor account: EUR 2000.00
+- Withdrawals from the investor account: EUR 0.00
+- Inactivity fee: EUR 0.00
+- Net income from claim rights: EUR 0.00
+• Interest income from claim rights: EUR 0.00
+• Gain/loss from secondary market: EUR 0.00
+• Gain/loss from currency fluctuations: EUR 0.00
+- Net income from Loan Securities: EUR 0.85
+• Interest income from Loan Securities: EUR 0.90
+• Tax withheld: EUR -0.05
+• Gain/loss from secondary market: EUR 0.00
+• Gain/loss from currency fluctuations: EUR 0.00
+- Net income from Real estate Securities: EUR 0.00
+• Dividend income: EUR 0.00
+• Gain/loss from secondary market: EUR 0.00
+• Gain/loss from currency fluctuations: EUR  0.00
+- Income from campaigns (cashback, referral): EUR 20.00
+-  Total net income received: EUR 20.85
+- Account value on 30.09.2026: EUR 2020.86
+• Investments (incl. reservations): EUR 2020.00
+• Available funds: EUR 0.86
