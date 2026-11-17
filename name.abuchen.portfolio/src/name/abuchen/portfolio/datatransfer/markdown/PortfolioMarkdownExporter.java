@@ -10,13 +10,15 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import name.abuchen.portfolio.PortfolioLog;
 import name.abuchen.portfolio.model.Account;
@@ -83,6 +85,7 @@ public class PortfolioMarkdownExporter implements Exporter
     private static final CostMethod COST_METHOD = CostMethod.FIFO;
     private static final int STALE_PRICE_DAYS = 7;
     private static final int DAYS_PER_YEAR = 365;
+    private static final String TAXONOMY_ROOT = "(taxonomy root)";
 
     private record PeriodResult(String label, Interval interval, Money start, Money transfers, Money gains,
                     Money earnings, Money fees, Money taxes, Money end, Money absoluteGain, double ttwror,
@@ -110,7 +113,7 @@ public class PortfolioMarkdownExporter implements Exporter
 
     // state of one run
     private final Set<String> notes = new LinkedHashSet<>();
-    private final Set<String> duplicateSecurityNames = new HashSet<>();
+    private final Map<Security, String> securityLabels = new HashMap<>();
     private LocalDate firstTransactionDate;
     private ClientSnapshot snapshot;
     private LazySecurityPerformanceSnapshot securityPerformance;
@@ -220,13 +223,39 @@ public class PortfolioMarkdownExporter implements Exporter
         securityPerformance = firstTransactionDate == null ? null
                         : LazySecurityPerformanceSnapshot.create(client, converter, allTimeInterval());
 
-        var seen = new HashSet<String>();
-        duplicateSecurityNames.clear();
-        for (var security : client.getSecurities())
+        securityLabels.clear();
+        var byName = client.getSecurities().stream().collect(Collectors.groupingBy(
+                        s -> Objects.toString(s.getName(), ""), LinkedHashMap::new, Collectors.toList()));
+        for (var entry : byName.entrySet())
         {
-            if (!seen.add(security.getName()))
-                duplicateSecurityNames.add(security.getName());
+            var group = entry.getValue();
+            for (int index = 0; index < group.size(); index++)
+            {
+                var security = group.get(index);
+                securityLabels.put(security, group.size() == 1 ? entry.getKey()
+                                : entry.getKey() + " [" + distinguishingSuffix(security, group, index) + "]");
+            }
         }
+    }
+
+    /**
+     * Returns a suffix that distinguishes securities with the same name: the
+     * ticker symbol, else the ISIN, else the currency with a running number.
+     */
+    private static String distinguishingSuffix(Security security, List<Security> group, int index)
+    {
+        if (isUniqueIn(group, security.getTickerSymbol(), Security::getTickerSymbol))
+            return security.getTickerSymbol();
+        if (isUniqueIn(group, security.getIsin(), Security::getIsin))
+            return security.getIsin();
+        return security.getCurrencyCode() + " #" + (index + 1);
+    }
+
+    private static boolean isUniqueIn(List<Security> group, String value, Function<Security, String> attribute)
+    {
+        if (value == null || value.isBlank())
+            return false;
+        return group.stream().filter(s -> value.equals(attribute.apply(s))).count() == 1;
     }
 
     private Interval allTimeInterval()
@@ -259,16 +288,19 @@ public class PortfolioMarkdownExporter implements Exporter
         return converter.getTermCurrency();
     }
 
+    /**
+     * Returns the name of the security, made unique if several securities have
+     * the same name. Use it wherever a security is referenced so that rows of
+     * different sections can be matched.
+     */
     private String label(Security security)
     {
-        if (duplicateSecurityNames.contains(security.getName()))
-        {
-            var suffix = security.getTickerSymbol() != null && !security.getTickerSymbol().isBlank()
-                            ? security.getTickerSymbol()
-                            : security.getCurrencyCode();
-            return MarkdownFormat.text(security.getName() + " [" + suffix + "]");
-        }
-        return MarkdownFormat.text(security.getName());
+        return MarkdownFormat.text(securityLabels.getOrDefault(security, Objects.toString(security.getName(), "")));
+    }
+
+    private String label(InvestmentVehicle vehicle)
+    {
+        return vehicle instanceof Security security ? label(security) : MarkdownFormat.text(vehicle.getName());
     }
 
     private static String nullToEmpty(String value)
@@ -479,6 +511,19 @@ public class PortfolioMarkdownExporter implements Exporter
                         : new MarkdownTable("Category", "Value (" + currency + ")", "Share");
         var assignments = new MarkdownTable("Category", "Instrument", "Assigned weight", "Value (" + currency + ")");
 
+        // assignments directly to the root are part of the taxonomy but of no
+        // category; they have no target
+        long rootValue = root.getAssignments().stream().mapToLong(a -> assignedValue(a, values)).sum();
+        if (rootValue != 0)
+        {
+            var share = MarkdownFormat.percent(rootValue / (double) total);
+            if (hasTargets)
+                allocation.row(TAXONOMY_ROOT, MarkdownFormat.amount(rootValue), share, "", "", "");
+            else
+                allocation.row(TAXONOMY_ROOT, MarkdownFormat.amount(rootValue), share);
+            writeAssignments(root, TAXONOMY_ROOT, values, assignments);
+        }
+
         long rootTarget = total - unassigned;
         writeClassifications(root, "", rootTarget, hasTargets, values, total, allocation, assignments);
 
@@ -549,20 +594,25 @@ public class PortfolioMarkdownExporter implements Exporter
                 }
             }
 
-            var childAssignments = new ArrayList<>(child.getAssignments());
-            childAssignments.sort(Comparator.comparingInt(Classification.Assignment::getRank));
-            for (var assignment : childAssignments)
-            {
-                long assigned = assignedValue(assignment, values);
-                if (assigned == 0)
-                    continue;
-
-                assignments.row(MarkdownFormat.text(path),
-                                MarkdownFormat.text(assignment.getInvestmentVehicle().getName()),
-                                MarkdownFormat.weight(assignment.getWeight()), MarkdownFormat.amount(assigned));
-            }
+            writeAssignments(child, MarkdownFormat.text(path), values, assignments);
 
             writeClassifications(child, path, target, hasTargets, values, total, allocation, assignments);
+        }
+    }
+
+    private void writeAssignments(Classification classification, String category,
+                    Map<InvestmentVehicle, Long> values, MarkdownTable assignments)
+    {
+        var list = new ArrayList<>(classification.getAssignments());
+        list.sort(Comparator.comparingInt(Classification.Assignment::getRank));
+        for (var assignment : list)
+        {
+            long assigned = assignedValue(assignment, values);
+            if (assigned == 0)
+                continue;
+
+            assignments.row(category, label(assignment.getInvestmentVehicle()),
+                            MarkdownFormat.weight(assignment.getWeight()), MarkdownFormat.amount(assigned));
         }
     }
 
@@ -663,12 +713,12 @@ public class PortfolioMarkdownExporter implements Exporter
     {
         if (price.getValue() == 0)
         {
-            notes.add("No price is available for the held security '" + security.getName()
+            notes.add("No price is available for the held security '" + label(security)
                             + "'; its value is shown as 0.");
         }
         else if (ChronoUnit.DAYS.between(price.getDate(), valuationDate) > STALE_PRICE_DAYS)
         {
-            notes.add("The latest price of '" + security.getName() + "' is from " + price.getDate() + " ("
+            notes.add("The latest price of '" + label(security) + "' is from " + price.getDate() + " ("
                             + ChronoUnit.DAYS.between(price.getDate(), valuationDate) + " days old).");
         }
     }

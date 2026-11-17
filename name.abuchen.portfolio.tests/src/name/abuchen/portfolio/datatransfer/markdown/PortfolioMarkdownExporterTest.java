@@ -24,6 +24,7 @@ import name.abuchen.portfolio.junit.TestCurrencyConverter;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.AccountTransferEntry;
 import name.abuchen.portfolio.model.BuySellEntry;
+import name.abuchen.portfolio.model.Classification;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.InvestmentPlan;
 import name.abuchen.portfolio.model.PortfolioTransaction;
@@ -478,6 +479,66 @@ public class PortfolioMarkdownExporterTest
         assertThat(markdown, containsString("| 2026-03-01 | TRANSFER |"));
         assertThat(markdown, not(containsString("TRANSFER_IN")));
         assertThat(count(markdown, "| TRANSFER |"), is(2));
+    }
+
+    @Test
+    public void testDuplicateSecurityNamesFallBackToIsinAndNumber()
+    {
+        var client = new Client();
+        var taxonomy = new TaxonomyBuilder().addClassification("equity").addTo(client);
+        taxonomy.setName("Types");
+
+        var cash = new AccountBuilder().deposit_("2026-01-01", 1_000_00).addTo(client);
+
+        var first = new SecurityBuilder().addPrice("2026-06-30", 10_00000000L).assign(taxonomy, "equity")
+                        .addTo(client);
+        first.setName("Same Name");
+        first.setTickerSymbol("AAA");
+        var second = new SecurityBuilder().addPrice("2026-06-30", 10_00000000L).assign(taxonomy, "equity")
+                        .addTo(client);
+        second.setName("Same Name");
+        second.setTickerSymbol(null);
+        second.setIsin("IE00SECOND01");
+        var third = new SecurityBuilder().addPrice("2026-06-01", 10_00000000L).addTo(client);
+        third.setName("Same Name");
+        third.setTickerSymbol(null);
+        third.setIsin(null);
+
+        new PortfolioBuilder(cash).buy(first, "2026-02-01", 1_00000000L, 10_00)
+                        .buy(second, "2026-02-02", 1_00000000L, 10_00)
+                        .buy(third, "2026-02-03", 1_00000000L, 10_00).addTo(client);
+
+        var markdown = exporter(client).generate();
+
+        assertThat(markdown, containsString("| Same Name [AAA] |"));
+        assertThat(markdown, containsString("| Same Name [IE00SECOND01] |"));
+        assertThat(markdown, containsString("| Same Name [EUR #3] |"));
+
+        // assignments and data quality notes use the same labels
+        assertThat(markdown, containsString("| equity | Same Name [AAA] | 100.00% | 10.00 |"));
+        assertThat(markdown, containsString("| equity | Same Name [IE00SECOND01] | 100.00% | 10.00 |"));
+        assertThat(markdown, containsString("The latest price of 'Same Name [EUR #3]' is from 2026-06-01"));
+    }
+
+    @Test
+    public void testAssignmentsToTaxonomyRoot()
+    {
+        var client = new Client();
+        var taxonomy = new TaxonomyBuilder().addTo(client);
+        taxonomy.setName("Flat");
+
+        var cash = new AccountBuilder().deposit_("2026-01-01", 1_000_00).addTo(client);
+        var security = new SecurityBuilder().addPrice("2026-06-30", 10_00000000L).addTo(client);
+        security.setName("Rooted");
+        taxonomy.getRoot().addAssignment(new Classification.Assignment(security, Classification.ONE_HUNDRED_PERCENT));
+        new PortfolioBuilder(cash).buy(security, "2026-02-01", 10_00000000L, 100_00).addTo(client);
+
+        var markdown = exporter(client).generate();
+
+        assertThat(markdown, containsString("### Flat"));
+        assertThat(markdown, containsString("| (taxonomy root) | 100.00 | 10.00% |"));
+        assertThat(markdown, containsString("| (unassigned) | 900.00 | 90.00% |"));
+        assertThat(markdown, containsString("| (taxonomy root) | Rooted | 100.00% | 100.00 |"));
     }
 
     private static int count(String text, String token)
