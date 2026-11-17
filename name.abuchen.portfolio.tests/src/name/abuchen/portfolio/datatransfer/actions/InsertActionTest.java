@@ -10,6 +10,7 @@ import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.time.LocalDateTime;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -103,6 +104,103 @@ public class InsertActionTest
 
         assertThat(t.getUnitSum(Unit.Type.TAX), is(Money.of(CurrencyUnit.EUR, 1_99)));
         assertThat(t.getUnits().count(), is(1L));
+    }
+
+    @Test
+    public void testRetiredSecurityIsReactivatedOnBuy()
+    {
+        Account account = client.getAccounts().get(0);
+        Portfolio portfolio = client.getPortfolios().get(0);
+        Security security = client.getSecurities().get(0);
+        security.setRetired(true);
+
+        InsertAction action = new InsertAction(client);
+        action.process(entry, account, portfolio);
+
+        assertThat(action.getRetiredSecuritiesWithInbound(), is(Set.of(security)));
+
+        var reactivated = InsertAction.reactivateSecuritiesWithHoldings(client,
+                        action.getRetiredSecuritiesWithInbound());
+
+        assertThat(reactivated, is(List.of(security)));
+        assertThat(security.isRetired(), is(false));
+    }
+
+    @Test
+    public void testRetiredSecurityIsReactivatedOnConvertedDelivery()
+    {
+        Account account = client.getAccounts().get(0);
+        Portfolio portfolio = client.getPortfolios().get(0);
+        Security security = client.getSecurities().get(0);
+        security.setRetired(true);
+
+        InsertAction action = new InsertAction(client);
+        action.setConvertBuySellToDelivery(true);
+        action.process(entry, account, portfolio);
+
+        assertThat(action.getRetiredSecuritiesWithInbound(), is(Set.of(security)));
+
+        InsertAction.reactivateSecuritiesWithHoldings(client, action.getRetiredSecuritiesWithInbound());
+
+        assertThat(security.isRetired(), is(false));
+    }
+
+    @Test
+    public void testRetiredSecurityStaysRetiredWithoutHoldings()
+    {
+        Account account = client.getAccounts().get(0);
+        Portfolio portfolio = client.getPortfolios().get(0);
+        Security security = client.getSecurities().get(0);
+        security.setRetired(true);
+
+        // the shares have been delivered out after the purchase
+        PortfolioTransaction outbound = new PortfolioTransaction();
+        outbound.setType(Type.DELIVERY_OUTBOUND);
+        outbound.setDateTime(transactionDate.plusDays(1));
+        outbound.setSecurity(security);
+        outbound.setMonetaryAmount(Money.of(CurrencyUnit.EUR, 9_99));
+        outbound.setShares(99);
+        portfolio.addTransaction(outbound);
+
+        InsertAction action = new InsertAction(client);
+        action.process(entry, account, portfolio);
+
+        assertThat(action.getRetiredSecuritiesWithInbound(), is(Set.of(security)));
+
+        var reactivated = InsertAction.reactivateSecuritiesWithHoldings(client,
+                        action.getRetiredSecuritiesWithInbound());
+
+        assertThat(reactivated.isEmpty(), is(true));
+        assertThat(security.isRetired(), is(true));
+    }
+
+    @Test
+    public void testRetiredSecurityIsNotRememberedOnSell()
+    {
+        Account account = client.getAccounts().get(0);
+        Portfolio portfolio = client.getPortfolios().get(0);
+        Security security = client.getSecurities().get(0);
+        security.setRetired(true);
+
+        entry.setType(Type.SELL);
+
+        InsertAction action = new InsertAction(client);
+        action.process(entry, account, portfolio);
+
+        assertThat(action.getRetiredSecuritiesWithInbound().isEmpty(), is(true));
+        assertThat(security.isRetired(), is(true));
+    }
+
+    @Test
+    public void testActiveSecurityIsNotRemembered()
+    {
+        Account account = client.getAccounts().get(0);
+        Portfolio portfolio = client.getPortfolios().get(0);
+
+        InsertAction action = new InsertAction(client);
+        action.process(entry, account, portfolio);
+
+        assertThat(action.getRetiredSecuritiesWithInbound().isEmpty(), is(true));
     }
 
     @Test
