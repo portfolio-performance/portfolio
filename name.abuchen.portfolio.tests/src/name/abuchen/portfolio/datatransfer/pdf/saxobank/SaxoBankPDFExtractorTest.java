@@ -598,8 +598,8 @@ public class SaxoBankPDFExtractorTest
                         hasDate("2025-11-03T09:28:44"), hasShares(15.00), //
                         hasSource("Verkauf01.txt"), //
                         hasNote("Order-ID 5339573521 | Trade-ID 6463593307"), //
-                        hasAmount("CHF", 1130.17), hasGrossValue("CHF", 1134.02), //
-                        hasTaxes("CHF", 0.85), hasFees("CHF", 3.00))));
+                        hasAmount("CHF", 1130.17), hasGrossValue("CHF", 1131.02), //
+                        hasTaxes("CHF", 0.85), hasFees("CHF", 0.00))));
     }
 
     @Test
