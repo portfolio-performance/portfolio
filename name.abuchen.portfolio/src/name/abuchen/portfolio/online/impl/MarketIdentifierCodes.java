@@ -28,7 +28,6 @@ public class MarketIdentifierCodes
         MIC2YAHOO.put("ASEX", "AT");
         MIC2YAHOO.put("BVCA", "CR");
         MIC2YAHOO.put("DSMD", "QA");
-        MIC2YAHOO.put("MISX", "ME");
         MIC2YAHOO.put("XAMS", "AS");
         MIC2YAHOO.put("XBER", "BE");
         MIC2YAHOO.put("XBKK", "BK");
