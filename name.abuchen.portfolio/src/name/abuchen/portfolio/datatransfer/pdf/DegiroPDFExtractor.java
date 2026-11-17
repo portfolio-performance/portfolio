@@ -1599,11 +1599,12 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                             // exchange Venue Quantity Price Local value Value EUR Exchange AutoFX and/or third
                             // d'exécution locale CHF change conversion
                             // Lokalwährung Wert EUR Wec
+                            // referencia Número Precio Valor local Valor EUR Tipo de Comisión transacción
                             // @formatter:on
                             Pattern pCurrencyAccount = Pattern.compile("^(?![\\d]{2}\\-[\\d]{2}\\-[\\d]{4} )"
-                                            + ".*(Local value Value|locale|Lokalw.hrung Wert) "
+                                            + ".*(Local value Value|locale|Lokalw.hrung Wert|Valor local Valor) "
                                             + "(?<currency>[A-Z]{3}) "
-                                            + "(Exchange|change|Wec).*$");
+                                            + "(Exchange|change|Wec|Tipo).*$");
 
                             // @formatter:off
                             // The name of the security can be spread over several lines.
