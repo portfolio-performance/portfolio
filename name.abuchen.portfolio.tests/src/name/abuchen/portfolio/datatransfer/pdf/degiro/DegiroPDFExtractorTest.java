@@ -43,6 +43,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.collection.IsEmptyCollection.empty;
 import static org.junit.Assert.assertNull;
 
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -4595,6 +4596,48 @@ public class DegiroPDFExtractorTest
                         hasIsin("FI0009003727"), hasWkn(null), hasTicker(null), //
                         hasName("WARTSILA OYJ ABP"), //
                         hasCurrencyCode("EUR"))));
+    }
+
+    @Test
+    public void testAccountStatement_french03()
+    {
+        // @formatter:off
+        // The account statement of the French documents is named "Relevé de
+        // compte". It shows the cash movements of the account only:
+        //
+        // - the transfers to and from the "Compte Espèces" of the flatexDEGIRO
+        //   Bank together with their "Degiro Cash Sweep Transfer" mirror
+        //   booking are internal transfers of the same bank group and are
+        //   ignored like in all other languages,
+        // - the fees, the taxes and the "Achat" and "Vente" bookings of the
+        //   securities are settled through the "Compte Espèces" and are
+        //   imported from the transaction report of the same period,
+        // - both interest bookings have an amount of 0,00.
+        //
+        // Therefore nothing is imported from this statement and the extractor
+        // reports the document as not supported. The statement must not be
+        // detected as transaction report because of the "Taxe sur les
+        // Transactions Financières" line either.
+        // @formatter:on
+        var extractor = new DegiroPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "AccountStatement_french03.txt"), errors);
+
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(0));
+        assertThat(errors.size(), is(1));
+
+        var firstError = errors.get(0);
+        assertThat(firstError instanceof UnsupportedOperationException, is(true));
+        assertThat(firstError.getMessage(), is(MessageFormat.format(Messages.PDFdbMsgCannotDetermineFileType, "DEGIRO",
+                        "AccountStatement_french03.txt")));
     }
 
     @Test
