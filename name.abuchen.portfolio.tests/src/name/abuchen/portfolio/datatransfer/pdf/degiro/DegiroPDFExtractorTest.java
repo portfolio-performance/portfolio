@@ -9561,6 +9561,60 @@ public class DegiroPDFExtractorTest
     }
 
     @Test
+    public void testTransactions_english04()
+    {
+        // @formatter:off
+        // The execution venue (Place) is missing, only the reference exchange
+        // is printed. The AutoFX fee is included in the total amount.
+        // @formatter:on
+        var extractor = new DegiroPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Transactions_english04.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(2L));
+        assertThat(countBuySell(results), is(2L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(4));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("PA1436583006"), hasWkn(null), hasTicker(null), //
+                        hasName("CARNIVAL CORP"), //
+                        hasCurrencyCode("USD"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("US0970231058"), hasWkn(null), hasTicker(null), //
+                        hasName("BOEING CO"), //
+                        hasCurrencyCode("USD"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2020-09-25T20:22"), hasShares(30.00), //
+                        hasSource("Transactions_english04.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 381.34), hasGrossValue("EUR", 382.32), //
+                        hasForexGrossValue("USD", 444.60), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.38 + 0.60), //
+                        hasSecurity(hasIsin("PA1436583006")))));
+
+        assertThat(results, hasItem(sale( //
+                        hasDate("2020-09-25T20:22"), hasShares(2.00), //
+                        hasSource("Transactions_english04.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 259.73), hasGrossValue("EUR", 260.50), //
+                        hasForexGrossValue("USD", 302.94), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.26 + 0.51), //
+                        hasSecurity(hasIsin("US0970231058")))));
+    }
+
+    @Test
     public void testTransakcje01()
     {
         DegiroPDFExtractor extractor = new DegiroPDFExtractor(new Client());

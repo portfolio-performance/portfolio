@@ -1,0 +1,21 @@
+PDFBox Version: 3.0.8
+Portfolio Performance Version: 0.90.0
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+Mr UIbsShd mwoAkSS
+Atf 27 8
+78659 KnJLccIk
+MzfWp
+User name: ******RPt
+Transactions from 25-09-2020 until 25-09-2020
+Transaction
+Date Time Product ISIN Reference
+exchange Venue Quantity Price Local value Value EUR Exchange AutoFX and/or third
+rate Fee party fees Total EUR
+EUR
+25-09-2020 20:22 CARNIVAL CORP PA1436583006 NSY -30 14,8200 USD 444,60 USD 382,32 1,1629 -0,38 -0,60 381,34
+25-09-2020 20:22 BOEING CO US0970231058 NSY -2 151,4700 USD 302,94 USD 260,50 1,1629 -0,26 -0,51 259,73
+flatexDEGIRO Bank Dutch Branch, trading under the name DEGIRO, is the Dutch branch of flatexDEGIRO Bank SE. flatexDEGIRO Bank www.degiro.it Account statement
+SE is primarily supervised by the German financial regulator (BaFin). In the Netherlands, flatexDEGIRO Bank Dutch Branch is registered clienti@degiro.it
+with DNB and supervised by AFM and DNB. Amstelplein 1 1096 HA 2026-11-15
+Page 1 / 1

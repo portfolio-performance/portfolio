@@ -1886,7 +1886,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                             // with exchange rate
                             // with AutoFX fee
                             // with fee
-                            // with stock exchange place
+                            // with or without stock exchange place
                             // -------------------------------------
                             // Formatting:
                             // DateTime | Name | ISIN | Stock Exchange | Place | Shares | Quote | Local market value | Market value | Exchange rate | AutoFX fee | Fee | Total amount
@@ -1894,6 +1894,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                             // 16-01-2026 21:59 LIGHTWAVE LOGIC INC US5322751042 NDQ XNAS 130 4,6000 USD -598,00 USD -515,52 1,1600 -1,29 -2,00 -518,81
                             // 16-10-2025 18:33 RIGETTI COMPUTING INC US76655K1034 NDQ JNST -100 48,3807 USD 4.838,07 USD 4.144,34 1,1674 -10,36 -2,00 4.131,98
                             // 01-12-2025 19:04 NORDEA BANK ABP FI4000297767 TDG XGAT -100 15,3650 EUR 1 536,50 EUR 1 434,95 1,0708 -3,59 -3,65 1 431,30
+                            // 25-09-2020 20:22 CARNIVAL CORP PA1436583006 NSY -30 14,8200 USD 444,60 USD 382,32 1,1629 -0,38 -0,60 381,34
                             // @formatter:on
                             section -> section
                                 .id("documentContext-withExchangeRate-withAutoFxFee-withFee-withStockExchangePlace")
@@ -1902,7 +1903,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                 .match("^(?<date>[\\d]{2}\\-[\\d]{2}\\-[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}) "
                                                 + "(?<name>.*) "
                                                 + "(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) "
-                                                + "[\\w]{3} [\\w]{4} ([\\s]+)?"
+                                                + "[\\w]{3}( [\\w]{4})? ([\\s]+)?"
                                                 + "(?<shares>[\\-\\.,'’\\d]+) "
                                                 + "(\\-)?[\\.,'’\\d\\s]+[\\.|,][\\d]{2,6} "
                                                 + "(?<currency>[\\w]{3}) (\\-)?(?<amountFx>[\\.,'’\\d\\s]+[\\.|,][\\d]{2}) "
@@ -1963,7 +1964,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                             // with exchange rate
                             // with AutoFX fee
                             // without fee
-                            // with stock exchange place
+                            // with or without stock exchange place
                             // -------------------------------------
                             // Formatting:
                             // DateTime | Name | ISIN | Stock Exchange | Place | Shares | Quote | Local market value | Market value | Exchange rate | AutoFX fee | Total amount
@@ -1978,7 +1979,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                 .match("^(?<date>[\\d]{2}\\-[\\d]{2}\\-[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}) "
                                                 + "(?<name>.*) "
                                                 + "(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) "
-                                                + "[\\w]{3} [\\w]{4} ([\\s]+)?"
+                                                + "[\\w]{3}( [\\w]{4})? ([\\s]+)?"
                                                 + "(?<shares>[\\-\\.,'’\\d]+) "
                                                 + "(\\-)?[\\.,'’\\d\\s]+[\\.|,][\\d]{2,6} "
                                                 + "(?<currency>[\\w]{3}) (\\-)?(?<amountFx>[\\.,'’\\d\\s]+[\\.|,][\\d]{2}) "
