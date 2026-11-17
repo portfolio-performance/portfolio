@@ -603,6 +603,40 @@ public class SaxoBankPDFExtractorTest
     }
 
     @Test
+    public void testWertpapierVerkauf02()
+    {
+        var extractor = new SaxoBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf02.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "CHF");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00BKX55T58"), hasWkn(null), hasTicker("VEVE"), //
+                        hasName("Vanguard FTSE Developed World UCITS ETF"), //
+                        hasCurrencyCode("CHF"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2026-11-11T13:31:37"), hasShares(32.00), //
+                        hasSource("Verkauf02.txt"), //
+                        hasNote("Order-ID 5461026260 | Trade-ID 6937761981"), //
+                        hasAmount("CHF", 3769.06), hasGrossValue("CHF", 3774.72), //
+                        hasTaxes("CHF", 5.66), hasFees("CHF", 0.00))));
+    }
+
+    @Test
     public void testSecurityBuy01()
     {
         var extractor = new SaxoBankPDFExtractor(new Client());

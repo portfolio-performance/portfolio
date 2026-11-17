@@ -65,7 +65,7 @@ public class SaxoBankPDFExtractor extends AbstractPDFExtractor
                                         .section("name").optional() //
                                         .match("^ETF$") //
                                         .match("^(?<name>.*)$") //
-                                        .match("^Instrument (Handelszeit|Trade time) .*$") //
+                                        .match("^Instrument (Handelszeit|Ausführungszeit|Trade time) .*$") //
                                         .assign((ctx, v) -> ctx.put("name", trim(v.get("name")))));
 
         this.addDocumentTyp(type);
@@ -135,10 +135,15 @@ public class SaxoBankPDFExtractor extends AbstractPDFExtractor
                                         // ISIN IE00B4L5Y983 Valuta 07-Aug-2025
                                         // Symbol SWDA:xswx Order-ID 5311230162
                                         // Hauptbörse SIX Swiss Exchange (ETFs) Gehandelter Wert -2.394,19 USD
+                                        //
+                                        // Instrument Vanguard FTSE Developed World UCITS ETF Ausführungszeit 11-Nov-2026 13:31:37
+                                        // ISIN IE00BKX55T58 Valuta 13-Nov-2026
+                                        // Symbol VEVE:xswx Order-ID 5461026260
+                                        // Hauptbörse SIX Swiss Exchange (ETFs) Gehandelter Wert 3.774,72 CHF
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("name", "isin", "tickerSymbol", "currency") //
-                                                        .match("^Instrument (?<name>.*) Handelszeit.*$") //
+                                                        .match("^Instrument (?<name>.*) (Handelszeit|Ausführungszeit).*$") //
                                                         .match("^ISIN (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) Valuta.*$") //
                                                         .match("^Symbol (?<tickerSymbol>[A-Z0-9\\._-]{1,10}(?:\\.[A-Z]{1,4})?):.*$") //
                                                         .match("^.* Gehandelter Wert (\\-)?[\\.,'\\d]+ (?<currency>[A-Z]{3})$") //
@@ -155,7 +160,7 @@ public class SaxoBankPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("name1", "isin", "tickerSymbol", "currency") //
                                                         .documentContext("name") //
-                                                        .match("^Instrument (Handelszeit|Trade time) .*$") //
+                                                        .match("^Instrument (Handelszeit|Ausführungszeit|Trade time) .*$") //
                                                         .match("^(?<name1>.*)$") //
                                                         .match("^ISIN (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) (Valuta|Value).*$") //
                                                         .match("^Symbol (?<tickerSymbol>[A-Z0-9\\._-]{1,10}(?:\\.[A-Z]{1,4})?):.*$") //
@@ -254,11 +259,12 @@ public class SaxoBankPDFExtractor extends AbstractPDFExtractor
                         .oneOf( //
                                         // @formatter:off
                                         // Instrument iShares Core MSCI World UCITS ETF Handelszeit 05-Dez-2024 11:21:27
+                                        // Instrument Vanguard FTSE Developed World UCITS ETF Ausführungszeit 11-Nov-2026 13:31:37
                                         // Instrument Virtus Infracap US Preferred Stock ETF Trade time 09-Apr-2025 19:47:57
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("date", "time") //
-                                                        .match("^.*(Handelszeit|Trade time) (?<date>[\\d]{2}\\-[^\\-]+\\-[\\d]{4}) (?<time>[\\d]{2}\\:[\\d]{2}\\:[\\d]{2})$") //
+                                                        .match("^.*(Handelszeit|Ausführungszeit|Trade time) (?<date>[\\d]{2}\\-[^\\-]+\\-[\\d]{4}) (?<time>[\\d]{2}\\:[\\d]{2}\\:[\\d]{2})$") //
                                                         .assign((t, v) -> t.setDate(asDate(v.get("date"), v.get("time")))))
 
                         .oneOf( //
@@ -380,11 +386,12 @@ public class SaxoBankPDFExtractor extends AbstractPDFExtractor
 
                         // @formatter:off
                         // Instrument iShares Core MSCI World UCITS ETF Handelszeit 05-Dez-2024 11:21:27
+                        // Instrument Vanguard FTSE Developed World UCITS ETF Ausführungszeit 11-Nov-2026 13:31:37
                         // Instrument Virtus Infracap US Preferred Stock ETF Trade time 09-Apr-2025 19:47:57
                         // @formatter:on
                         .section("date", "time").optional() //
                         .documentContext("currency") //
-                        .match("^.*(Handelszeit|Trade time) (?<date>[\\d]{2}\\-[^\\-]+\\-[\\d]{4}) (?<time>[\\d]{2}\\:[\\d]{2}\\:[\\d]{2})$") //
+                        .match("^.*(Handelszeit|Ausführungszeit|Trade time) (?<date>[\\d]{2}\\-[^\\-]+\\-[\\d]{4}) (?<time>[\\d]{2}\\:[\\d]{2}\\:[\\d]{2})$") //
                         .assign((t, v) -> {
                             t.setDateTime(asDate(v.get("date"), v.get("time")));
                             t.setCurrencyCode(v.get("currency"));
