@@ -344,6 +344,9 @@ public final class ColumnViewerSorter
                 columnViewer.refresh();
             else
                 columnViewer.setComparator(this);
+
+            if (viewerColumn instanceof TableViewerColumn tableViewerColumn)
+                SortColumnHighlightFix.clear(tableViewerColumn.getColumn().getParent());
         }
 
         @Override
