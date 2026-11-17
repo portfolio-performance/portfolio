@@ -209,9 +209,11 @@ public class PortfolioMarkdownExporter implements Exporter
 
     private void initialize()
     {
+        // transactions after the valuation date (e.g. planned ones) do not
+        // start the history
         firstTransactionDate = client.getAllTransactions().stream()
-                        .map(pair -> pair.getTransaction().getDateTime().toLocalDate()).min(Comparator.naturalOrder())
-                        .orElse(null);
+                        .map(pair -> pair.getTransaction().getDateTime().toLocalDate())
+                        .filter(date -> !date.isAfter(valuationDate)).min(Comparator.naturalOrder()).orElse(null);
 
         snapshot = ClientSnapshot.create(client, converter, valuationDate);
 
@@ -323,8 +325,9 @@ public class PortfolioMarkdownExporter implements Exporter
         out.append("Use them as given instead of recalculating them from the transactions.\n\n");
         out.append("- Dates use the ISO format YYYY-MM-DD. Numbers use a dot as decimal separator and no thousands separator. Percentages carry a % sign.\n");
         out.append("- Amounts are in the reporting currency (").append(reportingCurrency())
-                        .append(") unless a column, a heading or a currency column says otherwise. Prices are in the currency of the security. ");
-        out.append("Amounts in the transaction list are in the currency of the transaction.\n");
+                        .append(") unless a column, a heading or a currency column says otherwise. ");
+        out.append("Prices in the holdings and market data tables are in the currency of the security. ");
+        out.append("Amounts and prices in the transaction list are in the currency of the transaction (column 'Currency').\n");
         out.append("- Gains are positive, losses are negative. `n/a` means the value cannot be calculated; an empty cell means not applicable.\n");
         out.append("- 'Value' is the market value on the valuation date, based on the latest available price. 'Cost' is the purchase value of the shares that are currently held (including fees and taxes).\n");
         out.append("- Performance periods are measured from the close of the 'From' date to the close of the 'To' date. Annualized figures (p.a.) are only shown for periods of at least one year.\n");
@@ -379,7 +382,7 @@ public class PortfolioMarkdownExporter implements Exporter
         }
         else
         {
-            notes.add("The portfolio does not contain any transactions; no performance figures are available.");
+            notes.add("The portfolio does not contain any transactions up to the valuation date; no performance figures are available.");
         }
 
         table.appendTo(out);
@@ -1029,7 +1032,8 @@ public class PortfolioMarkdownExporter implements Exporter
 
         for (var row : all)
         {
-            if (cutoff != null && !row.date().toLocalDate().isAfter(cutoff))
+            if (cutoff != null && (!row.date().toLocalDate().isAfter(cutoff)
+                            || row.date().toLocalDate().isAfter(valuationDate)))
                 continue;
 
             table.row(MarkdownFormat.date(row.date().toLocalDate()), row.type(), row.security(), row.shares(),
@@ -1040,7 +1044,8 @@ public class PortfolioMarkdownExporter implements Exporter
         if (cutoff != null)
         {
             out.append("Showing the ").append(table.size()).append(" of ").append(all.size())
-                            .append(" transactions after ").append(MarkdownFormat.date(cutoff))
+                            .append(" transactions dated after ").append(MarkdownFormat.date(cutoff))
+                            .append(" and up to ").append(MarkdownFormat.date(valuationDate))
                             .append(" (the full history is not included). ");
         }
         else
@@ -1109,10 +1114,20 @@ public class PortfolioMarkdownExporter implements Exporter
                 break;
         }
 
-        var type = t.getType() == AccountTransaction.Type.TRANSFER_OUT ? "TRANSFER" : t.getType().name();
-        var counterparty = t.getType() == AccountTransaction.Type.TRANSFER_OUT && crossEntry != null
-                        ? ownerName(crossEntry.getCrossOwner(t))
-                        : "";
+        var isTransfer = t.getType() == AccountTransaction.Type.TRANSFER_OUT
+                        || t.getType() == AccountTransaction.Type.TRANSFER_IN;
+        var type = isTransfer ? "TRANSFER" : t.getType().name();
+
+        var counterparty = "";
+        if (t.getType() == AccountTransaction.Type.TRANSFER_OUT && crossEntry != null)
+        {
+            counterparty = ownerName(crossEntry.getCrossOwner(t));
+
+            var credited = crossEntry.getCrossTransaction(t);
+            if (credited != null && !t.getCurrencyCode().equals(credited.getCurrencyCode()))
+                counterparty += " (credited " + MarkdownFormat.amount(credited.getAmount()) + " "
+                                + credited.getCurrencyCode() + ")";
+        }
 
         return row(t, type, "", account.getName(), counterparty);
     }
@@ -1185,7 +1200,8 @@ public class PortfolioMarkdownExporter implements Exporter
         out.append("**Transaction types**\n\n");
         out.append("- BUY, SELL: purchase or sale of a security. Money leaves (BUY) or enters (SELL) the cash account; 'Net amount' includes fees and taxes.\n");
         out.append("- DELIVERY_INBOUND, DELIVERY_OUTBOUND: securities moved into or out of a portfolio without a cash movement (e.g. transfer from another bank).\n");
-        out.append("- TRANSFER: movement between two of the investor's own accounts or portfolios, from 'Portfolio'/'Account' to 'Counterparty'. It is not a deposit or removal.\n");
+        out.append("- TRANSFER: movement between two of the investor's own accounts or portfolios, from 'Portfolio'/'Account' to 'Counterparty'. It is not a deposit or removal. ")
+                        .append("If the two cash accounts have different currencies, the counterparty shows the amount credited in its currency.\n");
         out.append("- DEPOSIT, REMOVAL: money added to or taken out of a cash account from outside the portfolio.\n");
         out.append("- DIVIDENDS, INTEREST: money received. 'Gross value' is before taxes and fees.\n");
         out.append("- INTEREST_CHARGE, FEES, TAXES: money paid.\n");

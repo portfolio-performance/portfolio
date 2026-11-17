@@ -21,6 +21,7 @@ import name.abuchen.portfolio.junit.PortfolioBuilder;
 import name.abuchen.portfolio.junit.SecurityBuilder;
 import name.abuchen.portfolio.junit.TaxonomyBuilder;
 import name.abuchen.portfolio.junit.TestCurrencyConverter;
+import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.AccountTransferEntry;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
@@ -406,6 +407,77 @@ public class PortfolioMarkdownExporterTest
         assertThat(markdown, containsString("| Delta Stock | sold | 180.00 | 17.82% | 180.00 |  |"));
         assertThat(markdown, containsString("Total gain = realized gain + unrealized gain + dividends - fees and taxes"));
         assertThat(markdown, not(containsString("they are already reflected in the gains")));
+    }
+
+    @Test
+    public void testTransactionsAfterValuationDate()
+    {
+        var client = createClient();
+        var cash = client.getAccounts().get(0);
+        cash.addTransaction(new AccountTransaction(LocalDateTime.parse("2026-07-15T00:00"), "EUR", 50_00, null,
+                        AccountTransaction.Type.DEPOSIT));
+
+        var recent = exporter(client).withTransactionScope(TransactionScope.LAST_12_MONTHS).generate();
+        assertThat(recent, not(containsString("| 2026-07-15 |")));
+        assertThat(recent, containsString("transactions dated after 2025-06-30 and up to 2026-06-30"));
+
+        var all = exporter(client).withTransactionScope(TransactionScope.ALL).generate();
+        assertThat(all, containsString("| 2026-07-15 | DEPOSIT |"));
+        assertThat(all, containsString("- First transaction: 2025-01-02"));
+    }
+
+    @Test
+    public void testOnlyTransactionsAfterValuationDate()
+    {
+        var client = new Client();
+        new AccountBuilder().deposit_("2026-08-01", 1_000_00).addTo(client);
+
+        var markdown = exporter(client).generate();
+
+        assertThat(markdown, containsString("does not contain any transactions up to the valuation date"));
+        assertThat(markdown, not(containsString("could not be created completely")));
+        assertThat(markdown, not(containsString("- First transaction:")));
+    }
+
+    @Test
+    public void testTransactionPriceIsInTransactionCurrency()
+    {
+        var markdown = exporter(createClient()).generate();
+
+        assertThat(markdown, containsString(
+                        "Amounts and prices in the transaction list are in the currency of the transaction (column 'Currency')."));
+        assertThat(markdown, not(containsString("Prices are in the currency of the security.")));
+    }
+
+    @Test
+    public void testAccountTransfers()
+    {
+        var client = new Client();
+
+        var euro = new AccountBuilder().deposit_("2026-01-01", 1_000_00).addTo(client);
+        euro.setName("Euro Cash");
+        var dollar = new AccountBuilder("USD").addTo(client);
+        dollar.setName("Dollar Cash");
+
+        var transfer = new AccountTransferEntry(euro, dollar);
+        transfer.setDate(LocalDateTime.parse("2026-02-01T00:00"));
+        transfer.setAmount(100_00);
+        transfer.setCurrencyCode("EUR");
+        transfer.getTargetTransaction().setAmount(110_00);
+        transfer.getTargetTransaction().setCurrencyCode("USD");
+        transfer.insert();
+
+        // incoming transfer without the outgoing side
+        euro.addTransaction(new AccountTransaction(LocalDateTime.parse("2026-03-01T00:00"), "EUR", 20_00, null,
+                        AccountTransaction.Type.TRANSFER_IN));
+
+        var markdown = exporter(client).generate();
+
+        assertThat(markdown, containsString("| 2026-02-01 | TRANSFER |"));
+        assertThat(markdown, containsString("| Euro Cash | Dollar Cash (credited 110.00 USD) |"));
+        assertThat(markdown, containsString("| 2026-03-01 | TRANSFER |"));
+        assertThat(markdown, not(containsString("TRANSFER_IN")));
+        assertThat(count(markdown, "| TRANSFER |"), is(2));
     }
 
     private static int count(String text, String token)
