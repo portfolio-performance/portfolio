@@ -16,6 +16,7 @@ import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.dialogs.palette.CommandPalettePopup.Element;
 import name.abuchen.portfolio.ui.dialogs.palette.CommandPalettePopup.ElementProvider;
 import name.abuchen.portfolio.ui.editor.PortfolioPart;
+import name.abuchen.portfolio.ui.handlers.ExportMarkdownHandler;
 import name.abuchen.portfolio.ui.handlers.UpdateQuotesHandler;
 import name.abuchen.portfolio.ui.selection.SelectionService;
 import name.abuchen.portfolio.ui.util.CommandAction;
@@ -91,8 +92,10 @@ import name.abuchen.portfolio.ui.util.CommandAction;
         answer.add(new CommandElement(context, BundleMessages.getString(BundleMessages.Label.Command.exportTaxonomy),
                         Images.EXPORT_FILE, UIConstants.Command.EXPORT_TAXONOMY));
 
-        answer.add(new CommandElement(context, BundleMessages.getString(BundleMessages.Label.Command.exportMarkdown),
-                        Images.EXPORT_FILE, UIConstants.Command.EXPORT_MARKDOWN));
+        if (ExportMarkdownHandler.isEnabled())
+            answer.add(new CommandElement(context,
+                            BundleMessages.getString(BundleMessages.Label.Command.exportMarkdown), Images.EXPORT_FILE,
+                            UIConstants.Command.EXPORT_MARKDOWN));
 
         return answer;
     }

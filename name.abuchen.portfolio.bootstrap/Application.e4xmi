@@ -87,7 +87,9 @@
             <parameters xmi:id="_iVczENzZEeyUBtACSRat_Q" elementId="" name="name.abuchen.portfolio.ui.param.file-type" value="xml"/>
             <parameters xmi:id="_hum1gNzZEeyUBtACSRat_Q" elementId="" name="name.abuchen.portfolio.ui.param.create-copy" value="true"/>
           </children>
-          <children xsi:type="menu:HandledMenuItem" xmi:id="_ExportMarkdownMenuItem" elementId="name.abuchen.portfolio.ui.menu.file.exportMarkdown" label="%command.export.markdown" command="_ExportMarkdownCommand"/>
+          <children xsi:type="menu:HandledMenuItem" xmi:id="_ExportMarkdownMenuItem" elementId="name.abuchen.portfolio.ui.menu.file.exportMarkdown" label="%command.export.markdown" command="_ExportMarkdownCommand">
+            <visibleWhen xsi:type="ui:ImperativeExpression" xmi:id="_ExportMarkdownMenuItemVisibleWhen" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.handlers.ExportMarkdownEnabledExpression"/>
+          </children>
           <children xsi:type="menu:MenuSeparator" xmi:id="_yEfKIID7EfCu2LYuODFptg" elementId="name.abuchen.portfolio.bootstrap.menuseparator.10"/>
           <children xsi:type="menu:HandledMenuItem" xmi:id="_yfxX8ID7EfCu2LYuODFptg" elementId="name.abuchen.portfolio.ui.menu.file.exportTaxonomies" label="%command.export.taxonomy" mnemonics="" command="_nkxqAID7EfCu2LYuODFptg"/>
         </children>

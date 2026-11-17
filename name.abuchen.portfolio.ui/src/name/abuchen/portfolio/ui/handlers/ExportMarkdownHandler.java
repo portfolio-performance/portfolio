@@ -27,6 +27,7 @@ import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.dialogs.ExportMarkdownDialog;
 import name.abuchen.portfolio.ui.editor.ClientInput;
+import name.abuchen.portfolio.ui.preferences.Experiments;
 import name.abuchen.portfolio.util.TextUtil;
 
 /**
@@ -40,7 +41,15 @@ public class ExportMarkdownHandler
     @CanExecute
     boolean isVisible(@Named(IServiceConstants.ACTIVE_PART) MPart part)
     {
-        return MenuHelper.isClientPartActive(part);
+        return isEnabled() && MenuHelper.isClientPartActive(part);
+    }
+
+    /**
+     * The export is an experimental feature for now.
+     */
+    public static boolean isEnabled()
+    {
+        return new Experiments().isEnabled(Experiments.Feature.NOV26_MARKDOWN_EXPORT);
     }
 
     @Execute
