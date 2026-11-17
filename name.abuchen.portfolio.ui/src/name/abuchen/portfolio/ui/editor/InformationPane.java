@@ -185,6 +185,12 @@ public class InformationPane
         Control control = page2control.computeIfAbsent(page, p -> {
             Control c = p.createViewControl(pagebook);
             c.setData(InformationPanePage.class.getName(), p);
+
+            // explicitly style the page because it is created lazily after the
+            // view has been styled (otherwise the page may keep the default
+            // colors until the styles are applied again, e.g. on focus change)
+            stylingEngine.style(c);
+
             return c;
         });
 
