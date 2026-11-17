@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -296,6 +297,15 @@ public class PortfolioMarkdownExporter implements Exporter
     private String label(Security security)
     {
         return MarkdownFormat.text(securityLabels.getOrDefault(security, Objects.toString(security.getName(), "")));
+    }
+
+    /**
+     * Sort key for securities. Independent of the default locale (e.g. the
+     * Turkish dotless i) so that the output is identical everywhere.
+     */
+    private String sortKey(Security security)
+    {
+        return label(security).toLowerCase(Locale.ROOT);
     }
 
     private String label(InvestmentVehicle vehicle)
@@ -885,12 +895,15 @@ public class PortfolioMarkdownExporter implements Exporter
 
             // an annualized rate is misleading for short holding periods
             var dates = record.getLineItems().stream().map(i -> i.getDateTime().toLocalDate()).sorted().toList();
-            var holdingEnd = held ? valuationDate : dates.get(dates.size() - 1);
-            var irr = !dates.isEmpty() && ChronoUnit.DAYS.between(dates.get(0), holdingEnd) >= DAYS_PER_YEAR
-                            ? MarkdownFormat.percent(record.getIrr())
-                            : "";
+            var irr = "";
+            if (!dates.isEmpty())
+            {
+                var holdingEnd = held ? valuationDate : dates.get(dates.size() - 1);
+                if (ChronoUnit.DAYS.between(dates.get(0), holdingEnd) >= DAYS_PER_YEAR)
+                    irr = MarkdownFormat.percent(record.getIrr());
+            }
 
-            rows.add(Map.entry(security.getName().toLowerCase(),
+            rows.add(Map.entry(sortKey(security),
                             new String[] { label(security), held ? "held" : "sold", //
                                             MarkdownFormat.money(record.getDelta()), //
                                             MarkdownFormat.percent(record.getDeltaPercent()), //
@@ -951,7 +964,7 @@ public class PortfolioMarkdownExporter implements Exporter
                         "YTD", "1 year", "52w low", "52w high", "Below 52w high");
 
         var sorted = new ArrayList<>(securities);
-        sorted.sort(Comparator.comparing(s -> s.getName().toLowerCase()));
+        sorted.sort(Comparator.comparing(this::sortKey));
 
         for (var security : sorted)
         {

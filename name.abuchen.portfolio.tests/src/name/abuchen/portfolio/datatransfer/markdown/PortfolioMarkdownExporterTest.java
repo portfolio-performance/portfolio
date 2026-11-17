@@ -541,6 +541,54 @@ public class PortfolioMarkdownExporterTest
         assertThat(markdown, containsString("| (taxonomy root) | Rooted | 100.00% | 100.00 |"));
     }
 
+    @Test
+    public void testSortingDoesNotDependOnLocale()
+    {
+        var client = new Client();
+        var cash = new AccountBuilder().deposit_("2026-01-01", 1_000_00).addTo(client);
+
+        var jFund = new SecurityBuilder().addPrice("2026-06-30", 10_00000000L).addTo(client);
+        jFund.setName("J Fund");
+        var iFund = new SecurityBuilder().addPrice("2026-06-30", 10_00000000L).addTo(client);
+        iFund.setName("I Fund");
+
+        new PortfolioBuilder(cash).buy(jFund, "2026-02-01", 1_00000000L, 10_00)
+                        .buy(iFund, "2026-02-02", 1_00000000L, 10_00).addTo(client);
+
+        var defaultLocale = Locale.getDefault();
+        try
+        {
+            Locale.setDefault(Locale.US);
+            var us = exporter(client).generate();
+
+            // in Turkish, "I" is lower-cased to the dotless i which sorts
+            // after "j"
+            Locale.setDefault(Locale.forLanguageTag("tr-TR"));
+            var tr = exporter(client).generate();
+
+            org.junit.Assert.assertEquals(us, tr);
+
+            var marketData = us.substring(us.indexOf("## Market data"));
+            assertThat(marketData.indexOf("| I Fund |") < marketData.indexOf("| J Fund |"), is(true));
+        }
+        finally
+        {
+            Locale.setDefault(defaultLocale);
+        }
+    }
+
+    @Test
+    public void testTextEscapesBackslashAndPipe()
+    {
+        // a backslash in front of a pipe must not cancel the escaping
+        assertThat(MarkdownFormat.text("C:\\| x"), is("C:\\\\\\| x"));
+        assertThat(MarkdownFormat.text("a\nb\t|c"), is("a b \\|c"));
+
+        // shortened before escaping: no dangling backslash before "..."
+        var longText = "a".repeat(296) + "\\|" + "b".repeat(10);
+        assertThat(MarkdownFormat.text(longText), is("a".repeat(296) + "\\\\..."));
+    }
+
     private static int count(String text, String token)
     {
         int count = 0;

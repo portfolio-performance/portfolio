@@ -100,19 +100,21 @@ import name.abuchen.portfolio.money.Values;
 
     /**
      * Makes arbitrary text safe to be used inside a table cell: no line
-     * breaks, no unescaped pipe characters, limited length.
+     * breaks, escaped backslashes and pipe characters, limited length. The
+     * text is shortened before escaping so that an escape sequence is never
+     * cut in half.
      */
     /* package */ static String text(String text)
     {
         if (text == null)
             return "";
 
-        var cleaned = text.replaceAll("\\s+", " ").trim().replace("|", "\\|");
+        var cleaned = text.replaceAll("\\s+", " ").trim();
 
         if (cleaned.length() > MAX_TEXT_LENGTH)
             cleaned = cleaned.substring(0, MAX_TEXT_LENGTH - 3) + "...";
 
-        return cleaned;
+        return cleaned.replace("\\", "\\\\").replace("|", "\\|");
     }
 
     private static String stripZeros(BigDecimal value, int minScale)
