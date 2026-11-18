@@ -2,6 +2,7 @@ package name.abuchen.portfolio.datatransfer.traderepublic;
 
 import java.io.IOException;
 import java.io.StringReader;
+import java.io.UncheckedIOException;
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -70,6 +71,11 @@ public class TradeRepublicCSVExtractor implements Extractor
         {
             var content = Files.readString(inputFile.getFile().toPath(), StandardCharsets.UTF_8);
 
+            // a byte order mark (e.g. after saving the file with an editor)
+            // would otherwise become part of the first column name
+            if (content.startsWith("\uFEFF"))
+                content = content.substring(1);
+
             // try comma first, fall back to semicolon
             if (!tryParse(content, ',', securityCache, source, items, errors)
                             && !tryParse(content, ';', securityCache, source, items, errors))
@@ -121,6 +127,13 @@ public class TradeRepublicCSVExtractor implements Extractor
         catch (IOException e)
         {
             errors.add(e);
+            return true;
+        }
+        catch (UncheckedIOException e)
+        {
+            // commons-csv reports malformed content (e.g. an unclosed quote)
+            // while iterating over the records
+            errors.add(e.getCause());
             return true;
         }
     }
