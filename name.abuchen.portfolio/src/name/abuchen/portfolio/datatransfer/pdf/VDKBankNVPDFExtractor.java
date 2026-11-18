@@ -51,7 +51,7 @@ public class VDKBankNVPDFExtractor extends AbstractPDFExtractor
 
                         // Is type --> "verkoop" change from BUY to SELL
                         .section("type").optional() //
-                        .match("^Je (?<type>(verkoop|aankoop)) van: .*") //
+                        .match("^Je (?<type>(verkoop|aankoop)) van: .*$") //
                         .assign((t, v) -> {
                             if ("verkoop".equals(v.get("type")))
                                 t.setType(PortfolioTransaction.Type.SELL);
@@ -313,10 +313,7 @@ public class VDKBankNVPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("withHoldingTax", "currency").optional() //
                         .match("^Belgische roerende voorheffing .*: (?<withHoldingTax>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
-                        .assign((t, v) -> {
-                            if (!type.getCurrentContext().getBoolean("noTax"))
-                                processWithHoldingTaxEntries(t, v, "withHoldingTax", type);
-                        });
+                        .assign((t, v) -> processWithHoldingTaxEntries(t, v, "withHoldingTax", type));
     }
 
     private <T extends Transaction<?>> void addFeesSectionsTransaction(T transaction, DocumentType type)
