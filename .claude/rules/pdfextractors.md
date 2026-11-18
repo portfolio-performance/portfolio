@@ -21,6 +21,7 @@ PDF importers extract transactions from bank and broker PDF statements.
   - When extracting information from pdf-documents, create multiple `section`-Blocks. 
   - Consistency in coding style between all extractors is more important than nice code.
   - Paste the matching document lines verbatim above each section-block, wrapped in `@formatter:off` / `@formatter:on` — see below.
+- Only implement document types, transaction types and patterns that occur in a real sample document. Do not add alternatives for documents you have not seen.
 
 ## `@formatter:off` / `@formatter:on`
 
@@ -145,6 +146,16 @@ v.put("currency", asCurrencyCode("USD"));         // works but prefer named cons
 })
 ```
 
+**Transaction context** — a value that belongs to a single transaction (a flag, a time read in an earlier section) goes into `v.getTransactionContext()`, which exists only while that transaction is parsed. The document context holds values that are valid for the whole document, such as the currency or the year of a statement; a per-transaction value stored there leaks into the following transactions:
+```java
+.assign((t, v) -> v.getTransactionContext().putBoolean("noTax", true))
+
+.assign((t, v) -> {
+    if (!v.getTransactionContext().getBoolean("noTax"))
+        processTaxEntries(t, v, type);
+})
+```
+
 **Runtime transaction type switch** — when a single PDF document format contains both deposits and removals (or buys and sells) distinguished only by a sign character, it is allowed to combine them into one block. Set `subject()` to the default type and switch in `assign()` based on the extracted sign:
 ```java
 var depositRemovalBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (Einzahlung|Auszahlung) (\\-)?[\\.,\\d]+ .*$");
@@ -204,6 +215,13 @@ A dividend whose net amount drops to `0.00` because of taxes or fees is a regula
 .match("^(?<type>STORNO)$") //
 .assign((t, v) -> v.markAsFailure(Messages.MsgErrorTransactionOrderCancellationUnsupported))
 ```
+
+A reversed withholding tax (e.g. `Cancel Withholding Tax` in a statement) is a tax refund, not a cancelled order: import it as `TAX_REFUND` (or `TAXES` if the amount is negative).
+
+**Zero amounts and bookings from other documents**
+- Purchases and inbound deliveries with a zero amount (e.g. bonus or free shares) are never imported, because the performance would become infinite. Mark them with `MsgErrorTransactionTypeNotSupportedOrRequired` (see the `wrap((t, ctx) -> ...)` of the purchases in `BaaderBankPDFExtractor`) and do not estimate a value from historical prices. An outbound delivery with a zero amount (worthless securities written off) is allowed.
+- A line that is booked from somewhere else gets a specific message: `MsgErrorTransactionAlternativeDocumentRequired` if the bank provides another document for it, `MsgErrorTransactionIncludedInOtherTransaction` if it is already part of another transaction of the document (e.g. the withholding tax of a dividend). Use `MsgErrorTransactionTypeNotSupportedOrRequired` only for transactions that are not needed at all.
+- Taxes or fees that are already deducted from a booked amount (e.g. the taxes listed below an interest settlement) are units of that transaction; do not book them again as separate removals or taxes.
 
 
 # Testing
@@ -267,6 +285,16 @@ assertThat(results, hasItem(security( //
                 hasFeedProperty(CoinGeckoQuoteFeed.COINGECKO_COIN_ID, "bitcoin"))));
 ```
 Tests that do not involve crypto securities (e.g. deposits/removals only) may create a plain `new BSDEXPDFExtractor(new Client())` locally within the test method instead.
+
+**Security in EUR** — the `...WithSecurityInEUR` variants of a test (security currency differs from the transaction currency) keep the currency check in the transaction assertion:
+```java
+                hasTaxes("CHF", 0.11 / (71.48 / 67.82)), hasFees("CHF", 0.00), //
+                check(tx -> {
+                    var c = new CheckCurrenciesAction();
+                    var s = c.process((PortfolioTransaction) tx, new Portfolio());
+                    assertThat(s, is(Status.OK_STATUS));
+                }))));
+```
 
 `withFailureMessage(...)` assertions follow this structure — the `//` after the opening parenthesis is required:
 
