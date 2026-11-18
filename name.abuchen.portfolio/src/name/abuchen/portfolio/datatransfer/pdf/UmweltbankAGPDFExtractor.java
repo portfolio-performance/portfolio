@@ -1,6 +1,5 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
-import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetFee;
 import static name.abuchen.portfolio.util.TextUtil.trim;
 
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
@@ -10,20 +9,21 @@ import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
-import name.abuchen.portfolio.money.Money;
 
 /**
  * @formatter:off
- * @implNote UmweltBank AG provides customer bonuses (Kundenbonifikation) that reduce issue fees.
+ * @implNote UmweltBank AG provides customer bonuses (Kundenbonifikation) that refund the issue surcharge
+ *           (Ausgabeaufschlag), which is included in the market value (Kurswert).
  *
  *           Example from Kauf02:
  *           Kurswert 13.040,15 EUR
- *           Entgelt 247,76 EUR,
+ *           Entgelt 247,76 EUR
  *           Kundenbonifikation 100% vom Ausgabeaufschlag 380,70 EUR
- *           --> Final amount: 13.040,15 + 247,76 - 380,70 = 12.907,21 EUR
+ *           --> Ausmachender Betrag: 13.040,15 + 247,76 - 380,70 = 12.907,21 EUR
  *
- *           If bonus were 80%: Customer pays 380,70 * 0,20 = 76,14 EUR of the issue fee
- *           --> Final amount would be: 13.040,15 + 247,76 + 76,14 = 13.364,05 EUR
+ *           The amount is taken from "Ausmachender Betrag" and the "Entgelt" is the fee. The gross value
+ *           is therefore the market value reduced by the bonus (13.040,15 - 380,70 = 12.659,45 EUR). With a
+ *           bonus of less than 100%, the remaining issue surcharge stays in the gross value.
  * @formatter:on
  */
 
@@ -111,21 +111,6 @@ public class UmweltbankAGPDFExtractor extends AbstractPDFExtractor
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(asAmount(v.get("amount")));
                         })
-
-                        // @formatter:off
-                        // Kurswert 13.040,15- EUR
-                        // Kundenbonifikation 100 % vom Ausgabeaufschlag 380,70 EUR
-                        // @formatter:on
-                        .section("gross", "grossCurrency", "fee", "feeCurrency").optional() //
-                        .match("^Kurswert (?<gross>[\\.,\\d]+)\\- (?<grossCurrency>[\\w]{3})$") //
-                        .match("^Kundenbonifikation 100 % vom Ausgabeaufschlag (?<fee>[\\.,\\d]+) (?<feeCurrency>[\\w]{3})$") //
-                        .assign((t, v) -> {
-                            var gross = Money.of(asCurrencyCode(v.get("grossCurrency")), asAmount(v.get("gross")));
-                            var fee = Money.of( asCurrencyCode(v.get("feeCurrency")), asAmount(v.get("fee")));
-
-                            t.setMonetaryAmount(gross.subtract(fee));
-                        })
-
 
                         // @formatter:off
                         //  Auftragsnummer 715355/24.00
@@ -258,28 +243,10 @@ public class UmweltbankAGPDFExtractor extends AbstractPDFExtractor
                         .assign((t, v) -> processFeeEntries(t, v, type))
 
                         // @formatter:off
-                        // Kurswert 13.040,15- EUR
                         // Entgelt 247,76- EUR
-                        // Kundenbonifikation 100 % vom Ausgabeaufschlag 380,70 EUR
                         // @formatter:on
-                        .section("gross", "grossCurrency", "fee", "feeCurrency", "discount", "discountCurrency").optional() //
-                        .match("^Kurswert (?<gross>[\\.,\\d]+)\\- (?<grossCurrency>[A-Z]{3})$") //
-                        .match("^Entgelt (?<fee>[\\.,\\d]+)\\- (?<feeCurrency>[A-Z]{3})$") //
-                        .match("^Kundenbonifikation [\\.,\\d]+ % vom Ausgabeaufschlag (?<discount>[\\.,\\d]+) (?<discountCurrency>[A-Z]{3})$") //
-                        .assign((t, v) -> {
-                            var gross = Money.of(asCurrencyCode(v.get("grossCurrency")), asAmount(v.get("gross")));
-                            var fee = Money.of(asCurrencyCode(v.get("feeCurrency")), asAmount(v.get("fee")));
-                            var discount = Money.of(asCurrencyCode(v.get("discountCurrency")), asAmount(v.get("discount")));
-
-                            // portion of the issue fee actually applied
-                            var appliedFeePortion = gross.subtract(gross.subtract(discount));
-
-                            // @formatter:off
-                            // totalFees = fixed fee + (applied portion - discount)
-                            // @formatter:on
-                            var totalFees = fee.add(appliedFeePortion.subtract(discount));
-
-                            checkAndSetFee(totalFees, t, type.getCurrentContext());
-                        });
+                        .section("fee", "currency").optional() //
+                        .match("^Entgelt (?<fee>[\\.,\\d]+)\\- (?<currency>[A-Z]{3})$") //
+                        .assign((t, v) -> processFeeEntries(t, v, type));
     }
 }

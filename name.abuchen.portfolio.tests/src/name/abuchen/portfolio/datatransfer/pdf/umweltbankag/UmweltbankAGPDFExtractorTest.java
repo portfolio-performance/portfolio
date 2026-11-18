@@ -104,7 +104,7 @@ public class UmweltbankAGPDFExtractorTest
                         hasDate("2025-05-06"), hasShares(235.00), //
                         hasSource("Kauf02.txt"), //
                         hasNote("Auftragsnummer 653140/64.00"), //
-                        hasAmount("EUR", 13040.15 - 380.70), hasGrossValue("EUR", 13040.15 - 380.70 - 247.76), //
+                        hasAmount("EUR", 12907.21), hasGrossValue("EUR", 13040.15 - 380.70), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 247.76))));
     }
 
