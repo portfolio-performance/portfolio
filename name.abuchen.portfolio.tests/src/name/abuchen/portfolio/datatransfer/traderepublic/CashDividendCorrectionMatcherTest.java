@@ -121,7 +121,7 @@ public class CashDividendCorrectionMatcherTest
     }
 
     @Test
-    public void differentTaxDoesNotPair()
+    public void differentTaxPairsAndBooksTaxCharge()
     {
         var security = newSecurity("EUR");
         var original = originalItem(security, "2025-07-17T10:00", Values.Share.factorize(181.638106),
@@ -132,7 +132,66 @@ public class CashDividendCorrectionMatcherTest
         var items = new ArrayList<>(List.of(original, correction));
         CashDividendCorrectionMatcher.reconcile(items);
 
+        // original +21.78, correction -22.02 -> net -0.24 booked as taxes
+        assertThat(items.size(), is(1));
+        var tx = (AccountTransaction) items.get(0).getSubject();
+        assertThat(items.get(0).isFailure(), is(false));
+        assertThat(tx.getType(), is(AccountTransaction.Type.TAXES));
+        assertThat(tx.getSecurity(), is(security));
+        assertThat(tx.getDateTime(), is(LocalDateTime.parse("2026-03-27T10:00")));
+        assertThat(tx.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(0.24))));
+    }
+
+    @Test
+    public void differentTaxPairsAndBooksTaxRefund()
+    {
+        var security = newSecurity("EUR");
+        var original = originalItem(security, "2025-07-17T10:00", Values.Share.factorize(181.638106),
+                        Values.Amount.factorize(22.26), Values.Amount.factorize(7.32), Values.Amount.factorize(0));
+        var correction = correctionItem(security, "2026-03-27T10:00", Values.Share.factorize(181.638106),
+                        Values.Amount.factorize(-22.02), Values.Amount.factorize(-7.56), Values.Amount.factorize(0));
+
+        var items = new ArrayList<>(List.of(original, correction));
+        CashDividendCorrectionMatcher.reconcile(items);
+
+        // original +22.26, correction -22.02 -> net +0.24 booked as tax refund
+        assertThat(items.size(), is(1));
+        var tx = (AccountTransaction) items.get(0).getSubject();
+        assertThat(tx.getType(), is(AccountTransaction.Type.TAX_REFUND));
+        assertThat(tx.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(0.24))));
+    }
+
+    @Test
+    public void differentGrossDoesNotPair()
+    {
+        var security = newSecurity("EUR");
+        var original = originalItem(security, "2025-07-17T10:00", Values.Share.factorize(181.638106),
+                        Values.Amount.factorize(22.03), Values.Amount.factorize(7.56), Values.Amount.factorize(0));
+        var correction = correctionItem(security, "2026-03-27T10:00", Values.Share.factorize(181.638106),
+                        Values.Amount.factorize(-22.02), Values.Amount.factorize(-7.56), Values.Amount.factorize(0));
+
+        var items = new ArrayList<>(List.of(original, correction));
+        CashDividendCorrectionMatcher.reconcile(items);
+
         assertThat(items.size(), is(2));
+    }
+
+    @Test
+    public void prefersExactMatchOverNearerOriginalWithDifferentTax()
+    {
+        var security = newSecurity("EUR");
+        var exactOriginal = originalItem(security, "2024-07-17T10:00", Values.Share.factorize(181.638106),
+                        Values.Amount.factorize(22.02), Values.Amount.factorize(7.56), Values.Amount.factorize(0));
+        var otherTaxOriginal = originalItem(security, "2025-07-17T10:00", Values.Share.factorize(181.638106),
+                        Values.Amount.factorize(21.78), Values.Amount.factorize(7.80), Values.Amount.factorize(0));
+        var correction = correctionItem(security, "2026-03-27T10:00", Values.Share.factorize(181.638106),
+                        Values.Amount.factorize(-22.02), Values.Amount.factorize(-7.56), Values.Amount.factorize(0));
+
+        var items = new ArrayList<>(List.of(exactOriginal, otherTaxOriginal, correction));
+        CashDividendCorrectionMatcher.reconcile(items);
+
+        assertThat(items.size(), is(1));
+        assertThat(items.get(0), is(otherTaxOriginal));
     }
 
     @Test
@@ -183,6 +242,22 @@ public class CashDividendCorrectionMatcherTest
         CashDividendCorrectionMatcher.reconcile(items);
 
         assertThat(items.size(), is(2));
+    }
+
+    @Test
+    public void pairsNonFxOriginalWithFxCorrection()
+    {
+        var security = newSecurity("USD");
+        var original = originalItem(security, "2025-07-17T10:00", Values.Share.factorize(181.638106),
+                        Values.Amount.factorize(22.02), Values.Amount.factorize(7.56), Values.Amount.factorize(0));
+        var correction = correctionItemWithFx(security, "2026-03-27T10:00", Values.Share.factorize(181.638106),
+                        Values.Amount.factorize(-22.02), Values.Amount.factorize(-7.56), Values.Amount.factorize(0),
+                        Values.Amount.factorize(-29.58), Values.Amount.factorize(-34.51), new BigDecimal("0.857265"));
+
+        var items = new ArrayList<>(List.of(original, correction));
+        CashDividendCorrectionMatcher.reconcile(items);
+
+        assertThat(items.size(), is(0));
     }
 
     // -------- helpers --------
