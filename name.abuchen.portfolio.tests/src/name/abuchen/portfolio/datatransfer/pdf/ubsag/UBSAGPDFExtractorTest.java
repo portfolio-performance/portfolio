@@ -35,6 +35,7 @@ import static org.hamcrest.collection.IsEmptyCollection.empty;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.hamcrest.number.IsCloseTo;
 import org.junit.Test;
 
 import name.abuchen.portfolio.datatransfer.ImportAction.Status;
@@ -48,6 +49,7 @@ import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.model.Transaction.Unit;
 
 @SuppressWarnings("nls")
 public class UBSAGPDFExtractorTest
@@ -193,7 +195,11 @@ public class UBSAGPDFExtractorTest
                         hasNote("Auftrags-Nr. 90586823"), //
                         hasAmount("CHF", 3881.75), hasGrossValue("CHF", 3846.00), //
                         hasForexGrossValue("USD", 3851.00), //
-                        hasTaxes("CHF", 5.75), hasFees("CHF", 36.55 - 6.55))));
+                        hasTaxes("CHF", 5.75), hasFees("CHF", 36.55 - 6.55), //
+                        check(tx -> assertThat(tx.getUnit(Unit.Type.GROSS_VALUE) //
+                                        .orElseThrow(IllegalArgumentException::new) //
+                                        .getExchangeRate().doubleValue(), //
+                                        IsCloseTo.closeTo(0.9987, 0.000001))))));
     }
 
     @Test

@@ -286,17 +286,17 @@ public class UBSAGBankingAGPDFExtractor extends AbstractPDFExtractor
                                         // CHF 3 846.00
                                         // @formatter:on
                                         section -> section //
-                                                        .attributes("fxGross", "termCurrency", "baseCurrency", "exchangeRate", "gross") //
+                                                        .attributes("fxGross", "baseCurrency", "termCurrency", "exchangeRate", "gross") //
                                                         .match("^Kurswert in Handelsw.hrung [A-Z]{3} (?<fxGross>[\\.'\\d\\s]+)$") //
-                                                        .match("^(?<termCurrency>[A-Z]{3}) \\/ (?<baseCurrency>[A-Z]{3}) zu (?<exchangeRate>[\\.'\\d]+)$") //
+                                                        .match("^(?<baseCurrency>[A-Z]{3}) \\/ (?<termCurrency>[A-Z]{3}) zu (?<exchangeRate>[\\.'\\d]+)$") //
                                                         .match("^[A-Z]{3} [\\.'\\d\\s]+$") //
                                                         .match("^[A-Z]{3} (?<gross>[\\.'\\d\\s]+)$") //
                                                         .assign((t, v) -> {
                                                             var rate = asExchangeRate(v);
                                                             type.getCurrentContext().putType(rate);
 
-                                                            var gross = Money.of(rate.getBaseCurrency(), asAmount(v.get("gross")));
-                                                            var fxGross = Money.of(rate.getTermCurrency(), asAmount(v.get("fxGross")));
+                                                            var gross = Money.of(rate.getTermCurrency(), asAmount(v.get("gross")));
+                                                            var fxGross = Money.of(rate.getBaseCurrency(), asAmount(v.get("fxGross")));
 
                                                             checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                                                         }),
