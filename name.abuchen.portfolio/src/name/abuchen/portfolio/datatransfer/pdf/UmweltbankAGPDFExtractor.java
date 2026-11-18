@@ -106,7 +106,7 @@ public class UmweltbankAGPDFExtractor extends AbstractPDFExtractor
                         // Ausmachender Betrag 5.268,32- EUR
                         // @formatter:on
                         .section("amount", "currency") //
-                        .match("^Ausmachender Betrag (?<amount>[\\.,\\d]+)\\- (?<currency>[\\w]{3})$") //
+                        .match("^Ausmachender Betrag (?<amount>[\\.,\\d]+)\\- (?<currency>[A-Z]{3})$") //
                         .assign((t, v) -> {
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(asAmount(v.get("amount")));
@@ -148,7 +148,7 @@ public class UmweltbankAGPDFExtractor extends AbstractPDFExtractor
         //  ZeeWke NSCcip
         //  für Anleihe-Sparplan zum 15. monatlich
         // @formatter:on
-        var depositRemovalBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\. [\\d]{2}\\.[\\d]{2}\\. Dauerauftragsgutschr[\\s]{1,}[\\.,\\d]+ [S|H]$");
+        var depositRemovalBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\. [\\d]{2}\\.[\\d]{2}\\. Dauerauftragsgutschr[\\s]{1,}[\\.,\\d]+ [SH]$");
         type.addBlock(depositRemovalBlock);
         depositRemovalBlock.set(new Transaction<AccountTransaction>()
 
@@ -156,7 +156,7 @@ public class UmweltbankAGPDFExtractor extends AbstractPDFExtractor
 
                         .section("date", "amount", "type") //
                         .documentContext("currency", "year") //
-                        .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.) [\\d]{2}\\.[\\d]{2}\\. Dauerauftragsgutschr[\\s]{1,}(?<amount>[\\.,\\d]+) (?<type>[S|H])$") //
+                        .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.) [\\d]{2}\\.[\\d]{2}\\. Dauerauftragsgutschr[\\s]{1,}(?<amount>[\\.,\\d]+) (?<type>[SH])$") //
                         .assign((t, v) -> {
                             // @formatter:off
                             // Is type --> "S" change from DEPOSIT to REMOVAL
@@ -239,7 +239,7 @@ public class UmweltbankAGPDFExtractor extends AbstractPDFExtractor
                         // Provision 1,1000 % vom Kurswert 57,32- EUR
                         // @formatter:on
                         .section("fee", "currency").optional() //
-                        .match("^Provision [\\.,\\d]+ % vom Kurswert (?<fee>[\\.,\\d]+)\\- (?<currency>[\\w]{3})$") //
+                        .match("^Provision [\\.,\\d]+ % vom Kurswert (?<fee>[\\.,\\d]+)\\- (?<currency>[A-Z]{3})$") //
                         .assign((t, v) -> processFeeEntries(t, v, type))
 
                         // @formatter:off
