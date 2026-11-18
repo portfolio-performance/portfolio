@@ -8,8 +8,8 @@ PDF importers extract transactions from bank and broker PDF statements.
 
 > **Required:** Whenever these rules are active, the test cases of the modified importer must be reviewed after every change — both for completeness and correct assertions.
 
-- Each bank/broker has its own extractor class inside `name.abuchen.portfolio/src/name/abuchen/datatransfer/pdf/`
-- Tests are located at `name.abuchen.portfolio.tests/src/name/abuchen/datatransfer/pdf/` within a folder for each bank, containing all connected test-exports.
+- Each bank/broker has its own extractor class inside `name.abuchen.portfolio/src/name/abuchen/portfolio/datatransfer/pdf/`
+- Tests are located at `name.abuchen.portfolio.tests/src/name/abuchen/portfolio/datatransfer/pdf/` within a folder for each bank, containing all connected test-exports.
 
 # Implementation
 
@@ -21,6 +21,7 @@ PDF importers extract transactions from bank and broker PDF statements.
   - When extracting information from pdf-documents, create multiple `section`-Blocks. 
   - Consistency in coding style between all extractors is more important than nice code.
   - Paste the matching document lines verbatim above each section-block, wrapped in `@formatter:off` / `@formatter:on` — see below.
+- Only implement document types, transaction types and patterns that occur in a real sample document. Do not add alternatives for documents you have not seen.
 
 ## `@formatter:off` / `@formatter:on`
 
@@ -72,7 +73,7 @@ Beside general good practices for regular expressions, keep in mind:
 | :--- | :--- | :--- |
 | Date | 01.01.1970 | `[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}` |
 | Date | 1.1.1970 | `[\\d]{1,2}\\.[\\d]{1,2}\\.[\\d]{4}` |
-| Time | 12:01 | `[\\d]{2}\\:[\\d]{2}` |
+| Time | 12:01 | `[\\d]{2}:[\\d]{2}` |
 | ISIN | IE00BKM4GZ66 | `[A-Z]{2}[A-Z0-9]{9}[0-9]` |
 | WKN | A111X9 | `[A-Z0-9]{6}` |
 | Valoren | 1098758 | `[A-Z0-9]{5,9}` |
@@ -145,6 +146,16 @@ v.put("currency", asCurrencyCode("USD"));         // works but prefer named cons
 })
 ```
 
+**Transaction context** — a value that belongs to a single transaction (a flag, a time read in an earlier section) goes into `v.getTransactionContext()`, which exists only while that transaction is parsed. The document context holds values that are valid for the whole document, such as the currency or the year of a statement; a per-transaction value stored there leaks into the following transactions:
+```java
+.assign((t, v) -> v.getTransactionContext().putBoolean("noTax", true))
+
+.assign((t, v) -> {
+    if (!v.getTransactionContext().getBoolean("noTax"))
+        processTaxEntries(t, v, type);
+})
+```
+
 **Runtime transaction type switch** — when a single PDF document format contains both deposits and removals (or buys and sells) distinguished only by a sign character, it is allowed to combine them into one block. Set `subject()` to the default type and switch in `assign()` based on the extracted sign:
 ```java
 var depositRemovalBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (Einzahlung|Auszahlung) (\\-)?[\\.,\\d]+ .*$");
@@ -195,6 +206,22 @@ Block variable names may use an underscore suffix to distinguish format variants
     return new BuySellEntryItem(t);
 })
 ```
+
+A dividend whose net amount drops to `0.00` because of taxes or fees is a regular dividend: import it with gross value, taxes and fees, and do not skip it with the guard. Otherwise the withheld taxes are missing in the tax and dividend reports.
+
+**Cancellations** — importing cancelled orders (Storno) is not supported. Detect the cancellation in a section and mark the transaction as failure; do not return a `SkippedItem` and do not use `MsgErrorTransactionTypeNotSupportedOrRequired`:
+```java
+.section("type").optional() //
+.match("^(?<type>STORNO)$") //
+.assign((t, v) -> v.markAsFailure(Messages.MsgErrorTransactionOrderCancellationUnsupported))
+```
+
+A reversed withholding tax (e.g. `Cancel Withholding Tax` in a statement) is a tax refund, not a cancelled order: import it as `TAX_REFUND` (or `TAXES` if the amount is negative).
+
+**Zero amounts and bookings from other documents**
+- Purchases and inbound deliveries with a zero amount (e.g. bonus or free shares) are never imported, because the performance would become infinite. Mark them with `MsgErrorTransactionTypeNotSupportedOrRequired` (see the `wrap((t, ctx) -> ...)` of the purchases in `BaaderBankPDFExtractor`) and do not estimate a value from historical prices. An outbound delivery with a zero amount (worthless securities written off) is allowed.
+- A line that is booked from somewhere else gets a specific message: `MsgErrorTransactionAlternativeDocumentRequired` if the bank provides another document for it, `MsgErrorTransactionIncludedInOtherTransaction` if it is already part of another transaction of the document (e.g. the withholding tax of a dividend). Use `MsgErrorTransactionTypeNotSupportedOrRequired` only for transactions that are not needed at all.
+- Taxes or fees that are already deducted from a booked amount (e.g. the taxes listed below an interest settlement) are units of that transaction; do not book them again as separate removals or taxes.
 
 
 # Testing
@@ -259,6 +286,16 @@ assertThat(results, hasItem(security( //
 ```
 Tests that do not involve crypto securities (e.g. deposits/removals only) may create a plain `new BSDEXPDFExtractor(new Client())` locally within the test method instead.
 
+**Security in EUR** — the `...WithSecurityInEUR` variants of a test (security currency differs from the transaction currency) keep the currency check in the transaction assertion:
+```java
+                hasTaxes("CHF", 0.11 / (71.48 / 67.82)), hasFees("CHF", 0.00), //
+                check(tx -> {
+                    var c = new CheckCurrenciesAction();
+                    var s = c.process((PortfolioTransaction) tx, new Portfolio());
+                    assertThat(s, is(Status.OK_STATUS));
+                }))));
+```
+
 `withFailureMessage(...)` assertions follow this structure — the `//` after the opening parenthesis is required:
 
 ```java
@@ -311,7 +348,7 @@ assertThat(results, hasItem(interest( //
   - Midnight: write the date only, `hasDate("2025-04-30")`, not `"2025-04-30T00:00"`
   - Otherwise include the time the document gives. Leave out the seconds if they are `:00`: `hasDate("2025-06-05T12:56")`, not `"2025-06-05T12:56:00"`. Keep real seconds: `hasDate("2024-12-05T11:21:27")`
   - Do not shorten existing assertions that use `T00:00` or `:00` seconds unless you change that line anyway
-- The `ExtractorMatchers`-class contains test assertion helpers
+- The `ExtractorMatchers`-class contains the assertion helpers (`purchase(...)`, `dividend(...)`, `hasDate(...)`, ...); the count helpers (`countSecurities`, `countBuySell`, ...) are in `ExtractorTestUtilities`
 - The fees and taxes could consist of multiple values, do not merge or consolidate them for better understanding
 - Always use `0.00` (double literal) for zero amounts, never the integer `0`
 - Every `dividend(...)` assertion must include `hasExDate(...)`. The correct value comes from the JUnit test failure message: look for `dividend with exDate = <value>` in the mismatch output. Use that date, written in the shortest form (see `hasDate` above). If the extractor does not extract an ex-date, the actual value will be `null`.
