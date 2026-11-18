@@ -18,10 +18,15 @@ import java.util.TreeMap;
 public record Request(String method, String path, Map<String, String> pathParams, Map<String, String> queryParams,
                 byte[] body, Authorization authorization, String userAgent)
 {
-    /** the preference page says which: "you forgot the header" and "your token is wrong" differ */
+    /**
+     * The preference page says which: "you forgot the header", "that is not a
+     * bearer header" and "your token is wrong" are three different faults, and
+     * telling the first two apart is the only way a misconfigured connector can
+     * be diagnosed from the application.
+     */
     public enum Authorization
     {
-        VALID, INVALID, MISSING
+        VALID, INVALID, WRONG_SCHEME, MISSING
     }
 
     public Request(String method, String path, Map<String, String> pathParams, Map<String, String> queryParams,
