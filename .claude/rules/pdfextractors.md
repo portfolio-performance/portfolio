@@ -8,8 +8,8 @@ PDF importers extract transactions from bank and broker PDF statements.
 
 > **Required:** Whenever these rules are active, the test cases of the modified importer must be reviewed after every change — both for completeness and correct assertions.
 
-- Each bank/broker has its own extractor class inside `name.abuchen.portfolio/src/name/abuchen/datatransfer/pdf/`
-- Tests are located at `name.abuchen.portfolio.tests/src/name/abuchen/datatransfer/pdf/` within a folder for each bank, containing all connected test-exports.
+- Each bank/broker has its own extractor class inside `name.abuchen.portfolio/src/name/abuchen/portfolio/datatransfer/pdf/`
+- Tests are located at `name.abuchen.portfolio.tests/src/name/abuchen/portfolio/datatransfer/pdf/` within a folder for each bank, containing all connected test-exports.
 
 # Implementation
 
@@ -72,7 +72,7 @@ Beside general good practices for regular expressions, keep in mind:
 | :--- | :--- | :--- |
 | Date | 01.01.1970 | `[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}` |
 | Date | 1.1.1970 | `[\\d]{1,2}\\.[\\d]{1,2}\\.[\\d]{4}` |
-| Time | 12:01 | `[\\d]{2}\\:[\\d]{2}` |
+| Time | 12:01 | `[\\d]{2}:[\\d]{2}` |
 | ISIN | IE00BKM4GZ66 | `[A-Z]{2}[A-Z0-9]{9}[0-9]` |
 | WKN | A111X9 | `[A-Z0-9]{6}` |
 | Valoren | 1098758 | `[A-Z0-9]{5,9}` |
@@ -196,6 +196,15 @@ Block variable names may use an underscore suffix to distinguish format variants
 })
 ```
 
+A dividend whose net amount drops to `0.00` because of taxes or fees is a regular dividend: import it with gross value, taxes and fees, and do not skip it with the guard. Otherwise the withheld taxes are missing in the tax and dividend reports.
+
+**Cancellations** — importing cancelled orders (Storno) is not supported. Detect the cancellation in a section and mark the transaction as failure; do not return a `SkippedItem` and do not use `MsgErrorTransactionTypeNotSupportedOrRequired`:
+```java
+.section("type").optional() //
+.match("^(?<type>STORNO)$") //
+.assign((t, v) -> v.markAsFailure(Messages.MsgErrorTransactionOrderCancellationUnsupported))
+```
+
 
 # Testing
 Test methods should be in following structure
@@ -311,7 +320,7 @@ assertThat(results, hasItem(interest( //
   - Midnight: write the date only, `hasDate("2025-04-30")`, not `"2025-04-30T00:00"`
   - Otherwise include the time the document gives. Leave out the seconds if they are `:00`: `hasDate("2025-06-05T12:56")`, not `"2025-06-05T12:56:00"`. Keep real seconds: `hasDate("2024-12-05T11:21:27")`
   - Do not shorten existing assertions that use `T00:00` or `:00` seconds unless you change that line anyway
-- The `ExtractorMatchers`-class contains test assertion helpers
+- The `ExtractorMatchers`-class contains the assertion helpers (`purchase(...)`, `dividend(...)`, `hasDate(...)`, ...); the count helpers (`countSecurities`, `countBuySell`, ...) are in `ExtractorTestUtilities`
 - The fees and taxes could consist of multiple values, do not merge or consolidate them for better understanding
 - Always use `0.00` (double literal) for zero amounts, never the integer `0`
 - Every `dividend(...)` assertion must include `hasExDate(...)`. The correct value comes from the JUnit test failure message: look for `dividend with exDate = <value>` in the mismatch output. Use that date, written in the shortest form (see `hasDate` above). If the extractor does not extract an ex-date, the actual value will be `null`.
