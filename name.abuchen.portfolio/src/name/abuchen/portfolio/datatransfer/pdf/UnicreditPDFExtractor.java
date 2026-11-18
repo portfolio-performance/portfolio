@@ -7,7 +7,6 @@ import static name.abuchen.portfolio.util.TextUtil.trim;
 import java.math.BigDecimal;
 
 import name.abuchen.portfolio.Messages;
-import name.abuchen.portfolio.datatransfer.ExtrExchangeRate;
 import name.abuchen.portfolio.datatransfer.ExtractorUtils;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
@@ -22,7 +21,6 @@ import name.abuchen.portfolio.money.Values;
 @SuppressWarnings("nls")
 public class UnicreditPDFExtractor extends AbstractPDFExtractor
 {
-
     public UnicreditPDFExtractor(Client client)
     {
         super(client);
@@ -45,12 +43,12 @@ public class UnicreditPDFExtractor extends AbstractPDFExtractor
 
     private void addBuySellTransaction()
     {
-        DocumentType type = new DocumentType("(K a u f|V e r k a u f)");
+        final var type = new DocumentType("(K a u f|V e r k a u f)");
         this.addDocumentTyp(type);
 
-        Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
+        var pdfTransaction = new Transaction<BuySellEntry>();
 
-        Block firstRelevantLine = new Block("^W e r t p a p i e r \\- A b r e c h n u n g[\\s]{1,}(K a u f| V e r k a u f).*$");
+        var firstRelevantLine = new Block("^W e r t p a p i e r \\- A b r e c h n u n g[\\s]{1,}(K a u f| V e r k a u f).*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -76,10 +74,10 @@ public class UnicreditPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("name", "wkn", "name1", "isin", "currency") //
-                                                        .find("Nennbetrag Wertpapierbezeichnung.*")
-                                                        .match("^(?<name>.*) (?<wkn>[A-Z0-9]{6})$")
-                                                        .match("^(?<name1>.*) (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$")
-                                                        .match("^Kurswert (?<currency>[\\w]{3}) [\\.,\\d]+.*$")
+                                                        .find("Nennbetrag Wertpapierbezeichnung.*") //
+                                                        .match("^(?<name>.*) (?<wkn>[A-Z0-9]{6})$") //
+                                                        .match("^(?<name1>.*) (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
+                                                        .match("^Kurswert (?<currency>[A-Z]{3}) [\\.,\\d]+.*$") //
                                                         .assign((t, v) -> {
                                                             v.put("name", trim(v.get("name")) + " " + trim(v.get("name1")));
 
@@ -92,9 +90,9 @@ public class UnicreditPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("name", "name1", "wkn", "isin", "currency") //
-                                                        .find("Nennbetrag Wertpapierbezeichnung.*")
-                                                        .match("^ST [\\.,\\d]+ (?<name>.*) (?<wkn>[A-Z0-9]{6})[\\s]{2,}(?<name1>.*) (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$")
-                                                        .match("^Kurswert (?<currency>[\\w]{3}) [\\.,\\d]+.*$")
+                                                        .find("Nennbetrag Wertpapierbezeichnung.*") //
+                                                        .match("^ST [\\.,\\d]+ (?<name>.*) (?<wkn>[A-Z0-9]{6})[\\s]{2,}(?<name1>.*) (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
+                                                        .match("^Kurswert (?<currency>[A-Z]{3}) [\\.,\\d]+.*$") //
                                                         .assign((t, v) -> {
                                                             v.put("name", trim(v.get("name")) + " " + trim(v.get("name1")));
 
@@ -115,8 +113,8 @@ public class UnicreditPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("time").optional() //
                         .find("Zum Kurs von .*") //
-                        .match("^[\\w]{3} [\\.,\\d]+ [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} ([\\s]+)?(?<time>[\\d]{2}\\.[\\d]{2}\\.[\\d]{2}).*$") //
-                        .assign((t, v) -> type.getCurrentContext().put("time", v.get("time")))
+                        .match("^[A-Z]{3} [\\.,\\d]+ [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} ([\\s]+)?(?<time>[\\d]{2}\\.[\\d]{2}\\.[\\d]{2}).*$") //
+                        .assign((t, v) -> v.getTransactionContext().putString("time", v.get("time")))
 
                         // @formatter:off
                         // Zum Kurs von Ausf}hrungstag/Zeit Ausf}hrungsort Verwahrart
@@ -125,9 +123,9 @@ public class UnicreditPDFExtractor extends AbstractPDFExtractor
                         // 16.28.03
                         // @formatter:on
                         .section("time").optional().find("Zum Kurs von .*") //
-                        .match("^[\\w]{3} [\\.,\\d]+ .*$") //
+                        .match("^[A-Z]{3} [\\.,\\d]+ .*$") //
                         .match("^(?<time>[\\d]{2}\\.[\\d]{2}\\.[\\d]{2})$") //
-                        .assign((t, v) -> type.getCurrentContext().put("time", v.get("time")))
+                        .assign((t, v) -> v.getTransactionContext().putString("time", v.get("time")))
 
                         .oneOf( //
                                         // @formatter:off
@@ -139,8 +137,8 @@ public class UnicreditPDFExtractor extends AbstractPDFExtractor
                                                         .find("Zum Kurs von .*") //
                                                         .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$") //
                                                         .assign((t, v) -> {
-                                                            if (type.getCurrentContext().get("time") != null)
-                                                                t.setDate(asDate(v.get("date"), type.getCurrentContext().get("time")));
+                                                            if (v.getTransactionContext().getString("time") != null)
+                                                                t.setDate(asDate(v.get("date"), v.getTransactionContext().getString("time")));
                                                             else
                                                                 t.setDate(asDate(v.get("date")));
                                                         }),
@@ -150,10 +148,10 @@ public class UnicreditPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section.attributes("date") //
                                                         .find("Zum Kurs von .*") //
-                                                        .match("^[\\w]{3} [\\.,\\d]+ (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
+                                                        .match("^[A-Z]{3} [\\.,\\d]+ (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
                                                         .assign((t, v) -> {
-                                                            if (type.getCurrentContext().get("time") != null)
-                                                                t.setDate(asDate(v.get("date"), type.getCurrentContext().get("time")));
+                                                            if (v.getTransactionContext().getString("time") != null)
+                                                                t.setDate(asDate(v.get("date"), v.getTransactionContext().getString("time")));
                                                             else
                                                                 t.setDate(asDate(v.get("date")));
                                                         }))
@@ -163,7 +161,7 @@ public class UnicreditPDFExtractor extends AbstractPDFExtractor
                         // Gutschrift (vor Steuern) EUR 8.175,91
                         // @formatter:on
                         .section("currency", "amount") //
-                        .match("^(Belastung|Gutschrift) \\(vor Steuern\\) (?<currency>[\\w]{3}) (?<amount>[\\.,\\d]+).*$") //
+                        .match("^(Belastung|Gutschrift) \\(vor Steuern\\) (?<currency>[A-Z]{3}) (?<amount>[\\.,\\d]+).*$") //
                         .assign((t, v) -> {
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(asAmount(v.get("amount")));
@@ -174,18 +172,18 @@ public class UnicreditPDFExtractor extends AbstractPDFExtractor
                         // Umrechnungskurs 1 EUR = 1,1 USD
                         // @formatter:on
                         .section("fxGross", "baseAmount", "baseCurrency", "termAmount", "termCurrency").optional() //
-                        .match("^Kurswert [\\w]{3} (?<fxGross>[\\.,\\d]+)$") //
-                        .match("^Umrechnungskurs (?<baseAmount>[\\.,\\d]+) (?<baseCurrency>[\\w]{3}) = (?<termAmount>[\\.,\\d]+) (?<termCurrency>[\\w]{3})$") //
+                        .match("^Kurswert [A-Z]{3} (?<fxGross>[\\.,\\d]+)$") //
+                        .match("^Umrechnungskurs (?<baseAmount>[\\.,\\d]+) (?<baseCurrency>[A-Z]{3}) = (?<termAmount>[\\.,\\d]+) (?<termCurrency>[A-Z]{3})$") //
                         .assign((t, v) -> {
                             // Calculate and store the exchange rate
                             BigDecimal exchangeRate = BigDecimal.valueOf(((double) asAmount(v.get("termAmount")) / asAmount(v.get("baseAmount"))));
                             v.put("exchangeRate", exchangeRate.toPlainString());
 
-                            ExtrExchangeRate rate = asExchangeRate(v);
+                            var rate = asExchangeRate(v);
                             type.getCurrentContext().putType(rate);
 
-                            Money fxGross = Money.of(rate.getTermCurrency(), asAmount(v.get("fxGross")));
-                            Money gross = rate.convert(rate.getBaseCurrency(), fxGross);
+                            var fxGross = Money.of(rate.getTermCurrency(), asAmount(v.get("fxGross")));
+                            var gross = rate.convert(rate.getBaseCurrency(), fxGross);
 
                             checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                         })
@@ -194,7 +192,7 @@ public class UnicreditPDFExtractor extends AbstractPDFExtractor
                         // Umsatzreferenz: 20160215WAB1861426155
                         // @formatter:on
                         .section("note").optional() //
-                        .match("Umsatzreferenz: (?<note>.*)$") //
+                        .match("^Umsatzreferenz: (?<note>.*)$") //
                         .assign((t, v) -> t.setNote("Ref.-Nr.: " + trim(v.get("note"))))
 
                         .wrap(BuySellEntryItem::new);
@@ -204,13 +202,13 @@ public class UnicreditPDFExtractor extends AbstractPDFExtractor
 
     private void addDividendTransaction()
     {
-        final String dividendMainIdentRegex = "(Wertpapiermitteilung \\- Ertragszahlung|Booking text Wertpapier-Kuponabrechnung)";
-        DocumentType type = new DocumentType(dividendMainIdentRegex);
+        final var dividendMainIdentRegex = "(Wertpapiermitteilung \\- Ertragszahlung|Booking text Wertpapier-Kuponabrechnung)";
+        final var type = new DocumentType(dividendMainIdentRegex);
         this.addDocumentTyp(type);
 
-        Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
+        var pdfTransaction = new Transaction<AccountTransaction>();
 
-        Block firstRelevantLine = new Block("^" + dividendMainIdentRegex + ".*$");
+        var firstRelevantLine = new Block("^" + dividendMainIdentRegex + ".*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -228,7 +226,7 @@ public class UnicreditPDFExtractor extends AbstractPDFExtractor
                                         section -> section.attributes("name", "wkn", "isin", "name1", "currency") //
                                                         .match("^(?<name>.*) Wertpapierkennnummer[\\s]{1,}(?<wkn>[A-Z0-9]{6}) \\/ (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
                                                         .match("^(?<name1>.*)$") //
-                                                        .match("^zahlbar mit (?<currency>[\\w]{3})[\\s]{1,}[\\.,\\d]+.*$") //
+                                                        .match("^zahlbar mit (?<currency>[A-Z]{3})[\\s]{1,}[\\.,\\d]+.*$") //
                                                         .assign((t, v) -> {
                                                             if (!v.get("name1").startsWith("Geschäftsjahr"))
                                                                 v.put("name", v.get("name") + " "
@@ -236,42 +234,36 @@ public class UnicreditPDFExtractor extends AbstractPDFExtractor
 
                                                             t.setSecurity(getOrCreateSecurity(v));
                                                         }),
-                        
                                         // @formatter:off
                                         //  ISIN: US0758871091   Stk.  1.178,00           BECTON, DICKINSON & CO.
                                         //  IKN:  857675                                  Registered Shares DL 1
                                         //  Zahlbar mit                    1,05  /Stk.                     USD               1.236,90
                                         // @formatter:on
-                                        section -> section
+                                        section -> section //
                                                         .attributes("name", "wkn", "isin", "currency", "nameContinued") //
-                                                        .match("^\\s*ISIN: (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])\\s+Stk\\.\\s+[\\d,.]+\\s+(?<name>.+)$")
-                                                        .match("^\\s*[WI]KN:\\s+(?<wkn>[A-Z0-9]{6})(?<nameContinued>.*)$")
-                                                        .match("^\\s*(?i)zahlbar mit\\s+[\\d,.]+\\s*\\/Stk\\.\\s+(?<currency>[\\w]{3})[\\s]{1,}[\\.,\\d]+.*$") //
+                                                        .match("^\\s*ISIN: (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])\\s+Stk\\.\\s+[\\.,\\d]+\\s+(?<name>.+)$") //
+                                                        .match("^\\s*[WI]KN:\\s+(?<wkn>[A-Z0-9]{6})(?<nameContinued>.*)$") //
+                                                        .match("^\\s*(?i:zahlbar mit)\\s+[\\.,\\d]+\\s*\\/Stk\\.\\s+(?<currency>[A-Z]{3})[\\s]{1,}[\\.,\\d]+.*$") //
                                                         .assign((t, v) -> {
                                                             v.put("nameContinued", trim(v.get("nameContinued")));
 
                                                             t.setSecurity(getOrCreateSecurity(v));
-                                                        })
-                        )
+                                                        }))
 
-                        .oneOf(
+                        .oneOf( //
                                         // @formatter:off
                                         // Stück 0,066
                                         // @formatter:on
                                         section -> section.attributes("shares") //
                                                         .match("^St.ck (?<shares>[\\.,\\d]+)$") //
-                                                        .assign((t, v) -> t.setShares(asShares(v.get("shares")))), //
-                                        
-                                        
-                                        
+                                                        .assign((t, v) -> t.setShares(asShares(v.get("shares")))),
                                         // @formatter:off
                                         // ISIN: US0758871091   Stk.  1.178,00           BECTON, DICKINSON & CO.
                                         // @formatter:on
                                         section -> section.attributes("shares") //
-                                                        .match("^\\s*ISIN: [A-Z]{2}[A-Z0-9]{9}[0-9]\\s+Stk\\.\\s+(?<shares>[\\d,.]+).*$")
-                                                        .assign((t, v) -> t.setShares(asShares(v.get("shares")))) //
+                                                        .match("^\\s*ISIN: [A-Z]{2}[A-Z0-9]{9}[0-9]\\s+Stk\\.\\s+(?<shares>[\\.,\\d]+).*$") //
+                                                        .assign((t, v) -> t.setShares(asShares(v.get("shares")))))
 
-                        )
                         .oneOf( //
                                         // @formatter:off
                                         // Valuta 18.05.2021 Gutschrift     EUR 0,99
@@ -279,44 +271,39 @@ public class UnicreditPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section.attributes("date") //
                                                         .match("^(Valuta|Value Date) (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
-                                                        .assign((t, v) -> t.setDateTime(asDate(v.get("date")))), //
-                            
+                                                        .assign((t, v) -> t.setDateTime(asDate(v.get("date")))),
                                         // @formatter:off
                                         //                     Wert  01.07.2026           GUTSCHRIFT       USD                 893,04
                                         // @formatter:on
                                         section -> section.attributes("date") //
                                                         .match("^\\s*Wert\\s+(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})\\s+GUTSCHRIFT.*$") //
-                                                        .assign((t, v) -> t.setDateTime(asDate(v.get("date")))) //
-                            
-                        )
+                                                        .assign((t, v) -> t.setDateTime(asDate(v.get("date")))))
 
                         // @formatter:off
                         // Valuta 18.05.2021 Gutschrift     EUR 0,99
                         //                     Wert  01.07.2026           GUTSCHRIFT       USD                 893,04
                         // @formatter:on
                         .section("currency", "amount") //
-                        .match("^(?i)\\s*(Valuta|Wert)\\s+[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}\\s+Gutschrift[\\s]{1,}(?<currency>[\\w]{3})\\s+(?<amount>[\\.,\\d]+)$") //
+                        .match("^\\s*(Valuta|Wert)\\s+[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}\\s+(?i:Gutschrift)[\\s]{1,}(?<currency>[A-Z]{3})\\s+(?<amount>[\\.,\\d]+)$") //
                         .assign((t, v) -> {
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(asAmount(v.get("amount")));
                         })
 
-                        .optionalOneOf(
-
+                        .optionalOneOf( //
                                         // @formatter:off
                                         // Referenz 20210517KUP0123456789
                                         // @formatter:on
                                         section -> section.attributes("note") //
-                                                        .match("Referenz (?<note>.*)$").assign((t, v) -> t
-                                                                        .setNote("Ref.-Nr.: " + trim(v.get("note")))), //
-
+                                                        .match("^Referenz (?<note>.*)$") //
+                                                        .assign((t, v) -> t.setNote("Ref.-Nr.: " + trim(v.get("note")))),
                                         // @formatter:off
                                         //                                                                  Bel.Nr.:   161815275103001
                                         // @formatter:on
                                         section -> section.attributes("note") //
-                                                        .match("^\\s*Bel\\.Nr\\.:\\s+(?<note>.*)$")
-                                                        .assign((t, v) -> t.setNote("Bel.-Nr.: " + trim(v.get("note")))) //
-                        )
+                                                        .match("^\\s*Bel\\.Nr\\.:\\s+(?<note>.*)$") //
+                                                        .assign((t, v) -> t.setNote("Bel.-Nr.: " + trim(v.get("note")))))
+
                         .wrap(TransactionItem::new);
 
         addFeesSectionsTransaction(pdfTransaction, type);
@@ -406,7 +393,7 @@ public class UnicreditPDFExtractor extends AbstractPDFExtractor
                         //  US-Tax                              15,00 %                    USD                 185,54-
                         // @formatter:on
                         .section("currency", "tax").optional().multipleTimes() //
-                        .match("^\\s*(Auslandskest|US-Tax)\\s+[\\d,.]+\\s+%\\s+(?<currency>[A-Z]{3})\\s+(?<tax>[\\.,\\d]+)-$") //
+                        .match("^\\s*(Auslandskest|US\\-Tax)\\s+[\\.,\\d]+\\s+%\\s+(?<currency>[A-Z]{3})\\s+(?<tax>[\\.,\\d]+)\\-$") //
                         .assign((t, v) -> processTaxEntries(t, v, type));
     }
 
@@ -418,28 +405,28 @@ public class UnicreditPDFExtractor extends AbstractPDFExtractor
                         // Brokerkommission* EUR 0,27
                         // @formatter:on
                         .section("currency", "fee").optional() //
-                        .match("^Brokerkommission\\* (?<currency>[\\w]{3}) (?<fee>[\\.,\\d]+)(\\-)?.*$") //
+                        .match("^Brokerkommission\\* (?<currency>[A-Z]{3}) (?<fee>[\\.,\\d]+)(\\-)?.*$") //
                         .assign((t, v) -> processFeeEntries(t, v, type))
 
                         // @formatter:off
                         // Transaktionsentgelt* EUR 3,09
                         // @formatter:on
                         .section("currency", "fee").optional() //
-                        .match("^Transaktionsentgelt\\* (?<currency>[\\w]{3}) (?<fee>[\\.,\\d]+)(\\-)?.*$") //
+                        .match("^Transaktionsentgelt\\* (?<currency>[A-Z]{3}) (?<fee>[\\.,\\d]+)(\\-)?.*$") //
                         .assign((t, v) -> processFeeEntries(t, v, type))
 
                         // @formatter:off
                         // Provision EUR 10,21
                         // @formatter:on
                         .section("currency", "fee").optional() //
-                        .match("^Provision (?<currency>[\\w]{3}) (?<fee>[\\.,\\d]+)(\\-)?.*$") //
+                        .match("^Provision (?<currency>[A-Z]{3}) (?<fee>[\\.,\\d]+)(\\-)?.*$") //
                         .assign((t, v) -> processFeeEntries(t, v, type))
 
                         // @formatter:off
                         // Wertpapierprovision* EUR 41,09-
                         // @formatter:on
                         .section("currency", "fee").optional() //
-                        .match("^Wertpapierprovision\\* (?<currency>[\\w]{3}) (?<fee>[\\.,\\d]+)(\\-)?.*$") //
+                        .match("^Wertpapierprovision\\* (?<currency>[A-Z]{3}) (?<fee>[\\.,\\d]+)(\\-)?.*$") //
                         .assign((t, v) -> processFeeEntries(t, v, type))
 
                         // @formatter:off
@@ -447,7 +434,7 @@ public class UnicreditPDFExtractor extends AbstractPDFExtractor
                         //  USt aus Spesen                                       20,00 %   USD                   0,62-
                         // @formatter:on
                         .section("currency", "fee").optional().multipleTimes() //
-                        .match("^\\s*(USt aus Spesen\\s+[\\d.,]+\\s+%|Eigene Spesen)\\s+(?<currency>[\\w]{3})\\s+(?<fee>[\\.,\\d]+)(\\-)?.*$") //
+                        .match("^\\s*(USt aus Spesen\\s+[\\.,\\d]+\\s+%|Eigene Spesen)\\s+(?<currency>[A-Z]{3})\\s+(?<fee>[\\.,\\d]+)(\\-)?.*$") //
                         .assign((t, v) -> processFeeEntries(t, v, type));
     }
 
