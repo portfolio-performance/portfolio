@@ -1634,6 +1634,162 @@ public class WirBankPDFExtractorTest
     }
 
     @Test
+    public void testDividende07()
+    {
+        var extractor = new WirBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende07.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "CHF");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("CH0030849712"), hasWkn(null), hasTicker(null), //
+                        hasName("UBS US - Pension Fund"), //
+                        hasCurrencyCode("USD"))));
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2025-05-27"), hasExDate(null), //
+                        hasShares(2.128), //
+                        hasSource("Dividende07.txt"), //
+                        hasNote("Ordentliche Dividende"), //
+                        hasAmount("CHF", 1.52), hasGrossValue("CHF", 1.52), //
+                        hasForexGrossValue("USD", 1.85), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.00))));
+    }
+
+    @Test
+    public void testDividende07WithSecurityInCHF()
+    {
+        var security = new Security("UBS US - Pension Fund", "CHF");
+        security.setIsin("CH0030849712");
+
+        var client = new Client();
+        client.addSecurity(security);
+
+        var extractor = new WirBankPDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende07.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, "CHF");
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2025-05-27"), hasExDate(null), //
+                        hasShares(2.128), //
+                        hasSource("Dividende07.txt"), //
+                        hasNote("Ordentliche Dividende"), //
+                        hasAmount("CHF", 1.52), hasGrossValue("CHF", 1.52), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.00), //
+                        check(tx -> {
+                            var c = new CheckCurrenciesAction();
+                            var account = new Account();
+                            account.setCurrencyCode("CHF");
+                            var s = c.process((AccountTransaction) tx, account);
+                            assertThat(s, is(Status.OK_STATUS));
+                        }))));
+    }
+
+    @Test
+    public void testDividende08()
+    {
+        var extractor = new WirBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende08_English.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "CHF");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("CH0030849613"), hasWkn(null), hasTicker(null), //
+                        hasName("UBS Canada"), //
+                        hasCurrencyCode("CAD"))));
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2026-05-28"), hasExDate(null), //
+                        hasShares(0.196), //
+                        hasSource("Dividende08_English.txt"), //
+                        hasNote("Ordinary dividend"), //
+                        hasAmount("CHF", 0.09), hasGrossValue("CHF", 0.09), //
+                        hasForexGrossValue("CAD", 0.15), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.00))));
+    }
+
+    @Test
+    public void testDividende08WithSecurityInCHF()
+    {
+        var security = new Security("UBS Canada", "CHF");
+        security.setIsin("CH0030849613");
+
+        var client = new Client();
+        client.addSecurity(security);
+
+        var extractor = new WirBankPDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende08_English.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, "CHF");
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2026-05-28"), hasExDate(null), //
+                        hasShares(0.196), //
+                        hasSource("Dividende08_English.txt"), //
+                        hasNote("Ordinary dividend"), //
+                        hasAmount("CHF", 0.09), hasGrossValue("CHF", 0.09), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.00), //
+                        check(tx -> {
+                            var c = new CheckCurrenciesAction();
+                            var account = new Account();
+                            account.setCurrencyCode("CHF");
+                            var s = c.process((AccountTransaction) tx, account);
+                            assertThat(s, is(Status.OK_STATUS));
+                        }))));
+    }
+
+    @Test
     public void testWertpapierVerkauf01()
     {
         var extractor = new WirBankPDFExtractor(new Client());
@@ -2227,6 +2383,40 @@ public class WirBankPDFExtractorTest
                         hasSource("Steuerrueckerstattung09_English.txt"), //
                         hasNote("Refund Swiss withholding tax"), //
                         hasAmount("CHF", 0.05), hasGrossValue("CHF", 0.05), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.00))));
+    }
+
+    @Test
+    public void testSteuerrueckerstattung10()
+    {
+        var extractor = new WirBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Steuerrueckerstattung10.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "CHF");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("CH0030849712"), hasWkn(null), hasTicker(null), //
+                        hasName("UBS US - Pension Fund"), //
+                        hasCurrencyCode("CHF"))));
+
+        // check tax refund transaction
+        assertThat(results, hasItem(taxRefund( //
+                        hasDate("2025-05-27"), hasShares(2.128), //
+                        hasSource("Steuerrueckerstattung10.txt"), //
+                        hasNote("Rückerstattung Quellensteuer"), //
+                        hasAmount("CHF", 0.82), hasGrossValue("CHF", 0.82), //
                         hasTaxes("CHF", 0.00), hasFees("CHF", 0.00))));
     }
 
