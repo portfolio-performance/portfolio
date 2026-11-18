@@ -186,9 +186,9 @@ public class VDKBankNVPDFExtractorTest
         assertThat(results, hasItem(sale( //
                         hasDate("2024-07-19T12:44:20"), hasShares(800.00), //
                         hasSource("Verkoop02.txt"), //
-                        hasNote("Borderel-Ref.: 2024.000123456789 | Ord.-Ref.: 088618"), //
+                        hasNote("Borderel-Ref.: 2024.000123456789 | Ord.-Ref.: 088618 | Verlopen interest 602,19 NOK"), //
                         hasAmount("EUR", 6449.78), hasGrossValue("EUR", 6493.67), //
-                        hasForexGrossValue("NOK", 76443.20), //
+                        hasForexGrossValue("NOK", 76443.20 + 602.19), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 43.89))));
     }
 
@@ -221,7 +221,7 @@ public class VDKBankNVPDFExtractorTest
         assertThat(results, hasItem(sale( //
                         hasDate("2024-07-19T12:44:20"), hasShares(800.00), //
                         hasSource("Verkoop02.txt"), //
-                        hasNote("Borderel-Ref.: 2024.000123456789 | Ord.-Ref.: 088618"), //
+                        hasNote("Borderel-Ref.: 2024.000123456789 | Ord.-Ref.: 088618 | Verlopen interest 602,19 NOK"), //
                         hasAmount("EUR", 6449.78), hasGrossValue("EUR", 6493.67), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 43.89), //
                         check(tx -> {

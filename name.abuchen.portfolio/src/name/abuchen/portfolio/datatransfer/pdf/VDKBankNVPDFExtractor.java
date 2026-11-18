@@ -129,6 +129,27 @@ public class VDKBankNVPDFExtractor extends AbstractPDFExtractor
 
                         .optionalOneOf( //
                                         // @formatter:off
+                                        // Verlopen interest:  602,19 NOK
+                                        // Totaal bedrag: 76.443,20 NOK
+                                        // Wisselkoers NOK/EUR 11,864688
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("accruedInterest", "fxGross", "termCurrency", "baseCurrency", "exchangeRate") //
+                                                        .match("^Verlopen interest:[\\s]+(?<accruedInterest>[\\.,\\d]+) [A-Z]{3}$") //
+                                                        .match("^Totaal bedrag: (?<fxGross>[\\.,\\d]+) [A-Z]{3}$") //
+                                                        .match("^Wisselkoers (?<termCurrency>[A-Z]{3})\\/(?<baseCurrency>[A-Z]{3}) (?<exchangeRate>[\\.,\\d]+)$") //
+                                                        .assign((t, v) -> {
+                                                            var rate = asExchangeRate(v);
+                                                            type.getCurrentContext().putType(rate);
+
+                                                            // The gross value includes the accrued interest
+                                                            var fxGross = Money.of(rate.getTermCurrency(),
+                                                                            asAmount(v.get("fxGross")) + asAmount(v.get("accruedInterest")));
+                                                            var gross = rate.convert(rate.getBaseCurrency(), fxGross);
+
+                                                            checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
+                                                        }),
+                                        // @formatter:off
                                         // Totaal bedrag: 2.298,56 USD
                                         // Wisselkoers USD/EUR 1,146626
                                         // @formatter:on
@@ -159,6 +180,13 @@ public class VDKBankNVPDFExtractor extends AbstractPDFExtractor
                         .section("note").optional() //
                         .match("^.*Orderreferentie:(?<note>.*)$") //
                         .assign((t, v) -> t.setNote(concatenate(t.getNote(), "Ord.-Ref.: " + trim(v.get("note")), " | ")))
+
+                        // @formatter:off
+                        // Verlopen interest:  602,19 NOK
+                        // @formatter:on
+                        .section("note1", "note2").optional() //
+                        .match("^(?<note1>Verlopen interest):[\\s]+(?<note2>[\\.,\\d]+ [A-Z]{3})$") //
+                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), v.get("note1") + " " + v.get("note2"), " | ")))
 
                         .conclude(ExtractorUtils.fixGrossValueBuySell())
 
