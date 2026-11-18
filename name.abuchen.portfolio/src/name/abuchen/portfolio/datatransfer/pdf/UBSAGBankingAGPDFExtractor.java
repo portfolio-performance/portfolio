@@ -44,7 +44,6 @@ public class UBSAGBankingAGPDFExtractor extends AbstractPDFExtractor
     {
         final var type = new DocumentType("(B.rse (Kauf|Verkauf) Komptant" //
                         + "|Ihr (Kauf|Verkauf)" //
-                        + "|R.CKZAHLUNG RESERVEN AUS KAPITALEINLAGEN" //
                         + "|FUSION" //
                         + "|FRAKTIONS\\-ABRECHNUNG)");
         this.addDocumentTyp(type);
@@ -70,9 +69,7 @@ public class UBSAGBankingAGPDFExtractor extends AbstractPDFExtractor
                                                         }),
                                         section -> section //
                                                         .attributes("type") //
-                                                        .match("^(?<type>(R.CKZAHLUNG RESERVEN AUS KAPITALEINLAGEN" //
-                                                                        + "|FUSION" //
-                                                                        + "|FRAKTIONS\\-ABRECHNUNG))$") //
+                                                        .match("^(?<type>(FUSION|FRAKTIONS\\-ABRECHNUNG))$") //
                                                         .assign((t, v) -> t.setType(PortfolioTransaction.Type.SELL)))
 
                         .oneOf( //
@@ -113,24 +110,6 @@ public class UBSAGBankingAGPDFExtractor extends AbstractPDFExtractor
                                                         .assign((t, v) -> {
                                                             if (!v.get("name1").startsWith("Kurswert"))
                                                                 v.put("name", v.get("name") + " " + v.get("name1"));
-
-                                                            t.setSecurity(getOrCreateSecurity(v));
-                                                        }),
-                                        // @formatter:off
-                                        // STUECKZAHL VALOR 1057076 ISIN CH0010570767 ANSATZ
-                                        // 1 PARTIZIPATIONSSCHEINE BRUTTO
-                                        // CHOCOLADEFABRIKEN LINDT &
-                                        // SPRUENGLI AG (LISP) CHF 36.90
-                                        // @formatter:on
-                                        section -> section //
-                                                        .attributes("wkn", "isin", "name3", "name", "name1", "tickerSymbol", "currency") //
-                                                        .match("^STUECKZAHL VALOR (?<wkn>[A-Z0-9]{5,9}) ISIN (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]).*$") //
-                                                        .match("^[\\.'\\d\\s]+ (?<name3>.*) BRUTTO$") //
-                                                        .match("^(?<name>.*)$") //
-                                                        .match("^(?<name1>.*) \\((?<tickerSymbol>[A-Z0-9]{1,6}(?:\\.[A-Z]{1,4})?)\\) (?<currency>[A-Z]{3}) [\\.'\\d\\s]+$") //
-                                                        .assign((t, v) -> {
-                                                            if (!v.get("name1").startsWith("Kurswert"))
-                                                                v.put("name", v.get("name") + " " + v.get("name1") + " " + v.get("name3"));
 
                                                             t.setSecurity(getOrCreateSecurity(v));
                                                         }),
@@ -178,13 +157,6 @@ public class UBSAGBankingAGPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("shares") //
                                                         .match("^(?<shares>[\\.'\\d\\s]+) .* [A-Z]{3} [\\.'\\d\\s]+$") //
-                                                        .assign((t, v) -> t.setShares(asShares(v.get("shares")))),
-                                        // @formatter:off
-                                        // 1 PARTIZIPATIONSSCHEINE BRUTTO
-                                        // @formatter:on
-                                        section -> section //
-                                                        .attributes("shares") //
-                                                        .match("^(?<shares>[\\.'\\d\\s]+) PARTIZIPATIONSSCHEINE BRUTTO$") //
                                                         .assign((t, v) -> t.setShares(asShares(v.get("shares")))))
 
                         // @formatter:off
@@ -208,13 +180,6 @@ public class UBSAGBankingAGPDFExtractor extends AbstractPDFExtractor
                                                             else
                                                                 t.setDate(asDate(v.get("date")));
                                                         }),
-                                        // @formatter:off
-                                        // VERFALL 10.05.2021 EX-TAG 06.05.2021
-                                        // @formatter:on
-                                        section -> section //
-                                                        .attributes("date") //
-                                                        .match("^VERFALL (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
-                                                        .assign((t, v) -> t.setDate(asDate(v.get("date")))),
                                         // @formatter:off
                                         // Zugunsten Konto 292-123456.40R CHF Valuta 12.04.2021 CHF 8 030.00
                                         // @formatter:on
@@ -241,16 +206,6 @@ public class UBSAGBankingAGPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("currency", "amount") //
                                                         .match("^(Zulasten|Zugunsten) Konto .* Valuta [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<currency>[A-Z]{3}) (?<amount>[\\.'\\d\\s]+)$") //
-                                                        .assign((t, v) -> {
-                                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                                                            t.setAmount(asAmount(v.get("amount")));
-                                                        }),
-                                        // @formatter:off
-                                        // GUTSCHRIFT KONTO 292-123456.40R VALUTA 10.05.2021 CHF 36.90
-                                        // @formatter:on
-                                        section -> section //
-                                                        .attributes("currency", "amount") //
-                                                        .match("^GUTSCHRIFT KONTO .* VALUTA [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<currency>[A-Z]{3}) (?<amount>[\\.'\\d\\s]+)$") //
                                                         .assign((t, v) -> {
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                                             t.setAmount(asAmount(v.get("amount")));
@@ -354,7 +309,8 @@ public class UBSAGBankingAGPDFExtractor extends AbstractPDFExtractor
 
     private void addDividendeTransaction()
     {
-        final var type = new DocumentType("DIVIDENDENZAHLUNG");
+        final var type = new DocumentType("(DIVIDENDENZAHLUNG" //
+                        + "|R.CKZAHLUNG RESERVEN AUS KAPITALEINLAGEN)");
         this.addDocumentTyp(type);
 
         var pdfTransaction = new Transaction<AccountTransaction>();
@@ -391,11 +347,29 @@ public class UBSAGBankingAGPDFExtractor extends AbstractPDFExtractor
                                                         .match("^[\\.'\\d\\s]+ (?<name>.*) BRUTTO$") //
                                                         .match("^\\((?<tickerSymbol>[A-Z0-9]{1,6}(?:\\.[A-Z]{1,4})?)\\)$") //
                                                         .match("^BRUTTO (?<currency>[A-Z]{3}) [\\.'\\d\\s]+$") //
-                                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))))
+                                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
+                                        // @formatter:off
+                                        // STUECKZAHL VALOR 1057076 ISIN CH0010570767 ANSATZ
+                                        // 1 PARTIZIPATIONSSCHEINE BRUTTO
+                                        // CHOCOLADEFABRIKEN LINDT &
+                                        // SPRUENGLI AG (LISP) CHF 36.90
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("wkn", "isin", "name3", "name", "name1", "tickerSymbol", "currency") //
+                                                        .match("^STUECKZAHL VALOR (?<wkn>[A-Z0-9]{5,9}) ISIN (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]).*$") //
+                                                        .match("^[\\.'\\d\\s]+ (?<name3>.*) BRUTTO$") //
+                                                        .match("^(?<name>.*)$") //
+                                                        .match("^(?<name1>.*) \\((?<tickerSymbol>[A-Z0-9]{1,6}(?:\\.[A-Z]{1,4})?)\\) (?<currency>[A-Z]{3}) [\\.'\\d\\s]+$") //
+                                                        .assign((t, v) -> {
+                                                            v.put("name", v.get("name") + " " + v.get("name1") + " " + v.get("name3"));
+
+                                                            t.setSecurity(getOrCreateSecurity(v));
+                                                        }))
 
                         // @formatter:off
                         // 20 AKT -B- NIKE INC. (NKE) BRUTTO
                         // 546 N-AKT SHELL PLC BRUTTO
+                        // 1 PARTIZIPATIONSSCHEINE BRUTTO
                         // @formatter:on
                         .section("shares") //
                         .match("^(?<shares>[\\.'\\d\\s]+) .* BRUTTO$") //

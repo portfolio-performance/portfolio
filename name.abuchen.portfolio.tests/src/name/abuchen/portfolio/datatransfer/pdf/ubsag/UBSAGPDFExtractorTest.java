@@ -430,40 +430,6 @@ public class UBSAGPDFExtractorTest
     }
 
     @Test
-    public void testWertpapierVerkauf04()
-    {
-        var extractor = new UBSAGBankingAGPDFExtractor(new Client());
-
-        List<Exception> errors = new ArrayList<>();
-
-        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf04.txt"), errors);
-
-        assertThat(errors, empty());
-        assertThat(countSecurities(results), is(1L));
-        assertThat(countBuySell(results), is(1L));
-        assertThat(countAccountTransactions(results), is(0L));
-        assertThat(countAccountTransfers(results), is(0L));
-        assertThat(countItemsWithFailureMessage(results), is(0L));
-        assertThat(countSkippedItems(results), is(0L));
-        assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, "CHF");
-
-        // check security
-        assertThat(results, hasItem(security( //
-                        hasIsin("CH0010570767"), hasWkn("1057076"), hasTicker("LISP"), //
-                        hasName("CHOCOLADEFABRIKEN LINDT & SPRUENGLI AG PARTIZIPATIONSSCHEINE"), //
-                        hasCurrencyCode("CHF"))));
-
-        // check buy sell transaction
-        assertThat(results, hasItem(sale( //
-                        hasDate("2021-05-10"), hasShares(1.00), //
-                        hasSource("Verkauf04.txt"), //
-                        hasNote("Auftrags-Nr. 6820800"), //
-                        hasAmount("CHF", 36.90), hasGrossValue("CHF", 36.90), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.00))));
-    }
-
-    @Test
     public void testWertpapierVerkauf05()
     {
         var extractor = new UBSAGBankingAGPDFExtractor(new Client());
@@ -731,6 +697,41 @@ public class UBSAGPDFExtractorTest
                             var s = c.process((AccountTransaction) tx, account);
                             assertThat(s, is(Status.OK_STATUS));
                         }))));
+    }
+
+    @Test
+    public void testDividende03()
+    {
+        var extractor = new UBSAGBankingAGPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende03.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "CHF");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("CH0010570767"), hasWkn("1057076"), hasTicker("LISP"), //
+                        hasName("CHOCOLADEFABRIKEN LINDT & SPRUENGLI AG PARTIZIPATIONSSCHEINE"), //
+                        hasCurrencyCode("CHF"))));
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2021-05-10"), hasExDate("2021-05-06"), //
+                        hasShares(1.00), //
+                        hasSource("Dividende03.txt"), //
+                        hasNote("Auftrags-Nr. 6820800"), //
+                        hasAmount("CHF", 36.90), hasGrossValue("CHF", 36.90), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.00))));
     }
 
     @Test
