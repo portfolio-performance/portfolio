@@ -3,6 +3,7 @@ package name.abuchen.portfolio.ui.handlers;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.text.MessageFormat;
 
 import jakarta.inject.Named;
@@ -10,8 +11,10 @@ import jakarta.inject.Named;
 import org.eclipse.e4.core.di.annotations.CanExecute;
 import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.e4.ui.services.IServiceConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.FileDialog;
@@ -24,6 +27,7 @@ import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.dialogs.ExportMarkdownDialog;
 import name.abuchen.portfolio.ui.editor.ClientInput;
+import name.abuchen.portfolio.ui.preferences.Experiments;
 import name.abuchen.portfolio.util.TextUtil;
 
 /**
@@ -37,7 +41,15 @@ public class ExportMarkdownHandler
     @CanExecute
     boolean isVisible(@Named(IServiceConstants.ACTIVE_PART) MPart part)
     {
-        return MenuHelper.isClientPartActive(part);
+        return isEnabled() && MenuHelper.isClientPartActive(part);
+    }
+
+    /**
+     * The export is an experimental feature for now.
+     */
+    public static boolean isEnabled()
+    {
+        return new Experiments().isEnabled(Experiments.Feature.NOV26_MARKDOWN_EXPORT);
     }
 
     @Execute
@@ -72,14 +84,38 @@ public class ExportMarkdownHandler
 
             var exporter = new PortfolioMarkdownExporter(client, converter, name)
                             .withTransactionScope(optionsDialog.getTransactionScope()) //
+                            .withDiscreetMode(optionsDialog.isDiscreetMode()) //
                             .withGenerator(getGenerator());
 
-            try (var out = new FileOutputStream(new File(fileName)))
-            {
-                exporter.export(out);
-            }
+            // the performance calculations for all periods and years can take
+            // a while: do not block the UI thread
+            new ProgressMonitorDialog(shell).run(true, false, monitor -> {
+                monitor.beginTask(Messages.ExportMarkdownDialogTitle, IProgressMonitor.UNKNOWN);
+                try (var out = new FileOutputStream(new File(fileName)))
+                {
+                    exporter.export(out);
+                }
+                catch (IOException e)
+                {
+                    throw new InvocationTargetException(e);
+                }
+                finally
+                {
+                    monitor.done();
+                }
+            });
         }
-        catch (IOException | RuntimeException e)
+        catch (InvocationTargetException e)
+        {
+            var cause = e.getCause() != null ? e.getCause() : e;
+            PortfolioPlugin.log(cause);
+            MessageDialog.openError(shell, Messages.ExportWizardErrorExporting, String.valueOf(cause.getMessage()));
+        }
+        catch (InterruptedException e)
+        {
+            Thread.currentThread().interrupt();
+        }
+        catch (RuntimeException e)
         {
             PortfolioPlugin.log(e);
             MessageDialog.openError(shell, Messages.ExportWizardErrorExporting, String.valueOf(e.getMessage()));

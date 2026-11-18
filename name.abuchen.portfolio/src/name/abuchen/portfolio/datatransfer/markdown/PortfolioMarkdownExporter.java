@@ -10,13 +10,16 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import name.abuchen.portfolio.PortfolioLog;
 import name.abuchen.portfolio.model.Account;
@@ -38,6 +41,7 @@ import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.model.TransactionOwner;
 import name.abuchen.portfolio.money.CurrencyConverter;
+import name.abuchen.portfolio.money.DiscreetMode;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.snapshot.ClientPerformanceSnapshot.CategoryType;
 import name.abuchen.portfolio.snapshot.ClientSnapshot;
@@ -83,6 +87,7 @@ public class PortfolioMarkdownExporter implements Exporter
     private static final CostMethod COST_METHOD = CostMethod.FIFO;
     private static final int STALE_PRICE_DAYS = 7;
     private static final int DAYS_PER_YEAR = 365;
+    private static final String TAXONOMY_ROOT = "(taxonomy root)";
 
     private record PeriodResult(String label, Interval interval, Money start, Money transfers, Money gains,
                     Money earnings, Money fees, Money taxes, Money end, Money absoluteGain, double ttwror,
@@ -105,12 +110,13 @@ public class PortfolioMarkdownExporter implements Exporter
     private final String name;
 
     private TransactionScope transactionScope = TransactionScope.ALL;
+    private boolean discreetMode = false;
     private LocalDate valuationDate = LocalDate.now();
     private String generator;
 
     // state of one run
     private final Set<String> notes = new LinkedHashSet<>();
-    private final Set<String> duplicateSecurityNames = new HashSet<>();
+    private final Map<Security, String> securityLabels = new HashMap<>();
     private LocalDate firstTransactionDate;
     private ClientSnapshot snapshot;
     private LazySecurityPerformanceSnapshot securityPerformance;
@@ -135,6 +141,18 @@ public class PortfolioMarkdownExporter implements Exporter
     public PortfolioMarkdownExporter withTransactionScope(TransactionScope scope)
     {
         this.transactionScope = Objects.requireNonNull(scope);
+        return this;
+    }
+
+    /**
+     * In discreet mode, absolute amounts and numbers of shares are replaced by
+     * {@link DiscreetMode#HIDDEN_AMOUNT} and free-text notes are omitted, as in
+     * the discreet mode of the application. Percentages, prices and dates are
+     * exported. Independent of the global {@link DiscreetMode}.
+     */
+    public PortfolioMarkdownExporter withDiscreetMode(boolean discreetMode)
+    {
+        this.discreetMode = discreetMode;
         return this;
     }
 
@@ -209,22 +227,50 @@ public class PortfolioMarkdownExporter implements Exporter
 
     private void initialize()
     {
+        // transactions after the valuation date (e.g. planned ones) do not
+        // start the history
         firstTransactionDate = client.getAllTransactions().stream()
-                        .map(pair -> pair.getTransaction().getDateTime().toLocalDate()).min(Comparator.naturalOrder())
-                        .orElse(null);
+                        .map(pair -> pair.getTransaction().getDateTime().toLocalDate())
+                        .filter(date -> !date.isAfter(valuationDate)).min(Comparator.naturalOrder()).orElse(null);
 
         snapshot = ClientSnapshot.create(client, converter, valuationDate);
 
         securityPerformance = firstTransactionDate == null ? null
                         : LazySecurityPerformanceSnapshot.create(client, converter, allTimeInterval());
 
-        var seen = new HashSet<String>();
-        duplicateSecurityNames.clear();
-        for (var security : client.getSecurities())
+        securityLabels.clear();
+        var byName = client.getSecurities().stream().collect(Collectors.groupingBy(
+                        s -> Objects.toString(s.getName(), ""), LinkedHashMap::new, Collectors.toList()));
+        for (var entry : byName.entrySet())
         {
-            if (!seen.add(security.getName()))
-                duplicateSecurityNames.add(security.getName());
+            var group = entry.getValue();
+            for (int index = 0; index < group.size(); index++)
+            {
+                var security = group.get(index);
+                securityLabels.put(security, group.size() == 1 ? entry.getKey()
+                                : entry.getKey() + " [" + distinguishingSuffix(security, group, index) + "]");
+            }
         }
+    }
+
+    /**
+     * Returns a suffix that distinguishes securities with the same name: the
+     * ticker symbol, else the ISIN, else the currency with a running number.
+     */
+    private static String distinguishingSuffix(Security security, List<Security> group, int index)
+    {
+        if (isUniqueIn(group, security.getTickerSymbol(), Security::getTickerSymbol))
+            return security.getTickerSymbol();
+        if (isUniqueIn(group, security.getIsin(), Security::getIsin))
+            return security.getIsin();
+        return security.getCurrencyCode() + " #" + (index + 1);
+    }
+
+    private static boolean isUniqueIn(List<Security> group, String value, Function<Security, String> attribute)
+    {
+        if (value == null || value.isBlank())
+            return false;
+        return group.stream().filter(s -> value.equals(attribute.apply(s))).count() == 1;
     }
 
     private Interval allTimeInterval()
@@ -257,21 +303,58 @@ public class PortfolioMarkdownExporter implements Exporter
         return converter.getTermCurrency();
     }
 
+    /**
+     * Returns the name of the security, made unique if several securities have
+     * the same name. Use it wherever a security is referenced so that rows of
+     * different sections can be matched.
+     */
     private String label(Security security)
     {
-        if (duplicateSecurityNames.contains(security.getName()))
-        {
-            var suffix = security.getTickerSymbol() != null && !security.getTickerSymbol().isBlank()
-                            ? security.getTickerSymbol()
-                            : security.getCurrencyCode();
-            return MarkdownFormat.text(security.getName() + " [" + suffix + "]");
-        }
-        return MarkdownFormat.text(security.getName());
+        return MarkdownFormat.text(securityLabels.getOrDefault(security, Objects.toString(security.getName(), "")));
+    }
+
+    /**
+     * Sort key for securities. Independent of the default locale (e.g. the
+     * Turkish dotless i) so that the output is identical everywhere.
+     */
+    private String sortKey(Security security)
+    {
+        return label(security).toLowerCase(Locale.ROOT);
+    }
+
+    private String label(InvestmentVehicle vehicle)
+    {
+        return vehicle instanceof Security security ? label(security) : MarkdownFormat.text(vehicle.getName());
     }
 
     private static String nullToEmpty(String value)
     {
         return value == null ? "" : MarkdownFormat.text(value);
+    }
+
+    /**
+     * Free-text notes can contain amounts: omitted in discreet mode.
+     */
+    private String note(String value)
+    {
+        return discreetMode ? "" : nullToEmpty(value);
+    }
+
+    private String money(Money money)
+    {
+        if (money == null)
+            return "";
+        return discreetMode ? DiscreetMode.HIDDEN_AMOUNT : MarkdownFormat.money(money);
+    }
+
+    private String amount(long amount)
+    {
+        return discreetMode ? DiscreetMode.HIDDEN_AMOUNT : MarkdownFormat.amount(amount);
+    }
+
+    private String shares(long shares)
+    {
+        return discreetMode ? DiscreetMode.HIDDEN_AMOUNT : MarkdownFormat.shares(shares);
     }
 
     private static String ownerName(TransactionOwner<?> owner)
@@ -310,6 +393,8 @@ public class PortfolioMarkdownExporter implements Exporter
                         .append(client.getActiveAccounts().size()).append(" cash accounts, ")
                         .append(client.getSecurities().size()).append(" securities, ")
                         .append(transactionRows().size()).append(" transactions\n");
+        if (discreetMode)
+            out.append("- Discreet mode: amounts and numbers of shares are hidden, notes are omitted\n");
         if (generator != null && !generator.isBlank())
             out.append("- Generated by: ").append(generator).append('\n');
         out.append('\n');
@@ -323,9 +408,14 @@ public class PortfolioMarkdownExporter implements Exporter
         out.append("Use them as given instead of recalculating them from the transactions.\n\n");
         out.append("- Dates use the ISO format YYYY-MM-DD. Numbers use a dot as decimal separator and no thousands separator. Percentages carry a % sign.\n");
         out.append("- Amounts are in the reporting currency (").append(reportingCurrency())
-                        .append(") unless a column, a heading or a currency column says otherwise. Prices are in the currency of the security. ");
-        out.append("Amounts in the transaction list are in the currency of the transaction.\n");
+                        .append(") unless a column, a heading or a currency column says otherwise. ");
+        out.append("Prices in the holdings and market data tables are in the currency of the security. ");
+        out.append("Amounts and prices in the transaction list are in the currency of the transaction (column 'Currency').\n");
         out.append("- Gains are positive, losses are negative. `n/a` means the value cannot be calculated; an empty cell means not applicable.\n");
+        if (discreetMode)
+            out.append("- The report was created in discreet mode: `").append(DiscreetMode.HIDDEN_AMOUNT)
+                            .append("` replaces absolute amounts and numbers of shares, free-text notes are omitted. ")
+                            .append("Percentages, returns, prices and dates are real. Do not try to reconstruct the hidden amounts.\n");
         out.append("- 'Value' is the market value on the valuation date, based on the latest available price. 'Cost' is the purchase value of the shares that are currently held (including fees and taxes).\n");
         out.append("- Performance periods are measured from the close of the 'From' date to the close of the 'To' date. Annualized figures (p.a.) are only shown for periods of at least one year.\n");
         out.append("- Weights are relative to total assets (securities plus cash) unless stated otherwise.\n");
@@ -356,9 +446,9 @@ public class PortfolioMarkdownExporter implements Exporter
         var cash = Money.of(currency, snapshot.getAccounts().stream().mapToLong(a -> a.getFunds().getAmount()).sum());
 
         var table = new MarkdownTable("Item", "Value");
-        table.row("Total assets (" + currency + ")", MarkdownFormat.money(snapshot.getMonetaryAssets()));
-        table.row("Securities (" + currency + ")", MarkdownFormat.money(securities));
-        table.row("Cash (" + currency + ")", MarkdownFormat.money(cash));
+        table.row("Total assets (" + currency + ")", money(snapshot.getMonetaryAssets()));
+        table.row("Securities (" + currency + ")", money(securities));
+        table.row("Cash (" + currency + ")", money(cash));
         table.row("Number of securities held", String.valueOf(
                         snapshot.getJointPortfolio().getPositions().stream().filter(p -> p.getShares() != 0).count()));
 
@@ -366,9 +456,9 @@ public class PortfolioMarkdownExporter implements Exporter
         if (result != null)
         {
             table.row("Net deposits since first transaction (" + currency + ")",
-                            MarkdownFormat.money(result.transfers()));
+                            money(result.transfers()));
             table.row("Absolute gain since first transaction (" + currency + ")",
-                            MarkdownFormat.money(result.absoluteGain()));
+                            money(result.absoluteGain()));
             table.row("Time-weighted return since first transaction (TTWROR)",
                             MarkdownFormat.percent(result.ttwror()));
             if (result.isAnnualizable())
@@ -379,7 +469,7 @@ public class PortfolioMarkdownExporter implements Exporter
         }
         else
         {
-            notes.add("The portfolio does not contain any transactions; no performance figures are available.");
+            notes.add("The portfolio does not contain any transactions up to the valuation date; no performance figures are available.");
         }
 
         table.appendTo(out);
@@ -476,16 +566,29 @@ public class PortfolioMarkdownExporter implements Exporter
                         : new MarkdownTable("Category", "Value (" + currency + ")", "Share");
         var assignments = new MarkdownTable("Category", "Instrument", "Assigned weight", "Value (" + currency + ")");
 
+        // assignments directly to the root are part of the taxonomy but of no
+        // category; they have no target
+        long rootValue = root.getAssignments().stream().mapToLong(a -> assignedValue(a, values)).sum();
+        if (rootValue != 0)
+        {
+            var share = MarkdownFormat.percent(rootValue / (double) total);
+            if (hasTargets)
+                allocation.row(TAXONOMY_ROOT, amount(rootValue), share, "", "", "");
+            else
+                allocation.row(TAXONOMY_ROOT, amount(rootValue), share);
+            writeAssignments(root, TAXONOMY_ROOT, values, assignments);
+        }
+
         long rootTarget = total - unassigned;
         writeClassifications(root, "", rootTarget, hasTargets, values, total, allocation, assignments);
 
         if (unassigned != 0)
         {
             if (hasTargets)
-                allocation.row("(unassigned)", MarkdownFormat.amount(unassigned),
+                allocation.row("(unassigned)", amount(unassigned),
                                 MarkdownFormat.percent(unassigned / (double) total), "", "", "");
             else
-                allocation.row("(unassigned)", MarkdownFormat.amount(unassigned),
+                allocation.row("(unassigned)", amount(unassigned),
                                 MarkdownFormat.percent(unassigned / (double) total));
         }
 
@@ -536,30 +639,35 @@ public class PortfolioMarkdownExporter implements Exporter
                 var share = MarkdownFormat.percent(value / (double) total);
                 if (hasTargets)
                 {
-                    allocation.row(MarkdownFormat.text(path), MarkdownFormat.amount(value), share,
-                                    MarkdownFormat.weight(child.getWeight()), MarkdownFormat.amount(target),
-                                    MarkdownFormat.amount(value - target));
+                    allocation.row(MarkdownFormat.text(path), amount(value), share,
+                                    MarkdownFormat.weight(child.getWeight()), amount(target),
+                                    amount(value - target));
                 }
                 else
                 {
-                    allocation.row(MarkdownFormat.text(path), MarkdownFormat.amount(value), share);
+                    allocation.row(MarkdownFormat.text(path), amount(value), share);
                 }
             }
 
-            var childAssignments = new ArrayList<>(child.getAssignments());
-            childAssignments.sort(Comparator.comparingInt(Classification.Assignment::getRank));
-            for (var assignment : childAssignments)
-            {
-                long assigned = assignedValue(assignment, values);
-                if (assigned == 0)
-                    continue;
-
-                assignments.row(MarkdownFormat.text(path),
-                                MarkdownFormat.text(assignment.getInvestmentVehicle().getName()),
-                                MarkdownFormat.weight(assignment.getWeight()), MarkdownFormat.amount(assigned));
-            }
+            writeAssignments(child, MarkdownFormat.text(path), values, assignments);
 
             writeClassifications(child, path, target, hasTargets, values, total, allocation, assignments);
+        }
+    }
+
+    private void writeAssignments(Classification classification, String category,
+                    Map<InvestmentVehicle, Long> values, MarkdownTable assignments)
+    {
+        var list = new ArrayList<>(classification.getAssignments());
+        list.sort(Comparator.comparingInt(Classification.Assignment::getRank));
+        for (var assignment : list)
+        {
+            long assigned = assignedValue(assignment, values);
+            if (assigned == 0)
+                continue;
+
+            assignments.row(category, label(assignment.getInvestmentVehicle()),
+                            MarkdownFormat.weight(assignment.getWeight()), amount(assigned));
         }
     }
 
@@ -613,8 +721,8 @@ public class PortfolioMarkdownExporter implements Exporter
             if (record != null)
             {
                 var costBasis = record.getCost(COST_METHOD, TaxesAndFees.INCLUDED);
-                cost = MarkdownFormat.money(costBasis);
-                gain = MarkdownFormat.money(record.getCapitalGainsOnHoldings(COST_METHOD));
+                cost = money(costBasis);
+                gain = money(record.getCapitalGainsOnHoldings(COST_METHOD));
                 gainPercent = costBasis.isZero() ? MarkdownFormat.NOT_AVAILABLE
                                 : MarkdownFormat.percent(record.getCapitalGainsOnHoldingsPercent(COST_METHOD));
             }
@@ -622,9 +730,9 @@ public class PortfolioMarkdownExporter implements Exporter
             rows.add(Map.entry(value.getAmount(),
                             new String[] { label(security), nullToEmpty(security.getIsin()),
                                             nullToEmpty(security.getTickerSymbol()), security.getCurrencyCode(),
-                                            MarkdownFormat.shares(position.getShares()),
+                                            shares(position.getShares()),
                                             MarkdownFormat.quote(price.getValue()),
-                                            MarkdownFormat.date(price.getDate()), MarkdownFormat.money(value),
+                                            MarkdownFormat.date(price.getDate()), money(value),
                                             total == 0 ? MarkdownFormat.NOT_AVAILABLE
                                                             : MarkdownFormat.percent(
                                                                             value.getAmount() / (double) total),
@@ -645,8 +753,9 @@ public class PortfolioMarkdownExporter implements Exporter
                         .append("price is in the currency of the security.\n\n");
         table.appendTo(out);
 
-        var securityNotes = positions.stream().map(SecurityPosition::getSecurity)
-                        .filter(s -> s.getNote() != null && !s.getNote().isBlank()).toList();
+        var securityNotes = discreetMode ? List.<Security>of()
+                        : positions.stream().map(SecurityPosition::getSecurity)
+                                        .filter(s -> s.getNote() != null && !s.getNote().isBlank()).toList();
         if (!securityNotes.isEmpty())
         {
             out.append("Notes of the investor on individual securities:\n\n");
@@ -660,12 +769,12 @@ public class PortfolioMarkdownExporter implements Exporter
     {
         if (price.getValue() == 0)
         {
-            notes.add("No price is available for the held security '" + security.getName()
+            notes.add("No price is available for the held security '" + label(security)
                             + "'; its value is shown as 0.");
         }
         else if (ChronoUnit.DAYS.between(price.getDate(), valuationDate) > STALE_PRICE_DAYS)
         {
-            notes.add("The latest price of '" + security.getName() + "' is from " + price.getDate() + " ("
+            notes.add("The latest price of '" + label(security) + "' is from " + price.getDate() + " ("
                             + ChronoUnit.DAYS.between(price.getDate(), valuationDate) + " days old).");
         }
     }
@@ -683,13 +792,13 @@ public class PortfolioMarkdownExporter implements Exporter
 
             if (accountSnapshot.getUnconvertedFunds().isNegative())
                 notes.add("The cash account '" + account.getName() + "' has a negative balance ("
-                                + MarkdownFormat.money(accountSnapshot.getUnconvertedFunds()) + " "
+                                + money(accountSnapshot.getUnconvertedFunds()) + " "
                                 + account.getCurrencyCode() + ").");
 
             table.row(MarkdownFormat.text(account.getName()), account.getCurrencyCode(),
-                            MarkdownFormat.money(accountSnapshot.getUnconvertedFunds()),
-                            MarkdownFormat.money(accountSnapshot.getFunds()),
-                            account.isRetired() ? "retired" : "active", nullToEmpty(account.getNote()));
+                            money(accountSnapshot.getUnconvertedFunds()),
+                            money(accountSnapshot.getFunds()),
+                            account.isRetired() ? "retired" : "active", note(account.getNote()));
         }
 
         if (!table.isEmpty())
@@ -714,8 +823,8 @@ public class PortfolioMarkdownExporter implements Exporter
             overview.row(MarkdownFormat.text(portfolio.getName()),
                             portfolio.getReferenceAccount() == null ? ""
                                             : MarkdownFormat.text(portfolio.getReferenceAccount().getName()),
-                            MarkdownFormat.money(portfolioSnapshot.getValue()),
-                            portfolio.isRetired() ? "retired" : "active", nullToEmpty(portfolio.getNote()));
+                            money(portfolioSnapshot.getValue()),
+                            portfolio.isRetired() ? "retired" : "active", note(portfolio.getNote()));
         }
         overview.appendTo(out);
 
@@ -732,8 +841,8 @@ public class PortfolioMarkdownExporter implements Exporter
                     continue;
 
                 positions.row(MarkdownFormat.text(portfolioSnapshot.getPortfolio().getName()),
-                                label(position.getSecurity()), MarkdownFormat.shares(position.getShares()),
-                                MarkdownFormat.money(convert(position.calculateValue())));
+                                label(position.getSecurity()), shares(position.getShares()),
+                                money(convert(position.calculateValue())));
             }
         }
         if (!positions.isEmpty())
@@ -800,11 +909,11 @@ public class PortfolioMarkdownExporter implements Exporter
         for (var period : periods)
         {
             table.row(period.label(), MarkdownFormat.date(period.interval().getStart()),
-                            MarkdownFormat.date(period.interval().getEnd()), MarkdownFormat.money(period.start()),
-                            MarkdownFormat.money(period.transfers()), MarkdownFormat.money(period.gains()),
-                            MarkdownFormat.money(period.earnings()), MarkdownFormat.money(period.fees()),
-                            MarkdownFormat.money(period.taxes()), MarkdownFormat.money(period.end()),
-                            MarkdownFormat.money(period.absoluteGain()), MarkdownFormat.percent(period.ttwror()),
+                            MarkdownFormat.date(period.interval().getEnd()), money(period.start()),
+                            money(period.transfers()), money(period.gains()),
+                            money(period.earnings()), money(period.fees()),
+                            money(period.taxes()), money(period.end()),
+                            money(period.absoluteGain()), MarkdownFormat.percent(period.ttwror()),
                             period.isAnnualizable() ? MarkdownFormat.percent(period.ttwrorAnnualized()) : "",
                             period.isAnnualizable() ? MarkdownFormat.percent(period.irr()) : "");
         }
@@ -832,22 +941,27 @@ public class PortfolioMarkdownExporter implements Exporter
 
             // an annualized rate is misleading for short holding periods
             var dates = record.getLineItems().stream().map(i -> i.getDateTime().toLocalDate()).sorted().toList();
-            var holdingEnd = held ? valuationDate : dates.get(dates.size() - 1);
-            var irr = !dates.isEmpty() && ChronoUnit.DAYS.between(dates.get(0), holdingEnd) >= DAYS_PER_YEAR
-                            ? MarkdownFormat.percent(record.getIrr())
-                            : "";
+            var irr = "";
+            if (!dates.isEmpty())
+            {
+                var holdingEnd = held ? valuationDate : dates.get(dates.size() - 1);
+                if (ChronoUnit.DAYS.between(dates.get(0), holdingEnd) >= DAYS_PER_YEAR)
+                    irr = MarkdownFormat.percent(record.getIrr());
+            }
 
-            rows.add(Map.entry(security.getName().toLowerCase(),
+            rows.add(Map.entry(sortKey(security),
                             new String[] { label(security), held ? "held" : "sold", //
-                                            MarkdownFormat.money(record.getDelta()), //
+                                            money(record.getDelta()), //
                                             MarkdownFormat.percent(record.getDeltaPercent()), //
-                                            MarkdownFormat.money(record.getRealizedCapitalGains(COST_METHOD)
+                                            money(record
+                                                            .getRealizedCapitalGains(COST_METHOD,
+                                                                            TaxesAndFees.INCLUDED)
                                                             .getCapitalGains()), //
-                                            held ? MarkdownFormat.money(record.getCapitalGainsOnHoldings(COST_METHOD))
+                                            held ? money(record.getCapitalGainsOnHoldings(COST_METHOD))
                                                             : "", //
-                                            MarkdownFormat.money(record.getSumOfDividends()), //
-                                            MarkdownFormat.money(record.getFees()), //
-                                            MarkdownFormat.money(record.getTaxes()), //
+                                            money(record.getSumOfDividends()), //
+                                            money(record.getFees()), //
+                                            money(record.getTaxes()), //
                                             irr }));
         }
 
@@ -858,8 +972,12 @@ public class PortfolioMarkdownExporter implements Exporter
             return;
 
         out.append("Results of each security since the first transaction, including securities that have been sold. ")
-                        .append("Total gain = realized gain + unrealized gain + dividends. Fees and taxes are shown for information; ")
-                        .append("they are already reflected in the gains. ")
+                        .append("Total gain is the result after all fees and taxes. ")
+                        .append("Realized and unrealized gain already include the fees and taxes of buys and sells. ")
+                        .append("Dividends are gross amounts (before taxes and fees). ")
+                        .append("Total gain = realized gain + unrealized gain + dividends - fees and taxes that are not part of a buy or sell ")
+                        .append("(for example withholding tax on dividends). ")
+                        .append("The fees and taxes columns contain all fees and taxes of the security and are shown for information only. ")
                         .append("IRR p.a. is only shown for securities that have been held for at least one year.\n\n");
         table.appendTo(out);
     }
@@ -892,7 +1010,7 @@ public class PortfolioMarkdownExporter implements Exporter
                         "YTD", "1 year", "52w low", "52w high", "Below 52w high");
 
         var sorted = new ArrayList<>(securities);
-        sorted.sort(Comparator.comparing(s -> s.getName().toLowerCase()));
+        sorted.sort(Comparator.comparing(this::sortKey));
 
         for (var security : sorted)
         {
@@ -975,12 +1093,12 @@ public class PortfolioMarkdownExporter implements Exporter
                             plan.getSecurity() == null ? "" : label(plan.getSecurity()),
                             plan.getPortfolio() == null ? "" : MarkdownFormat.text(plan.getPortfolio().getName()),
                             plan.getAccount() == null ? "" : MarkdownFormat.text(plan.getAccount().getName()),
-                            currency == null ? "" : currency, MarkdownFormat.amount(plan.getAmount()),
-                            MarkdownFormat.amount(plan.getFees()), MarkdownFormat.amount(plan.getTaxes()), interval,
+                            currency == null ? "" : currency, amount(plan.getAmount()),
+                            amount(plan.getFees()), amount(plan.getTaxes()), interval,
                             MarkdownFormat.date(plan.getStart()),
                             plan.getLastDate().map(MarkdownFormat::date).orElse(""),
                             MarkdownFormat.date(plan.getDateOfNextTransactionToBeGenerated()),
-                            nullToEmpty(plan.getNote()));
+                            note(plan.getNote()));
         }
 
         out.append("Recurring investments (savings plans). The next execution date is the next date for which a transaction is due.\n\n");
@@ -1023,7 +1141,8 @@ public class PortfolioMarkdownExporter implements Exporter
 
         for (var row : all)
         {
-            if (cutoff != null && !row.date().toLocalDate().isAfter(cutoff))
+            if (cutoff != null && (!row.date().toLocalDate().isAfter(cutoff)
+                            || row.date().toLocalDate().isAfter(valuationDate)))
                 continue;
 
             table.row(MarkdownFormat.date(row.date().toLocalDate()), row.type(), row.security(), row.shares(),
@@ -1034,7 +1153,8 @@ public class PortfolioMarkdownExporter implements Exporter
         if (cutoff != null)
         {
             out.append("Showing the ").append(table.size()).append(" of ").append(all.size())
-                            .append(" transactions after ").append(MarkdownFormat.date(cutoff))
+                            .append(" transactions dated after ").append(MarkdownFormat.date(cutoff))
+                            .append(" and up to ").append(MarkdownFormat.date(valuationDate))
                             .append(" (the full history is not included). ");
         }
         else
@@ -1103,10 +1223,20 @@ public class PortfolioMarkdownExporter implements Exporter
                 break;
         }
 
-        var type = t.getType() == AccountTransaction.Type.TRANSFER_OUT ? "TRANSFER" : t.getType().name();
-        var counterparty = t.getType() == AccountTransaction.Type.TRANSFER_OUT && crossEntry != null
-                        ? ownerName(crossEntry.getCrossOwner(t))
-                        : "";
+        var isTransfer = t.getType() == AccountTransaction.Type.TRANSFER_OUT
+                        || t.getType() == AccountTransaction.Type.TRANSFER_IN;
+        var type = isTransfer ? "TRANSFER" : t.getType().name();
+
+        var counterparty = "";
+        if (t.getType() == AccountTransaction.Type.TRANSFER_OUT && crossEntry != null)
+        {
+            counterparty = ownerName(crossEntry.getCrossOwner(t));
+
+            var credited = crossEntry.getCrossTransaction(t);
+            if (credited != null && !t.getCurrencyCode().equals(credited.getCurrencyCode()))
+                counterparty += " (credited " + amount(credited.getAmount()) + " "
+                                + credited.getCurrencyCode() + ")";
+        }
 
         return row(t, type, "", account.getName(), counterparty);
     }
@@ -1148,12 +1278,12 @@ public class PortfolioMarkdownExporter implements Exporter
         var gross = security != null || !fees.isZero() || !taxes.isZero() ? t.getGrossValue() : null;
 
         return new TransactionRow(t.getDateTime(), type, security == null ? "" : label(security),
-                        t.getShares() != 0 ? MarkdownFormat.shares(t.getShares()) : "",
+                        t.getShares() != 0 ? shares(t.getShares()) : "",
                         isTrade ? MarkdownFormat.pricePerShare(t.getGrossValue().getAmount(), t.getShares()) : "",
-                        MarkdownFormat.money(gross), fees.isZero() ? "" : MarkdownFormat.money(fees),
-                        taxes.isZero() ? "" : MarkdownFormat.money(taxes), MarkdownFormat.amount(t.getAmount()),
+                        money(gross), fees.isZero() ? "" : money(fees),
+                        taxes.isZero() ? "" : money(taxes), amount(t.getAmount()),
                         t.getCurrencyCode(), MarkdownFormat.text(portfolio), MarkdownFormat.text(account),
-                        MarkdownFormat.text(counterparty), nullToEmpty(t.getNote()));
+                        MarkdownFormat.text(counterparty), note(t.getNote()));
     }
 
     // ---------------------------------------------------------------------
@@ -1179,7 +1309,8 @@ public class PortfolioMarkdownExporter implements Exporter
         out.append("**Transaction types**\n\n");
         out.append("- BUY, SELL: purchase or sale of a security. Money leaves (BUY) or enters (SELL) the cash account; 'Net amount' includes fees and taxes.\n");
         out.append("- DELIVERY_INBOUND, DELIVERY_OUTBOUND: securities moved into or out of a portfolio without a cash movement (e.g. transfer from another bank).\n");
-        out.append("- TRANSFER: movement between two of the investor's own accounts or portfolios, from 'Portfolio'/'Account' to 'Counterparty'. It is not a deposit or removal.\n");
+        out.append("- TRANSFER: movement between two of the investor's own accounts or portfolios, from 'Portfolio'/'Account' to 'Counterparty'. It is not a deposit or removal. ")
+                        .append("If the two cash accounts have different currencies, the counterparty shows the amount credited in its currency.\n");
         out.append("- DEPOSIT, REMOVAL: money added to or taken out of a cash account from outside the portfolio.\n");
         out.append("- DIVIDENDS, INTEREST: money received. 'Gross value' is before taxes and fees.\n");
         out.append("- INTEREST_CHARGE, FEES, TAXES: money paid.\n");

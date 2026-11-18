@@ -21,13 +21,16 @@ import name.abuchen.portfolio.junit.PortfolioBuilder;
 import name.abuchen.portfolio.junit.SecurityBuilder;
 import name.abuchen.portfolio.junit.TaxonomyBuilder;
 import name.abuchen.portfolio.junit.TestCurrencyConverter;
+import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.AccountTransferEntry;
 import name.abuchen.portfolio.model.BuySellEntry;
+import name.abuchen.portfolio.model.Classification;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.InvestmentPlan;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.PortfolioTransferEntry;
 import name.abuchen.portfolio.model.Watchlist;
+import name.abuchen.portfolio.money.DiscreetMode;
 import name.abuchen.portfolio.money.Money;
 
 @SuppressWarnings("nls")
@@ -379,6 +382,258 @@ public class PortfolioMarkdownExporterTest
         assertThat(count(markdown, "| TRANSFER |"), is(1));
         assertThat(markdown, containsString("| 2026-03-01 | TRANSFER | Moved | 10 |"));
         assertThat(markdown, containsString("| Broker A |  | Broker B |"));
+    }
+
+    @Test
+    public void testRealizedGainIncludesFeesAndTaxes()
+    {
+        var client = new Client();
+        var cash = new AccountBuilder().deposit_("2025-01-02", 10_000_00).addTo(client);
+
+        var security = new SecurityBuilder() //
+                        .addPrice("2025-01-02", 100_00000000L) //
+                        .addPrice("2026-06-30", 120_00000000L) //
+                        .addTo(client);
+        security.setName("Delta Stock");
+
+        // gross 1000.00 + 10.00 fees; gross 1200.00 - 10.00 fees
+        new PortfolioBuilder(cash) //
+                        .buy(security, "2025-01-03", 10_00000000L, 1_010_00, 10_00, 0) //
+                        .sell(security, "2026-02-02", 10_00000000L, 1_190_00, 10_00) //
+                        .addTo(client);
+
+        var markdown = exporter(client).generate();
+
+        // total gain and realized gain are both after the fees of the buy
+        // and the sell: 1190.00 - 1010.00
+        assertThat(markdown, containsString("| Delta Stock | sold | 180.00 | 17.82% | 180.00 |  |"));
+        assertThat(markdown, containsString("Total gain = realized gain + unrealized gain + dividends - fees and taxes"));
+        assertThat(markdown, not(containsString("they are already reflected in the gains")));
+    }
+
+    @Test
+    public void testTransactionsAfterValuationDate()
+    {
+        var client = createClient();
+        var cash = client.getAccounts().get(0);
+        cash.addTransaction(new AccountTransaction(LocalDateTime.parse("2026-07-15T00:00"), "EUR", 50_00, null,
+                        AccountTransaction.Type.DEPOSIT));
+
+        var recent = exporter(client).withTransactionScope(TransactionScope.LAST_12_MONTHS).generate();
+        assertThat(recent, not(containsString("| 2026-07-15 |")));
+        assertThat(recent, containsString("transactions dated after 2025-06-30 and up to 2026-06-30"));
+
+        var all = exporter(client).withTransactionScope(TransactionScope.ALL).generate();
+        assertThat(all, containsString("| 2026-07-15 | DEPOSIT |"));
+        assertThat(all, containsString("- First transaction: 2025-01-02"));
+    }
+
+    @Test
+    public void testOnlyTransactionsAfterValuationDate()
+    {
+        var client = new Client();
+        new AccountBuilder().deposit_("2026-08-01", 1_000_00).addTo(client);
+
+        var markdown = exporter(client).generate();
+
+        assertThat(markdown, containsString("does not contain any transactions up to the valuation date"));
+        assertThat(markdown, not(containsString("could not be created completely")));
+        assertThat(markdown, not(containsString("- First transaction:")));
+    }
+
+    @Test
+    public void testTransactionPriceIsInTransactionCurrency()
+    {
+        var markdown = exporter(createClient()).generate();
+
+        assertThat(markdown, containsString(
+                        "Amounts and prices in the transaction list are in the currency of the transaction (column 'Currency')."));
+        assertThat(markdown, not(containsString("Prices are in the currency of the security.")));
+    }
+
+    @Test
+    public void testAccountTransfers()
+    {
+        var client = new Client();
+
+        var euro = new AccountBuilder().deposit_("2026-01-01", 1_000_00).addTo(client);
+        euro.setName("Euro Cash");
+        var dollar = new AccountBuilder("USD").addTo(client);
+        dollar.setName("Dollar Cash");
+
+        var transfer = new AccountTransferEntry(euro, dollar);
+        transfer.setDate(LocalDateTime.parse("2026-02-01T00:00"));
+        transfer.setAmount(100_00);
+        transfer.setCurrencyCode("EUR");
+        transfer.getTargetTransaction().setAmount(110_00);
+        transfer.getTargetTransaction().setCurrencyCode("USD");
+        transfer.insert();
+
+        // incoming transfer without the outgoing side
+        euro.addTransaction(new AccountTransaction(LocalDateTime.parse("2026-03-01T00:00"), "EUR", 20_00, null,
+                        AccountTransaction.Type.TRANSFER_IN));
+
+        var markdown = exporter(client).generate();
+
+        assertThat(markdown, containsString("| 2026-02-01 | TRANSFER |"));
+        assertThat(markdown, containsString("| Euro Cash | Dollar Cash (credited 110.00 USD) |"));
+        assertThat(markdown, containsString("| 2026-03-01 | TRANSFER |"));
+        assertThat(markdown, not(containsString("TRANSFER_IN")));
+        assertThat(count(markdown, "| TRANSFER |"), is(2));
+    }
+
+    @Test
+    public void testDuplicateSecurityNamesFallBackToIsinAndNumber()
+    {
+        var client = new Client();
+        var taxonomy = new TaxonomyBuilder().addClassification("equity").addTo(client);
+        taxonomy.setName("Types");
+
+        var cash = new AccountBuilder().deposit_("2026-01-01", 1_000_00).addTo(client);
+
+        var first = new SecurityBuilder().addPrice("2026-06-30", 10_00000000L).assign(taxonomy, "equity")
+                        .addTo(client);
+        first.setName("Same Name");
+        first.setTickerSymbol("AAA");
+        var second = new SecurityBuilder().addPrice("2026-06-30", 10_00000000L).assign(taxonomy, "equity")
+                        .addTo(client);
+        second.setName("Same Name");
+        second.setTickerSymbol(null);
+        second.setIsin("IE00SECOND01");
+        var third = new SecurityBuilder().addPrice("2026-06-01", 10_00000000L).addTo(client);
+        third.setName("Same Name");
+        third.setTickerSymbol(null);
+        third.setIsin(null);
+
+        new PortfolioBuilder(cash).buy(first, "2026-02-01", 1_00000000L, 10_00)
+                        .buy(second, "2026-02-02", 1_00000000L, 10_00)
+                        .buy(third, "2026-02-03", 1_00000000L, 10_00).addTo(client);
+
+        var markdown = exporter(client).generate();
+
+        assertThat(markdown, containsString("| Same Name [AAA] |"));
+        assertThat(markdown, containsString("| Same Name [IE00SECOND01] |"));
+        assertThat(markdown, containsString("| Same Name [EUR #3] |"));
+
+        // assignments and data quality notes use the same labels
+        assertThat(markdown, containsString("| equity | Same Name [AAA] | 100.00% | 10.00 |"));
+        assertThat(markdown, containsString("| equity | Same Name [IE00SECOND01] | 100.00% | 10.00 |"));
+        assertThat(markdown, containsString("The latest price of 'Same Name [EUR #3]' is from 2026-06-01"));
+    }
+
+    @Test
+    public void testAssignmentsToTaxonomyRoot()
+    {
+        var client = new Client();
+        var taxonomy = new TaxonomyBuilder().addTo(client);
+        taxonomy.setName("Flat");
+
+        var cash = new AccountBuilder().deposit_("2026-01-01", 1_000_00).addTo(client);
+        var security = new SecurityBuilder().addPrice("2026-06-30", 10_00000000L).addTo(client);
+        security.setName("Rooted");
+        taxonomy.getRoot().addAssignment(new Classification.Assignment(security, Classification.ONE_HUNDRED_PERCENT));
+        new PortfolioBuilder(cash).buy(security, "2026-02-01", 10_00000000L, 100_00).addTo(client);
+
+        var markdown = exporter(client).generate();
+
+        assertThat(markdown, containsString("### Flat"));
+        assertThat(markdown, containsString("| (taxonomy root) | 100.00 | 10.00% |"));
+        assertThat(markdown, containsString("| (unassigned) | 900.00 | 90.00% |"));
+        assertThat(markdown, containsString("| (taxonomy root) | Rooted | 100.00% | 100.00 |"));
+    }
+
+    @Test
+    public void testSortingDoesNotDependOnLocale()
+    {
+        var client = new Client();
+        var cash = new AccountBuilder().deposit_("2026-01-01", 1_000_00).addTo(client);
+
+        var jFund = new SecurityBuilder().addPrice("2026-06-30", 10_00000000L).addTo(client);
+        jFund.setName("J Fund");
+        var iFund = new SecurityBuilder().addPrice("2026-06-30", 10_00000000L).addTo(client);
+        iFund.setName("I Fund");
+
+        new PortfolioBuilder(cash).buy(jFund, "2026-02-01", 1_00000000L, 10_00)
+                        .buy(iFund, "2026-02-02", 1_00000000L, 10_00).addTo(client);
+
+        var defaultLocale = Locale.getDefault();
+        try
+        {
+            Locale.setDefault(Locale.US);
+            var us = exporter(client).generate();
+
+            // in Turkish, "I" is lower-cased to the dotless i which sorts
+            // after "j"
+            Locale.setDefault(Locale.forLanguageTag("tr-TR"));
+            var tr = exporter(client).generate();
+
+            org.junit.Assert.assertEquals(us, tr);
+
+            var marketData = us.substring(us.indexOf("## Market data"));
+            assertThat(marketData.indexOf("| I Fund |") < marketData.indexOf("| J Fund |"), is(true));
+        }
+        finally
+        {
+            Locale.setDefault(defaultLocale);
+        }
+    }
+
+    @Test
+    public void testTextEscapesBackslashAndPipe()
+    {
+        // a backslash in front of a pipe must not cancel the escaping
+        assertThat(MarkdownFormat.text("C:\\| x"), is("C:\\\\\\| x"));
+        assertThat(MarkdownFormat.text("a\nb\t|c"), is("a b \\|c"));
+
+        // shortened before escaping: no dangling backslash before "..."
+        var longText = "a".repeat(296) + "\\|" + "b".repeat(10);
+        assertThat(MarkdownFormat.text(longText), is("a".repeat(296) + "\\\\..."));
+    }
+
+    @Test
+    public void testDiscreetModeHidesAmountsSharesAndNotes()
+    {
+        var client = createClient();
+        var alpha = client.getSecurities().get(0);
+        alpha.setNote("bought for 5010 EUR");
+        client.getAccounts().get(0).setNote("IBAN and balance");
+
+        var markdown = exporter(client).withDiscreetMode(true).generate();
+
+        assertThat(markdown, containsString("- Discreet mode: amounts and numbers of shares are hidden"));
+        assertThat(markdown, containsString("The report was created in discreet mode"));
+
+        // shares and value hidden; price, date and weights are real
+        assertThat(markdown, containsString(
+                        "| Alpha \\| World ETF | IE00ALPHA001 | ALPH | EUR | *** | 120.00 | 2026-06-30 | *** | 53.48% | *** | *** | 19.76% |"));
+        assertThat(markdown, containsString("| equity | *** | 53.48% | 70.00% | *** | *** |"));
+        assertThat(markdown, containsString("| Since first transaction | 2025-01-01 | 2026-06-30 | *** | *** |"));
+        assertThat(markdown, containsString("| 2025-01-03 | BUY | Alpha \\| World ETF | *** | 100.00 | *** | *** |"));
+
+        for (var amount : new String[] { "| 6000.00 |", "| 5010.00 |", "| 10000.00 |", "| 500.00 |", "| 30.00 |",
+                        "| 50 |", "| 990.00 |" })
+            assertThat(amount, markdown, not(containsString(amount)));
+
+        assertThat(markdown, not(containsString("bought for 5010 EUR")));
+        assertThat(markdown, not(containsString("IBAN and balance")));
+    }
+
+    @Test
+    public void testGlobalDiscreetModeDoesNotChangeTheExport()
+    {
+        var client = createClient();
+        try
+        {
+            DiscreetMode.setActive(true);
+            var markdown = exporter(client).generate();
+
+            assertThat(markdown, containsString("| 2026-06-30 | 6000.00 |"));
+            assertThat(markdown, not(containsString("- Discreet mode:")));
+        }
+        finally
+        {
+            DiscreetMode.setActive(false);
+        }
     }
 
     private static int count(String text, String token)
