@@ -1,5 +1,9 @@
 package name.abuchen.portfolio.ui.views.dashboard;
 
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
@@ -30,18 +34,33 @@ public class HoverButton
     private Composite hover;
     private long timestamp;
 
+    private final Set<Control> watched = new HashSet<>();
+
     private final Listener parentResizeListener = this::onAnchorResize;
+    private final Listener mouseFilter = this::onEnterOrExit;
 
     private HoverButton(Control leadingControl, Control... others)
     {
         this.leadingControl = leadingControl;
 
-        this.leadingControl.addListener(SWT.MouseEnter, this::onMouseEnter);
-        this.leadingControl.addListener(SWT.MouseExit, this::onMouseExit);
+        watched.add(leadingControl);
+        watched.addAll(Arrays.asList(others));
+
+        // SWT sends enter and exit events only to the control under the
+        // pointer, not to its parents. A filter also catches the children of
+        // the watched controls, for example the cells of a heatmap, which are
+        // recreated on every update.
+        var display = leadingControl.getDisplay();
+        display.addFilter(SWT.MouseEnter, mouseFilter);
+        display.addFilter(SWT.MouseExit, mouseFilter);
+
         this.leadingControl.addListener(SWT.Resize, this::onAnchorResize);
         this.leadingControl.addListener(SWT.Move, this::onAnchorResize);
 
         this.leadingControl.addDisposeListener(e -> {
+            display.removeFilter(SWT.MouseEnter, mouseFilter);
+            display.removeFilter(SWT.MouseExit, mouseFilter);
+
             if (hover != null && !hover.isDisposed())
                 hover.dispose();
 
@@ -53,12 +72,6 @@ public class HoverButton
         var parent = leadingControl.getParent();
         if (parent != null)
             parent.addListener(SWT.Resize, parentResizeListener);
-
-        for (Control c : others)
-        {
-            c.addListener(SWT.MouseEnter, this::onMouseEnter);
-            c.addListener(SWT.MouseExit, this::onMouseExit);
-        }
     }
 
     public static HoverButton build(Control leadingControl, Control... others)
@@ -70,6 +83,27 @@ public class HoverButton
     {
         this.listener = listener;
         return this;
+    }
+
+    private void onEnterOrExit(Event event)
+    {
+        if (!(event.widget instanceof Control control) || !isWatched(control))
+            return;
+
+        if (event.type == SWT.MouseEnter)
+            onMouseEnter(event);
+        else
+            onMouseExit(event);
+    }
+
+    private boolean isWatched(Control control)
+    {
+        for (var c = control; c != null; c = c.getParent())
+        {
+            if (watched.contains(c))
+                return true;
+        }
+        return false;
     }
 
     private void onMouseExit(Event event)
@@ -129,10 +163,7 @@ public class HoverButton
         if (listener != null)
             button.addHyperlinkListener(listener);
 
-        hover.addListener(SWT.MouseEnter, this::onMouseEnter);
-        hover.addListener(SWT.MouseExit, this::onMouseExit);
-        button.addListener(SWT.MouseEnter, this::onMouseEnter);
-        button.addListener(SWT.MouseExit, this::onMouseExit);
+        watched.add(hover);
     }
 
     private void positionHover()
