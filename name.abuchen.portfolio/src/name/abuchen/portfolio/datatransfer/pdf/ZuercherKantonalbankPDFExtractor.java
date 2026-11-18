@@ -123,6 +123,15 @@ public class ZuercherKantonalbankPDFExtractor extends AbstractPDFExtractor
                                                         .match("^(?<shares>[\\.'\\d]+) zu [\\.'\\d]+ [\\.'\\d]+$") //
                                                         .assign((t, v) -> t.setShares(asShares(v.get("shares")))))
 
+                        // @formatter:off
+                        // Abschlüsse mit Zeitangaben in Klammer
+                        // 460 zu 3.545 (17:26; BATE; 211004B250750283), 540 zu 3.545 (17:26; XLON; 211004B250750783)
+                        // @formatter:on
+                        .section("time").optional() //
+                        .find("Abschlüsse mit Zeitangaben in Klammer") //
+                        .match("^[\\.'\\d]+ zu [\\.'\\d]+ \\((?<time>[\\d]{2}\\:[\\d]{2});.*$") //
+                        .assign((t, v) -> v.getTransactionContext().putString("time", v.get("time")))
+
                         .oneOf( //
                                         // @formatter:off
                                         // Abschluss per: 04.10.2021 / Buchungstag: 04.10.2021 / Börsenplatz: LSE UK 1 CUR
@@ -130,7 +139,12 @@ public class ZuercherKantonalbankPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("date") //
                                                         .match("^Abschluss per: (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
-                                                        .assign((t, v) -> t.setDate(asDate(v.get("date")))),
+                                                        .assign((t, v) -> {
+                                                            if (v.getTransactionContext().getString("time") != null)
+                                                                t.setDate(asDate(v.get("date"), v.getTransactionContext().getString("time")));
+                                                            else
+                                                                t.setDate(asDate(v.get("date")));
+                                                        }),
                                         // @formatter:off
                                         // 51215778 SWC (CH) IPF III VF 95 Passiv NT 0.633 157.95 28.05.2021 99.98
                                         // @formatter:on

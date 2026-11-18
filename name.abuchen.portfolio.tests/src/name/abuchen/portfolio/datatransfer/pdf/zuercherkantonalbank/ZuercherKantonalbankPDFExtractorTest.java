@@ -78,7 +78,7 @@ public class ZuercherKantonalbankPDFExtractorTest
 
         // check buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2021-10-04"), hasShares(1000.00), //
+                        hasDate("2021-10-04T17:26"), hasShares(1000.00), //
                         hasSource("Kauf01.txt"), //
                         hasNote("Abwicklungs-Nr. 592473551 | Auftrags-Nr. ONBA-0005128022772021"), //
                         hasAmount("CHF", 4469.94), hasGrossValue("CHF", 4462.37), //
@@ -114,7 +114,7 @@ public class ZuercherKantonalbankPDFExtractorTest
 
         // check buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2021-10-04"), hasShares(1000.00), //
+                        hasDate("2021-10-04T17:26"), hasShares(1000.00), //
                         hasSource("Kauf01.txt"), //
                         hasNote("Abwicklungs-Nr. 592473551 | Auftrags-Nr. ONBA-0005128022772021"), //
                         hasAmount("CHF", 4469.94), hasGrossValue("CHF", 4462.37), //
@@ -153,7 +153,7 @@ public class ZuercherKantonalbankPDFExtractorTest
 
         // check buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2023-06-29"), hasShares(2000.00), //
+                        hasDate("2023-06-29T09:54"), hasShares(2000.00), //
                         hasSource("Kauf02.txt"), //
                         hasNote("Abwicklungs-Nr. 715281248 | Auftrags-Nr. ONBA-0005066961792023"), //
                         hasAmount("USD", 7515.04), hasGrossValue("USD", 7461.23), //
@@ -189,7 +189,7 @@ public class ZuercherKantonalbankPDFExtractorTest
 
         // check buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2023-06-29"), hasShares(2000.00), //
+                        hasDate("2023-06-29T09:54"), hasShares(2000.00), //
                         hasSource("Kauf02.txt"), //
                         hasNote("Abwicklungs-Nr. 715281248 | Auftrags-Nr. ONBA-0005066961792023"), //
                         hasAmount("USD", 7515.04), hasGrossValue("USD", 7461.23), //
@@ -228,7 +228,7 @@ public class ZuercherKantonalbankPDFExtractorTest
 
         // check buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2022-06-08"), hasShares(150.00), //
+                        hasDate("2022-06-08T11:49"), hasShares(150.00), //
                         hasSource("Kauf03.txt"), //
                         hasNote("Abwicklungs-Nr. 640981320 | Auftrags-Nr. ONBA-0005082331592022"), //
                         hasAmount("CHF", 7294.30), hasGrossValue("CHF", 7287.33), //
@@ -262,7 +262,7 @@ public class ZuercherKantonalbankPDFExtractorTest
 
         // check buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2022-03-28"), hasShares(10.00), //
+                        hasDate("2022-03-28T16:55"), hasShares(10.00), //
                         hasSource("Kauf04.txt"), //
                         hasNote("Abwicklungs-Nr. 626674106 | Auftrags-Nr. ONBA-0005089660872022"), //
                         hasAmount("CHF", 6078.35), hasGrossValue("CHF", 6046.52), //
@@ -298,7 +298,7 @@ public class ZuercherKantonalbankPDFExtractorTest
 
         // check buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2022-03-28"), hasShares(10.00), //
+                        hasDate("2022-03-28T16:55"), hasShares(10.00), //
                         hasSource("Kauf04.txt"), //
                         hasNote("Abwicklungs-Nr. 626674106 | Auftrags-Nr. ONBA-0005089660872022"), //
                         hasAmount("CHF", 6078.35), hasGrossValue("CHF", 6046.52), //
@@ -405,7 +405,7 @@ public class ZuercherKantonalbankPDFExtractorTest
 
         // check buy sell transaction
         assertThat(results, hasItem(sale( //
-                        hasDate("2023-02-24"), hasShares(150.00), //
+                        hasDate("2023-02-24T14:30"), hasShares(150.00), //
                         hasSource("Verkauf01.txt"), //
                         hasNote("Abwicklungs-Nr. 691980481 | Auftrags-Nr. ONBA-0005093310552023"), //
                         hasAmount("CHF", 8512.11), hasGrossValue("CHF", 8520.00), //
@@ -439,7 +439,7 @@ public class ZuercherKantonalbankPDFExtractorTest
 
         // check buy sell transaction
         assertThat(results, hasItem(sale( //
-                        hasDate("2023-02-17"), hasShares(10.00), //
+                        hasDate("2023-02-17T10:43"), hasShares(10.00), //
                         hasSource("Verkauf02.txt"), //
                         hasNote("Abwicklungs-Nr. 690706592 | Auftrags-Nr. ONBA-0005146670482023"), //
                         hasAmount("CHF", 5831.90), hasGrossValue("CHF", 5845.13), //
@@ -475,7 +475,7 @@ public class ZuercherKantonalbankPDFExtractorTest
 
         // check buy sell transaction
         assertThat(results, hasItem(sale( //
-                        hasDate("2023-02-17"), hasShares(10.00), //
+                        hasDate("2023-02-17T10:43"), hasShares(10.00), //
                         hasSource("Verkauf02.txt"), //
                         hasNote("Abwicklungs-Nr. 690706592 | Auftrags-Nr. ONBA-0005146670482023"), //
                         hasAmount("CHF", 5831.90), hasGrossValue("CHF", 5845.13), //
