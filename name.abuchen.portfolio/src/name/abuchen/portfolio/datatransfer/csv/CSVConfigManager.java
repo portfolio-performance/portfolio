@@ -36,6 +36,7 @@ public class CSVConfigManager
 
     private boolean isDirty = false;
     private List<CSVConfig> userSpecific = new ArrayList<>();
+    private List<Object> unreadable = new ArrayList<>();
 
     @PostConstruct
     private void loadConfigurations() throws IOException
@@ -44,11 +45,11 @@ public class CSVConfigManager
                         StandardCharsets.UTF_8.name()))
         {
             String json = scanner.useDelimiter("\\A").next(); //$NON-NLS-1$
-            builtIn.addAll(fromJSON(json));
+            builtIn.addAll(fromJSON(json, new ArrayList<>()));
 
             String saved = preferences.get(CSVConfigManager.class.getName(), null);
             if (saved != null)
-                userSpecific.addAll(fromJSON(saved));
+                userSpecific.addAll(fromJSON(saved, unreadable));
         }
         catch (ParseException e)
         {
@@ -67,6 +68,7 @@ public class CSVConfigManager
         {
             JSONArray array = new JSONArray();
             userSpecific.forEach(config -> array.add(config.toJSON()));
+            array.addAll(unreadable); // keep what this version cannot read
             preferences.put(CSVConfigManager.class.getName(), array.toJSONString());
             preferences.flush();
         }
@@ -76,7 +78,7 @@ public class CSVConfigManager
         }
     }
 
-    private List<CSVConfig> fromJSON(String json) throws ParseException
+    private List<CSVConfig> fromJSON(String json, List<Object> unreadable) throws ParseException
     {
         JSONArray array = (JSONArray) JSONValue.parseWithException(json);
 
@@ -92,6 +94,7 @@ public class CSVConfigManager
             catch (Exception e)
             {
                 PortfolioLog.error(e);
+                unreadable.add(array.get(ii));
             }
         }
 
