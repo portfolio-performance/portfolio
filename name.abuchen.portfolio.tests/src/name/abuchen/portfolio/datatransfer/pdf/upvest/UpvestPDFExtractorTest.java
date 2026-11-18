@@ -40,7 +40,6 @@ import name.abuchen.portfolio.model.Client;
 @SuppressWarnings("nls")
 public class UpvestPDFExtractorTest
 {
-
     @Test
     public void testKauf01()
     {
@@ -60,25 +59,19 @@ public class UpvestPDFExtractorTest
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
-
         // check security
         assertThat(results, hasItem(security( //
-                        hasIsin("LU0290358497"), //
-                        hasWkn(null), //
-                        hasTicker(null), //
+                        hasIsin("LU0290358497"), hasWkn(null), hasTicker(null), //
                         hasName("XTR.II EUR OV.RATE SW. 1C"), //
                         hasCurrencyCode("EUR"))));
 
         // check buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2026-01-30T15:35:01"), //
-                        hasShares(2.60301), //
+                        hasDate("2026-01-30T15:35:01"), hasShares(2.60301), //
                         hasSource("Kauf01.txt"), //
                         hasNote("Abr.-Nr.: 47ca082b-7818-45d4-9dda-8cb2d1174086"), //
-                        hasAmount("EUR", 386.00), //
-                        hasGrossValue("EUR", 386.00), //
-                        hasTaxes("EUR", 0.00 + 0.00 + 0.00), //
-                        hasFees("EUR", 0.00))));
+                        hasAmount("EUR", 386.00), hasGrossValue("EUR", 386.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -102,22 +95,17 @@ public class UpvestPDFExtractorTest
 
         // check security
         assertThat(results, hasItem(security( //
-                        hasIsin("LU0290358497"), //
-                        hasWkn(null), //
-                        hasTicker(null), //
+                        hasIsin("LU0290358497"), hasWkn(null), hasTicker(null), //
                         hasName("XTR.II EUR OV.RATE SW. 1C"), //
                         hasCurrencyCode("EUR"))));
 
         // check buy sell transaction
         assertThat(results, hasItem(sale( //
-                        hasDate("2026-02-02T15:05:46"), //
-                        hasShares(2.60301), //
+                        hasDate("2026-02-02T15:05:46"), hasShares(2.60301), //
                         hasSource("Verkauf01.txt"), //
                         hasNote("Abr.-Nr.: 33c092d9-3c6e-4a0d-ad35-b44c1e1efe81"), //
-                        hasAmount("EUR", 386.04), //
-                        hasGrossValue("EUR", 386.05), //
-                        hasTaxes("EUR", 0.01 + 0.00 + 0.00), //
-                        hasFees("EUR", 0.00))));
+                        hasAmount("EUR", 386.04), hasGrossValue("EUR", 386.05), //
+                        hasTaxes("EUR", 0.01 + 0.00 + 0.00), hasFees("EUR", 0.00))));
     }
 
     @Test
