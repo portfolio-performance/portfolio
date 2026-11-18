@@ -91,7 +91,7 @@ public class VZVermoegenszentrumAGPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("shares") //
                         .find("Wir haben f.r Sie am.*")
-                        .match("^(?<shares>[\\.,\\d]+) .*$") //
+                        .match("^(?<shares>[\\.'\\d]+) .*$") //
                         .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
                         // @formatter:off
@@ -168,7 +168,7 @@ public class VZVermoegenszentrumAGPDFExtractor extends AbstractPDFExtractor
                         // Bestand: 38 zu CHF 5.99
                         // @formatter:on
                         .section("shares") //
-                        .match("^Bestand: (?<shares>[\\.,\\d]+) zu [\\w]{3} [\\.'\\d]+$") //
+                        .match("^Bestand: (?<shares>[\\.'\\d]+) zu [\\w]{3} [\\.'\\d]+$") //
                         .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
                         // @formatter:off
