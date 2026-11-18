@@ -4,10 +4,10 @@ import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetGros
 import static name.abuchen.portfolio.util.TextUtil.stripBlanks;
 import static name.abuchen.portfolio.util.TextUtil.trim;
 
-import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 import name.abuchen.portfolio.Messages;
-import name.abuchen.portfolio.datatransfer.ExtractorUtils;
+import name.abuchen.portfolio.datatransfer.ExtrExchangeRate;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
@@ -16,7 +16,6 @@ import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.money.Money;
-import name.abuchen.portfolio.money.Values;
 
 @SuppressWarnings("nls")
 public class UnicreditPDFExtractor extends AbstractPDFExtractor
@@ -173,13 +172,14 @@ public class UnicreditPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("fxGross", "baseAmount", "baseCurrency", "termAmount", "termCurrency").optional() //
                         .match("^Kurswert [A-Z]{3} (?<fxGross>[\\.,\\d]+)$") //
-                        .match("^Umrechnungskurs (?<baseAmount>[\\.,\\d]+) (?<baseCurrency>[A-Z]{3}) = (?<termAmount>[\\.,\\d]+) (?<termCurrency>[A-Z]{3})$") //
+                        .match("^Umrechnungskurs (?<baseAmount>[1-9][\\.,\\d]*) (?<baseCurrency>[A-Z]{3}) = (?<termAmount>[\\.,\\d]+) (?<termCurrency>[A-Z]{3})$") //
                         .assign((t, v) -> {
-                            // Calculate and store the exchange rate
-                            BigDecimal exchangeRate = BigDecimal.valueOf(((double) asAmount(v.get("termAmount")) / asAmount(v.get("baseAmount"))));
-                            v.put("exchangeRate", exchangeRate.toPlainString());
-
-                            var rate = asExchangeRate(v);
+                            // Calculate the exchange rate without rounding the amounts
+                            var baseAmount = asBigDecimal(v.get("baseAmount"));
+                            var termAmount = asBigDecimal(v.get("termAmount"));
+                            var exchangeRate = termAmount.divide(baseAmount, 10, RoundingMode.HALF_DOWN);
+                            var rate = new ExtrExchangeRate(exchangeRate, asCurrencyCode(v.get("baseCurrency")),
+                                            asCurrencyCode(v.get("termCurrency")));
                             type.getCurrentContext().putType(rate);
 
                             var fxGross = Money.of(rate.getTermCurrency(), asAmount(v.get("fxGross")));
@@ -436,11 +436,5 @@ public class UnicreditPDFExtractor extends AbstractPDFExtractor
                         .section("currency", "fee").optional().multipleTimes() //
                         .match("^\\s*(USt aus Spesen\\s+[\\.,\\d]+\\s+%|Eigene Spesen)\\s+(?<currency>[A-Z]{3})\\s+(?<fee>[\\.,\\d]+)(\\-)?.*$") //
                         .assign((t, v) -> processFeeEntries(t, v, type));
-    }
-
-    @Override
-    protected BigDecimal asExchangeRate(String value)
-    {
-        return ExtractorUtils.convertToNumberBigDecimal(value, Values.Share, "de", "CH");
     }
 }
