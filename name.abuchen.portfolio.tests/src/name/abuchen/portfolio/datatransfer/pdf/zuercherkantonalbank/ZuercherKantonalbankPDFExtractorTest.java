@@ -332,7 +332,7 @@ public class ZuercherKantonalbankPDFExtractorTest
         // check security
         assertThat(results, hasItem(security( //
                         hasIsin("CH0512157782"), hasWkn("51215778"), hasTicker(null), //
-                        hasName("Swisscanto (CH) IPF III (IPF III)"), //
+                        hasName("Swc (CH) IPF III Vorsorge Fonds 95 Passiv"), //
                         hasCurrencyCode("CHF"))));
 
         // check buy sell transaction

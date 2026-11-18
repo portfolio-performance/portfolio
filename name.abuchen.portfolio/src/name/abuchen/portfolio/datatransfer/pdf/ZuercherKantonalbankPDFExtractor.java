@@ -86,7 +86,7 @@ public class ZuercherKantonalbankPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("currency", "name", "wkn", "isin") //
-                                                        .match("^Anteile .* (?<currency>[A-Z]{3})\\- (?<name>.*) \\-.*$") //
+                                                        .match("^Anteile .* (?<currency>[A-Z]{3})\\- .* \\- (?<name>.*)$") //
                                                         .match("^Valor (?<wkn>[A-Z0-9]{5,9}) \\/ ISIN (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
                                         // @formatter:off
