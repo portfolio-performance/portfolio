@@ -77,6 +77,19 @@ public class McpToolCallTest
         assertThat(text(call("pp_list_instruments", "{\"file\":\"" + fileId + "\"}")), containsString("ACME"));
     }
 
+    @Test
+    public void testInstrumentFilterIsDispatchedFromMcp()
+    {
+        new SecurityBuilder().addTo(client).setName("OTHER");
+
+        var result = call("pp_list_instruments",
+                        "{\"file\":\"sample\",\"filter\":{\"name\":\"ACME\"}}");
+
+        assertThat(isError(result), is(false));
+        assertThat(text(result), containsString("ACME"));
+        assertThat(text(result), not(containsString("OTHER")));
+    }
+
     /** handed back inline, so the model recovers in this call rather than spending a turn */
     @Test
     public void testAMissingFileAnswersWithTheFilesThemselves()
