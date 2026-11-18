@@ -46,7 +46,8 @@ public class XTBCSVExtractor implements Extractor
                     "Comment", "Product" };
     private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     private static final Pattern CURRENCY = Pattern.compile("^([A-Z]{3})_.*\\.csv$", Pattern.CASE_INSENSITIVE);
-    private static final Pattern DIVIDEND_PER_SHARE = Pattern.compile("^\\S+ [A-Z]{3} (\\d+(?:\\.\\d+)?)/ SHR$");
+    private static final Pattern DIVIDEND_PER_SHARE = Pattern
+                    .compile("^\\S+ (?<currency>[A-Z]{3}) (?<perShare>\\d+(?:\\.\\d+)?)/ SHR$");
     private static final Pattern SHARES = Pattern
                     .compile("^(?:OPEN BUY|CLOSE (?:BUY|SELL)) (\\d+(?:\\.\\d+)?)(?:/\\d+(?:\\.\\d+)?)? @ .*$");
 
@@ -102,15 +103,14 @@ public class XTBCSVExtractor implements Extractor
                 if ("Total".equals(value(record, 0)) || matchedTaxes.contains(record)
                                 || internalTransfers.contains(record))
                     continue;
-                try
-                {
-                    process(record, taxes.get(record), columns, currency, securityCache, inputFile.getName(), items);
-                }
-                catch (RuntimeException e)
-                {
-                    errors.add(new IllegalArgumentException(MessageFormat.format(Messages.XTBCSVMsgErrorInLine,
-                                    String.valueOf(record.getRecordNumber()), e.getMessage()), e));
-                }
+                var tax = taxes.get(record);
+                var processed = tryProcess(record, tax, columns, currency, securityCache, inputFile.getName(), items,
+                                errors);
+
+                // the paired tax must not get lost if its dividend or interest
+                // cannot be imported
+                if (!processed && tax != null)
+                    tryProcess(tax, null, columns, currency, securityCache, inputFile.getName(), items, errors);
             }
         }
         catch (IOException e)
@@ -125,6 +125,22 @@ public class XTBCSVExtractor implements Extractor
         }
 
         return items;
+    }
+
+    private boolean tryProcess(CSVRecord record, CSVRecord matchedTax, Columns columns, String currency,
+                    SecurityCache securityCache, String source, List<Item> items, List<Exception> errors)
+    {
+        try
+        {
+            process(record, matchedTax, columns, currency, securityCache, source, items);
+            return true;
+        }
+        catch (RuntimeException e)
+        {
+            errors.add(new IllegalArgumentException(MessageFormat.format(Messages.XTBCSVMsgErrorInLine,
+                            String.valueOf(record.getRecordNumber()), e.getMessage()), e));
+            return false;
+        }
     }
 
     private Map<CSVRecord, CSVRecord> matchInterestTaxes(List<CSVRecord> records, Columns columns)
@@ -346,7 +362,7 @@ public class XTBCSVExtractor implements Extractor
                 // "EXAM.DE EUR 0.3500/ SHR"; the number of shares is not
                 // part of the export
                 if ("Dividend".equals(type) || "Spinoff".equals(type))
-                    transaction.setShares(sharesFromDividendPerShare(comment, amount));
+                    transaction.setShares(sharesFromDividendPerShare(comment, amount, currency));
                 if (matchedTax != null)
                 {
                     var tax = Math.abs(parseDecimal(value(matchedTax, columns.amount()).replace(',', '.'),
@@ -384,13 +400,18 @@ public class XTBCSVExtractor implements Extractor
         }
     }
 
-    private long sharesFromDividendPerShare(String comment, long amount)
+    private long sharesFromDividendPerShare(String comment, long amount, String currency)
     {
         var matcher = DIVIDEND_PER_SHARE.matcher(comment);
         if (!matcher.matches())
             return 0;
 
-        var perShare = new BigDecimal(matcher.group(1));
+        // the amount is booked in the account currency; without exchange
+        // rate a dividend per share in another currency cannot be used
+        if (!currency.equals(matcher.group("currency")))
+            return 0;
+
+        var perShare = new BigDecimal(matcher.group("perShare"));
         if (perShare.signum() <= 0)
             return 0;
 
