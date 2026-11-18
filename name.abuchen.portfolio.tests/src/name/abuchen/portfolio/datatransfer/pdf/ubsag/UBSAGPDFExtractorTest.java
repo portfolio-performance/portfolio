@@ -156,7 +156,7 @@ public class UBSAGPDFExtractorTest
 
         // check buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2017-12-27"), hasShares(15.00), //
+                        hasDate("2017-12-27T09:00:57"), hasShares(15.00), //
                         hasSource("Kauf02.txt"), //
                         hasNote("Auftrags-Nr. 90586827"), //
                         hasAmount("CHF", 2213.15), hasGrossValue("CHF", 2190.00), //
@@ -190,7 +190,7 @@ public class UBSAGPDFExtractorTest
 
         // check buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2017-12-26"), hasShares(100.00), //
+                        hasDate("2017-12-26T15:30"), hasShares(100.00), //
                         hasSource("Kauf03.txt"), //
                         hasNote("Auftrags-Nr. 90586823"), //
                         hasAmount("CHF", 3881.75), hasGrossValue("CHF", 3846.00), //
@@ -230,7 +230,7 @@ public class UBSAGPDFExtractorTest
 
         // check buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2017-12-26"), hasShares(100.00), //
+                        hasDate("2017-12-26T15:30"), hasShares(100.00), //
                         hasSource("Kauf03.txt"), //
                         hasNote("Auftrags-Nr. 90586823"), //
                         hasAmount("CHF", 3881.75), hasGrossValue("CHF", 3846.00), //
@@ -345,7 +345,7 @@ public class UBSAGPDFExtractorTest
 
         // check buy sell transaction
         assertThat(results, hasItem(sale( //
-                        hasDate("2021-12-23"), hasShares(10.00), //
+                        hasDate("2021-12-23T09:00:54"), hasShares(10.00), //
                         hasSource("Verkauf02.txt"), //
                         hasNote("Auftrags-Nr. 155032892"), //
                         hasAmount("CHF", 3720.18), hasGrossValue("CHF", 3763.00), //
@@ -379,7 +379,7 @@ public class UBSAGPDFExtractorTest
 
         // check buy sell transaction
         assertThat(results, hasItem(sale( //
-                        hasDate("2021-08-19"), hasShares(39.00), //
+                        hasDate("2021-08-19T15:30:01"), hasShares(39.00), //
                         hasSource("Verkauf03.txt"), //
                         hasNote("Auftrags-Nr. 149557039"), //
                         hasAmount("CHF", 1883.08), hasGrossValue("CHF", 1946.01), //
@@ -416,7 +416,7 @@ public class UBSAGPDFExtractorTest
 
         // check buy sell transaction
         assertThat(results, hasItem(sale( //
-                        hasDate("2021-08-19"), hasShares(39.00), //
+                        hasDate("2021-08-19T15:30:01"), hasShares(39.00), //
                         hasSource("Verkauf03.txt"), //
                         hasNote("Auftrags-Nr. 149557039"), //
                         hasAmount("CHF", 1883.08), hasGrossValue("CHF", 1946.01), //

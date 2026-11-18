@@ -159,12 +159,24 @@ public class UBSAGBankingAGPDFExtractor extends AbstractPDFExtractor
                                                         .match("^(?<shares>[\\.'\\d\\s]+) .* [A-Z]{3} [\\.'\\d\\s]+$") //
                                                         .assign((t, v) -> t.setShares(asShares(v.get("shares")))))
 
-                        // @formatter:off
-                        // Abschluss 08.03.2022  15:02:13 Börse Kauf Komptant 450 USD 10.868
-                        // @formatter:on
-                        .section("time").optional() //
-                        .match("^(Abschluss|Abschlussdatum:) .* (?<time>[\\d]{2}:[\\d]{2}:[\\d]{2}).*$") //
-                        .assign((t, v) -> v.getTransactionContext().putString("time", v.get("time")))
+                        .optionalOneOf( //
+                                        // @formatter:off
+                                        // Abschluss 08.03.2022  15:02:13 Börse Kauf Komptant 450 USD 10.868
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("time") //
+                                                        .match("^(Abschluss|Abschlussdatum:) .* (?<time>[\\d]{2}:[\\d]{2}:[\\d]{2}).*$") //
+                                                        .assign((t, v) -> v.getTransactionContext().putString("time", v.get("time"))),
+                                        // @formatter:off
+                                        // Ausführungsdetails
+                                        // Abschlussort Stückzahl / Nominal Kurs Trading Capacity FINMA / MIFID Zeit
+                                        // SIX 3 CHF 146 Agent --- Agent 09:00:57 CET
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("time") //
+                                                        .find("Ausführungsdetails") //
+                                                        .match("^.* (?<time>[\\d]{2}:[\\d]{2}:[\\d]{2}) [A-Z]{3,4}$") //
+                                                        .assign((t, v) -> v.getTransactionContext().putString("time", v.get("time"))))
 
                         .oneOf( //
                                         // @formatter:off
