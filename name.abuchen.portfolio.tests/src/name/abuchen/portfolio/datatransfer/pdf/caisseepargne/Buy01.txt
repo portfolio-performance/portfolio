@@ -1,0 +1,44 @@
+```
+PDFBox Version: 3.0.8
+Portfolio Performance Version: 0.90.0
+System: linux | x86_64 | 21.0.13.0.3+1-1-22.04.1-Ubuntu | Ubuntu
+-----------------------------------------
+AVIS D'OPERE BOURSE
+CAISSE D'EPARGNE
+REDACTED
+12 RUE DE REDACTED M REDACTED REDACTED
+12345 REDACTED REDACTED REDACTED
+12 REDACTED REDACTED
+12345 REDACTED
+Date : 27/05/2026
+Compte : 12345 12345 123456789 12
+Rfrence de l'opration : REDACTED REDACTED REDACTED REDACTED
+NATURE ET DETAIL DE L'OPERATION DEBIT CREDIT
+Nous vous prions de trouver ci-dessous les caractristiques de l'opration enregistre
+sur votre compte en date du 27/05/2026.
+NATURE DE L'OPERATION : ACHAT AU COMPTANT
+TYPE D'ORDRE : AU MARCHE
+DATE ET HEURE D'EXECUTION : 27/05/2026 - 12:17:41
+LIEU D'EXECUTION : EQUIDUCT MARCHE REGLEMENTE SEGMENTB
+LIBELLE DE LA VALEUR : CARREFOUR
+CODE VALEUR : FR0000120172
+QUANTITE : 15
+COURS : 16,06 EUR
+MONTANT BRUT 240,90
+TAXE SUR LES ACQUISITIONS DE TITRES 0,96
+COMMISSION 0,84
+NET PASSE SUR VOTRE COMPTE NUMERAIRE 12345 12345 12345678910 EUR 242,70
+Opration enregistre sur votre compte conformment  vos instructions, sous rserve de bonne fin.
+Le dtail de la ngociation en cas d'excutions multiples, outre le dtail des frais, sera communiqu sur simple demande de votre part
+auprs de votre conseiller.
+Ce document ne tient pas lieu de justificatif en matire de droits  dduction de la TVA.
+Page 1/1
+Caisse d'Epargne et de Prvoyance REDACTED - REDACTED - Banque cooprative rgie par les articles L512-85 et suivants du Code montaire et financier - Socit anonyme  directoire
+et conseil d'orientation et de surveillance - Capital de 1.315.000.000 euros - Sige social 2, REDACTED REDACTED REDACTED 12345 REDACTED REDACTED REDACTED 1 - REDACTED REDACTED REDACTED R.C.S. REDACTED - REDACTED
+d'assurance, immatricul  l'ORIAS sous le N= REDACTED - Titulaire de la carte professionnelle "Transactions sur immeubles et fonds de commerce" sans perception de fonds,
+effets ou valeurs n=REDACTED dlivre par la CCI de REDACTED-REDACTED, garantie par la CEGC - REDACTED, REDACTED REDACTED REDACTED REDACTED REDACTED Paris.
+Identifiant unique REP Papiers n= REDACTED (BPCE  SIRET REDACTED)
+REDACTED                                   
+REDACTED REDACTED REDACTED REDACTED REDACTED
+
+```
