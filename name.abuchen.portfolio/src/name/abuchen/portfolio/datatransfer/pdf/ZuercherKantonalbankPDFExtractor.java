@@ -163,6 +163,11 @@ public class ZuercherKantonalbankPDFExtractor extends AbstractPDFExtractor
                                                         .assign((t, v) -> {
                                                             t.setAmount(asAmount(v.get("amount")));
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+
+                                                            // @formatter:off
+                                                            // Set currency for tax and fee handling
+                                                            // @formatter:on
+                                                            v.getTransactionContext().putString("currency", asCurrencyCode(v.get("currency")));
                                                         }),
                                         // @formatter:off
                                         // Valor Bezeichnung Anzahl Kurs CHF Datum Total CHF
@@ -175,6 +180,11 @@ public class ZuercherKantonalbankPDFExtractor extends AbstractPDFExtractor
                                                         .assign((t, v) -> {
                                                             t.setAmount(asAmount(v.get("amount")));
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+
+                                                            // @formatter:off
+                                                            // Set currency for tax and fee handling
+                                                            // @formatter:on
+                                                            v.getTransactionContext().putString("currency", asCurrencyCode(v.get("currency")));
                                                         }),
                                         // @formatter:off
                                         // Stück CHF CHF
@@ -316,6 +326,11 @@ public class ZuercherKantonalbankPDFExtractor extends AbstractPDFExtractor
                                                         .assign((t, v) -> {
                                                             t.setAmount(asAmount(v.get("amount")));
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+
+                                                            // @formatter:off
+                                                            // Set currency for tax and fee handling
+                                                            // @formatter:on
+                                                            v.getTransactionContext().putString("currency", asCurrencyCode(v.get("currency")));
                                                         }),
                                         // @formatter:off
                                         // Zahlbar 24.01.2024
@@ -330,6 +345,11 @@ public class ZuercherKantonalbankPDFExtractor extends AbstractPDFExtractor
                                                         .assign((t, v) -> {
                                                             t.setAmount(asAmount(v.get("amount")));
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+
+                                                            // @formatter:off
+                                                            // Set currency for tax and fee handling
+                                                            // @formatter:on
+                                                            v.getTransactionContext().putString("currency", asCurrencyCode(v.get("currency")));
                                                         }),
                                         // @formatter:off
                                         // Total zu Ihren Gunsten Valuta 06.02.2024 42.08
