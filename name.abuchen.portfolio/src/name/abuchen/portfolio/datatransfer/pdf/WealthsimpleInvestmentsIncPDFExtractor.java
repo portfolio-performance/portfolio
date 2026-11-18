@@ -264,6 +264,9 @@ public class WealthsimpleInvestmentsIncPDFExtractor extends AbstractPDFExtractor
                                             {
                                                 Money tax = Money.of(asCurrencyCode(dividendTaxTransaction.get().currency), dividendTaxTransaction.get().tax);
                                                 checkAndSetTax(tax, t, type.getCurrentContext());
+
+                                                // The dividend is listed gross, the withholding tax is a separate line
+                                                t.setMonetaryAmount(t.getMonetaryAmount().subtract(tax));
                                             }
 
                                             ExtrExchangeRate rate = asExchangeRate(v);
@@ -313,6 +316,9 @@ public class WealthsimpleInvestmentsIncPDFExtractor extends AbstractPDFExtractor
                                             {
                                                 Money tax = Money.of(asCurrencyCode(dividendTaxTransaction.get().currency), dividendTaxTransaction.get().tax);
                                                 checkAndSetTax(tax, t, type.getCurrentContext());
+
+                                                // The dividend is listed gross, the withholding tax is a separate line
+                                                t.setMonetaryAmount(t.getMonetaryAmount().subtract(tax));
                                             }
 
                                             Money gross = Money.of(asCurrencyCode(v.get("currency")), t.getGrossValueAmount());
@@ -360,6 +366,9 @@ public class WealthsimpleInvestmentsIncPDFExtractor extends AbstractPDFExtractor
                                             {
                                                 Money tax = Money.of(asCurrencyCode(dividendTaxTransaction.get().currency), dividendTaxTransaction.get().tax);
                                                 checkAndSetTax(tax, t, type.getCurrentContext());
+
+                                                // The dividend is listed gross, the withholding tax is a separate line
+                                                t.setMonetaryAmount(t.getMonetaryAmount().subtract(tax));
                                             }
 
                                             Money gross = Money.of(asCurrencyCode(v.get("currency")), t.getGrossValueAmount());
@@ -396,6 +405,9 @@ public class WealthsimpleInvestmentsIncPDFExtractor extends AbstractPDFExtractor
                                             {
                                                 Money tax = Money.of(asCurrencyCode(dividendTaxTransaction.get().currency), dividendTaxTransaction.get().tax);
                                                 checkAndSetTax(tax, t, type.getCurrentContext());
+
+                                                // The dividend is listed gross, the withholding tax is a separate line
+                                                t.setMonetaryAmount(t.getMonetaryAmount().subtract(tax));
                                             }
                                         })
                         )

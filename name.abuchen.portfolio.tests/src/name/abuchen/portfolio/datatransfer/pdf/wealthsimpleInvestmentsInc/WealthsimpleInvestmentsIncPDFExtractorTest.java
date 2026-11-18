@@ -461,7 +461,7 @@ public class WealthsimpleInvestmentsIncPDFExtractorTest
                         hasShares(8.3610), //
                         hasSource("DepotStatement01.txt"), //
                         hasNote(null), //
-                        hasAmount("CAD", 8.55), hasGrossValue("CAD", 9.83), //
+                        hasAmount("CAD", 8.55 - 1.28), hasGrossValue("CAD", 8.55), //
                         hasTaxes("CAD", 1.28), hasFees("CAD", 0.00))));
 
         // check dividends transaction
@@ -470,7 +470,7 @@ public class WealthsimpleInvestmentsIncPDFExtractorTest
                         hasShares(20.8583), //
                         hasSource("DepotStatement01.txt"), //
                         hasNote(null), //
-                        hasAmount("CAD", 25.40), hasGrossValue("CAD", 29.21), //
+                        hasAmount("CAD", 25.40 - 3.81), hasGrossValue("CAD", 25.40), //
                         hasTaxes("CAD", 3.81), hasFees("CAD", 0.00))));
 
         // check dividends transaction
@@ -515,7 +515,7 @@ public class WealthsimpleInvestmentsIncPDFExtractorTest
                         hasShares(4.7706), //
                         hasSource("DepotStatement01.txt"), //
                         hasNote(null), //
-                        hasAmount("CAD", 4.29), hasGrossValue("CAD", 4.93), //
+                        hasAmount("CAD", 4.29 - 0.64), hasGrossValue("CAD", 4.29), //
                         hasTaxes("CAD", 0.64), hasFees("CAD", 0.00))));
 
         // check dividends transaction
@@ -596,7 +596,7 @@ public class WealthsimpleInvestmentsIncPDFExtractorTest
                         hasShares(5.5910), //
                         hasSource("DepotStatement01.txt"), //
                         hasNote(null), //
-                        hasAmount("CAD", 5.32), hasGrossValue("CAD", 6.12), //
+                        hasAmount("CAD", 5.32 - 0.80), hasGrossValue("CAD", 5.32), //
                         hasTaxes("CAD", 0.80), hasFees("CAD", 0.00))));
 
         // check dividends transaction
@@ -623,7 +623,7 @@ public class WealthsimpleInvestmentsIncPDFExtractorTest
                         hasShares(8.8424), //
                         hasSource("DepotStatement01.txt"), //
                         hasNote(null), //
-                        hasAmount("CAD", 11.02), hasGrossValue("CAD", 12.67), //
+                        hasAmount("CAD", 11.02 - 1.65), hasGrossValue("CAD", 11.02), //
                         hasTaxes("CAD", 1.65), hasFees("CAD", 0.00))));
 
         // check dividends transaction
@@ -632,7 +632,7 @@ public class WealthsimpleInvestmentsIncPDFExtractorTest
                         hasShares(22.6576), //
                         hasSource("DepotStatement01.txt"), //
                         hasNote(null), //
-                        hasAmount("CAD", 16.93), hasGrossValue("CAD", 19.47), //
+                        hasAmount("CAD", 16.93 - 2.54), hasGrossValue("CAD", 16.93), //
                         hasTaxes("CAD", 2.54), hasFees("CAD", 0.00))));
 
         // check dividends transaction
@@ -1141,8 +1141,8 @@ public class WealthsimpleInvestmentsIncPDFExtractorTest
                         hasShares(8.3610), //
                         hasSource("DepotStatement01.txt"), //
                         hasNote(null), //
-                        hasAmount("CAD", 8.55), hasGrossValue("CAD", 9.83), //
-                        hasForexGrossValue("USD", 7.60), //
+                        hasAmount("CAD", 8.55 - 1.28), hasGrossValue("CAD", 8.55), //
+                        hasForexGrossValue("USD", 6.61), //
                         hasTaxes("CAD", 1.28), hasFees("CAD", 0.00), //
                         check(tx -> {
                             var c = new CheckCurrenciesAction();
@@ -1158,8 +1158,8 @@ public class WealthsimpleInvestmentsIncPDFExtractorTest
                         hasShares(20.8583), //
                         hasSource("DepotStatement01.txt"), //
                         hasNote(null), //
-                        hasAmount("CAD", 25.40), hasGrossValue("CAD", 29.21), //
-                        hasForexGrossValue("USD", 22.60), //
+                        hasAmount("CAD", 25.40 - 3.81), hasGrossValue("CAD", 25.40), //
+                        hasForexGrossValue("USD", 19.65), //
                         hasTaxes("CAD", 3.81), hasFees("CAD", 0.00), //
                         check(tx -> {
                             var c = new CheckCurrenciesAction();
@@ -1211,8 +1211,8 @@ public class WealthsimpleInvestmentsIncPDFExtractorTest
                         hasShares(4.7706), //
                         hasSource("DepotStatement01.txt"), //
                         hasNote(null), //
-                        hasAmount("CAD", 4.29), hasGrossValue("CAD", 4.93), //
-                        hasForexGrossValue("USD", 3.70), //
+                        hasAmount("CAD", 4.29 - 0.64), hasGrossValue("CAD", 4.29), //
+                        hasForexGrossValue("USD", 3.22), //
                         hasTaxes("CAD", 0.64), hasFees("CAD", 0.00), //
                         check(tx -> {
                             var c = new CheckCurrenciesAction();
@@ -1300,8 +1300,8 @@ public class WealthsimpleInvestmentsIncPDFExtractorTest
                         hasShares(5.5910), //
                         hasSource("DepotStatement01.txt"), //
                         hasNote(null), //
-                        hasAmount("CAD", 5.32), hasGrossValue("CAD", 6.12), //
-                        hasForexGrossValue("USD", 4.50), //
+                        hasAmount("CAD", 5.32 - 0.80), hasGrossValue("CAD", 5.32), //
+                        hasForexGrossValue("USD", 3.91), //
                         hasTaxes("CAD", 0.80), hasFees("CAD", 0.00), //
                         check(tx -> {
                             var c = new CheckCurrenciesAction();
@@ -1335,8 +1335,8 @@ public class WealthsimpleInvestmentsIncPDFExtractorTest
                         hasShares(8.8424), //
                         hasSource("DepotStatement01.txt"), //
                         hasNote(null), //
-                        hasAmount("CAD", 11.02), hasGrossValue("CAD", 12.67), //
-                        hasForexGrossValue("USD", 9.36), //
+                        hasAmount("CAD", 11.02 - 1.65), hasGrossValue("CAD", 11.02), //
+                        hasForexGrossValue("USD", 8.14), //
                         hasTaxes("CAD", 1.65), hasFees("CAD", 0.00), //
                         check(tx -> {
                             var c = new CheckCurrenciesAction();
@@ -1352,8 +1352,8 @@ public class WealthsimpleInvestmentsIncPDFExtractorTest
                         hasShares(22.6576), //
                         hasSource("DepotStatement01.txt"), //
                         hasNote(null), //
-                        hasAmount("CAD", 16.93), hasGrossValue("CAD", 19.47), //
-                        hasForexGrossValue("USD", 14.38), //
+                        hasAmount("CAD", 16.93 - 2.54), hasGrossValue("CAD", 16.93), //
+                        hasForexGrossValue("USD", 12.51), //
                         hasTaxes("CAD", 2.54), hasFees("CAD", 0.00), //
                         check(tx -> {
                             var c = new CheckCurrenciesAction();
@@ -1669,7 +1669,7 @@ public class WealthsimpleInvestmentsIncPDFExtractorTest
                         hasShares(8.8424), //
                         hasSource("DepotStatement02.txt"), //
                         hasNote(null), //
-                        hasAmount("CAD", 11.02), hasGrossValue("CAD", 12.67), //
+                        hasAmount("CAD", 11.02 - 1.65), hasGrossValue("CAD", 11.02), //
                         hasTaxes("CAD", 1.65), hasFees("CAD", 0.00))));
 
         // check dividends transaction
@@ -1678,7 +1678,7 @@ public class WealthsimpleInvestmentsIncPDFExtractorTest
                         hasShares(22.6576), //
                         hasSource("DepotStatement02.txt"), //
                         hasNote(null), //
-                        hasAmount("CAD", 16.93), hasGrossValue("CAD", 19.47), //
+                        hasAmount("CAD", 16.93 - 2.54), hasGrossValue("CAD", 16.93), //
                         hasTaxes("CAD", 2.54), hasFees("CAD", 0.00))));
 
         // check dividends transaction
@@ -1899,8 +1899,8 @@ public class WealthsimpleInvestmentsIncPDFExtractorTest
                         hasShares(8.8424), //
                         hasSource("DepotStatement02.txt"), //
                         hasNote(null), //
-                        hasAmount("CAD", 11.02), hasGrossValue("CAD", 12.67), //
-                        hasForexGrossValue("USD", 9.36), //
+                        hasAmount("CAD", 11.02 - 1.65), hasGrossValue("CAD", 11.02), //
+                        hasForexGrossValue("USD", 8.14), //
                         hasTaxes("CAD", 1.65), hasFees("CAD", 0.00), //
                         check(tx -> {
                             var c = new CheckCurrenciesAction();
@@ -1916,8 +1916,8 @@ public class WealthsimpleInvestmentsIncPDFExtractorTest
                         hasShares(22.6576), //
                         hasSource("DepotStatement02.txt"), //
                         hasNote(null), //
-                        hasAmount("CAD", 16.93), hasGrossValue("CAD", 19.47), //
-                        hasForexGrossValue("USD", 14.38), //
+                        hasAmount("CAD", 16.93 - 2.54), hasGrossValue("CAD", 16.93), //
+                        hasForexGrossValue("USD", 12.51), //
                         hasTaxes("CAD", 2.54), hasFees("CAD", 0.00), //
                         check(tx -> {
                             var c = new CheckCurrenciesAction();
