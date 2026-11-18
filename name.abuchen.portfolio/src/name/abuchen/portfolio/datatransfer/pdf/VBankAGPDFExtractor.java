@@ -2,7 +2,6 @@ package name.abuchen.portfolio.datatransfer.pdf;
 
 import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetGrossUnit;
 
-import name.abuchen.portfolio.datatransfer.ExtrExchangeRate;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
@@ -33,12 +32,12 @@ public class VBankAGPDFExtractor extends AbstractPDFExtractor
 
     private void addBuySellTransaction()
     {
-        DocumentType type = new DocumentType("(Kauf|Verkauf)( \\((Zeichnung|R.cknahme)\\))?");
+        final var type = new DocumentType("(Kauf|Verkauf)( \\((Zeichnung|R.cknahme)\\))?");
         this.addDocumentTyp(type);
 
-        Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
+        var pdfTransaction = new Transaction<BuySellEntry>();
 
-        Block firstRelevantLine = new Block("^(Kauf|Verkauf)( \\((Zeichnung|R.cknahme)\\))?$", "^Diese Mitteilung wurde maschinell .*$");
+        var firstRelevantLine = new Block("^(Kauf|Verkauf)( \\((Zeichnung|R.cknahme)\\))?$", "^Diese Mitteilung wurde maschinell .*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -64,7 +63,7 @@ public class VBankAGPDFExtractor extends AbstractPDFExtractor
                         .match("^Wertpapierbezeichnung (?<name>.*)$") //
                         .match("^ISIN (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
                         .match("^WKN (?<wkn>[A-Z0-9]{6})$") //
-                        .match("^Kurs (?<currency>[\\w]{3}) [\\.,\\d]+$") //
+                        .match("^Kurs (?<currency>[A-Z]{3}) [\\.,\\d]+$") //
                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
                         // @formatter:off
@@ -86,7 +85,7 @@ public class VBankAGPDFExtractor extends AbstractPDFExtractor
                         // Ausmachender Betrag EUR 26.199,03
                         // @formatter:on
                         .section("currency", "amount") //
-                        .match("^Ausmachender Betrag (?<currency>[\\w]{3}) (\\-\\s)?(?<amount>[\\.,\\d]+)$") //
+                        .match("^Ausmachender Betrag (?<currency>[A-Z]{3}) (\\-\\s)?(?<amount>[\\.,\\d]+)$") //
                         .assign((t, v) -> {
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
@@ -97,14 +96,14 @@ public class VBankAGPDFExtractor extends AbstractPDFExtractor
                         // Devisenkurs EUR/USD 1,116670
                         // @formatter:on
                         .section("fxGross", "baseCurrency", "termCurrency", "exchangeRate").optional() //
-                        .match("^Kurswert [\\w]{3} \\- (?<fxGross>[\\.,\\d]+)$") //
-                        .match("^Devisenkurs (?<baseCurrency>[\\w]{3})\\/(?<termCurrency>[\\w]{3}) (?<exchangeRate>[\\.,\\d]+)$") //
+                        .match("^Kurswert [A-Z]{3} \\- (?<fxGross>[\\.,\\d]+)$") //
+                        .match("^Devisenkurs (?<baseCurrency>[A-Z]{3})\\/(?<termCurrency>[A-Z]{3}) (?<exchangeRate>[\\.,\\d]+)$") //
                         .assign((t, v) -> {
-                            ExtrExchangeRate rate = asExchangeRate(v);
+                            var rate = asExchangeRate(v);
                             type.getCurrentContext().putType(rate);
 
-                            Money fxGross = Money.of(rate.getTermCurrency(), asAmount(v.get("fxGross")));
-                            Money gross = rate.convert(rate.getBaseCurrency(), fxGross);
+                            var fxGross = Money.of(rate.getTermCurrency(), asAmount(v.get("fxGross")));
+                            var gross = rate.convert(rate.getBaseCurrency(), fxGross);
 
                             checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                         })
@@ -117,12 +116,12 @@ public class VBankAGPDFExtractor extends AbstractPDFExtractor
 
     private void addDividendeTransaction()
     {
-        DocumentType type = new DocumentType("Ertr.gnisabrechnung");
+        final var type = new DocumentType("Ertr.gnisabrechnung");
         this.addDocumentTyp(type);
 
-        Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
+        var pdfTransaction = new Transaction<AccountTransaction>();
 
-        Block firstRelevantLine = new Block("^Ertr.gnisabrechnung$", "^Der Abrechnungsbetrag wird mit Valuta .*$");
+        var firstRelevantLine = new Block("^Ertr.gnisabrechnung$", "^Der Abrechnungsbetrag wird mit Valuta .*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -141,7 +140,7 @@ public class VBankAGPDFExtractor extends AbstractPDFExtractor
                         .match("^Wertpapierbezeichnung (?<name>.*)$") //
                         .match("^ISIN (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
                         .match("^WKN (?<wkn>[A-Z0-9]{6})$") //
-                        .match("^W.hrung (?<currency>[\\w]{3})$") //
+                        .match("^W.hrung (?<currency>[A-Z]{3})$") //
                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
                         // @formatter:off
@@ -169,7 +168,7 @@ public class VBankAGPDFExtractor extends AbstractPDFExtractor
                         // Ausmachender Betrag EUR 48,54
                         // @formatter:on
                         .section("currency", "amount") //
-                        .match("^Ausmachender Betrag (?<currency>[\\w]{3}) (?<amount>[\\.,\\d]+)$") //
+                        .match("^Ausmachender Betrag (?<currency>[A-Z]{3}) (?<amount>[\\.,\\d]+)$") //
                         .assign((t, v) -> {
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(asAmount(v.get("amount")));
@@ -189,21 +188,21 @@ public class VBankAGPDFExtractor extends AbstractPDFExtractor
                         // Kapitalertragsteuer EUR - 386,08
                         // @formatter:on
                         .section("currency", "tax").optional() //
-                        .match("^Kapitalertrags(s)?teuer (?<currency>[\\w]{3}) \\-([\\s])?(?<tax>[\\.,\\d]+)") //
+                        .match("^Kapitalertrags(s)?teuer (?<currency>[A-Z]{3}) \\-([\\s])?(?<tax>[\\.,\\d]+)$") //
                         .assign((t, v) -> processTaxEntries(t, v, type))
 
                         // @formatter:off
                         // Solidaritätszuschlag EUR - 21,23
                         // @formatter:on
                         .section("currency", "tax").optional() //
-                        .match("^Solidarit.tszuschlag (?<currency>[\\w]{3}) \\-([\\s])?(?<tax>[\\.,\\d]+)") //
+                        .match("^Solidarit.tszuschlag (?<currency>[A-Z]{3}) \\-([\\s])?(?<tax>[\\.,\\d]+)$") //
                         .assign((t, v) -> processTaxEntries(t, v, type))
 
                         // @formatter:off
                         // Kirchensteuer EUR - 11,11
                         // @formatter:on
                         .section("currency", "tax").optional() //
-                        .match("^Kirchensteuer (?<currency>[\\w]{3}) \\-([\\s])?(?<tax>[\\.,\\d]+)") //
+                        .match("^Kirchensteuer (?<currency>[A-Z]{3}) \\-([\\s])?(?<tax>[\\.,\\d]+)$") //
                         .assign((t, v) -> processTaxEntries(t, v, type));
     }
 
@@ -215,35 +214,35 @@ public class VBankAGPDFExtractor extends AbstractPDFExtractor
                         // Bank-Provision EUR - 30,00
                         // @formatter:on
                         .section("currency", "fee").optional() //
-                        .match("^Bank\\-Provision (\\*\\s])?(?<currency>[\\w]{3}) \\-([\\s])?(?<fee>[\\.,\\d]+)$") //
+                        .match("^Bank\\-Provision (\\*\\s)?(?<currency>[A-Z]{3}) \\-([\\s])?(?<fee>[\\.,\\d]+)$") //
                         .assign((t, v) -> processFeeEntries(t, v, type))
 
                         // @formatter:off
                         // Abwicklungsgebühren * EUR - 2,00
                         // @formatter:on
                         .section("currency", "fee").optional() //
-                        .match("^Abwicklungsgeb.hren (\\*\\s)?(?<currency>[\\w]{3}) \\-([\\s])?(?<fee>[\\.,\\d]+)$") //
+                        .match("^Abwicklungsgeb.hren (\\*\\s)?(?<currency>[A-Z]{3}) \\-([\\s])?(?<fee>[\\.,\\d]+)$") //
                         .assign((t, v) -> processFeeEntries(t, v, type))
 
                         // @formatter:off
                         // Spesen * EUR - 1,00
                         // @formatter:on
                         .section("currency", "fee").optional() //
-                        .match("^Spesen (\\*\\s)?(?<currency>[\\w]{3}) \\-([\\s])?(?<fee>[\\.,\\d]+)$") //
+                        .match("^Spesen (\\*\\s)?(?<currency>[A-Z]{3}) \\-([\\s])?(?<fee>[\\.,\\d]+)$") //
                         .assign((t, v) -> processFeeEntries(t, v, type))
 
                         // @formatter:off
                         // Gebühren USD - 1,00
                         // @formatter:on
                         .section("currency", "fee").optional() //
-                        .match("^Geb.hren (\\*\\s)?(?<currency>[\\w]{3}) \\-([\\s])?(?<fee>[\\.,\\d]+)$") //
+                        .match("^Geb.hren (\\*\\s)?(?<currency>[A-Z]{3}) \\-([\\s])?(?<fee>[\\.,\\d]+)$") //
                         .assign((t, v) -> processFeeEntries(t, v, type))
 
                         // @formatter:off
                         // Courtage * EUR - 13,17
                         // @formatter:on
                         .section("currency", "fee").optional() //
-                        .match("^Courtage (\\*\\s)?(?<currency>[\\w]{3}) \\-([\\s])?(?<fee>[\\.,\\d]+)$") //
+                        .match("^Courtage (\\*\\s)?(?<currency>[A-Z]{3}) \\-([\\s])?(?<fee>[\\.,\\d]+)$") //
                         .assign((t, v) -> processFeeEntries(t, v, type));
     }
 }
