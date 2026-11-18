@@ -374,6 +374,14 @@ public class Messages extends NLS
     public static String VINISAppValueSecuritiesPurchase;
     public static String VINISAppValueTotalAssetsMarket;
     public static String VINISAppValueTotalAssetsPurchase;
+    public static String XTBCSVLabel;
+    public static String XTBCSVMsgCurrencyMissing;
+    public static String XTBCSVMsgErrorInLine;
+    public static String XTBCSVMsgFileNotSupported;
+    public static String XTBCSVMsgInstrumentMissing;
+    public static String XTBCSVMsgInterestTaxExceedsInterest;
+    public static String XTBCSVMsgSharesNotFound;
+    public static String XTBCSVMsgUnsupportedTransactionType;
 
     static
     {

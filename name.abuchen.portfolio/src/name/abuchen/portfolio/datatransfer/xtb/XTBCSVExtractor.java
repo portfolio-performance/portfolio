@@ -2,6 +2,7 @@ package name.abuchen.portfolio.datatransfer.xtb;
 
 import java.io.IOException;
 import java.io.StringReader;
+import java.io.UncheckedIOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.nio.ByteBuffer;
@@ -10,6 +11,7 @@ import java.nio.charset.Charset;
 import java.nio.charset.CodingErrorAction;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.text.MessageFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -22,6 +24,7 @@ import java.util.regex.Pattern;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVRecord;
 
+import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.datatransfer.Extractor;
 import name.abuchen.portfolio.datatransfer.SecurityCache;
 import name.abuchen.portfolio.model.AccountTransaction;
@@ -58,7 +61,7 @@ public class XTBCSVExtractor implements Extractor
     @Override
     public String getLabel()
     {
-        return "XTB (CSV)";
+        return Messages.XTBCSVLabel;
     }
 
     @Override
@@ -68,7 +71,8 @@ public class XTBCSVExtractor implements Extractor
         var currencyMatcher = CURRENCY.matcher(inputFile.getName());
         if (!currencyMatcher.matches() || CurrencyUnit.getInstance(currencyMatcher.group(1).toUpperCase()) == null)
         {
-            errors.add(new IllegalArgumentException("XTB account currency is missing from the CSV filename"));
+            errors.add(new IllegalArgumentException(
+                            MessageFormat.format(Messages.XTBCSVMsgCurrencyMissing, inputFile.getName())));
             return items;
         }
         var currency = currencyMatcher.group(1).toUpperCase();
@@ -82,12 +86,13 @@ public class XTBCSVExtractor implements Extractor
                             || !"Cash Operations".equals(value(records.get(1), 0))
                             || columns == null)
             {
-                errors.add(new IllegalArgumentException("File is not a supported XTB cash operations CSV export"));
+                errors.add(new IllegalArgumentException(
+                                MessageFormat.format(Messages.XTBCSVMsgFileNotSupported, inputFile.getName())));
                 return items;
             }
 
-            var interestTaxes = matchInterestTaxes(records, columns);
-            var matchedTaxes = new HashSet<>(interestTaxes.values());
+            var taxes = matchInterestTaxes(records, columns);
+            var matchedTaxes = new HashSet<>(taxes.values());
             var internalTransfers = matchInternalTransfers(records, columns);
             for (int index = 5; index < records.size(); index++)
             {
@@ -97,19 +102,24 @@ public class XTBCSVExtractor implements Extractor
                     continue;
                 try
                 {
-                    process(record, interestTaxes.get(record), columns, currency, securityCache, inputFile.getName(),
-                                    items);
+                    process(record, taxes.get(record), columns, currency, securityCache, inputFile.getName(), items);
                 }
                 catch (RuntimeException e)
                 {
-                    errors.add(new IllegalArgumentException(
-                                    "XTB CSV line " + record.getRecordNumber() + ": " + e.getMessage(), e));
+                    errors.add(new IllegalArgumentException(MessageFormat.format(Messages.XTBCSVMsgErrorInLine,
+                                    String.valueOf(record.getRecordNumber()), e.getMessage()), e));
                 }
             }
         }
         catch (IOException e)
         {
             errors.add(e);
+        }
+        catch (UncheckedIOException e)
+        {
+            // commons-csv reports malformed content (e.g. an unclosed quote)
+            // while reading the records
+            errors.add(e.getCause());
         }
 
         return items;
@@ -203,8 +213,8 @@ public class XTBCSVExtractor implements Extractor
             var content = StandardCharsets.UTF_8.newDecoder().onMalformedInput(CodingErrorAction.REPORT)
                             .onUnmappableCharacter(CodingErrorAction.REPORT).decode(ByteBuffer.wrap(bytes)).toString();
             // Excel's "CSV UTF-8" starts with a byte order mark, which the
-            // decoder keeps as a leading
-            return content.startsWith("﻿") ? content.substring(1) : content;
+            // decoder keeps as a leading character
+            return content.startsWith("\uFEFF") ? content.substring(1) : content;
         }
         catch (CharacterCodingException e)
         {
@@ -231,7 +241,7 @@ public class XTBCSVExtractor implements Extractor
         return true;
     }
 
-    private void process(CSVRecord record, CSVRecord interestTax, Columns columns, String currency,
+    private void process(CSVRecord record, CSVRecord matchedTax, Columns columns, String currency,
                     SecurityCache securityCache, String source, List<Item> items)
     {
         var type = value(record, 0);
@@ -247,7 +257,7 @@ public class XTBCSVExtractor implements Extractor
                 var security = lookupSecurity(record, columns, currency, securityCache);
                 var sharesMatcher = SHARES.matcher(comment);
                 if (!sharesMatcher.matches())
-                    throw new IllegalArgumentException("Cannot read trade quantity from " + comment);
+                    throw new IllegalArgumentException(MessageFormat.format(Messages.XTBCSVMsgSharesNotFound, comment));
                 var entry = new BuySellEntry();
                 entry.setType("Stock purchase".equals(type) ? PortfolioTransaction.Type.BUY
                                 : PortfolioTransaction.Type.SELL);
@@ -285,12 +295,12 @@ public class XTBCSVExtractor implements Extractor
                 transaction.setDateTime(date);
                 transaction.setCurrencyCode(currency);
                 transaction.setAmount(amount);
-                if (interestTax != null)
+                if (matchedTax != null)
                 {
-                    var tax = Math.abs(parseDecimal(value(interestTax, columns.amount()).replace(',', '.'),
+                    var tax = Math.abs(parseDecimal(value(matchedTax, columns.amount()).replace(',', '.'),
                                     Values.Amount.factor()));
                     if (tax > amount)
-                        throw new IllegalArgumentException("Interest tax exceeds interest");
+                        throw new IllegalArgumentException(Messages.XTBCSVMsgInterestTaxExceedsInterest);
                     transaction.setAmount(amount - tax);
                     transaction.addUnit(new Unit(Unit.Type.TAX, Money.of(currency, tax)));
                 }
@@ -299,7 +309,26 @@ public class XTBCSVExtractor implements Extractor
                 items.add(new TransactionItem(transaction));
                 break;
             default:
-                throw new IllegalArgumentException("Unsupported transaction type: " + type);
+                // show the row in the import wizard instead of dropping it
+                var unsupported = new AccountTransaction();
+                unsupported.setType(signedAmount >= 0 ? AccountTransaction.Type.DEPOSIT
+                                : AccountTransaction.Type.REMOVAL);
+                unsupported.setDateTime(date);
+                unsupported.setCurrencyCode(currency);
+                unsupported.setAmount(amount);
+                unsupported.setNote(note);
+                unsupported.setSource(source);
+                var item = new TransactionItem(unsupported)
+                {
+                    @Override
+                    public String getTypeInformation()
+                    {
+                        return type;
+                    }
+                };
+                item.setFailureMessage(MessageFormat.format(Messages.XTBCSVMsgUnsupportedTransactionType, type));
+                items.add(item);
+                break;
         }
     }
 
@@ -308,7 +337,7 @@ public class XTBCSVExtractor implements Extractor
         var ticker = value(record, columns.ticker());
         var name = value(record, columns.instrument());
         if (ticker.isEmpty() || name.isEmpty())
-            throw new IllegalArgumentException("Missing instrument or ticker");
+            throw new IllegalArgumentException(Messages.XTBCSVMsgInstrumentMissing);
         return securityCache.lookup(null, ticker, null, name, () -> new Security(name, currency));
     }
 
