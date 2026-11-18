@@ -43,26 +43,18 @@ public class VZVermoegenszentrumAGPDFExtractor extends AbstractPDFExtractor
 
     private void addBuySellTransaction()
     {
-        DocumentType type = new DocumentType("B.rsenabrechnung \\- (Kauf|Emission)");
+        final var type = new DocumentType("B.rsenabrechnung \\- (Kauf|Emission)");
         this.addDocumentTyp(type);
 
-        Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
+        var pdfTransaction = new Transaction<BuySellEntry>();
 
-        Block firstRelevantLine = new Block("^Auftragsnummer .*$");
+        var firstRelevantLine = new Block("^Auftragsnummer .*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
         pdfTransaction //
 
                         .subject(() -> new BuySellEntry(PortfolioTransaction.Type.BUY))
-
-//                        // Is type --> "Verkauf" change from BUY to SELL
-//                        .section("type").optional() //
-//                        .match("^Abrechnung (?<type>(Kauf|Verkauf|Zeichnung)).*$") //
-//                        .assign((t, v) -> {
-//                            if ("Verkauf".equals(v.get("type")))
-//                                t.setType(PortfolioTransaction.Type.SELL);
-//                        })
 
                         // @formatter:off
                         // Wir haben für Sie am 31.01.2022 gekauft.
@@ -73,12 +65,12 @@ public class VZVermoegenszentrumAGPDFExtractor extends AbstractPDFExtractor
                         // Total Kurswert CHF -986.00
                         // @formatter:on
                         .section("name1", "name", "wkn", "isin", "currency") //
-                        .find("Wir haben f.r Sie am.*")
+                        .find("Wir haben f.r Sie am.*") //
                         .match("^[\\.'\\d]+ (?<name1>.*)$") //
                         .match("^(?<name>.*)$") //
                         .match("^Valor: (?<wkn>[A-Z0-9]{5,9})$") //
                         .match("^ISIN: (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
-                        .match("^Total Kurswert (?<currency>[\\w]{3}) \\-[\\.'\\d]+$") //
+                        .match("^Total Kurswert (?<currency>[A-Z]{3}) \\-[\\.'\\d]+$") //
                         .assign((t, v) -> {
                             v.put("name", trim(v.get("name")) + " " + trim(v.get("name1")));
 
@@ -90,7 +82,7 @@ public class VZVermoegenszentrumAGPDFExtractor extends AbstractPDFExtractor
                         // 20 Namen-Aktie
                         // @formatter:on
                         .section("shares") //
-                        .find("Wir haben f.r Sie am.*")
+                        .find("Wir haben f.r Sie am.*") //
                         .match("^(?<shares>[\\.'\\d]+) .*$") //
                         .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
@@ -101,15 +93,15 @@ public class VZVermoegenszentrumAGPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("date", "time") //
                         .match("^Wir haben f.r Sie am (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
-                        .find("Ausf.hrung Menge Preis Kurswert")
-                        .match("^(?<time>[\\d]{2}:[\\d]{2}:[\\d]{2}) [\\.'\\d]+ [\\.'\\d]+ [\\w]{3} \\-[\\.'\\d]+$") //
+                        .find("Ausf.hrung Menge Preis Kurswert") //
+                        .match("^(?<time>[\\d]{2}:[\\d]{2}:[\\d]{2}) [\\.'\\d]+ [\\.'\\d]+ [A-Z]{3} \\-[\\.'\\d]+$") //
                         .assign((t, v) -> t.setDate(asDate(v.get("date"), v.get("time"))))
 
                         // @formatter:off
                         // Netto CHF -1'027.30
                         // @formatter:on
                         .section("currency", "amount") //
-                        .match("^Netto (?<currency>[\\w]{3}) \\-(?<amount>[\\.'\\d]+)$") //
+                        .match("^Netto (?<currency>[A-Z]{3}) \\-(?<amount>[\\.'\\d]+)$") //
                         .assign((t, v) -> {
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(asAmount(v.get("amount")));
@@ -130,12 +122,12 @@ public class VZVermoegenszentrumAGPDFExtractor extends AbstractPDFExtractor
 
     private void addDividendeTransaction()
     {
-        DocumentType type = new DocumentType("(Dividende|Aussch.ttung)");
+        final var type = new DocumentType("(Dividende|Aussch.ttung)");
         this.addDocumentTyp(type);
 
-        Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
+        var pdfTransaction = new Transaction<AccountTransaction>();
 
-        Block firstRelevantLine = new Block("^.*Unsere Referenz.*$");
+        var firstRelevantLine = new Block("^.*Unsere Referenz.*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -152,12 +144,12 @@ public class VZVermoegenszentrumAGPDFExtractor extends AbstractPDFExtractor
                         // Bestand: 38 zu CHF 5.99
                         // @formatter:on
                         .section("name1", "name", "wkn", "isin", "currency") //
-                        .find("Wir beziehen uns auf die in.*")
+                        .find("Wir beziehen uns auf die in.*") //
                         .match("^(?<name1>.*) Ex Datum:.*$") //
                         .match("^(?<name>.*) Zahlbar Datum:.*$") //
                         .match("^Valor: (?<wkn>[A-Z0-9]{5,9})$") //
                         .match("^ISIN: (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
-                        .match("^Bestand: [\\.'\\d]+ zu (?<currency>[\\w]{3}) [\\.'\\d]+$") //
+                        .match("^Bestand: [\\.'\\d]+ zu (?<currency>[A-Z]{3}) [\\.'\\d]+$") //
                         .assign((t, v) -> {
                             v.put("name", trim(v.get("name")) + " " + trim(v.get("name1")));
 
@@ -168,7 +160,7 @@ public class VZVermoegenszentrumAGPDFExtractor extends AbstractPDFExtractor
                         // Bestand: 38 zu CHF 5.99
                         // @formatter:on
                         .section("shares") //
-                        .match("^Bestand: (?<shares>[\\.'\\d]+) zu [\\w]{3} [\\.'\\d]+$") //
+                        .match("^Bestand: (?<shares>[\\.'\\d]+) zu [A-Z]{3} [\\.'\\d]+$") //
                         .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
                         // @formatter:off
@@ -190,7 +182,7 @@ public class VZVermoegenszentrumAGPDFExtractor extends AbstractPDFExtractor
                         // Netto CHF 147.95
                         // @formatter:on
                         .section("currency", "amount") //
-                        .match("^Netto (?<currency>[\\w]{3}) (?<amount>[\\.'\\d]+)$") //
+                        .match("^Netto (?<currency>[A-Z]{3}) (?<amount>[\\.'\\d]+)$") //
                         .assign((t, v) -> {
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(asAmount(v.get("amount")));
@@ -217,14 +209,14 @@ public class VZVermoegenszentrumAGPDFExtractor extends AbstractPDFExtractor
                         // Eidg. Umsatz Stempel CHF -0.75
                         // @formatter:on
                         .section("currency", "tax").optional() //
-                        .match("^Eidg\\. Umsatz Stempel (?<currency>[\\w]{3}) \\-(?<tax>[\\.'\\d]+)$") //
+                        .match("^Eidg\\. Umsatz Stempel (?<currency>[A-Z]{3}) \\-(?<tax>[\\.'\\d]+)$") //
                         .assign((t, v) -> processTaxEntries(t, v, type))
 
                         // @formatter:off
                         // Verrechnungssteuer 35% CHF -79.65
                         // @formatter:on
                         .section("currency", "tax").optional() //
-                        .match("^Verrechnungssteuer [\\.'\\d]+% (?<currency>[\\w]{3}) \\-(?<tax>[\\.'\\d]+)$") //
+                        .match("^Verrechnungssteuer [\\.'\\d]+% (?<currency>[A-Z]{3}) \\-(?<tax>[\\.'\\d]+)$") //
                         .assign((t, v) -> processTaxEntries(t, v, type));
     }
 
@@ -236,14 +228,14 @@ public class VZVermoegenszentrumAGPDFExtractor extends AbstractPDFExtractor
                         // Börsengebühren CHF -1.55
                         // @formatter:on
                         .section("currency", "fee").optional() //
-                        .match("^B.rsengeb.hren (?<currency>[\\w]{3}) \\-(?<fee>[\\.'\\d]+)$") //
+                        .match("^B.rsengeb.hren (?<currency>[A-Z]{3}) \\-(?<fee>[\\.'\\d]+)$") //
                         .assign((t, v) -> processFeeEntries(t, v, type))
 
                         // @formatter:off
                         // Courtage * CHF -39.00
                         // @formatter:on
                         .section("currency", "fee").optional() //
-                        .match("^Courtage \\* (?<currency>[\\w]{3}) \\-(?<fee>[\\.'\\d]+)$") //
+                        .match("^Courtage \\* (?<currency>[A-Z]{3}) \\-(?<fee>[\\.'\\d]+)$") //
                         .assign((t, v) -> processFeeEntries(t, v, type));
     }
 
