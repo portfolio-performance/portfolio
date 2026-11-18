@@ -71,7 +71,7 @@ public class XTBCSVExtractorTest
 
         assertThat(errors, empty());
         assertThat(countSecurities(items), is(1L));
-        assertThat(items.size(), is(17));
+        assertThat(items.size(), is(16));
         assertThat(items, hasItem(security( //
                         hasIsin(null), hasWkn(null), hasTicker("EXAM.DE"), //
                         hasName("Example ETF"), //
@@ -87,7 +87,7 @@ public class XTBCSVExtractorTest
     private void assertCashOperations(List<Item> items, String source)
     {
         assertThat(countBuySell(items), is(4L));
-        assertThat(countAccountTransactions(items), is(12L));
+        assertThat(countAccountTransactions(items), is(11L));
         assertThat(countItemsWithFailureMessage(items), is(0L));
         assertThat(countSkippedItems(items), is(0L));
 
@@ -147,21 +147,15 @@ public class XTBCSVExtractorTest
                         hasAmount("EUR", 0.03), hasGrossValue("EUR", 0.03), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
+        // the withholding tax booked at the same time becomes the tax of the
+        // dividend; the number of shares is derived from 0.3500 per share
         assertThat(items, hasItem(dividend( //
-                        hasDate("2025-01-10T10:00"), hasShares(0.00), //
+                        hasDate("2025-01-10T10:00"), hasShares(1.00), //
                         hasSecurity(hasName("Example ETF")), //
                         hasSource(source), //
                         hasNote("EXAM.DE EUR 0.3500/ SHR (XTB ID: 15)"), //
-                        hasAmount("EUR", 0.35), hasGrossValue("EUR", 0.35), //
-                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
-
-        assertThat(items, hasItem(taxes( //
-                        hasDate("2025-01-10T10:00"), hasShares(0.00), //
-                        hasSecurity(hasName("Example ETF")), //
-                        hasSource(source), //
-                        hasNote("EXAM.DE EUR WHT 15% (XTB ID: 16)"), //
-                        hasAmount("EUR", 0.05), hasGrossValue("EUR", 0.05), //
-                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+                        hasAmount("EUR", 0.30), hasGrossValue("EUR", 0.35), //
+                        hasTaxes("EUR", 0.05), hasFees("EUR", 0.00))));
 
         assertThat(items, hasItem(interest( //
                         hasDate("2025-02-03T18:23:45"), not(hasSecurity()), //
@@ -194,7 +188,7 @@ public class XTBCSVExtractorTest
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         assertThat(items, hasItem(dividend( //
-                        hasDate("2025-01-13T14:30"), hasShares(0.00), //
+                        hasDate("2025-01-13T14:30"), hasShares(2.00), //
                         hasSecurity(hasName("Example ETF")), //
                         hasSource(source), //
                         hasNote("EXAM.DE EUR 0.4800/ SHR (XTB ID: 21)"), //
@@ -305,7 +299,7 @@ public class XTBCSVExtractorTest
         }, errors);
 
         assertThat(errors, empty());
-        assertThat(items.size(), is(16));
+        assertThat(items.size(), is(15));
         assertThat(items, hasItem(deposit(hasNote("Vklad odměny za pozvání přátel (XTB ID: 1)"))));
     }
 

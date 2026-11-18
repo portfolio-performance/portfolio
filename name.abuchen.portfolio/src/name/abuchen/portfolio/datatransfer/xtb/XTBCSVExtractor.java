@@ -46,6 +46,7 @@ public class XTBCSVExtractor implements Extractor
                     "Comment", "Product" };
     private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     private static final Pattern CURRENCY = Pattern.compile("^([A-Z]{3})_.*\\.csv$", Pattern.CASE_INSENSITIVE);
+    private static final Pattern DIVIDEND_PER_SHARE = Pattern.compile("^\\S+ [A-Z]{3} (\\d+(?:\\.\\d+)?)/ SHR$");
     private static final Pattern SHARES = Pattern
                     .compile("^(?:OPEN BUY|CLOSE (?:BUY|SELL)) (\\d+(?:\\.\\d+)?)(?:/\\d+(?:\\.\\d+)?)? @ .*$");
 
@@ -92,6 +93,7 @@ public class XTBCSVExtractor implements Extractor
             }
 
             var taxes = matchInterestTaxes(records, columns);
+            taxes.putAll(matchWithholdingTaxes(records, columns));
             var matchedTaxes = new HashSet<>(taxes.values());
             var internalTransfers = matchInternalTransfers(records, columns);
             for (int index = 5; index < records.size(); index++)
@@ -150,6 +152,51 @@ public class XTBCSVExtractor implements Extractor
                     if (interestDate.toLocalDate().equals(taxDate.toLocalDate()))
                     {
                         matches.put(interest, tax);
+                        matchedTaxes.add(tax);
+                        break;
+                    }
+                }
+                catch (RuntimeException e)
+                {
+                    // Malformed rows are reported while processing the individual record.
+                }
+            }
+        }
+        return matches;
+    }
+
+    /**
+     * Pairs a dividend with the withholding tax of the same instrument booked at
+     * the same time, so that the tax becomes a unit of the dividend (as for the
+     * interest tax). Unpaired taxes are booked as separate transactions.
+     */
+    private Map<CSVRecord, CSVRecord> matchWithholdingTaxes(List<CSVRecord> records, Columns columns)
+    {
+        var matches = new HashMap<CSVRecord, CSVRecord>();
+        var matchedTaxes = new HashSet<CSVRecord>();
+        for (int index = 5; index < records.size(); index++)
+        {
+            var dividend = records.get(index);
+            if (!"Dividend".equals(value(dividend, 0)))
+                continue;
+
+            for (int taxIndex = 5; taxIndex < records.size(); taxIndex++)
+            {
+                var tax = records.get(taxIndex);
+                if (matchedTaxes.contains(tax) || !"Withholding tax".equals(value(tax, 0))
+                                || !value(dividend, columns.ticker()).equals(value(tax, columns.ticker()))
+                                || !value(dividend, columns.time()).equals(value(tax, columns.time())))
+                    continue;
+
+                try
+                {
+                    var gross = parseDecimal(value(dividend, columns.amount()).replace(',', '.'),
+                                    Values.Amount.factor());
+                    var withheld = -parseDecimal(value(tax, columns.amount()).replace(',', '.'),
+                                    Values.Amount.factor());
+                    if (withheld >= 0 && withheld <= gross)
+                    {
+                        matches.put(dividend, tax);
                         matchedTaxes.add(tax);
                         break;
                     }
@@ -295,6 +342,11 @@ public class XTBCSVExtractor implements Extractor
                 transaction.setDateTime(date);
                 transaction.setCurrencyCode(currency);
                 transaction.setAmount(amount);
+                // the comment carries the dividend per share, e.g.
+                // "EXAM.DE EUR 0.3500/ SHR"; the number of shares is not
+                // part of the export
+                if ("Dividend".equals(type) || "Spinoff".equals(type))
+                    transaction.setShares(sharesFromDividendPerShare(comment, amount));
                 if (matchedTax != null)
                 {
                     var tax = Math.abs(parseDecimal(value(matchedTax, columns.amount()).replace(',', '.'),
@@ -330,6 +382,23 @@ public class XTBCSVExtractor implements Extractor
                 items.add(item);
                 break;
         }
+    }
+
+    private long sharesFromDividendPerShare(String comment, long amount)
+    {
+        var matcher = DIVIDEND_PER_SHARE.matcher(comment);
+        if (!matcher.matches())
+            return 0;
+
+        var perShare = new BigDecimal(matcher.group(1));
+        if (perShare.signum() <= 0)
+            return 0;
+
+        // the amount is rounded to cents, therefore the result is rounded to
+        // six decimal places
+        return BigDecimal.valueOf(amount).divide(BigDecimal.valueOf(Values.Amount.factor()))
+                        .divide(perShare, 6, RoundingMode.HALF_UP).multiply(BigDecimal.valueOf(Values.Share.factor()))
+                        .longValueExact();
     }
 
     private Security lookupSecurity(CSVRecord record, Columns columns, String currency, SecurityCache securityCache)
