@@ -43,8 +43,8 @@ public class XTBCSVExtractor implements Extractor
                     "Comment", "Product" };
     private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     private static final Pattern CURRENCY = Pattern.compile("^([A-Z]{3})_.*\\.csv$", Pattern.CASE_INSENSITIVE);
-    private static final Pattern SHARES = Pattern
-                    .compile("^(?:OPEN BUY|CLOSE (?:BUY|SELL)) (\\d+(?:\\.\\d+)?)(?:/\\d+(?:\\.\\d+)?)? @ .*$");
+    private static final Pattern SHARES = Pattern.compile(
+                    "^(?:OPEN BUY|CLOSE (?:BUY|SELL)) (?:\\S+ )?(\\d+(?:\\.\\d+)?)(?:/\\d+(?:\\.\\d+)?)? @ .*$");
 
     private record Columns(int instrument, int ticker, int time, int amount, int id, int comment)
     {
@@ -260,13 +260,20 @@ public class XTBCSVExtractor implements Extractor
                 entry.setSource(source);
                 items.add(new BuySellEntryItem(entry));
                 break;
-            case "Deposit", "Withdrawal", "Dividend", "Spinoff", "Withholding tax", "Tax IFTT", "Swap",
-                            "Close trade", "Free funds interest", "Free funds interest tax":
+            case "Deposit", "Withdrawal", "IKE deposit", "Dividend", "Spinoff", "Withholding tax", "Tax IFTT",
+                            "Swap", "Close trade", "Free funds interest", "Free funds interest tax", "Transfer",
+                            "Subaccount transfer":
                 var transaction = new AccountTransaction();
                 transaction.setType(switch (type)
                 {
-                    case "Deposit" -> AccountTransaction.Type.DEPOSIT;
+                    case "Deposit", "IKE deposit" -> AccountTransaction.Type.DEPOSIT;
                     case "Withdrawal" -> AccountTransaction.Type.REMOVAL;
+                    // Unmatched transfers are not internal moves between the
+                    // user's own XTB sub-accounts (those are paired and
+                    // skipped above); they are money entering or leaving
+                    // this account.
+                    case "Transfer", "Subaccount transfer" -> signedAmount >= 0 ? AccountTransaction.Type.DEPOSIT
+                                    : AccountTransaction.Type.REMOVAL;
                     case "Dividend", "Spinoff" -> AccountTransaction.Type.DIVIDENDS;
                     case "Free funds interest" -> AccountTransaction.Type.INTEREST;
                     case "Swap", "Close trade" -> signedAmount > 0 ? AccountTransaction.Type.INTEREST
