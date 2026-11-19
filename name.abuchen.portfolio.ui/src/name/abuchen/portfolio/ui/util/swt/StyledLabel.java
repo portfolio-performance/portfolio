@@ -271,8 +271,27 @@ public class StyledLabel extends Canvas // NOSONAR
         return new Point(bounds.width + 4, bounds.height + 1);
     }
 
+    /**
+     * Sets the wrap width of the text layout to the current width of the
+     * label. {@link #computeSize} sets the width of the text layout to the
+     * width hint it is called with. Layouts call it with hints that differ from
+     * the bounds the label finally gets, for example with the width of the
+     * whole dashboard while the label sits in one of its columns. Painting and
+     * finding the link under the mouse pointer must use the actual width.
+     */
+    private void updateWrapWidth()
+    {
+        if ((getStyle() & SWT.WRAP) == 0)
+            return;
+
+        int width = getClientArea().width;
+        if (width > 0)
+            this.textLayout.setWidth(Math.max(width - 4, 1));
+    }
+
     private void handlePaint(Event e)
     {
+        updateWrapWidth();
         this.textLayout.draw(e.gc, 0, 0);
     }
 
@@ -301,6 +320,8 @@ public class StyledLabel extends Canvas // NOSONAR
 
     private String getLinkUrlAtMousePointer(Event event)
     {
+        updateWrapWidth();
+
         int offset = this.textLayout.getOffset(event.x, event.y, null);
         if (offset == -1)
             return null;
