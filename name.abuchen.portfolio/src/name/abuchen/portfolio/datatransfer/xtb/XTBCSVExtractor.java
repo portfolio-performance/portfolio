@@ -79,8 +79,20 @@ public class XTBCSVExtractor implements Extractor
         }
         var currency = currencyMatcher.group(1).toUpperCase();
 
-        try (var reader = new StringReader(readContent(inputFile));
-                        var parser = CSVFormat.DEFAULT.builder().setDelimiter(';').get().parse(reader))
+        String content;
+        try
+        {
+            content = readContent(inputFile);
+        }
+        catch (IOException e)
+        {
+            errors.add(e);
+            return items;
+        }
+
+        try (var reader = new StringReader(content);
+                        var parser = CSVFormat.DEFAULT.builder().setDelimiter(detectDelimiter(content)).get()
+                                        .parse(reader))
         {
             var records = parser.getRecords();
             var columns = records.size() >= 5 ? columnsFor(records.get(4)) : null;
@@ -266,6 +278,15 @@ public class XTBCSVExtractor implements Extractor
             }
         }
         return paired;
+    }
+
+    /**
+     * Excel saves a CSV file with the list separator of the regional settings,
+     * e.g. ";" in German and "," in English.
+     */
+    private static char detectDelimiter(String content)
+    {
+        return content.startsWith("Account number,") ? ',' : ';';
     }
 
     private String readContent(InputFile inputFile) throws IOException

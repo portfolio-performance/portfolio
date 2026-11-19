@@ -36,12 +36,16 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.collection.IsEmptyCollection.empty;
 
 import java.io.IOException;
+import java.io.StringReader;
+import java.io.StringWriter;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVPrinter;
 import org.junit.Test;
 
 import name.abuchen.portfolio.datatransfer.Extractor.InputFile;
@@ -324,6 +328,53 @@ public class XTBCSVExtractorTest
 
         assertThat(errors, empty());
         assertCashOperations(items);
+    }
+
+    @Test
+    public void testCommaSeparatedFile() throws IOException
+    {
+        var resource = TestExtractorHelper.loadResourceAsInputFile(getClass(), "EUR_account_sample.csv");
+        var content = toCommaSeparated(Files.readString(resource.getFile().toPath()));
+        var file = Files.createTempFile("xtb-comma-", ".csv");
+        Files.writeString(file, content, StandardCharsets.UTF_8);
+
+        var client = new Client();
+        var errors = new ArrayList<Exception>();
+        var items = new XTBCSVExtractor(client).extract(new SecurityCache(client), new InputFile(file.toFile())
+        {
+            @Override
+            public String getName()
+            {
+                return "EUR_account_sample.csv";
+            }
+        }, errors);
+
+        assertThat(errors, empty());
+        assertCashOperations(items);
+    }
+
+    /**
+     * Converts the sample to the format of Excel with English regional
+     * settings: "," as separator and "." as decimal separator.
+     */
+    private String toCommaSeparated(String content) throws IOException
+    {
+        var converted = new StringWriter();
+        try (var parser = CSVFormat.DEFAULT.builder().setDelimiter(';').get().parse(new StringReader(content));
+                        var printer = new CSVPrinter(converted,
+                                        CSVFormat.DEFAULT.builder().setRecordSeparator('\n').get()))
+        {
+            var lineNumber = 0;
+            for (var csvRecord : parser)
+            {
+                var values = csvRecord.toList();
+                // the amount is the fifth column below the header
+                if (lineNumber++ > 4)
+                    values.set(4, values.get(4).replace(',', '.'));
+                printer.printRecord(values);
+            }
+        }
+        return converted.toString();
     }
 
     @Test
