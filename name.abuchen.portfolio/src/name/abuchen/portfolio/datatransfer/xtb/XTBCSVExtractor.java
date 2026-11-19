@@ -2,6 +2,7 @@ package name.abuchen.portfolio.datatransfer.xtb;
 
 import java.io.IOException;
 import java.io.StringReader;
+import java.io.UncheckedIOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.nio.ByteBuffer;
@@ -10,6 +11,7 @@ import java.nio.charset.Charset;
 import java.nio.charset.CodingErrorAction;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.text.MessageFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -22,6 +24,7 @@ import java.util.regex.Pattern;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVRecord;
 
+import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.datatransfer.Extractor;
 import name.abuchen.portfolio.datatransfer.SecurityCache;
 import name.abuchen.portfolio.model.AccountTransaction;
@@ -43,6 +46,8 @@ public class XTBCSVExtractor implements Extractor
                     "Comment", "Product" };
     private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     private static final Pattern CURRENCY = Pattern.compile("^([A-Z]{3})_.*\\.csv$", Pattern.CASE_INSENSITIVE);
+    private static final Pattern DIVIDEND_PER_SHARE = Pattern
+                    .compile("^\\S+ (?<currency>[A-Z]{3}) (?<perShare>\\d+(?:\\.\\d+)?)/ SHR$");
     private static final Pattern SHARES = Pattern
                     .compile("^(?:OPEN BUY|CLOSE (?:BUY|SELL)) (\\d+(?:\\.\\d+)?)(?:/\\d+(?:\\.\\d+)?)? @ .*$");
 
@@ -58,7 +63,7 @@ public class XTBCSVExtractor implements Extractor
     @Override
     public String getLabel()
     {
-        return "XTB (CSV)";
+        return Messages.XTBCSVLabel;
     }
 
     @Override
@@ -68,13 +73,26 @@ public class XTBCSVExtractor implements Extractor
         var currencyMatcher = CURRENCY.matcher(inputFile.getName());
         if (!currencyMatcher.matches() || CurrencyUnit.getInstance(currencyMatcher.group(1).toUpperCase()) == null)
         {
-            errors.add(new IllegalArgumentException("XTB account currency is missing from the CSV filename"));
+            errors.add(new IllegalArgumentException(
+                            MessageFormat.format(Messages.XTBCSVMsgCurrencyMissing, inputFile.getName())));
             return items;
         }
         var currency = currencyMatcher.group(1).toUpperCase();
 
-        try (var reader = new StringReader(readContent(inputFile));
-                        var parser = CSVFormat.DEFAULT.builder().setDelimiter(';').get().parse(reader))
+        String content;
+        try
+        {
+            content = readContent(inputFile);
+        }
+        catch (IOException e)
+        {
+            errors.add(e);
+            return items;
+        }
+
+        try (var reader = new StringReader(content);
+                        var parser = CSVFormat.DEFAULT.builder().setDelimiter(detectDelimiter(content)).get()
+                                        .parse(reader))
         {
             var records = parser.getRecords();
             var columns = records.size() >= 5 ? columnsFor(records.get(4)) : null;
@@ -82,12 +100,14 @@ public class XTBCSVExtractor implements Extractor
                             || !"Cash Operations".equals(value(records.get(1), 0))
                             || columns == null)
             {
-                errors.add(new IllegalArgumentException("File is not a supported XTB cash operations CSV export"));
+                errors.add(new IllegalArgumentException(
+                                MessageFormat.format(Messages.XTBCSVMsgFileNotSupported, inputFile.getName())));
                 return items;
             }
 
-            var interestTaxes = matchInterestTaxes(records, columns);
-            var matchedTaxes = new HashSet<>(interestTaxes.values());
+            var taxes = matchInterestTaxes(records, columns);
+            taxes.putAll(matchWithholdingTaxes(records, columns));
+            var matchedTaxes = new HashSet<>(taxes.values());
             var internalTransfers = matchInternalTransfers(records, columns);
             for (int index = 5; index < records.size(); index++)
             {
@@ -95,24 +115,44 @@ public class XTBCSVExtractor implements Extractor
                 if ("Total".equals(value(record, 0)) || matchedTaxes.contains(record)
                                 || internalTransfers.contains(record))
                     continue;
-                try
-                {
-                    process(record, interestTaxes.get(record), columns, currency, securityCache, inputFile.getName(),
-                                    items);
-                }
-                catch (RuntimeException e)
-                {
-                    errors.add(new IllegalArgumentException(
-                                    "XTB CSV line " + record.getRecordNumber() + ": " + e.getMessage(), e));
-                }
+                var tax = taxes.get(record);
+                var processed = tryProcess(record, tax, columns, currency, securityCache, inputFile.getName(), items,
+                                errors);
+
+                // the paired tax must not get lost if its dividend or interest
+                // cannot be imported
+                if (!processed && tax != null)
+                    tryProcess(tax, null, columns, currency, securityCache, inputFile.getName(), items, errors);
             }
         }
         catch (IOException e)
         {
             errors.add(e);
         }
+        catch (UncheckedIOException e)
+        {
+            // commons-csv reports malformed content (e.g. an unclosed quote)
+            // while reading the records
+            errors.add(e.getCause());
+        }
 
         return items;
+    }
+
+    private boolean tryProcess(CSVRecord record, CSVRecord matchedTax, Columns columns, String currency,
+                    SecurityCache securityCache, String source, List<Item> items, List<Exception> errors)
+    {
+        try
+        {
+            process(record, matchedTax, columns, currency, securityCache, source, items);
+            return true;
+        }
+        catch (RuntimeException e)
+        {
+            errors.add(new IllegalArgumentException(MessageFormat.format(Messages.XTBCSVMsgErrorInLine,
+                            String.valueOf(record.getRecordNumber()), e.getMessage()), e));
+            return false;
+        }
     }
 
     private Map<CSVRecord, CSVRecord> matchInterestTaxes(List<CSVRecord> records, Columns columns)
@@ -140,6 +180,51 @@ public class XTBCSVExtractor implements Extractor
                     if (interestDate.toLocalDate().equals(taxDate.toLocalDate()))
                     {
                         matches.put(interest, tax);
+                        matchedTaxes.add(tax);
+                        break;
+                    }
+                }
+                catch (RuntimeException e)
+                {
+                    // Malformed rows are reported while processing the individual record.
+                }
+            }
+        }
+        return matches;
+    }
+
+    /**
+     * Pairs a dividend with the withholding tax of the same instrument booked at
+     * the same time, so that the tax becomes a unit of the dividend (as for the
+     * interest tax). Unpaired taxes are booked as separate transactions.
+     */
+    private Map<CSVRecord, CSVRecord> matchWithholdingTaxes(List<CSVRecord> records, Columns columns)
+    {
+        var matches = new HashMap<CSVRecord, CSVRecord>();
+        var matchedTaxes = new HashSet<CSVRecord>();
+        for (int index = 5; index < records.size(); index++)
+        {
+            var dividend = records.get(index);
+            if (!"Dividend".equals(value(dividend, 0)))
+                continue;
+
+            for (int taxIndex = 5; taxIndex < records.size(); taxIndex++)
+            {
+                var tax = records.get(taxIndex);
+                if (matchedTaxes.contains(tax) || !"Withholding tax".equals(value(tax, 0))
+                                || !value(dividend, columns.ticker()).equals(value(tax, columns.ticker()))
+                                || !value(dividend, columns.time()).equals(value(tax, columns.time())))
+                    continue;
+
+                try
+                {
+                    var gross = parseDecimal(value(dividend, columns.amount()).replace(',', '.'),
+                                    Values.Amount.factor());
+                    var withheld = -parseDecimal(value(tax, columns.amount()).replace(',', '.'),
+                                    Values.Amount.factor());
+                    if (withheld >= 0 && withheld <= gross)
+                    {
+                        matches.put(dividend, tax);
                         matchedTaxes.add(tax);
                         break;
                     }
@@ -195,6 +280,15 @@ public class XTBCSVExtractor implements Extractor
         return paired;
     }
 
+    /**
+     * Excel saves a CSV file with the list separator of the regional settings,
+     * e.g. ";" in German and "," in English.
+     */
+    private static char detectDelimiter(String content)
+    {
+        return content.startsWith("Account number,") ? ',' : ';';
+    }
+
     private String readContent(InputFile inputFile) throws IOException
     {
         var bytes = Files.readAllBytes(inputFile.getFile().toPath());
@@ -203,8 +297,8 @@ public class XTBCSVExtractor implements Extractor
             var content = StandardCharsets.UTF_8.newDecoder().onMalformedInput(CodingErrorAction.REPORT)
                             .onUnmappableCharacter(CodingErrorAction.REPORT).decode(ByteBuffer.wrap(bytes)).toString();
             // Excel's "CSV UTF-8" starts with a byte order mark, which the
-            // decoder keeps as a leading
-            return content.startsWith("﻿") ? content.substring(1) : content;
+            // decoder keeps as a leading character
+            return content.startsWith("\uFEFF") ? content.substring(1) : content;
         }
         catch (CharacterCodingException e)
         {
@@ -231,7 +325,7 @@ public class XTBCSVExtractor implements Extractor
         return true;
     }
 
-    private void process(CSVRecord record, CSVRecord interestTax, Columns columns, String currency,
+    private void process(CSVRecord record, CSVRecord matchedTax, Columns columns, String currency,
                     SecurityCache securityCache, String source, List<Item> items)
     {
         var type = value(record, 0);
@@ -239,7 +333,8 @@ public class XTBCSVExtractor implements Extractor
         var signedAmount = parseDecimal(value(record, columns.amount()).replace(',', '.'), Values.Amount.factor());
         var amount = Math.abs(signedAmount);
         var comment = value(record, columns.comment());
-        var note = comment + " (XTB ID: " + value(record, columns.id()) + ")";
+        var id = value(record, columns.id());
+        var note = id.isEmpty() ? comment : comment + " (XTB ID: " + id + ")";
 
         switch (type)
         {
@@ -247,7 +342,7 @@ public class XTBCSVExtractor implements Extractor
                 var security = lookupSecurity(record, columns, currency, securityCache);
                 var sharesMatcher = SHARES.matcher(comment);
                 if (!sharesMatcher.matches())
-                    throw new IllegalArgumentException("Cannot read trade quantity from " + comment);
+                    throw new IllegalArgumentException(MessageFormat.format(Messages.XTBCSVMsgSharesNotFound, comment));
                 var entry = new BuySellEntry();
                 entry.setType("Stock purchase".equals(type) ? PortfolioTransaction.Type.BUY
                                 : PortfolioTransaction.Type.SELL);
@@ -285,12 +380,17 @@ public class XTBCSVExtractor implements Extractor
                 transaction.setDateTime(date);
                 transaction.setCurrencyCode(currency);
                 transaction.setAmount(amount);
-                if (interestTax != null)
+                // the comment carries the dividend per share, e.g.
+                // "EXAM.DE EUR 0.3500/ SHR"; the number of shares is not
+                // part of the export
+                if ("Dividend".equals(type) || "Spinoff".equals(type))
+                    transaction.setShares(sharesFromDividendPerShare(comment, amount, currency));
+                if (matchedTax != null)
                 {
-                    var tax = Math.abs(parseDecimal(value(interestTax, columns.amount()).replace(',', '.'),
+                    var tax = Math.abs(parseDecimal(value(matchedTax, columns.amount()).replace(',', '.'),
                                     Values.Amount.factor()));
                     if (tax > amount)
-                        throw new IllegalArgumentException("Interest tax exceeds interest");
+                        throw new IllegalArgumentException(Messages.XTBCSVMsgInterestTaxExceedsInterest);
                     transaction.setAmount(amount - tax);
                     transaction.addUnit(new Unit(Unit.Type.TAX, Money.of(currency, tax)));
                 }
@@ -299,8 +399,49 @@ public class XTBCSVExtractor implements Extractor
                 items.add(new TransactionItem(transaction));
                 break;
             default:
-                throw new IllegalArgumentException("Unsupported transaction type: " + type);
+                // show the row in the import wizard instead of dropping it
+                var unsupported = new AccountTransaction();
+                unsupported.setType(signedAmount >= 0 ? AccountTransaction.Type.DEPOSIT
+                                : AccountTransaction.Type.REMOVAL);
+                unsupported.setDateTime(date);
+                unsupported.setCurrencyCode(currency);
+                unsupported.setAmount(amount);
+                unsupported.setNote(note);
+                unsupported.setSource(source);
+                var item = new TransactionItem(unsupported)
+                {
+                    @Override
+                    public String getTypeInformation()
+                    {
+                        return type;
+                    }
+                };
+                item.setFailureMessage(MessageFormat.format(Messages.XTBCSVMsgUnsupportedTransactionType, type));
+                items.add(item);
+                break;
         }
+    }
+
+    private long sharesFromDividendPerShare(String comment, long amount, String currency)
+    {
+        var matcher = DIVIDEND_PER_SHARE.matcher(comment);
+        if (!matcher.matches())
+            return 0;
+
+        // the amount is booked in the account currency; without exchange
+        // rate a dividend per share in another currency cannot be used
+        if (!currency.equals(matcher.group("currency")))
+            return 0;
+
+        var perShare = new BigDecimal(matcher.group("perShare"));
+        if (perShare.signum() <= 0)
+            return 0;
+
+        // the amount is rounded to cents, therefore the result is rounded to
+        // six decimal places
+        return BigDecimal.valueOf(amount).divide(BigDecimal.valueOf(Values.Amount.factor()))
+                        .divide(perShare, 6, RoundingMode.HALF_UP).multiply(BigDecimal.valueOf(Values.Share.factor()))
+                        .longValueExact();
     }
 
     private Security lookupSecurity(CSVRecord record, Columns columns, String currency, SecurityCache securityCache)
@@ -308,7 +449,7 @@ public class XTBCSVExtractor implements Extractor
         var ticker = value(record, columns.ticker());
         var name = value(record, columns.instrument());
         if (ticker.isEmpty() || name.isEmpty())
-            throw new IllegalArgumentException("Missing instrument or ticker");
+            throw new IllegalArgumentException(Messages.XTBCSVMsgInstrumentMissing);
         return securityCache.lookup(null, ticker, null, name, () -> new Security(name, currency));
     }
 
