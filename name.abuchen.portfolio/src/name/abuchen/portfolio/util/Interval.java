@@ -44,6 +44,20 @@ public final class Interval
         return end;
     }
 
+    /**
+     * Returns an interval that does not extend beyond the given date. If the
+     * end is after the given date, the end is set to the given date. If also
+     * the start is after the given date, the start is set to the given date,
+     * too, which results in an empty interval.
+     */
+    public Interval capEnd(LocalDate latest)
+    {
+        if (!end.isAfter(latest))
+            return this;
+
+        return Interval.of(start.isAfter(latest) ? latest : start, latest);
+    }
+
     public boolean isLongerThan(Interval other)
     {
         return getDays() > other.getDays();

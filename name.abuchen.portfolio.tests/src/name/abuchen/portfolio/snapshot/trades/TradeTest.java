@@ -9,10 +9,13 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
 import org.junit.Test;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 
 import name.abuchen.portfolio.junit.AccountBuilder;
 import name.abuchen.portfolio.junit.PortfolioBuilder;
@@ -396,5 +399,44 @@ public class TradeTest
         // simple return of USD 7,850 / USD 5,150 - 1
         assertThat(trade.getReturn(), is(7850 / 5150.0 - 1));
         assertEquals(0.52427, trade.getIRR(), 0.0001);
+    }
+
+    /**
+     * The moving average cost of a closed trade includes all purchases before
+     * the closing transaction, even if they are dated in the future. Reporting
+     * periods are capped at today (issue #463), but the trade cost calculation
+     * must not be.
+     */
+    @Test
+    public void testMovingAverageCostIncludesPurchasesDatedInTheFuture() throws TradeCollectorException
+    {
+        var today = LocalDate.parse("2024-11-19");
+
+        try (MockedStatic<LocalDate> mockedStatic = Mockito.mockStatic(LocalDate.class, invocation -> {
+            if (invocation.getMethod().getName().equals("now"))
+                return today;
+            else
+                return invocation.callRealMethod();
+        }))
+        {
+            var client = new Client();
+            var collector = new TradeCollector(client, new TestCurrencyConverter());
+
+            var port = new PortfolioBuilder();
+            port.addTo(client);
+
+            var security = new SecurityBuilder().addTo(client);
+            port.buyPrice(security, "2024-11-18", 10.0, 100.0) //
+                            .buyPrice(security, "2024-11-20", 10.0, 200.0) //
+                            .sellPrice(security, "2024-11-21", 10.0, 250.0);
+
+            var trades = collector.collect(security);
+            assertThat(trades.size(), is(2));
+
+            var trade = trades.get(0);
+            assertThat(trade.isClosed(), is(true));
+            assertThat(trade.getEntryValue(), is(Money.of(CurrencyUnit.EUR, amountOf(1000))));
+            assertThat(trade.getEntryValueMovingAverage(), is(Money.of(CurrencyUnit.EUR, amountOf(1500))));
+        }
     }
 }

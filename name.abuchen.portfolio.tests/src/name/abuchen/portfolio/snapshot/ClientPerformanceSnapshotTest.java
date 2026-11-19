@@ -13,6 +13,8 @@ import java.time.Month;
 import java.util.List;
 
 import org.junit.Test;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 
 import name.abuchen.portfolio.junit.AccountBuilder;
 import name.abuchen.portfolio.junit.PortfolioBuilder;
@@ -750,5 +752,51 @@ public class ClientPerformanceSnapshotTest
         valueAtEndOfPeriod.add(snapshot.getValue(CategoryType.TRANSFERS));
 
         assertThat(valueAtEndOfPeriod.toMoney(), is(snapshot.getValue(CategoryType.FINAL_VALUE)));
+    }
+
+    /**
+     * Issue #463: if the reporting period extends into the future, the
+     * valuation at the end must be dated today and not at the end of the
+     * reporting period. Otherwise the IRR is calculated over a too long period.
+     */
+    @Test
+    public void testReportingPeriodExtendingIntoTheFuture()
+    {
+        var today = LocalDate.parse("2024-05-10");
+
+        try (MockedStatic<LocalDate> mockedStatic = Mockito.mockStatic(LocalDate.class, invocation -> {
+            if (invocation.getMethod().getName().equals("now"))
+                return today;
+            else
+                return invocation.callRealMethod();
+        }))
+        {
+            var client = new Client();
+
+            var security = new SecurityBuilder() //
+                            .addPrice("2024-03-11", Values.Quote.factorize(100)) //
+                            .addPrice("2024-05-10", Values.Quote.factorize(110)) //
+                            .addTo(client);
+
+            var account = new AccountBuilder() //
+                            .deposit_("2024-03-11", Values.Amount.factorize(1000)) //
+                            .addTo(client);
+
+            new PortfolioBuilder(account) //
+                            .buy(security, "2024-03-11", Values.Share.factorize(10), Values.Amount.factorize(1000)) //
+                            .addTo(client);
+
+            var converter = new TestCurrencyConverter();
+            var startOfYear = LocalDate.parse("2023-12-31");
+
+            var currentYear = new ClientPerformanceSnapshot(client, converter, startOfYear,
+                            LocalDate.parse("2024-12-31"));
+            var untilToday = new ClientPerformanceSnapshot(client, converter, startOfYear, today);
+
+            assertThat(currentYear.getEndClientSnapshot().getTime(), is(today));
+            assertThat(currentYear.getValue(CategoryType.FINAL_VALUE),
+                            is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1100))));
+            assertEquals(untilToday.getPerformanceIRR(), currentYear.getPerformanceIRR(), 0.000001);
+        }
     }
 }
