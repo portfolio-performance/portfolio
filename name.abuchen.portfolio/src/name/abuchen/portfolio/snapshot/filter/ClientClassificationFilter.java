@@ -15,6 +15,7 @@ import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Classification;
 import name.abuchen.portfolio.model.Classification.Assignment;
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.FundTransferEntry;
 import name.abuchen.portfolio.model.InvestmentVehicle;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
@@ -183,9 +184,53 @@ public class ClientClassificationFilter implements ClientFilter
                     ClientFilterHelper.recreateTransfer(entry, state.asReadOnly(entry.getSourcePortfolio()),
                                     state.asReadOnly(entry.getTargetPortfolio()), state.getWeight(t.getSecurity()));
                     break;
+                case FUND_TRANSFER_IN:
+                    addFundTransferInT(state, t);
+                    break;
+                case FUND_TRANSFER_OUT:
+                    addFundTransferOutT(state, t);
+                    break;
                 default:
                     throw new UnsupportedOperationException();
             }
+        }
+    }
+
+    private void addFundTransferInT(CalculationState state, PortfolioTransaction t)
+    {
+        FundTransferEntry entry = (FundTransferEntry) t.getCrossEntry();
+        BigDecimal targetWeight = state.getWeight(entry.getTargetTransaction().getSecurity());
+
+        if (state.isCategorized(entry.getSourceTransaction().getSecurity()))
+        {
+            ClientFilterHelper.recreateFundTransfer(entry, state.asReadOnly(entry.getSourcePortfolio()),
+                            state.asReadOnly(entry.getTargetPortfolio()),
+                            state.getWeight(entry.getSourceTransaction().getSecurity()), targetWeight);
+        }
+        else
+        {
+            // A classification can include only the target fund. Preserve the
+            // fund-transfer lots so the filtered client keeps the inherited
+            // acquisition basis instead of treating the transfer as a purchase.
+            FundTransferEntry copy = ClientFilterHelper.copyFundTransfer(entry, entry.getSourcePortfolio(),
+                            state.asReadOnly(entry.getTargetPortfolio()), targetWeight, targetWeight);
+            state.asReadOnly(entry.getTargetPortfolio()).internalAddTransaction(copy.getTargetTransaction());
+        }
+    }
+
+    private void addFundTransferOutT(CalculationState state, PortfolioTransaction t)
+    {
+        FundTransferEntry entry = (FundTransferEntry) t.getCrossEntry();
+
+        // If the target fund is included too, the inbound side recreates both
+        // filtered transactions and links them to one copied cross entry.
+        if (!state.isCategorized(entry.getTargetTransaction().getSecurity()))
+        {
+            FundTransferEntry copy = ClientFilterHelper.copyFundTransfer(entry,
+                            state.asReadOnly(entry.getSourcePortfolio()), entry.getTargetPortfolio(),
+                            state.getWeight(entry.getSourceTransaction().getSecurity()),
+                            state.getWeight(entry.getSourceTransaction().getSecurity()));
+            state.asReadOnly(entry.getSourcePortfolio()).internalAddTransaction(copy.getSourceTransaction());
         }
     }
 

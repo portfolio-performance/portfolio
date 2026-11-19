@@ -65,4 +65,40 @@ public class IRRCalculationTest
 
         assertThat(calculation.getIRR(), IsCloseTo.closeTo(0.412128788d, 0.00000001d));
     }
+
+    @Test
+    public void testFundTransferOutIsAnInboundCashFlowForTheSourceSecurity()
+    {
+        double expected = calculateIRR(PortfolioTransaction.Type.BUY, PortfolioTransaction.Type.DELIVERY_OUTBOUND);
+        double actual = calculateIRR(PortfolioTransaction.Type.BUY, PortfolioTransaction.Type.FUND_TRANSFER_OUT);
+
+        assertThat(actual, IsCloseTo.closeTo(expected, 0.00000001d));
+    }
+
+    @Test
+    public void testFundTransferInIsAnOutboundCashFlowForTheTargetSecurity()
+    {
+        double expected = calculateIRR(PortfolioTransaction.Type.DELIVERY_INBOUND, PortfolioTransaction.Type.SELL);
+        double actual = calculateIRR(PortfolioTransaction.Type.FUND_TRANSFER_IN, PortfolioTransaction.Type.SELL);
+
+        assertThat(actual, IsCloseTo.closeTo(expected, 0.00000001d));
+    }
+
+    private double calculateIRR(PortfolioTransaction.Type firstType, PortfolioTransaction.Type secondType)
+    {
+        List<CalculationLineItem> tx = new ArrayList<>();
+        Portfolio portfolio = new Portfolio();
+        Security security = new Security();
+
+        tx.add(CalculationLineItem.of(portfolio,
+                        new PortfolioTransaction(LocalDateTime.parse("2020-01-01T00:00"), CurrencyUnit.EUR,
+                                        Values.Amount.factorize(1000), security, Values.Share.factorize(10), firstType,
+                                        0, 0)));
+        tx.add(CalculationLineItem.of(portfolio,
+                        new PortfolioTransaction(LocalDateTime.parse("2021-01-01T00:00"), CurrencyUnit.EUR,
+                                        Values.Amount.factorize(1100), security, Values.Share.factorize(10), secondType,
+                                        0, 0)));
+
+        return Calculation.perform(IRRCalculation.class, new TestCurrencyConverter(), security, tx).getIRR();
+    }
 }

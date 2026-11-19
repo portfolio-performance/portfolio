@@ -207,4 +207,16 @@ public class ClientFactoryTest
         assertTrue(flags.contains(SaveFlag.XML));
         assertTrue(flags.contains(SaveFlag.ID_REFERENCES));
     }
+
+    @Test
+    public void testUpgradesVersion70ToCurrentVersion()
+    {
+        var client = new Client();
+        client.setVersion(70);
+
+        ClientFactory.upgradeModel(client);
+
+        assertEquals(70, client.getFileVersionAfterRead());
+        assertEquals(Client.CURRENT_VERSION, client.getVersion());
+    }
 }

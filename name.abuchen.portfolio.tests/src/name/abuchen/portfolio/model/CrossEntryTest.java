@@ -5,6 +5,7 @@ import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.fail;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Month;
 
@@ -264,5 +265,64 @@ public class CrossEntryTest
         portfolioA.deleteTransaction(pA, client);
         assertThat(portfolioA.getTransactions().size(), is(0));
         assertThat(portfolioB.getTransactions().size(), is(0));
+    }
+
+    @Test
+    public void testFundTransferEntry()
+    {
+        Security sourceSecurity = client.getSecurities().get(0);
+        Security targetSecurity = new Security();
+        targetSecurity.setName("Target security");
+        client.addSecurity(targetSecurity);
+
+        Portfolio sourcePortfolio = client.getPortfolios().get(0);
+        Portfolio targetPortfolio = client.getPortfolios().get(1);
+
+        FundTransferEntry entry = new FundTransferEntry(sourcePortfolio, targetPortfolio);
+        entry.setDate(LocalDateTime.of(2021, Month.JUNE, 1, 0, 0));
+        entry.setSourceSecurity(sourceSecurity);
+        entry.setTargetSecurity(targetSecurity);
+        entry.setSourceShares(Values.Share.factorize(5));
+        entry.setTargetShares(Values.Share.factorize(10));
+        entry.setSourceMonetaryAmount(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(750)));
+        entry.setTargetMonetaryAmount(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(750)));
+        entry.addCarriedLot(new FundTransferEntry.CarriedLot(LocalDate.parse("2020-01-01"),
+                        Values.Share.factorize(5), Values.Share.factorize(10),
+                        Money.of(CurrencyUnit.EUR, Values.Amount.factorize(500)), "source-transaction-uuid"));
+        entry.insert();
+
+        assertThat(sourcePortfolio.getTransactions().size(), is(1));
+        assertThat(targetPortfolio.getTransactions().size(), is(1));
+
+        PortfolioTransaction sourceTx = sourcePortfolio.getTransactions().get(0);
+        PortfolioTransaction targetTx = targetPortfolio.getTransactions().get(0);
+
+        assertThat(sourceTx.getType(), is(PortfolioTransaction.Type.FUND_TRANSFER_OUT));
+        assertThat(targetTx.getType(), is(PortfolioTransaction.Type.FUND_TRANSFER_IN));
+        assertThat(sourceTx.getSecurity(), is(sourceSecurity));
+        assertThat(targetTx.getSecurity(), is(targetSecurity));
+        assertThat(sourceTx.getShares(), is(Values.Share.factorize(5)));
+        assertThat(targetTx.getShares(), is(Values.Share.factorize(10)));
+        assertThat(sourceTx.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(750))));
+        assertThat(targetTx.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(750))));
+
+        assertThat(entry.getCrossOwner(sourceTx), is((Object) targetPortfolio));
+        assertThat(entry.getCrossTransaction(sourceTx), is((Transaction) targetTx));
+        assertThat(entry.getCrossOwner(targetTx), is((Object) sourcePortfolio));
+        assertThat(entry.getCrossTransaction(targetTx), is((Transaction) sourceTx));
+
+        assertThat(entry.getCarriedLots().get(0).getAcquisitionDate(), is(LocalDate.parse("2020-01-01")));
+        assertThat(entry.getCarriedLots().get(0).getSourceShares(), is(Values.Share.factorize(5)));
+        assertThat(entry.getCarriedLots().get(0).getTargetShares(), is(Values.Share.factorize(10)));
+        assertThat(entry.getCarriedLots().get(0).getAcquisitionValue(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(500))));
+
+        sourceTx.setNote("Test");
+        entry.updateFrom(sourceTx);
+        assertThat(targetTx.getNote(), is(sourceTx.getNote()));
+
+        targetPortfolio.deleteTransaction(targetTx, client);
+        assertThat(sourcePortfolio.getTransactions().size(), is(0));
+        assertThat(targetPortfolio.getTransactions().size(), is(0));
     }
 }

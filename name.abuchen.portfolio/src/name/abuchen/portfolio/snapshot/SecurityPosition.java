@@ -61,10 +61,12 @@ public class SecurityPosition
             {
                 case BUY:
                 case TRANSFER_IN:
+                case FUND_TRANSFER_IN:
                 case DELIVERY_INBOUND:
                     return t.getShares();
                 case SELL:
                 case TRANSFER_OUT:
+                case FUND_TRANSFER_OUT:
                 case DELIVERY_OUTBOUND:
                     return -t.getShares();
                 default:
