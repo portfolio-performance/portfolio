@@ -37,6 +37,7 @@ public class UmweltbankAGPDFExtractor extends AbstractPDFExtractor
         addBankIdentifier("UmweltBank AG");
 
         addBuySellTransaction();
+        addDividendeTransaction();
         addAccountStatementTransaction();
     }
 
@@ -122,6 +123,80 @@ public class UmweltbankAGPDFExtractor extends AbstractPDFExtractor
                         .wrap(BuySellEntryItem::new);
 
         addFeesSectionsTransaction(pdfTransaction, type);
+    }
+
+    private void addDividendeTransaction()
+    {
+        final var type = new DocumentType("Ausschüttung Investmentfonds");
+        this.addDocumentTyp(type);
+
+        var pdfTransaction = new Transaction<AccountTransaction>();
+
+        var firstRelevantLine = new Block("^.*Kundennummer.*$");
+        type.addBlock(firstRelevantLine);
+        firstRelevantLine.set(pdfTransaction);
+
+        pdfTransaction //
+
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.DIVIDENDS))
+
+                        // @formatter:off
+                        // Stück 70 IIV MIKROFINANZFONDS DE000A1H44T1 (A1H44T)
+                        // INHABER-ANTEILE R
+                        // Zahlbarkeitstag 03.11.2026 Ausschüttung pro St. 1,660000000 EUR
+                        // @formatter:on
+                        .section("name", "isin", "wkn", "name1", "currency") //
+                        .match("^Stück [\\.,\\d]+ (?<name>.*) (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) \\((?<wkn>[A-Z0-9]{6})\\)$") //
+                        .match("^(?<name1>.*)$") //
+                        .match("^.* Ausschüttung pro St\\. [\\.,\\d]+ (?<currency>[A-Z]{3})$") //
+                        .assign((t, v) -> {
+                            if (!v.get("name1").startsWith("Zahlbarkeitstag"))
+                                v.put("name", trim(v.get("name")) + " " + trim(v.get("name1")));
+
+                            t.setSecurity(getOrCreateSecurity(v));
+                        })
+
+                        // @formatter:off
+                        // Stück 70 IIV MIKROFINANZFONDS DE000A1H44T1 (A1H44T)
+                        // @formatter:on
+                        .section("shares") //
+                        .match("^Stück (?<shares>[\\.,\\d]+) .*$") //
+                        .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
+
+                        // @formatter:off
+                        // Den Betrag buchen wir mit Wertstellung 03.11.2026 zu Gunsten des Kontos 1976709 (IBAN
+                        // @formatter:on
+                        .section("date") //
+                        .match("^Den Betrag buchen wir mit Wertstellung (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) .*$") //
+                        .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
+
+                        // @formatter:off
+                        // Ex-Tag 30.10.2026
+                        // @formatter:on
+                        .section("exDate").optional() //
+                        .match("^Ex\\-Tag (?<exDate>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$") //
+                        .assign((t, v) -> t.setExDate(asDate(v.get("exDate"))))
+
+                        // @formatter:off
+                        // Ausmachender Betrag 83,67+ EUR
+                        // @formatter:on
+                        .section("amount", "currency") //
+                        .match("^Ausmachender Betrag (?<amount>[\\.,\\d]+)\\+ (?<currency>[A-Z]{3})$") //
+                        .assign((t, v) -> {
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                            t.setAmount(asAmount(v.get("amount")));
+                        })
+
+                        // @formatter:off
+                        //  Abrechnungsnr. 18233303596
+                        // @formatter:on
+                        .section("note").optional() //
+                        .match("^.*(?<note>Abrechnungsnr\\. [\\d]+)$") //
+                        .assign((t, v) -> t.setNote(trim(v.get("note"))))
+
+                        .wrap(TransactionItem::new);
+
+        addTaxesSectionsTransaction(pdfTransaction, type);
     }
 
     private void addAccountStatementTransaction()
@@ -229,6 +304,32 @@ public class UmweltbankAGPDFExtractor extends AbstractPDFExtractor
                         .assign((t, v) -> t.setNote("Auftragsnummer " + trim(v.get("note"))))
 
                         .wrap(BuySellEntryItem::new));
+    }
+
+    private <T extends Transaction<?>> void addTaxesSectionsTransaction(T transaction, DocumentType type)
+    {
+        transaction //
+
+                        // @formatter:off
+                        // Kapitalertragsteuer 24,45 % auf 116,20 EUR 28,41- EUR
+                        // @formatter:on
+                        .section("tax", "currency").optional() //
+                        .match("^Kapitalertragsteuer [\\.,\\d]+ % .* (?<tax>[\\.,\\d]+)\\- (?<currency>[A-Z]{3})$") //
+                        .assign((t, v) -> processTaxEntries(t, v, type))
+
+                        // @formatter:off
+                        // Solidaritätszuschlag 5,5 % auf 28,41 EUR 1,56- EUR
+                        // @formatter:on
+                        .section("tax", "currency").optional() //
+                        .match("^Solidaritätszuschlag [\\.,\\d]+ % .* (?<tax>[\\.,\\d]+)\\- (?<currency>[A-Z]{3})$") //
+                        .assign((t, v) -> processTaxEntries(t, v, type))
+
+                        // @formatter:off
+                        // Kirchensteuer 9 % auf 28,41 EUR 2,56- EUR
+                        // @formatter:on
+                        .section("tax", "currency").optional() //
+                        .match("^Kirchensteuer [\\.,\\d]+ % .* (?<tax>[\\.,\\d]+)\\- (?<currency>[A-Z]{3})$") //
+                        .assign((t, v) -> processTaxEntries(t, v, type));
     }
 
     private <T extends Transaction<?>> void addFeesSectionsTransaction(T transaction, DocumentType type)
