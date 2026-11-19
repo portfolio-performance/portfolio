@@ -44,6 +44,10 @@ public class StackedTimelineChart extends Chart // NOSONAR
         // UI when the tooltip is shown.
         new PlotArea(this, SWT.NONE);
 
+        // align the grid lines and tick labels of the y axis with the series
+        // when the tick labels of the x axis are hidden (see #1651)
+        setLayout(new TickAlignedChartLayout());
+
         setData(UIConstants.CSS.CLASS_NAME, "chart"); //$NON-NLS-1$
 
         getLegend().setVisible(false);
