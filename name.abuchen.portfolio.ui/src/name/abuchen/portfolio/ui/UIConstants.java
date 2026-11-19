@@ -94,6 +94,7 @@ public interface UIConstants
         String MIGRATE_PORTFOLIO_REPORT = "name.abuchen.portfolio.ui.command.tools.migratePortfolioReportHandler"; //$NON-NLS-1$
         String IMPORT_TAXONOMY = "name.abuchen.portfolio.ui.command.importTaxonomies"; //$NON-NLS-1$
         String EXPORT_TAXONOMY = "name.abuchen.portfolio.ui.command.exportTaxonomies"; //$NON-NLS-1$
+        String EXPORT_MARKDOWN = "name.abuchen.portfolio.ui.command.exportMarkdown"; //$NON-NLS-1$
     }
 
     /**

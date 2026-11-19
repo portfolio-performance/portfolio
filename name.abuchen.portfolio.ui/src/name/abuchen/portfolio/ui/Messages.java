@@ -456,6 +456,14 @@ public class Messages extends NLS
     public static String EventWizardTitle;
     public static String ExperimentalColumnExpectedDividends;
     public static String ExperimentalColumnExpectedDividends_MenuLabel;
+    public static String ExportMarkdownDialogMessage;
+    public static String ExportMarkdownDialogTitle;
+    public static String ExportMarkdownDiscreetMode;
+    public static String ExportMarkdownFileFilter;
+    public static String ExportMarkdownTransactions;
+    public static String ExportMarkdownTransactionsAll;
+    public static String ExportMarkdownTransactionsLastYear;
+    public static String ExportMarkdownTransactionsNone;
     public static String ExportWizardAccountTransactions;
     public static String ExportWizardCurrencyConversionQuotes;
     public static String ExportWizardDescription;
