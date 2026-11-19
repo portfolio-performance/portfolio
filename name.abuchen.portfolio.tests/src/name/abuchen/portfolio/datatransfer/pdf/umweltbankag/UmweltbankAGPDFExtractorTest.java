@@ -1,9 +1,11 @@
 package name.abuchen.portfolio.datatransfer.pdf.umweltbankag;
 
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.deposit;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.dividend;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasAmount;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasCurrencyCode;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasDate;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasExDate;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasFees;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasGrossValue;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasIsin;
@@ -104,8 +106,42 @@ public class UmweltbankAGPDFExtractorTest
                         hasDate("2025-05-06"), hasShares(235.00), //
                         hasSource("Kauf02.txt"), //
                         hasNote("Auftragsnummer 653140/64.00"), //
-                        hasAmount("EUR", 13040.15 - 380.70), hasGrossValue("EUR", 13040.15 - 380.70 - 247.76), //
+                        hasAmount("EUR", 12907.21), hasGrossValue("EUR", 13040.15 - 380.70), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 247.76))));
+    }
+
+    @Test
+    public void testDividende01()
+    {
+        var extractor = new UmweltbankAGPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende01.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("DE000A1H44T1"), hasWkn("A1H44T"), hasTicker(null), //
+                        hasName("IIV MIKROFINANZFONDS INHABER-ANTEILE R"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2026-11-03"), hasExDate("2026-10-30"), hasShares(70.00), //
+                        hasSource("Dividende01.txt"), //
+                        hasNote("Abrechnungsnr. 18233303596"), //
+                        hasAmount("EUR", 83.67), hasGrossValue("EUR", 116.20), //
+                        hasTaxes("EUR", 28.41 + 1.56 + 2.56), hasFees("EUR", 0.00))));
     }
 
     @Test
