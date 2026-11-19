@@ -378,6 +378,31 @@ public class XTBCSVExtractorTest
     }
 
     @Test
+    public void testEmptyIdIsNotAddedToNote() throws IOException
+    {
+        var resource = TestExtractorHelper.loadResourceAsInputFile(getClass(), "EUR_account_sample.csv");
+        var content = Files.readString(resource.getFile().toPath()).replace(";100;1;Deposit;", ";100;;Deposit;");
+        var file = Files.createTempFile("xtb-empty-id-", ".csv");
+        Files.writeString(file, content, StandardCharsets.UTF_8);
+
+        var client = new Client();
+        var errors = new ArrayList<Exception>();
+        var items = new XTBCSVExtractor(client).extract(new SecurityCache(client), new InputFile(file.toFile())
+        {
+            @Override
+            public String getName()
+            {
+                return "EUR_account_sample.csv";
+            }
+        }, errors);
+
+        assertThat(errors, empty());
+        assertThat(items.size(), is(15));
+        assertThat(items, hasItem(deposit(hasDate("2025-01-02T09:00"), hasAmount("EUR", 100.00), //
+                        hasSource("EUR_account_sample.csv"), hasNote("Deposit"))));
+    }
+
+    @Test
     public void testMalformedFileIsReportedAsError() throws IOException
     {
         var resource = TestExtractorHelper.loadResourceAsInputFile(getClass(), "EUR_account_sample.csv");

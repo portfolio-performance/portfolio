@@ -333,7 +333,8 @@ public class XTBCSVExtractor implements Extractor
         var signedAmount = parseDecimal(value(record, columns.amount()).replace(',', '.'), Values.Amount.factor());
         var amount = Math.abs(signedAmount);
         var comment = value(record, columns.comment());
-        var note = comment + " (XTB ID: " + value(record, columns.id()) + ")";
+        var id = value(record, columns.id());
+        var note = id.isEmpty() ? comment : comment + " (XTB ID: " + id + ")";
 
         switch (type)
         {
