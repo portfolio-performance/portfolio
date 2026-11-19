@@ -1,12 +1,15 @@
 package name.abuchen.portfolio.snapshot.security;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.closeTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 
 import java.time.LocalDate;
 
 import org.junit.Test;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 
 import name.abuchen.portfolio.junit.PortfolioBuilder;
 import name.abuchen.portfolio.junit.SecurityBuilder;
@@ -150,5 +153,52 @@ public class SecurityPerformanceSnapshotTest
 
         assertThat(record.getOpeningValue(), is(Money.of(CurrencyUnit.EUR, 0)));
         assertThat(record.getMarketValue(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(100 * 15d))));
+    }
+
+    /**
+     * Issue #463: if the reporting period extends into the future, the
+     * valuation at the end must be dated today and not at the end of the
+     * reporting period. Otherwise the quote is displayed with a future date and
+     * the IRR is calculated over a too long period.
+     */
+    @Test
+    public void testReportingPeriodExtendingIntoTheFuture()
+    {
+        var today = LocalDate.parse("2024-05-10");
+
+        try (MockedStatic<LocalDate> mockedStatic = Mockito.mockStatic(LocalDate.class, invocation -> {
+            if (invocation.getMethod().getName().equals("now"))
+                return today;
+            else
+                return invocation.callRealMethod();
+        }))
+        {
+            var client = new Client();
+
+            var security = new SecurityBuilder() //
+                            .addPrice("2024-03-11", Values.Quote.factorize(100)) //
+                            .addPrice("2024-05-10", Values.Quote.factorize(110)) //
+                            .addTo(client);
+
+            new PortfolioBuilder() //
+                            .buy(security, "2024-03-11", Values.Share.factorize(10), Values.Amount.factorize(1000)) //
+                            .addTo(client);
+
+            var converter = new TestCurrencyConverter();
+            var startOfYear = LocalDate.parse("2023-12-31");
+
+            var currentYear = LazySecurityPerformanceSnapshot
+                            .create(client, converter, Interval.of(startOfYear, LocalDate.parse("2024-12-31")))
+                            .getRecords().get(0);
+            var untilToday = LazySecurityPerformanceSnapshot
+                            .create(client, converter, Interval.of(startOfYear, today)).getRecords().get(0);
+
+            var valuationAtEnd = currentYear.getLineItems().stream()
+                            .filter(CalculationLineItem.ValuationAtEnd.class::isInstance).findFirst().orElseThrow();
+            assertThat(valuationAtEnd.getDateTime().toLocalDate(), is(today));
+
+            assertThat(currentYear.getMarketValue(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1100))));
+            assertThat(currentYear.getIrr(), closeTo(untilToday.getIrr(), 0.000001));
+        }
     }
 }

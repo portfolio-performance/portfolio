@@ -498,7 +498,9 @@ public class Trade implements Adaptable
                             ? new ClientTransactionFilter(security, realClosingTransaction).filter(client)
                             : client;
 
-            return LazySecurityPerformanceSnapshot.create(filteredClient, converter, interval);
+            // the closing transaction might be dated in the future: the
+            // interval must not be capped at today
+            return LazySecurityPerformanceSnapshot.createUncapped(filteredClient, converter, interval);
         });
 
         var r = snapshot.getRecord(security);

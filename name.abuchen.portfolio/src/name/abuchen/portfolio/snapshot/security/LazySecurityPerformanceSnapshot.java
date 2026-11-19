@@ -1,5 +1,6 @@
 package name.abuchen.portfolio.snapshot.security;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -11,7 +12,24 @@ import name.abuchen.portfolio.util.Interval;
 
 public class LazySecurityPerformanceSnapshot
 {
+    /**
+     * Creates the security performance for the given reporting interval. If
+     * the interval extends into the future, it is capped at today: the
+     * valuation at the end is dated today and transactions after today are not
+     * included.
+     */
     public static LazySecurityPerformanceSnapshot create(Client client, CurrencyConverter converter, Interval interval)
+    {
+        return createUncapped(client, converter, interval.capEnd(LocalDate.now()));
+    }
+
+    /**
+     * Creates the security performance for the given interval without capping
+     * it at today. Use it to calculate costs up to a transaction which might be
+     * dated in the future, for example the moving average cost of a trade.
+     */
+    public static LazySecurityPerformanceSnapshot createUncapped(Client client, CurrencyConverter converter,
+                    Interval interval)
     {
         var records = new SecurityPerformanceSnapshotBuilder<LazySecurityPerformanceRecord>(client, converter, interval)
                         .create(LazySecurityPerformanceRecord.class);
@@ -19,6 +37,11 @@ public class LazySecurityPerformanceSnapshot
         return new LazySecurityPerformanceSnapshot(records);
     }
 
+    /**
+     * Creates the security performance based on the given valuations. The
+     * interval is not capped; the caller must pass an interval that matches
+     * the valuations (see ClientPerformanceSnapshot).
+     */
     public static LazySecurityPerformanceSnapshot create(Client client, CurrencyConverter converter, Interval interval,
                     ClientSnapshot valuationAtStart, ClientSnapshot valuationAtEnd)
     {
