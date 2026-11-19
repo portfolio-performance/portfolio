@@ -229,7 +229,7 @@ import name.abuchen.portfolio.money.Money;
             // create the unit out of given amount, currency, and exchange rate
 
             Money forex = Money.of(currencyCode, Math.abs(grossAmount.longValue()));
-            BigDecimal grossAmountConverted = exchangeRate.multiply(BigDecimal.valueOf(grossAmount));
+            BigDecimal grossAmountConverted = exchangeRate.multiply(BigDecimal.valueOf(forex.getAmount()));
             Money converted = Money.of(amount.getCurrencyCode(), Math.round(grossAmountConverted.doubleValue()));
 
             return Optional.of(new Unit(Unit.Type.GROSS_VALUE, converted, forex, exchangeRate));

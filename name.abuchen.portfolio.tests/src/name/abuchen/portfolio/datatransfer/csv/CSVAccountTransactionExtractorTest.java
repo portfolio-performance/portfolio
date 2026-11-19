@@ -933,6 +933,60 @@ public class CSVAccountTransactionExtractorTest
     }
 
     @Test
+    public void testDividendWithNegativeGrossAmountInSubunitCurrencyWithoutExchangeRate()
+    {
+        assertDividendWithNegativeGrossAmountInSubunitCurrency("");
+    }
+
+    @Test
+    public void testDividendWithNegativeGrossAmountInSubunitCurrencyWithExchangeRate()
+    {
+        assertDividendWithNegativeGrossAmountInSubunitCurrency("0.01");
+    }
+
+    private void assertDividendWithNegativeGrossAmountInSubunitCurrency(String exchangeRate)
+    {
+        Client client = new Client();
+        Security security = new Security();
+        security.setTickerSymbol("ULVR.L");
+        security.setCurrencyCode("GBX");
+        client.addSecurity(security);
+
+        CSVExtractor extractor = new CSVAccountTransactionExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+        List<Item> results = extractor.extract(0, Arrays.<String[]>asList(new String[] { //
+                        "2025-06-02", "", // Date + Time
+                        "", "ULVR.L", "", // ISIN + TickerSymbol + WKN
+                        "10", "GBP", // Amount + Currency
+                        "DIVIDENDS", // Type
+                        "", "10", // Security name + Shares
+                        "Notiz", // Note
+                        "", "", // Taxes + Fee
+                        "", "", "", // account + account2nd + portfolio
+                        "-1000", "GBX", // Gross + Gross currency
+                        exchangeRate }), // Exchange rate
+                        buildField2Column(extractor), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, "GBP");
+
+        // the sign of the gross amount is ignored
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2025-06-02"), hasShares(10), //
+                        hasSecurity(hasTicker("ULVR.L")), //
+                        hasSource(null), hasNote("Notiz"), //
+                        hasAmount("GBP", 10.00), hasGrossValue("GBP", 10.00), //
+                        hasForexGrossValue("GBX", 1000.00), //
+                        hasTaxes("GBP", 0.00), hasFees("GBP", 0.00))));
+
+        var grossValueUnit = ((AccountTransaction) results.get(0).getSubject()).getUnit(Unit.Type.GROSS_VALUE)
+                        .orElseThrow();
+        assertThat(grossValueUnit.getAmount(), is(Money.of("GBP", Values.Amount.factorize(10.00))));
+    }
+
+    @Test
     public void testBuyForSecurityInSubunitCurrencyUsesFixedExchangeRate()
     {
         Client client = new Client();
