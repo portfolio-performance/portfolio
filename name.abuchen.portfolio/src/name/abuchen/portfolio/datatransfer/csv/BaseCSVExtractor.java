@@ -32,6 +32,10 @@ import name.abuchen.portfolio.money.Money;
 
 /* package */ abstract class BaseCSVExtractor extends CSVExtractor
 {
+    @SuppressWarnings("nls")
+    private static final Map<String, String> SUBUNIT_TO_CURRENCY = Map.of("GBX", "GBP", "ILA", "ILS", "ZAC", "ZAR");
+    private static final BigDecimal SUBUNIT_RATE = new BigDecimal("0.01"); //$NON-NLS-1$
+
     private Client client;
     private SecurityCache securityCache;
     private String label;
@@ -235,6 +239,12 @@ import name.abuchen.portfolio.money.Money;
             return;
 
         var exchangeRate = getBigDecimal(FieldCode.EXCHANGE_RATE, rawValues, field2column);
+
+        // subunit currencies (e.g. GBP and GBX) do not need an exchange rate
+        // in the file
+        if (exchangeRate == null || exchangeRate.compareTo(BigDecimal.ZERO) == 0)
+            exchangeRate = lookupSubunitExchangeRate(transaction.getCurrencyCode(), securityCurrency).orElse(null);
+
         if (exchangeRate != null && exchangeRate.compareTo(BigDecimal.ZERO) != 0)
         {
             var grossValue = transaction.getGrossValue();
@@ -243,5 +253,22 @@ import name.abuchen.portfolio.money.Money;
             exchangeRate = BigDecimal.ONE.divide(exchangeRate, 10, RoundingMode.HALF_DOWN);
             transaction.addUnit(new Unit(Unit.Type.GROSS_VALUE, grossValue, forex, exchangeRate));
         }
+    }
+
+    /**
+     * Returns the exchange rate to convert an amount from the given currency
+     * into the other currency if one is the subunit of the other (e.g. 100
+     * from GBP to GBX). Other fixed rates (legacy euro currencies, currency
+     * pegs) are only valid from a given date and are therefore not used.
+     */
+    private Optional<BigDecimal> lookupSubunitExchangeRate(String fromCurrency, String toCurrency)
+    {
+        if (toCurrency.equals(SUBUNIT_TO_CURRENCY.get(fromCurrency)))
+            return Optional.of(SUBUNIT_RATE);
+
+        if (fromCurrency.equals(SUBUNIT_TO_CURRENCY.get(toCurrency)))
+            return Optional.of(BigDecimal.ONE.divide(SUBUNIT_RATE, 10, RoundingMode.HALF_DOWN));
+
+        return Optional.empty();
     }
 }

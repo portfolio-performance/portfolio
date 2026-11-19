@@ -847,4 +847,118 @@ public class CSVAccountTransactionExtractorTest
         var status = new CheckForexGrossValueAction().process(dividendTransaction, new Account());
         assertThat(status.getMessage(), status.getCode(), is(Status.Code.OK));
     }
+
+    @Test
+    public void testDividendForSecurityInSubunitCurrencyUsesFixedExchangeRate()
+    {
+        Client client = new Client();
+        Security security = new Security();
+        security.setTickerSymbol("ULVR.L");
+        security.setCurrencyCode("GBX");
+        client.addSecurity(security);
+
+        CSVExtractor extractor = new CSVAccountTransactionExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+        List<Item> results = extractor.extract(0, Arrays.<String[]>asList(new String[] { //
+                        "2025-06-02", "", // Date + Time
+                        "", "ULVR.L", "", // ISIN + TickerSymbol + WKN
+                        "12.34", "GBP", // Amount + Currency
+                        "DIVIDENDS", // Type
+                        "", "10", // Security name + Shares
+                        "Notiz", // Note
+                        "", "", // Taxes + Fee
+                        "", "", "", // account + account2nd + portfolio
+                        "", "", // Gross + Gross currency
+                        "" }), // Exchange rate
+                        buildField2Column(extractor), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, "GBP");
+
+        // no exchange rate in the file: GBP and GBX have a fixed rate
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2025-06-02"), hasShares(10), //
+                        hasSecurity(hasTicker("ULVR.L")), //
+                        hasSource(null), hasNote("Notiz"), //
+                        hasAmount("GBP", 12.34), hasGrossValue("GBP", 12.34), //
+                        hasForexGrossValue("GBX", 1234.00), //
+                        hasTaxes("GBP", 0.00), hasFees("GBP", 0.00))));
+    }
+
+    @Test
+    public void testBuyForSecurityInSubunitCurrencyUsesFixedExchangeRate()
+    {
+        Client client = new Client();
+        Security security = new Security();
+        security.setTickerSymbol("ULVR.L");
+        security.setCurrencyCode("GBX");
+        client.addSecurity(security);
+
+        CSVExtractor extractor = new CSVAccountTransactionExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+        List<Item> results = extractor.extract(0, Arrays.<String[]>asList(new String[] { //
+                        "2025-06-02", "", // Date + Time
+                        "", "ULVR.L", "", // ISIN + TickerSymbol + WKN
+                        "100", "GBP", // Amount + Currency
+                        "BUY", // Type
+                        "", "2", // Security name + Shares
+                        "Notiz", // Note
+                        "", "1", // Taxes + Fee
+                        "", "", "", // account + account2nd + portfolio
+                        "", "", // Gross + Gross currency
+                        "" }), // Exchange rate
+                        buildField2Column(extractor), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, "GBP");
+
+        // no exchange rate in the file: GBP and GBX have a fixed rate
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2025-06-02"), hasShares(2), //
+                        hasSecurity(hasTicker("ULVR.L")), //
+                        hasSource(null), hasNote("Notiz"), //
+                        hasAmount("GBP", 100.00), hasGrossValue("GBP", 99.00), //
+                        hasForexGrossValue("GBX", 9900.00), //
+                        hasTaxes("GBP", 0.00), hasFees("GBP", 1.00))));
+    }
+
+    @Test
+    public void testDividendForSecurityWithPeggedCurrencyDoesNotUseFixedExchangeRate()
+    {
+        Client client = new Client();
+        Security security = new Security();
+        security.setTickerSymbol("EMAAR.AE");
+        security.setCurrencyCode("AED");
+        client.addSecurity(security);
+
+        CSVExtractor extractor = new CSVAccountTransactionExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+        List<Item> results = extractor.extract(0, Arrays.<String[]>asList(new String[] { //
+                        "1996-06-03", "", // Date + Time
+                        "", "EMAAR.AE", "", // ISIN + TickerSymbol + WKN
+                        "100", "USD", // Amount + Currency
+                        "DIVIDENDS", // Type
+                        "", "10", // Security name + Shares
+                        "Notiz", // Note
+                        "", "", // Taxes + Fee
+                        "", "", "", // account + account2nd + portfolio
+                        "", "", // Gross + Gross currency
+                        "" }), // Exchange rate
+                        buildField2Column(extractor), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(1));
+
+        // the USD/AED peg is only valid from a given date: without an exchange
+        // rate in the file, no gross value unit is created
+        var dividendTransaction = (AccountTransaction) results.get(0).getSubject();
+        assertThat(dividendTransaction.getType(), is(Type.DIVIDENDS));
+        assertThat(dividendTransaction.getMonetaryAmount(), is(Money.of("USD", Values.Amount.factorize(100))));
+        assertThat(dividendTransaction.getUnit(Unit.Type.GROSS_VALUE).isPresent(), is(false));
+    }
 }
