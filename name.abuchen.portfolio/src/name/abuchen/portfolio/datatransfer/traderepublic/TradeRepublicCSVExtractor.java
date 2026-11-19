@@ -382,9 +382,16 @@ public class TradeRepublicCSVExtractor implements Extractor
         }
 
         var security = lookupSecurity(csvRecord, securityCache);
+        var shares = parseShares(csvRecord);
+
+        if (parseAmount(csvRecord) == 0)
+        {
+            processZeroPrincipal(csvRecord, security, shares, source, items);
+            return;
+        }
+
         var date = parseDate(csvRecord);
         var currency = getField(csvRecord, "currency");
-        var shares = parseShares(csvRecord);
         var totalAmount = computeTotalAmount(csvRecord);
         var tax = parseTax(csvRecord);
         var fee = parseFee(csvRecord);
@@ -473,6 +480,13 @@ public class TradeRepublicCSVExtractor implements Extractor
         var name = getField(csvRecord, "name");
         var hasSecurity = !name.isEmpty();
 
+        if (parseAmount(csvRecord) == 0)
+        {
+            var zeroSecurity = hasSecurity ? lookupSecurity(csvRecord, securityCache) : null;
+            processZeroPrincipal(csvRecord, zeroSecurity, hasSecurity ? parseShares(csvRecord) : 0, source, items);
+            return;
+        }
+
         var t = new AccountTransaction();
         t.setType(hasSecurity ? AccountTransaction.Type.DIVIDENDS : AccountTransaction.Type.INTEREST);
         t.setDateTime(date);
@@ -522,10 +536,16 @@ public class TradeRepublicCSVExtractor implements Extractor
         var totalAmount = computeTotalAmount(csvRecord);
         var fee = parseFee(csvRecord);
 
-        if (totalAmount + fee == 0)
+        if (isZero(csvRecord))
         {
             items.add(createSkippedItem(csvRecord, securityCache, source,
                             Messages.MsgErrorTransactionTypeNotSupportedOrRequired));
+            return;
+        }
+
+        if (parseAmount(csvRecord) == 0)
+        {
+            processZeroPrincipal(csvRecord, null, 0, source, items);
             return;
         }
 
@@ -554,10 +574,16 @@ public class TradeRepublicCSVExtractor implements Extractor
         var totalAmount = computeTotalAmount(csvRecord);
         var fee = parseFee(csvRecord);
 
-        if (totalAmount == 0)
+        if (isZero(csvRecord))
         {
             items.add(createSkippedItem(csvRecord, securityCache, source,
                             Messages.MsgErrorTransactionTypeNotSupportedOrRequired));
+            return;
+        }
+
+        if (parseAmount(csvRecord) == 0)
+        {
+            processZeroPrincipal(csvRecord, null, 0, source, items);
             return;
         }
 
@@ -582,7 +608,7 @@ public class TradeRepublicCSVExtractor implements Extractor
 
     private void processCashEarnings(CSVRecord csvRecord, SecurityCache securityCache, String source, List<Item> items)
     {
-        if (parseAmount(csvRecord) == 0 && parseTaxRaw(csvRecord) == 0)
+        if (isZero(csvRecord))
         {
             // tax-free allowance covers it
             items.add(createSkippedItem(csvRecord, securityCache, source,
@@ -591,19 +617,25 @@ public class TradeRepublicCSVExtractor implements Extractor
         }
 
         var security = lookupSecurity(csvRecord, securityCache);
-        var date = parseDate(csvRecord);
-        var currency = getField(csvRecord, "currency");
         var shares = parseShares(csvRecord);
 
         var amount = parseAmount(csvRecord);
-        var tax = parseTaxRaw(csvRecord);
-        long total = amount + tax;
-
-        if (amount == 0 || total < 0)
+        if (amount == 0)
         {
             // Vorabpauschale: tax charge (or its refund)
+            processZeroPrincipal(csvRecord, security, shares, source, items);
+            return;
+        }
+
+        var date = parseDate(csvRecord);
+        var currency = getField(csvRecord, "currency");
+        long total = amount - parseTax(csvRecord);
+
+        if (total < 0)
+        {
+            // the tax exceeds the earnings
             var t = new AccountTransaction();
-            t.setType(total > 0 ? AccountTransaction.Type.TAX_REFUND : AccountTransaction.Type.TAXES);
+            t.setType(AccountTransaction.Type.TAXES);
             t.setSecurity(security);
             t.setDateTime(date);
             t.setCurrencyCode(currency);
@@ -613,6 +645,13 @@ public class TradeRepublicCSVExtractor implements Extractor
             t.setSource(source);
 
             items.add(new TransactionItem(t));
+
+            var fee = parseFee(csvRecord);
+            if (fee > 0)
+                items.add(createSeparateTransaction(csvRecord, AccountTransaction.Type.FEES, fee, security, shares,
+                                source));
+
+            addRefunds(csvRecord, security, shares, source, items);
         }
         else
         {
@@ -737,6 +776,27 @@ public class TradeRepublicCSVExtractor implements Extractor
             items.add(createSeparateTransaction(csvRecord, AccountTransaction.Type.TAXES, tax, null, 0, source));
 
         addRefunds(csvRecord, null, 0, source, items);
+    }
+
+    /**
+     * Books a row without principal amount, e.g. only a tax, fee or credit:
+     * charges become separate TAXES and FEES transactions and credits become
+     * refunds, but no income or cash transaction of 0.00 is created.
+     */
+    private void processZeroPrincipal(CSVRecord csvRecord, Security security, long shares, String source,
+                    List<Item> items)
+    {
+        var tax = parseTax(csvRecord);
+        if (tax > 0)
+            items.add(createSeparateTransaction(csvRecord, AccountTransaction.Type.TAXES, tax, security, shares,
+                            source));
+
+        var fee = parseFee(csvRecord);
+        if (fee > 0)
+            items.add(createSeparateTransaction(csvRecord, AccountTransaction.Type.FEES, fee, security, shares,
+                            source));
+
+        addRefunds(csvRecord, security, shares, source, items);
     }
 
     /**
