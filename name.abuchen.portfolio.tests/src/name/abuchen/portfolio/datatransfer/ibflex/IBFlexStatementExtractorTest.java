@@ -4103,23 +4103,80 @@ public class IBFlexStatementExtractorTest
     @Test
     public void testIBFlexStatementFile34() throws IOException
     {
-        // Cancel and rebook of an execution within one statement (issue
-        // #5915): only the rebooked execution is imported. The cancellation
-        // does not refund the commission of the canceled execution, so it is
-        // booked as a fee.
-        var extractor = new IBFlexStatementExtractor(new Client());
+        // Cancel and rebook of an execution (issue #5915), downloaded as two
+        // consecutive periods: the first file has the execution, the second
+        // its cancellation and the rebooked execution. Imported together, in
+        // any order, only the rebooked execution is imported. The
+        // cancellation does not refund the commission of the canceled
+        // execution, so it is booked as a fee.
+        var canceledExecution = createTempFile(getClass().getResourceAsStream("testIBFlexStatementFile34a.xml"));
+        var cancellationAndRebooking = createTempFile(
+                        getClass().getResourceAsStream("testIBFlexStatementFile34b.xml"));
 
-        var activityStatement = getClass().getResourceAsStream("testIBFlexStatementFile34.xml");
-        var tempFile = createTempFile(activityStatement);
+        for (var files : List.of(List.of(canceledExecution, cancellationAndRebooking),
+                        List.of(cancellationAndRebooking, canceledExecution)))
+        {
+            var extractor = new IBFlexStatementExtractor(new Client());
+
+            var errors = new ArrayList<Exception>();
+
+            var results = extractor.extract(files, errors);
+
+            assertThat(errors, empty());
+            assertThat(countSecurities(results), is(1L));
+            assertThat(countBuySell(results), is(1L));
+            assertThat(countAccountTransactions(results), is(1L));
+            assertThat(countAccountTransfers(results), is(0L));
+            assertThat(results.size(), is(3));
+            new AssertImportActions().check(results, "AUD");
+
+            // check buy sell transaction
+            assertThat(results, hasItem(purchase( //
+                            hasDate("2025-09-11T10:00"), hasShares(5000), //
+                            hasSecurity(hasIsin("CA38501D2041")), //
+                            hasNote("Trade-ID: 2001 | Transaction-ID: 1003"), //
+                            hasAmount("AUD", 1600.00), hasGrossValue("AUD", 1600.00), //
+                            hasTaxes("AUD", 0.00), hasFees("AUD", 0.00))));
+
+            // check fee transaction
+            assertThat(results, hasItem(fee( //
+                            hasDate("2025-09-11T10:00"), hasShares(0), //
+                            hasSecurity(hasIsin("CA38501D2041")), //
+                            hasNote("Trade-ID: 2001 | Transaction-ID: 1001"), //
+                            hasAmount("AUD", 6.00), //
+                            hasTaxes("AUD", 0.00), hasFees("AUD", 0.00))));
+        }
+
+        // Imported separately, the execution is imported with the first file,
+        // and the cancellation stays visible as unsupported with the second.
+        var extractor = new IBFlexStatementExtractor(new Client());
 
         var errors = new ArrayList<Exception>();
 
-        var results = extractor.extract(Collections.singletonList(tempFile), errors);
+        var results = extractor.extract(Collections.singletonList(canceledExecution), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(1L));
-        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "AUD");
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2025-09-11T10:00"), hasShares(5000), //
+                        hasSecurity(hasIsin("CA38501D2041")), //
+                        hasNote("Trade-ID: 2001 | Transaction-ID: 1001"), //
+                        hasAmount("AUD", 1606.00), hasGrossValue("AUD", 1600.00), //
+                        hasTaxes("AUD", 0.00), hasFees("AUD", 6.00))));
+
+        results = extractor.extract(Collections.singletonList(cancellationAndRebooking), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(2L));
+        assertThat(countAccountTransactions(results), is(0L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(3));
         new AssertImportActions().check(results, "AUD");
@@ -4132,13 +4189,15 @@ public class IBFlexStatementExtractorTest
                         hasAmount("AUD", 1600.00), hasGrossValue("AUD", 1600.00), //
                         hasTaxes("AUD", 0.00), hasFees("AUD", 0.00))));
 
-        // check fee transaction
-        assertThat(results, hasItem(fee( //
-                        hasDate("2025-09-11T10:00"), hasShares(0), //
-                        hasSecurity(hasIsin("CA38501D2041")), //
-                        hasNote("Trade-ID: 2001 | Transaction-ID: 1001"), //
-                        hasAmount("AUD", 6.00), //
-                        hasTaxes("AUD", 0.00), hasFees("AUD", 0.00))));
+        // check cancellation (Storno) transaction
+        assertThat(results, hasItem(withFailureMessage( //
+                        Messages.MsgErrorTransactionOrderCancellationUnsupported, //
+                        purchase( //
+                                        hasDate("2025-09-11T10:00"), hasShares(5000), //
+                                        hasSecurity(hasIsin("CA38501D2041")), //
+                                        hasNote(Messages.MsgErrorTransactionOrderCancellationUnsupported), //
+                                        hasAmount("AUD", 1600.00), hasGrossValue("AUD", 1600.00), //
+                                        hasTaxes("AUD", 0.00), hasFees("AUD", 0.00)))));
     }
 
     @Test

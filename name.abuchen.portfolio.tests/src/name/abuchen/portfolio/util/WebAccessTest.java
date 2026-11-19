@@ -5,14 +5,19 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
+import static org.junit.Assert.assertThrows;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 import org.junit.After;
 import org.junit.Before;
@@ -36,6 +41,8 @@ public class WebAccessTest
 
     private HttpServer server;
     private final List<RecordedRequest> requests = new CopyOnWriteArrayList<>();
+    private final CountDownLatch slowRequestReceived = new CountDownLatch(1);
+    private final CountDownLatch releaseSlowRequest = new CountDownLatch(1);
 
     @Before
     public void startServer() throws IOException
@@ -67,12 +74,27 @@ public class WebAccessTest
             respond(exchange, 404, "not found");
         });
 
+        server.createContext("/slow", exchange -> {
+            record(exchange);
+            slowRequestReceived.countDown();
+            try
+            {
+                releaseSlowRequest.await(10, TimeUnit.SECONDS);
+            }
+            catch (InterruptedException e)
+            {
+                Thread.currentThread().interrupt();
+            }
+            respond(exchange, 200, "slow");
+        });
+
         server.start();
     }
 
     @After
     public void stopServer()
     {
+        releaseSlowRequest.countDown();
         server.stop(0);
         WebAccess.setReuseConnections(false);
     }
@@ -214,5 +236,59 @@ public class WebAccessTest
         assertThat(requests, hasSize(1));
         assertThat(requests.get(0).method(), is("POST"));
         assertThat(requests.get(0).body(), is("{\"value\":1}"));
+    }
+
+    @Test
+    public void testPostForm() throws IOException
+    {
+        var form = new LinkedHashMap<String, String>();
+        form.put("t", "a b&c");
+        form.put("q", "ä");
+
+        assertThat(webAccess("/echo").addParameter("fd", "20260101").postForm(form), is("ok"));
+
+        assertThat(requests, hasSize(1));
+        assertThat(requests.get(0).method(), is("POST"));
+        assertThat(requests.get(0).body(), is("t=a+b%26c&q=%C3%A4"));
+    }
+
+    @Test
+    public void testCancelAbortsRequestInFlight() throws Exception
+    {
+        var request = webAccess("/slow");
+        var canceler = new Thread(() -> {
+            try
+            {
+                if (slowRequestReceived.await(10, TimeUnit.SECONDS))
+                    request.cancel();
+            }
+            catch (InterruptedException e)
+            {
+                Thread.currentThread().interrupt();
+            }
+        });
+        canceler.start();
+
+        long start = System.nanoTime();
+        assertThrows(IOException.class, request::get);
+        long elapsedMs = TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - start);
+        canceler.join();
+
+        // the server holds the response for 10 seconds
+        assertTrue("took " + elapsedMs + " ms", elapsedMs < 5000);
+
+        // other requests are not affected
+        releaseSlowRequest.countDown();
+        assertThat(webAccess("/echo").get(), is("ok"));
+    }
+
+    @Test
+    public void testCancelBeforeRequestSendsNothing()
+    {
+        var request = webAccess("/echo");
+        request.cancel();
+
+        assertThrows(IOException.class, request::get);
+        assertThat(requests, hasSize(0));
     }
 }
