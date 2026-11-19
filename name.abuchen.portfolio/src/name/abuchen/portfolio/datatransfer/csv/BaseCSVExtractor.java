@@ -208,6 +208,11 @@ import name.abuchen.portfolio.money.Money;
         if (grossAmount == null || grossAmount.longValue() == 0)
             return Optional.empty();
 
+        // subunit currencies (e.g. GBX and GBP) do not need an exchange rate
+        // in the file
+        if (exchangeRate == null || exchangeRate.compareTo(BigDecimal.ZERO) == 0)
+            exchangeRate = lookupSubunitExchangeRate(currencyCode, amount.getCurrencyCode()).orElse(null);
+
         if (exchangeRate == null || exchangeRate.compareTo(BigDecimal.ZERO) == 0)
         {
             // if no exchange rate is available, try to calculate given the
