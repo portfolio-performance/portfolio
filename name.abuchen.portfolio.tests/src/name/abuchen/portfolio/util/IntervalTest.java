@@ -59,4 +59,26 @@ public class IntervalTest
         interval = Interval.of(LocalDate.parse("2017-09-14"), LocalDate.parse("2019-09-14"));
         assertThat(interval.getYearMonths().size(), is(25));
     }
+
+    @Test
+    public void testCapEnd()
+    {
+        var latest = LocalDate.parse("2019-11-19");
+
+        // end before the given date: unchanged
+        var interval = Interval.of(LocalDate.parse("2018-12-31"), LocalDate.parse("2019-06-30"));
+        assertThat(interval.capEnd(latest), is(interval));
+
+        // end on the given date: unchanged
+        interval = Interval.of(LocalDate.parse("2018-12-31"), latest);
+        assertThat(interval.capEnd(latest), is(interval));
+
+        // end after the given date: end is capped
+        interval = Interval.of(LocalDate.parse("2018-12-31"), LocalDate.parse("2019-12-31"));
+        assertThat(interval.capEnd(latest), is(Interval.of(LocalDate.parse("2018-12-31"), latest)));
+
+        // start and end after the given date: empty interval
+        interval = Interval.of(LocalDate.parse("2019-12-31"), LocalDate.parse("2020-12-31"));
+        assertThat(interval.capEnd(latest), is(Interval.of(latest, latest)));
+    }
 }

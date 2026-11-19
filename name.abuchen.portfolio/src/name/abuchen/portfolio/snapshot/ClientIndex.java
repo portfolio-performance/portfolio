@@ -27,19 +27,8 @@ import name.abuchen.portfolio.util.Interval;
 
     /* package */void calculate(List<Exception> warnings)
     {
-        Interval interval = getReportInterval();
-
         // the actual interval should not extend into the future
-        if (interval.getEnd().isAfter(LocalDate.now()))
-        {
-            LocalDate start = interval.getStart();
-            LocalDate end = LocalDate.now();
-
-            if (start.isAfter(end))
-                start = end;
-
-            interval = Interval.of(start, end);
-        }
+        Interval interval = getReportInterval().capEnd(LocalDate.now());
 
         // reported via forum: if the user selects as 'since' date something in
         // the future, then #getDays will return something negative. Ensure the
