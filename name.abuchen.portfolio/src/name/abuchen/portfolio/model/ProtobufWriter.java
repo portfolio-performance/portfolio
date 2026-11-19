@@ -158,6 +158,8 @@ import name.abuchen.portfolio.money.Money;
             if (newSecurity.hasTargetCurrencyCode())
                 security.setTargetCurrencyCode(newSecurity.getTargetCurrencyCode());
 
+            security.setPercentageQuoted(newSecurity.getIsPercentageQuoted());
+
             if (newSecurity.hasNote())
                 security.setNote(newSecurity.getNote());
 
@@ -589,6 +591,9 @@ import name.abuchen.portfolio.money.Money;
                 case PTransactionUnit.Type.FEE_VALUE:
                     type = Transaction.Unit.Type.FEE;
                     break;
+                case PTransactionUnit.Type.ACCRUED_INTEREST_VALUE:
+                    type = Transaction.Unit.Type.ACCRUED_INTEREST;
+                    break;
                 default:
                     throw new UnsupportedOperationException();
             }
@@ -898,6 +903,8 @@ import name.abuchen.portfolio.money.Money;
             if (security.getTargetCurrencyCode() != null)
                 newSecurity.setTargetCurrencyCode(security.getTargetCurrencyCode());
 
+            newSecurity.setIsPercentageQuoted(security.isPercentageQuoted());
+
             if (security.getNote() != null)
                 newSecurity.setNote(security.getNote());
 
@@ -1201,6 +1208,9 @@ import name.abuchen.portfolio.money.Money;
                 break;
             case FEE:
                 newUnit.setTypeValue(PTransactionUnit.Type.FEE_VALUE);
+                break;
+            case ACCRUED_INTEREST:
+                newUnit.setTypeValue(PTransactionUnit.Type.ACCRUED_INTEREST_VALUE);
                 break;
             default:
                 throw new UnsupportedOperationException();

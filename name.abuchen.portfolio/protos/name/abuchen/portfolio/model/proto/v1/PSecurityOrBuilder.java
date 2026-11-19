@@ -366,4 +366,10 @@ public interface PSecurityOrBuilder extends
    * <code>.google.protobuf.Timestamp updatedAt = 21;</code>
    */
   com.google.protobuf.TimestampOrBuilder getUpdatedAtOrBuilder();
+
+  /**
+   * <code>bool isPercentageQuoted = 22;</code>
+   * @return The isPercentageQuoted.
+   */
+  boolean getIsPercentageQuoted();
 }

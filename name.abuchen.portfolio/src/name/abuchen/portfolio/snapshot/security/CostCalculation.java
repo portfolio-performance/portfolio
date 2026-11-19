@@ -95,7 +95,9 @@ import name.abuchen.portfolio.snapshot.trail.TrailRecord;
         {
             case BUY:
             case DELIVERY_INBOUND:
-                long grossAmount = t.getMonetaryAmount(converter).getAmount();
+                // accrued interest is not part of the cost (see
+                // DividendCalculation), neither is it part of the gross value
+                long grossAmount = t.getMonetaryAmountWithoutAccruedInterest(converter).getAmount();
                 long netAmount = t.getGrossValue(converter).getAmount();
 
                 TrailRecord trail = TrailRecord.ofTransaction(t);

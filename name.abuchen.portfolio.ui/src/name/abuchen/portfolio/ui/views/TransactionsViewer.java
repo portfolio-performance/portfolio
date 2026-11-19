@@ -358,7 +358,7 @@ public final class TransactionsViewer implements ModificationListener
         column.setLabelProvider(new TransactionLabelProvider(t -> {
             if (t instanceof PortfolioTransaction pt)
                 return t.getShares() != 0
-                                ? Values.CalculatedQuote.format(pt.getGrossPricePerShare(),
+                                ? Values.CalculatedQuote.formatFor(pt.getSecurity(), pt.getQuotedGrossPricePerShare(),
                                                 owner.getClient().getBaseCurrency())
                                 : null;
             else
@@ -366,7 +366,8 @@ public final class TransactionsViewer implements ModificationListener
         }));
         ColumnViewerSorter.create(e -> {
             Transaction tx = ((TransactionPair<?>) e).getTransaction();
-            return tx instanceof PortfolioTransaction pt ? pt.getGrossPricePerShare() : null;
+            // sort by the quote as shown (percentage-quoted securities)
+            return tx instanceof PortfolioTransaction pt ? pt.getQuotedGrossPricePerShare() : null;
         }).attachTo(column);
         support.addColumn(column);
 
@@ -397,6 +398,16 @@ public final class TransactionsViewer implements ModificationListener
                         .formatNonZero(t.getUnitSum(Transaction.Unit.Type.TAX), owner.getClient().getBaseCurrency())));
         ColumnViewerSorter.create(e -> ((TransactionPair<?>) e).getTransaction().getUnitSum(Transaction.Unit.Type.TAX))
                         .attachTo(column);
+        support.addColumn(column);
+
+        // accrued interest of bonds: paid with a purchase, received with a
+        // sale (in both cases shown as positive amount like fees)
+        column = new Column("accruedInterest", Messages.ColumnAccruedInterest, SWT.RIGHT, 80); //$NON-NLS-1$
+        column.setLabelProvider(new TransactionLabelProvider(t -> Values.Money.formatNonZero(
+                        t.getUnitSum(Transaction.Unit.Type.ACCRUED_INTEREST), owner.getClient().getBaseCurrency())));
+        ColumnViewerSorter.create(e -> ((TransactionPair<?>) e).getTransaction()
+                        .getUnitSum(Transaction.Unit.Type.ACCRUED_INTEREST)).attachTo(column);
+        column.setVisible(false);
         support.addColumn(column);
 
         column = new Column("8", Messages.ColumnNetValue, SWT.RIGHT, 80); //$NON-NLS-1$

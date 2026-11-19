@@ -255,14 +255,14 @@ public class SecurityDetailsViewer
             {
                 LatestSecurityPrice p = security.getLatest();
 
-                valueLatestPrices.setText(Values.Quote.format(p.getValue()));
+                valueLatestPrices.setText(Values.Quote.formatFor(security, p.getValue()));
                 valueLatestTrade.setText(Values.Date.format(p.getDate()));
                 long daysHigh = p.getHigh();
                 valueDaysHigh.setText(daysHigh == LatestSecurityPrice.NOT_AVAILABLE ? Messages.LabelNotAvailable
-                                : Values.Quote.format(daysHigh));
+                                : Values.Quote.formatFor(security, daysHigh));
                 long daysLow = p.getLow();
                 valueDaysLow.setText(daysLow == LatestSecurityPrice.NOT_AVAILABLE ? Messages.LabelNotAvailable
-                                : Values.Quote.format(daysLow));
+                                : Values.Quote.formatFor(security, daysLow));
                 long volume = p.getVolume();
                 valueVolume.setText(volume == LatestSecurityPrice.NOT_AVAILABLE ? Messages.LabelNotAvailable
                                 : String.format("%,d", volume)); //$NON-NLS-1$

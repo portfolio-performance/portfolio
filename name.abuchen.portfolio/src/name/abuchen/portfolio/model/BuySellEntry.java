@@ -78,6 +78,12 @@ public class BuySellEntry implements CrossEntry, Annotated
         this.accountTransaction.setSecurity(security);
     }
 
+    public Security getSecurity()
+    {
+        assert this.portfolioTransaction.getSecurity() == this.accountTransaction.getSecurity();
+        return this.portfolioTransaction.getSecurity();
+    }
+
     public void setShares(long shares)
     {
         this.portfolioTransaction.setShares(shares);

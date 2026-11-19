@@ -91,10 +91,10 @@ public class Trade implements Adaptable
         // for purchases, getMonetaryAmount() returns the value including taxes
         // and fees paid. Passing the converter applies the exchange rate
         // recorded on the transaction (if applicable) instead of the historical
-        // rate of that day
+        // rate of that day. Accrued interest is income, not part of the trade
         this.entryValue = transactions.stream() //
                         .filter(t -> t.getTransaction().getType().isPurchase() == isLong)
-                        .map(t -> t.getTransaction().getMonetaryAmount(converter))
+                        .map(t -> t.getTransaction().getMonetaryAmountWithoutAccruedInterest(converter))
                         .collect(MoneyCollectors.sum(converter.getTermCurrency()));
 
         // for purchases, getGrossValue() returns the value without taxes and
@@ -110,7 +110,7 @@ public class Trade implements Adaptable
             // (after) taxes and fees deducted
             this.exitValue = transactions.stream() //
                             .filter(t -> t.getTransaction().getType().isLiquidation() == isLong)
-                            .map(t -> t.getTransaction().getMonetaryAmount(converter))
+                            .map(t -> t.getTransaction().getMonetaryAmountWithoutAccruedInterest(converter))
                             .collect(MoneyCollectors.sum(converter.getTermCurrency()));
 
             // for sales, getGrossValue() returns the sales proceeds without
@@ -134,6 +134,7 @@ public class Trade implements Adaptable
                             .movePointLeft(Values.Share.precision()) //
                             .multiply(BigDecimal.valueOf(security.getSecurityPrice(now).getValue()), Values.MC)
                             .movePointLeft(Values.Quote.precisionDeltaToMoney()) //
+                            .multiply(security.getQuoteMultiplier()) //
                             .setScale(0, RoundingMode.HALF_UP).longValue();
 
             this.exitValue = converter.at(now).apply(Money.of(security.getCurrencyCode(), marketValue));
@@ -174,7 +175,8 @@ public class Trade implements Adaptable
         transactions.stream().forEach(t -> {
             dates.add(t.getTransaction().getDateTime().toLocalDate());
 
-            double amount = t.getTransaction().getMonetaryAmount(converter).getAmount() / Values.Amount.divider();
+            double amount = t.getTransaction().getMonetaryAmountWithoutAccruedInterest(converter).getAmount()
+                            / Values.Amount.divider();
 
             if (t.getTransaction().getType().isPurchase() == isLong())
             {

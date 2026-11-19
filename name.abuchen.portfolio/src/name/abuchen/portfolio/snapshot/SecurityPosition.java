@@ -96,10 +96,15 @@ public class SecurityPosition
 
     public Money calculateValue()
     {
+        // apply the quote factor before rounding to avoid losing precision
+        var quoteMultiplier = investment instanceof Security security ? security.getQuoteMultiplier()
+                        : BigDecimal.ONE;
+
         long marketValue = BigDecimal.valueOf(shares) //
                         .movePointLeft(Values.Share.precision())
                         .multiply(BigDecimal.valueOf(price.getValue()), Values.MC)
                         .movePointLeft(Values.Quote.precisionDeltaToMoney()) //
+                        .multiply(quoteMultiplier) //
                         .setScale(0, RoundingMode.HALF_UP).longValue();
         return Money.of(investment.getCurrencyCode(), marketValue);
     }

@@ -123,15 +123,7 @@ public class PortfolioTransaction extends Transaction
         }
         else if (getSecurity().getCurrencyCode().equals(converter.getTermCurrency()))
         {
-            Optional<Unit> grossValue = getUnit(Unit.Type.GROSS_VALUE);
-
-            // use exchange rate used within the transaction,
-            // not the historical exchange rate
-            BigDecimal exchangeRate = grossValue.isPresent() ? grossValue.get().getExchangeRate()
-                            : converter.getRate(getDateTime(), getCurrencyCode()).getValue();
-
-            return Money.of(converter.getTermCurrency(), BigDecimal.ONE.divide(exchangeRate, 10, RoundingMode.HALF_DOWN)
-                            .multiply(BigDecimal.valueOf(getAmount())).setScale(0, RoundingMode.HALF_DOWN).longValue());
+            return Money.of(converter.getTermCurrency(), convertWithTransactionRate(getAmount(), converter));
         }
         else
         {
@@ -150,10 +142,84 @@ public class PortfolioTransaction extends Transaction
     {
         long taxAndFees = getUnitSum(Unit.Type.FEE, Unit.Type.TAX).getAmount();
 
+        // accrued interest is paid in addition to the price (purchase) or
+        // received in addition to the proceeds (sale): never part of the
+        // gross value
+        long accruedInterest = getUnitSum(Unit.Type.ACCRUED_INTEREST).getAmount();
+
         if (this.type.isPurchase())
-            return getAmount() - taxAndFees;
+            return getAmount() - taxAndFees - accruedInterest;
         else
-            return getAmount() + taxAndFees;
+            return getAmount() + taxAndFees - accruedInterest;
+    }
+
+    /**
+     * Returns the accrued interest paid with a purchase or received with a
+     * sale (in transaction currency).
+     */
+    public Money getAccruedInterest()
+    {
+        return getUnitSum(Unit.Type.ACCRUED_INTEREST);
+    }
+
+    /**
+     * Returns the accrued interest paid with a purchase or received with a
+     * sale in the term currency of the currency converter.
+     */
+    public Money getAccruedInterest(CurrencyConverter converter)
+    {
+        if (getCurrencyCode().equals(converter.getTermCurrency()) || getSecurity() == null
+                        || !getSecurity().getCurrencyCode().equals(converter.getTermCurrency()))
+            return getUnitSum(Unit.Type.ACCRUED_INTEREST, converter);
+
+        // in the currency of the security, the accrued interest is converted
+        // with the exchange rate of the transaction (like the monetary amount,
+        // see #getMonetaryAmount(CurrencyConverter)) unless it is stored in
+        // that currency
+        long amount = getUnits().filter(u -> u.getType() == Unit.Type.ACCRUED_INTEREST)
+                        .mapToLong(u -> u.getForex() != null
+                                        && converter.getTermCurrency().equals(u.getForex().getCurrencyCode())
+                                                        ? u.getForex().getAmount()
+                                                        : convertWithTransactionRate(u.getAmount().getAmount(),
+                                                                        converter))
+                        .sum();
+        return Money.of(converter.getTermCurrency(), amount);
+    }
+
+    /**
+     * Converts an amount in transaction currency into the currency of the
+     * security with the exchange rate used within the transaction (not the
+     * historical exchange rate).
+     */
+    private long convertWithTransactionRate(long amount, CurrencyConverter converter)
+    {
+        Optional<Unit> grossValue = getUnit(Unit.Type.GROSS_VALUE);
+
+        BigDecimal exchangeRate = grossValue.isPresent() ? grossValue.get().getExchangeRate()
+                        : converter.getRate(getDateTime(), getCurrencyCode()).getValue();
+
+        return BigDecimal.ONE.divide(exchangeRate, 10, RoundingMode.HALF_DOWN).multiply(BigDecimal.valueOf(amount))
+                        .setScale(0, RoundingMode.HALF_DOWN).longValue();
+    }
+
+    /**
+     * Returns the monetary amount without accrued interest, i.e. the value of
+     * the security including taxes and fees. That is the cost of a purchase or
+     * the proceeds of a sale.
+     */
+    public Money getMonetaryAmountWithoutAccruedInterest()
+    {
+        return getMonetaryAmount().subtract(getAccruedInterest());
+    }
+
+    /**
+     * Returns the monetary amount without accrued interest in the term
+     * currency of the currency converter. See
+     * {@link #getMonetaryAmountWithoutAccruedInterest()}.
+     */
+    public Money getMonetaryAmountWithoutAccruedInterest(CurrencyConverter converter)
+    {
+        return getMonetaryAmount(converter).subtract(getAccruedInterest(converter));
     }
 
     /**
@@ -161,7 +227,7 @@ public class PortfolioTransaction extends Transaction
      * applied. In the case of a buy transaction, that are the gross costs, i.e.
      * before adding additional taxes and fees. In the case of sell
      * transactions, that are the gross proceeds before the deduction of taxes
-     * and fees.
+     * and fees. Accrued interest is never part of the gross value.
      */
     @Override
     public Money getGrossValue()
@@ -201,9 +267,10 @@ public class PortfolioTransaction extends Transaction
         if (getShares() == 0)
             return Quote.of(getCurrencyCode(), 0);
 
-        long grossPrice = BigDecimal.valueOf(getGrossValueAmount()).movePointRight(Values.Quote.precisionDeltaToMoney()) //
+        long grossPrice = BigDecimal.valueOf(getGrossValueAmount())
+                        .movePointRight(Values.Quote.precisionDeltaToMoney()) //
                         .movePointRight(Values.Share.precision()) //
-                        .divide(BigDecimal.valueOf(getShares()), Values.MC) //
+                        .divide(BigDecimal.valueOf(getShares()).multiply(getQuoteMultiplier()), Values.MC) //
                         .setScale(0, RoundingMode.HALF_EVEN).longValue();
 
         return Quote.of(getCurrencyCode(), grossPrice);
@@ -229,9 +296,46 @@ public class PortfolioTransaction extends Transaction
         long grossPrice = BigDecimal.valueOf(getGrossValue(converter).getAmount())
                         .movePointRight(Values.Quote.precisionDeltaToMoney()) //
                         .movePointRight(Values.Share.precision()) //
-                        .divide(BigDecimal.valueOf(getShares()), Values.MC) //
+                        .divide(BigDecimal.valueOf(getShares()).multiply(getQuoteMultiplier()), Values.MC) //
                         .setScale(0, RoundingMode.HALF_EVEN).longValue();
         return Quote.of(converter.getTermCurrency(), grossPrice);
+    }
+
+    /**
+     * Returns the gross price per share as the security is quoted. For
+     * percentage-quoted securities, the price is given in the currency of the
+     * security because a percentage refers to the nominal value in that
+     * currency. It is taken from the forex gross value of the transaction if
+     * the transaction currency differs. In all other cases this is the same as
+     * {@link #getGrossPricePerShare()}.
+     */
+    public Quote getQuotedGrossPricePerShare()
+    {
+        var security = getSecurity();
+        if (security == null || !security.isPercentageQuoted() || getShares() == 0
+                        || security.getCurrencyCode().equals(getCurrencyCode()))
+            return getGrossPricePerShare();
+
+        Optional<Unit> grossValue = getUnit(Unit.Type.GROSS_VALUE);
+        if (grossValue.isEmpty())
+            return getGrossPricePerShare();
+
+        long grossPrice = BigDecimal.valueOf(grossValue.get().getForex().getAmount())
+                        .movePointRight(Values.Quote.precisionDeltaToMoney()) //
+                        .movePointRight(Values.Share.precision()) //
+                        .divide(BigDecimal.valueOf(getShares()).multiply(getQuoteMultiplier()), Values.MC) //
+                        .setScale(0, RoundingMode.HALF_EVEN).longValue();
+        return Quote.of(security.getCurrencyCode(), grossPrice);
+    }
+
+    /**
+     * Returns the quote multiplier of the security (see
+     * {@link Security#getQuoteMultiplier()}), 1 if no security is set.
+     */
+    private BigDecimal getQuoteMultiplier()
+    {
+        var security = getSecurity();
+        return security != null ? security.getQuoteMultiplier() : BigDecimal.ONE;
     }
 
     @Override
