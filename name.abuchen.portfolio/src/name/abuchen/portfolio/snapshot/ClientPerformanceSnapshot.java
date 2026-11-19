@@ -191,9 +191,13 @@ public class ClientPerformanceSnapshot
         this.useFifo = useFifo;
         this.client = client;
         this.converter = converter;
-        this.period = period;
-        this.snapshotStart = ClientSnapshot.create(client, converter, period.getStart());
-        this.snapshotEnd = ClientSnapshot.create(client, converter, period.getEnd());
+
+        // the valuation at the end of the reporting period must not be dated
+        // into the future (otherwise the IRR is calculated over a too long
+        // period)
+        this.period = period.capEnd(LocalDate.now());
+        this.snapshotStart = ClientSnapshot.create(client, converter, this.period.getStart());
+        this.snapshotEnd = ClientSnapshot.create(client, converter, this.period.getEnd());
 
         calculate();
     }
