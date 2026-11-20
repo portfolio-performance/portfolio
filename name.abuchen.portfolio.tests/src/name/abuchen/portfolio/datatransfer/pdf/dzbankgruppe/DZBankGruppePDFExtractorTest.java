@@ -1459,7 +1459,7 @@ public class DZBankGruppePDFExtractorTest
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
                         hasDate("2017-11-24T00:00"), hasExDate(null), //
-                        hasShares(0.665), //
+                        hasShares(72.816), //
                         hasSource("Umsatzuebersicht02.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 94.78), hasGrossValue("EUR", 94.78), //
@@ -1502,7 +1502,7 @@ public class DZBankGruppePDFExtractorTest
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
                         hasDate("2020-12-10T00:00"), hasExDate(null), //
-                        hasShares(6.730), //
+                        hasShares(362.803), //
                         hasSource("Umsatzuebersicht03.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 362.80), hasGrossValue("EUR", 362.80), //
@@ -1567,7 +1567,7 @@ public class DZBankGruppePDFExtractorTest
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
                         hasDate("2017-12-15T00:00"), hasExDate(null), //
-                        hasShares(0.387), //
+                        hasShares(52.874), //
                         hasSource("Umsatzuebersicht04.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 92.69), hasGrossValue("EUR", 92.69), //
@@ -1682,7 +1682,7 @@ public class DZBankGruppePDFExtractorTest
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
                         hasDate("2020-11-24T00:00"), hasExDate(null), //
-                        hasShares(1.591), //
+                        hasShares(159.760), //
                         hasSource("Umsatzuebersicht06.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 207.69), hasGrossValue("EUR", 207.69), //
@@ -2385,7 +2385,7 @@ public class DZBankGruppePDFExtractorTest
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
                         hasDate("2022-11-10T00:00"), hasExDate(null), //
-                        hasShares(1.942), //
+                        hasShares(225.065), //
                         hasSource("Umsatzuebersicht16.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 630.18), hasGrossValue("EUR", 630.18), //
@@ -2474,6 +2474,76 @@ public class DZBankGruppePDFExtractorTest
                         hasSource("Umsatzuebersicht17.txt"), //
                         hasNote("Abrechnung Nr. 447"), //
                         hasAmount("EUR", 126.14), hasGrossValue("EUR", 126.14), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testUmsatzuebersicht18()
+    {
+        var extractor = new DZBankGruppePDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Umsatzuebersicht18.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(2L));
+        assertThat(countBuySell(results), is(2L));
+        assertThat(countAccountTransactions(results), is(2L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(6));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("DE0008491051"), hasWkn(null), hasTicker(null), //
+                        hasName("UniGlobal"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("LU0718610743"), hasWkn(null), hasTicker(null), //
+                        hasName("UniGlobal II A"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2026-11-12"), hasShares(0.422), //
+                        hasSecurity(hasIsin("DE0008491051")), //
+                        hasSource("Umsatzuebersicht18.txt"), //
+                        hasNote("Wiederanlage"), //
+                        hasAmount("EUR", 213.33), hasGrossValue("EUR", 213.33), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2026-11-12"), hasExDate(null), //
+                        hasShares(22.581), //
+                        hasSecurity(hasIsin("DE0008491051")), //
+                        hasSource("Umsatzuebersicht18.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 213.33), hasGrossValue("EUR", 231.23), //
+                        hasTaxes("EUR", 17.90), hasFees("EUR", 0.00))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2026-11-12"), hasShares(1.610), //
+                        hasSecurity(hasIsin("LU0718610743")), //
+                        hasSource("Umsatzuebersicht18.txt"), //
+                        hasNote("Wiederanlage"), //
+                        hasAmount("EUR", 351.53), hasGrossValue("EUR", 351.53), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2026-11-12"), hasExDate(null), //
+                        hasShares(79.532), //
+                        hasSecurity(hasIsin("LU0718610743")), //
+                        hasSource("Umsatzuebersicht18.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 351.53), hasGrossValue("EUR", 351.53), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
