@@ -24,6 +24,7 @@ import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
+import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
 
@@ -773,6 +774,12 @@ public class DZBankGruppePDFExtractor extends AbstractPDFExtractor
         // inklusive Solidaritätszuschlag
         // 11.12.2020
         // 1 0.12.2020 Wiederanlage 362,80 0,00 53,91 6,730
+        //
+        // Ausschüttung *1 231,23
+        // abgeführte Kapitalertragsteuer -17,90
+        // inklusive Solidaritätszuschlag
+        // 13.11.2026
+        // 12.11.2026 Wiederanlage 213,33 0,00 505,64 0,422
         // @formatter:on
         Transaction<AccountTransaction> pdfTransaction2 = new Transaction<>();
         pdfTransaction2.subject(() -> new AccountTransaction(AccountTransaction.Type.DIVIDENDS));
@@ -782,9 +789,9 @@ public class DZBankGruppePDFExtractor extends AbstractPDFExtractor
         firstRelevantLine2.set(pdfTransaction2);
 
         pdfTransaction2
-                .section("amount", "date", "shares")
+                .section("amount", "date")
                 .match("^(Gesamtaussch.ttung|Aussch.ttung) \\*[\\d]+ (?<amount>[\\.,\\d]+)$")
-                .match("^(?<date>[\\s\\d]{2,3}\\.[\\d]{2}\\.[\\d]{4}) Wiederanlage [\\.,\\d]+ [\\.,\\d]+ [\\.,\\d]+ (?<shares>[\\.,\\d]+)$")
+                .match("^(?<date>[\\s\\d]{2,3}\\.[\\d]{2}\\.[\\d]{4}) Wiederanlage [\\.,\\d]+ [\\.,\\d]+ [\\.,\\d]+ [\\.,\\d]+$")
                 .assign((t, v) -> {
                     Map<String, String> context = type.getCurrentContext();
 
@@ -797,15 +804,39 @@ public class DZBankGruppePDFExtractor extends AbstractPDFExtractor
                     }
 
                     t.setDateTime(asDate(stripBlanks(v.get("date"))));
-                    t.setShares(asShares(v.get("shares")));
                     t.setAmount(asAmount(v.get("amount")));
                     t.setCurrencyCode(asCurrencyCode(context.get("baseCurrency")));
                     t.setSecurity(getOrCreateSecurity(v));
                 })
 
+                // @formatter:off
+                // 1 2.11.2026 Wiederanlage 351,53 0,00 218,31 1,610
+                // Kauf ohne Ausgabeaufschlag
+                // Bestand UniGlobal II A *1 am 13.11.2026 81,142
+                //
+                // 12.11.2026 Wiederanlage 213,33 0,00 505,64 0,422
+                // Kauf ohne Ausgabeaufschlag
+                // Bestand am 13.11.2026 23,003
+                // @formatter:on
+                .section("reinvestedShares", "holding").optional()
+                .match("^[\\s\\d]{2,3}\\.[\\d]{2}\\.[\\d]{4} Wiederanlage [\\.,\\d]+ [\\.,\\d]+ [\\.,\\d]+ (?<reinvestedShares>[\\.,\\d]+)$")
+                .match("^Bestand( .*)? am [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<holding>[\\.,\\d]+)$")
+                .assign((t, v) -> {
+                    // The distribution is paid on the holding before the
+                    // reinvestment, which is the last booking before the
+                    // holding at the end of the statement
+                    t.setShares(asShares(v.get("holding")) - asShares(v.get("reinvestedShares")));
+                })
+
                 .wrap(t -> {
                     if (t.getCurrencyCode() != null && t.getAmount() != 0)
+                    {
+                        // The distribution is the gross amount, the withheld
+                        // taxes are deducted before the reinvestment
+                        t.setMonetaryAmount(t.getMonetaryAmount().subtract(t.getUnitSum(Unit.Type.TAX)));
+
                         return new TransactionItem(t);
+                    }
                     return null;
                 });
 
@@ -1385,9 +1416,10 @@ public class DZBankGruppePDFExtractor extends AbstractPDFExtractor
 
                         // @formatter:off
                         // abgeführte Kapitalertragsteuer 0,00
+                        // abgeführte Kapitalertragsteuer -17,90
                         // @formatter:on
                         .section("tax").optional() //
-                        .match("^abgef.hrte Kapitalertragsteuer (?<tax>[\\.,\\d]+)$") //
+                        .match("^abgef.hrte Kapitalertragsteuer (\\-)?(?<tax>[\\.,\\d]+)$") //
                         .assign((t, v) -> {
                             Map<String, String> context = type.getCurrentContext();
 
@@ -1399,7 +1431,7 @@ public class DZBankGruppePDFExtractor extends AbstractPDFExtractor
                         // abgeführte Kirchensteuer 0,00
                         // @formatter:on
                         .section("tax").optional() //
-                        .match("^abgef.hrte Kirchensteuer (?<tax>[\\.,\\d]+)$") //
+                        .match("^abgef.hrte Kirchensteuer (\\-)?(?<tax>[\\.,\\d]+)$") //
                         .assign((t, v) -> {
                             Map<String, String> context = type.getCurrentContext();
 
