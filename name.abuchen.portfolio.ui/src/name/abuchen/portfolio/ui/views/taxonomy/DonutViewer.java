@@ -21,6 +21,16 @@ import name.abuchen.portfolio.ui.views.IPieChart;
 
     private IPieChart chart;
 
+    /**
+     * True while the page is shown in the taxonomy view.
+     */
+    private boolean isVisible = false;
+
+    /**
+     * True if the model changed while the page was not shown.
+     */
+    private boolean isDirty = false;
+
     @Inject
     @Preference(UIConstants.Preferences.ENABLE_SWTCHART_PIECHARTS)
     boolean useSWTCharts;
@@ -57,24 +67,46 @@ import name.abuchen.portfolio.ui.views.IPieChart;
         {
             chart = new TaxonomyDonutBrowser(make(EmbeddedBrowser.class), this, view);
         }
-        return chart.createControl(container);
+        Control control = chart.createControl(container);
+
+        // the chart has just been built with the current data
+        isDirty = false;
+
+        return control;
     }
 
     @Override
-    public void beforePage() // NOSONAR
+    public void beforePage()
     {
+        isVisible = true;
+
+        if (isDirty)
+            refreshChart();
     }
 
     @Override
-    public void afterPage() // NOSONAR
+    public void afterPage()
     {
+        isVisible = false;
     }
 
     @Override
     public void nodeChange(TaxonomyNode node)
     {
+        // rebuild only the chart which is shown. A hidden chart is rebuilt
+        // when the page is shown again (see #beforePage).
+        if (isVisible)
+            refreshChart();
+        else
+            isDirty = true;
+    }
+
+    private void refreshChart()
+    {
         // chart is null while the control has not yet been created lazily
         if (chart != null)
             chart.refresh(null);
+
+        isDirty = false;
     }
 }

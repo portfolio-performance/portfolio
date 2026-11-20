@@ -1,10 +1,8 @@
 package name.abuchen.portfolio.ui.views.holdings;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.Map;
 
 import org.eclipse.jface.layout.GridDataFactory;
@@ -34,7 +32,6 @@ public class HoldingsPieChartSWT implements IPieChart
     private CircularChart chart;
     private ClientSnapshot snapshot;
     private AbstractFinanceView financeView;
-    private List<String> lastLabels;
     private Map<String, NodeData> id2nodeData;
 
     private class NodeData
@@ -157,60 +154,29 @@ public class HoldingsPieChartSWT implements IPieChart
                             id2nodeData.put(nodeId, data);
                         });
 
-        ICircularSeries<?> circularSeries = (ICircularSeries<?>) chart.getSeriesSet()
-                        .getSeries(Messages.LabelStatementOfAssetsHoldings);
-        if (circularSeries == null)
+        // Always rebuild the series instead of updating the values of the
+        // existing nodes: SWTChart recalculates the whole model on every
+        // Node#setValue (quadratic effort) and never lowers the value of the
+        // root node, i.e. after the total value has fallen, the slices would
+        // not cover the full circle anymore. createSeries replaces the series
+        // with the same id; setSeries recalculates the model only once.
+        try
         {
-            circularSeries = createSeries(values, labels);
-        }
-        else
-        {
-            if (hasDataSetChanged(labels))
-            {
-                // refresh values only for smoother update
-                ListIterator<String> iter = labels.listIterator();
-                while (iter.hasNext())
-                {
-                    int idx = iter.nextIndex();
-                    String label = iter.next();
-                    Node node = circularSeries.getNodeById(label);
-                    if (node != null)
-                    {
-                        node.setValue(values.get(idx));
-                    }
-                }
-            }
-            else
-            {
-                circularSeries = createSeries(values, labels);
-            }
+            chart.suspendUpdate(true);
 
+            ICircularSeries<?> circularSeries = (ICircularSeries<?>) chart.getSeriesSet()
+                            .createSeries(SeriesType.DOUGHNUT, Messages.LabelStatementOfAssetsHoldings);
+            circularSeries.setSeries(labels.toArray(new String[0]), values.stream().mapToDouble(d -> d).toArray());
+            circularSeries.setSliceColor(chart.getPlotArea().getBackground());
+            setColors(circularSeries, values.size());
+
+            chart.updateAngleBounds();
         }
-        setColors(circularSeries, values.size());
-        chart.updateAngleBounds();
+        finally
+        {
+            chart.suspendUpdate(false);
+        }
         chart.redraw();
-    }
-
-    /**
-     * Check whether or not the same labels in dataset
-     */
-    private boolean hasDataSetChanged(List<String> labels)
-    {
-        List<String> newLabels = new ArrayList<>(labels);
-        Collections.sort(newLabels, String.CASE_INSENSITIVE_ORDER);
-        return newLabels.equals(lastLabels);
-    }
-
-    private ICircularSeries<?> createSeries(List<Double> values, List<String> labels)
-    {
-        ICircularSeries<?> circularSeries;
-        circularSeries = (ICircularSeries<?>) chart.getSeriesSet().createSeries(SeriesType.DOUGHNUT,
-                        Messages.LabelStatementOfAssetsHoldings);
-        circularSeries.setSeries(labels.toArray(new String[0]), values.stream().mapToDouble(d -> d).toArray());
-        circularSeries.setSliceColor(chart.getPlotArea().getBackground());
-        lastLabels = new ArrayList<>(labels);
-        Collections.sort(lastLabels, String.CASE_INSENSITIVE_ORDER);
-        return circularSeries;
     }
 
     private void setColors(ICircularSeries<?> circularSeries, int colorCount)

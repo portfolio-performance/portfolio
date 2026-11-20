@@ -84,8 +84,12 @@ public class HoldingsChartWidget extends CircularChartWidget<ClientSnapshot>
                         .sorted((l, r) -> Long.compare(r.getValuation().getAmount(), l.getValuation().getAmount())) //
                         .forEach(p -> {
                             String nodeId = p.getInvestmentVehicle().getUUID();
-                            Node node = rootNode.addChild(nodeId,
-                                            p.getValuation().getAmount() / Values.Amount.divider());
+                            // unlike Node#addChild, the constructor does not
+                            // recalculate the whole model for every node. The
+                            // model is updated once after all nodes have been
+                            // created.
+                            Node node = new Node(nodeId, p.getValuation().getAmount() / Values.Amount.divider(),
+                                            rootNode);
                             node.setData(p);
                             id2color.put(nodeId, colorWheel.next());
                         });
@@ -95,6 +99,13 @@ public class HoldingsChartWidget extends CircularChartWidget<ClientSnapshot>
         {
             circularSeries.setSeries(new String[] { Messages.LabelErrorNoHoldings }, new double[] { 100 });
             circularSeries.setColor(Messages.LabelErrorNoHoldings, Colors.LIGHT_GRAY);
+        }
+        else
+        {
+            // recalculate the model once for all nodes. Must happen before
+            // setting the colors because the update overwrites the slice
+            // colors
+            circularSeries.getNodeDataModel().update();
         }
 
         id2color.forEach(circularSeries::setColor);

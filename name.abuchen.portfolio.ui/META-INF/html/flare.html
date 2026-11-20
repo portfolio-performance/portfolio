@@ -47,7 +47,7 @@ var svg = d3.select("body").append("svg")
 
 var partition = d3.layout.partition()
     .sort(null)
-    .value(function(d) { return 1; });
+    .value(function(d) { return d.value; });
 
 var arc = d3.svg.arc()
     .startAngle(function(d) { return Math.max(0, Math.min(2 * Math.PI, x(d.x))); })
@@ -57,50 +57,136 @@ var arc = d3.svg.arc()
 
 // Keep track of the node that is currently being displayed as the root.
 var node;
+var root;
+
+// Key of the segment below the mouse (shown in the tooltip)
+var hoveredKey = null;
 
 var flare = {
-  setContent: function(content) {
-    root = JSON.parse(content);
+  isInitialized: false,
+
+  // Builds the chart on the first call. Later calls update the existing
+  // elements instead of reloading the page (which flashes a white page).
+  update: function(content) {
+    var data = JSON.parse(content);
+    var nodes = partition.nodes(data);
+    assignKeys(data, data.uuid);
+
+    // remember the current geometry to animate from it
+    var previous = {};
+    svg.selectAll("path").each(function(d) { previous[d.key] = d; });
+
+    // stay zoomed into the node shown before if it still exists
+    var zoomKey = node ? node.key : null;
+    root = data;
     node = root;
+    var hovered = null;
 
-    this.path = svg.datum(root).selectAll("path")
-      .data(partition.value(function(d) { return d.value; }).nodes)
-      .enter()
-      .append("path")
-      .attr("d", arc)
-      .style("fill", function(d) { return d.color })
-      .on("click", this.click)
-      .on("mouseover", this.mouseover)
-      .on("mousemove", this.mousemove)
-      .on("mouseout", this.mouseout)
-      .each(stash);
+    nodes.forEach(function(d) {
+      var p = previous[d.key];
+      d.x0 = p ? p.x0 : d.x;
+      d.dx0 = p ? p.dx0 : 0;
+      d.y0 = p ? p.y0 : d.y;
+      d.dy0 = p ? p.dy0 : d.dy;
+      if (d.key === zoomKey)
+        node = d;
+      if (d.key === hoveredKey)
+        hovered = d;
+    });
 
-    this.text = svg.datum(root)
-      .selectAll("text")
-      .data(partition.value(function(d) { return d.value; }).nodes)
+    // refresh the tooltip of the hovered segment or hide it if it is gone
+    if (hoveredKey !== null) {
+      if (hovered && hovered.caption) {
+        tooltip.html(hovered.caption);
+      } else {
+        hoveredKey = null;
+        tooltip.transition()
+          .duration(250)
+          .style("opacity", 0);
+      }
+    }
 
-    var textEnter = this.text.enter().append("text")
-      .style("fill-opacity", 1)
-      .style("fill", function(d) {
-        return brightness(d3.rgb(d.color)) < 125 ? "#eee" : "#000";
-      })
-      .attr("text-anchor", function(d) {
-        return x(d.x + d.dx / 2) > Math.PI ? "end" : "start";
-      })
-      .attr("dy", ".2em")
-      .attr("transform", function(d) {
-        var angle = x(d.x + d.dx / 2) * 180 / Math.PI - 90;
-        return "rotate(" + angle + ")translate(" + (y(d.y) + 5) + ")rotate(" + (angle > 90 ? -180 : 0) + ")";
-      })
+    var shown = {};
+    markShown(node, shown);
+
+    // scales of the zoomed node after the update
+    var xs = x.copy().domain([node.x, node.x + node.dx]);
+    var ys = y.copy().domain([node.y, 1]).range([node.y ? 20 : 0, radius]);
+
+    var key = function(d) { return d.key; };
+    var tween = this.isInitialized ? updateTween(nodes, xs, ys) : null;
+
+    this.path = svg.selectAll("path").data(nodes, key);
+
+    this.path.exit().remove();
+
+    this.path.enter()
+      .insert("path", "text")
       .on("click", this.click)
       .on("mouseover", this.mouseover)
       .on("mousemove", this.mousemove)
       .on("mouseout", this.mouseout);
 
-    textEnter.append("tspan")
-      .attr("x", 0)
-      .attr("visibility", function(d) { return isBigEnough(d) ? null : "hidden" })
-      .text(cropped);
+    this.path.style("fill", function(d) { return d.color });
+
+    if (this.isInitialized) {
+      this.path.transition()
+        .duration(300)
+        .attrTween("d", function(d) {
+          return function(t) {
+            var b = tween(d, t);
+            d.x0 = b.x;
+            d.dx0 = b.dx;
+            d.y0 = b.y;
+            d.dy0 = b.dy;
+            return arc(b);
+          };
+        });
+    } else {
+      x.domain(xs.domain());
+      y.domain(ys.domain()).range(ys.range());
+      this.path.attr("d", arc).each(stash);
+    }
+
+    this.text = svg.selectAll("text").data(nodes, key);
+
+    this.text.exit().remove();
+
+    this.text.enter()
+      .append("text")
+      .attr("dy", ".2em")
+      .attr("transform", function(d) { return labelTransform(d, xs, ys); })
+      .on("click", this.click)
+      .on("mouseover", this.mouseover)
+      .on("mousemove", this.mousemove)
+      .on("mouseout", this.mouseout)
+      .append("tspan")
+      .attr("x", 0);
+
+    this.text
+      .style("fill", function(d) {
+        return brightness(d3.rgb(d.color)) < 125 ? "#eee" : "#000";
+      })
+      .style("fill-opacity", function(d) { return shown[d.key] ? 1 : 1e-6; })
+      .style("visibility", function(d) {
+        return isBigEnoughWith(d, xs) && shown[d.key] ? null : "hidden";
+      })
+      .attr("text-anchor", function(d) { return labelAnchor(d, xs); });
+
+    this.text.select("tspan")
+      .text(function(d) { return croppedWith(d, ys); });
+
+    if (this.isInitialized) {
+      this.text.transition()
+        .duration(300)
+        .attrTween("transform", function(d) {
+          return function(t) { return labelTransform(tween(d, t), x, y); };
+        });
+    } else {
+      this.text.attr("transform", function(d) { return labelTransform(d, xs, ys); });
+    }
+
+    this.isInitialized = true;
   },
 
   click: function(d) {
@@ -113,8 +199,12 @@ var flare = {
       onItemSelected(d.uuid);
     }
 
+    // the zoom draws the final geometry. Reset the origin of the arcs when
+    // the zoom starts (and interrupts a running update) so that the next
+    // update does not start from an intermediate origin.
     flare.path.transition()
       .duration(1000)
+      .each("start", stash)
       .attrTween("d", arcTweenZoom(d));
 
     // Somewhat of a hack as we rely on arcTween updating the scales.
@@ -136,15 +226,19 @@ var flare = {
         })
       .style("fill-opacity", function(e) { return isParentOf(d, e) ? 1 : 1e-6; })
       .each("end", function(e) {
+          // check against the current zoom node: an update during the zoom
+          // binds new data to the labels
           d3.select(this)
-            .style("visibility", isBigEnough(e) && isParentOf(d, e) ? null : "hidden")
-            .text(cropped(e));
+            .style("visibility", isBigEnough(e) && isParentOf(node, e) ? null : "hidden")
+            .select("tspan").text(cropped(e));
       });
   },
 
   mouseover: function(d) {
     if (!d.caption)
       return;
+
+    hoveredKey = d.key;
 
     tooltip.transition()
       .duration(250)
@@ -165,6 +259,8 @@ var flare = {
   },
 
   mouseout: function(d) {
+    hoveredKey = null;
+
     tooltip.transition()
       .duration(250)
       .style("opacity", 0);
@@ -172,10 +268,14 @@ var flare = {
 }
 
 function cropped(d) {
+  return croppedWith(d, y);
+}
+
+function croppedWith(d, ys) {
   if (!d.depth)
     return "";
 
-  var available = (Math.max(0, y(d.y + d.dy)) - Math.max(0, y(d.y))) / 7;
+  var available = (Math.max(0, ys(d.y + d.dy)) - Math.max(0, ys(d.y))) / 7;
   if (d.name.length <= available)
     return d.name;
   else
@@ -183,37 +283,72 @@ function cropped(d) {
 }
 
 function isBigEnough(d) {
-  var startAngle = Math.max(0, Math.min(2 * Math.PI, x(d.x)));
-  var endAngle = Math.max(0, Math.min(2 * Math.PI, x(d.x + d.dx)));
+  return isBigEnoughWith(d, x);
+}
+
+function isBigEnoughWith(d, xs) {
+  var startAngle = Math.max(0, Math.min(2 * Math.PI, xs(d.x)));
+  var endAngle = Math.max(0, Math.min(2 * Math.PI, xs(d.x + d.dx)));
   return d.depth && (endAngle - startAngle) > (2 * Math.PI / 100);
+}
+
+// A security assigned to several classifications appears several times in
+// the tree (as do the placeholders if securities are excluded). Therefore the
+// elements are identified by their path from the root instead of the uuid.
+function assignKeys(d, key) {
+  d.key = key;
+  if (!d.children)
+    return;
+
+  var count = {};
+  d.children.forEach(function(c) {
+    var id = "$" + c.uuid;
+    count[id] = (count[id] || 0) + 1;
+    assignKeys(c, key + "/" + c.uuid + "#" + count[id]);
+  });
+}
+
+function markShown(d, shown) {
+  shown[d.key] = true;
+  if (d.children)
+    d.children.forEach(function(c) { markShown(c, shown); });
+}
+
+function labelAnchor(d, xs) {
+  return xs(d.x + d.dx / 2) > Math.PI ? "end" : "start";
+}
+
+function labelTransform(d, xs, ys) {
+  var angle = xs(d.x + d.dx / 2) * 180 / Math.PI - 90;
+  return "rotate(" + angle + ")translate(" + (ys(d.y) + 5) + ")rotate(" + (angle > 90 ? -180 : 0) + ")";
 }
 
 // Setup for switching data: stash the old values for transition.
 function stash(d) {
   d.x0 = d.x;
   d.dx0 = d.dx;
+  d.y0 = d.y;
+  d.dy0 = d.dy;
 }
 
-// When switching data: interpolate the arcs in data space.
-function arcTweenData(a, i) {
-  var oi = d3.interpolate({x: a.x0, dx: a.dx0}, a);
-  function tween(t) {
-    var b = oi(t);
-    a.x0 = b.x;
-    a.dx0 = b.dx;
-    return arc(b);
-  }
-  if (i == 0) {
-   // If we are on the first arc, adjust the x domain to match the root node
-   // at the current zoom level. (We only need to do this once.)
-    var xd = d3.interpolate(x.domain(), [node.x, node.x + node.dx]);
-    return function(t) {
-      x.domain(xd(t));
-      return tween(t);
-    };
-  } else {
-    return tween;
-  }
+// When updating the data: interpolate the arcs in data space and the scales
+// to the zoomed node. Returns the geometry of a node at time t.
+function updateTween(nodes, xs, ys) {
+  var xd = d3.interpolate(x.domain(), xs.domain()),
+      yd = d3.interpolate(y.domain(), ys.domain()),
+      yr = d3.interpolate(y.range(), ys.range());
+
+  var interpolators = {};
+  nodes.forEach(function(d) {
+    interpolators[d.key] = d3.interpolate({x: d.x0, dx: d.dx0, y: d.y0, dy: d.dy0},
+                                          {x: d.x, dx: d.dx, y: d.y, dy: d.dy});
+  });
+
+  return function(d, t) {
+    x.domain(xd(t));
+    y.domain(yd(t)).range(yr(t));
+    return interpolators[d.key](t);
+  };
 }
 
 // When zooming: interpolate the scales.
@@ -243,7 +378,12 @@ function brightness(rgb) {
   return rgb.r * .299 + rgb.g * .587 + rgb.b * .114;
 }
 
-flare.setContent(loadData());
+flare.update(loadData());
+
+// expose global update function for external calls
+window.updateChart = function() {
+  flare.update(loadData());
+};
 }
 </script>
 </body>
