@@ -614,4 +614,40 @@ public class OberbankAGPDFExtractorTest
                         hasAmount("EUR", 263.90), hasGrossValue("EUR", 364.00), //
                         hasTaxes("EUR", 100.10), hasFees("EUR", 0.00))));
     }
+
+    @Test
+    public void testSplit01()
+    {
+        var extractor = new OberbankAGPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Split01.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(1L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("US67066G1040"), hasWkn(null), hasTicker(null), //
+                        hasName("NVIDIA CORP. Registered Shares DL-,001"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check unsupported transaction
+        assertThat(results, hasItem(withFailureMessage( //
+                        Messages.MsgErrorTransactionSplitUnsupported, //
+                        inboundDelivery( //
+                                        hasDate("2021-07-20T00:00"), hasShares(12.00), //
+                                        hasSource("Split01.txt"), //
+                                        hasNote("Abrechnungs-Nr. 888888"), //
+                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
+                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
+    }
 }

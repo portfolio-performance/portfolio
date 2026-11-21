@@ -26,6 +26,7 @@ public class OberbankAGPDFExtractor extends AbstractPDFExtractor
         addBuySellTransaction();
         addDividendTransaction();
         addDeliveryInOutBoundTransaction();
+        addNonImportableTransaction();
     }
 
     @Override
@@ -478,5 +479,158 @@ public class OberbankAGPDFExtractor extends AbstractPDFExtractor
                         })
 
                         .wrap(TransactionItem::new));
+    }
+
+    private void addNonImportableTransaction()
+    {
+        // The document is headed "Kapitalmaßnahme", but the booking that has to
+        // be reported is the "Einbuchung" on the following page. The kind of
+        // corporate action is only named on the first page, therefore it is
+        // read into the document context.
+        final var type = new DocumentType("(Durchf.hrungsanzeig[\\s]*e[\\s]+" //
+                        + "Kapitalma.nahme)", //
+                        documentContext -> documentContext //
+                                        .section("transaction").optional() //
+                                        .match("^(?<transaction>Split)$") //
+                                        .assign((ctx, v) -> ctx.put("transaction", v.get("transaction"))));
+        this.addDocumentTyp(type);
+
+        var pdfTransaction = new Transaction<PortfolioTransaction>();
+
+        var firstRelevantLine = new Block("^Durchf.hrungsanzeig[\\s]*e[\\s]+Einbuchung$");
+        type.addBlock(firstRelevantLine);
+        firstRelevantLine.set(pdfTransaction);
+
+        pdfTransaction //
+
+                        .subject(() -> new PortfolioTransaction(PortfolioTransaction.Type.DELIVERY_INBOUND))
+
+                        // @formatter:off
+                        // US67066G1040 NVIDIA CORP. Zugang Stk.               12,00
+                        // Registered Shares DL-,001
+                        // 888888 - 20.07.2021
+                        //   steuerlicher Anschaffungswert:                                                 1.298,55 EUR
+                        // @formatter:on
+                        .section("isin", "name", "nameContinued", "date", "shares", "currency") //
+                        .documentContextOptionally("transaction") //
+                        .match("^(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) (?<name>.*) Zugang Stk[\\s]*\\.[\\s]+(?<shares>[\\.,\\d]+)$") //
+                        .match("^(?<nameContinued>.*)$") //
+                        .match("^[\\d]+ - (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$") //
+                        .match("^[\\s]*steuerlicher Anschaffungswert:[\\s]+[\\.,\\d]+ (?<currency>[A-Z]{3})$") //
+                        .assign((t, v) -> {
+                            if ("Split".equals(v.get("transaction")))
+                                v.markAsFailure(Messages.MsgErrorTransactionSplitUnsupported);
+                            else
+                                v.markAsFailure(Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
+
+                            t.setDateTime(asDate(v.get("date")));
+                            t.setShares(asShares(v.get("shares")));
+                            t.setSecurity(getOrCreateSecurity(v));
+
+                            t.setCurrencyCode(asCurrencyCode(t.getSecurity().getCurrencyCode()));
+                            t.setAmount(0L);
+                        })
+
+                        // @formatter:off
+                        // 888888 - 20.07.2021
+                        // @formatter:on
+                        .section("note").optional() //
+                        .match("^(?<note>[\\d]+) - [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}$") //
+                        .assign((t, v) -> {
+                            t.setNote(concatenate(t.getNote(), "Abrechnungs-Nr. " + v.get("note"), " | "));
+                        })
+
+                        .wrap(TransactionItem::new);
+    }
+
+    private <T extends Transaction<?>> void addFeesSectionsTransaction(T transaction, DocumentType type)
+    {
+        transaction //
+
+                        // @formatter:off
+                        // Spesen EUR                7,25
+                        // Spesen EUR               -14,93
+                        // @formatter:on
+                        .section("currency", "fee").optional() //
+                        .match("^Spesen (?<currency>[A-Z]{3})[\\s]+(\\-)?(?<fee>[\\.,\\d]+)$") //
+                        .assign((t, v) -> processFeeEntries(t, v, type))
+
+                        // @formatter:off
+                        // 24.02.2024 Spesen EUR               39,32
+                        // @formatter:on
+                        .section("currency", "fee").optional() //
+                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} Spesen (?<currency>[A-Z]{3})[\\s]+(\\-)?(?<fee>[\\.,\\d]+)$") //
+                        .assign((t, v) -> processFeeEntries(t, v, type))
+
+                        // @formatter:off
+                        // Kupon Spesen EUR                0,60
+                        // @formatter:on
+                        .section("currency", "fee").optional() //
+                        .match("^Kupon Spesen (?<currency>[A-Z]{3})[\\s]+(\\-)?(?<fee>[\\.,\\d]+)$") //
+                        .assign((t, v) -> processFeeEntries(t, v, type));
+    }
+
+    private <T extends Transaction<?>> void addTaxesSectionsTransaction(T transaction, DocumentType type)
+    {
+        // If we have a gross reinvestment, we set a flag and don't book tax
+        // below.
+        transaction //
+
+                        .section("sign").optional() //
+                        .match("^Wertpapier\\-.*[\\s]+Aussch.ttungsgleicher Ertrag$") //
+                        .match("^.*zu (?<sign>(Gunsten|Lasten)) Konto .*$") //
+                        .assign((t, v) -> type.getCurrentContext().putBoolean("noTax", true));
+
+        transaction //
+
+                        // @formatter:off
+                        // Kursgewinn-KESt EUR               -73,15
+                        // @formatter:on
+                        .section("tax", "currency").optional() //
+                        .match("^Kursgewinn-KESt (?<currency>[A-Z]{3})[\\s]+(\\-)?(?<tax>[\\.,\\d]+)$") //
+                        .assign((t, v) -> {
+                            if (!type.getCurrentContext().getBoolean("noTax"))
+                                processTaxEntries(t, v, type);
+                        })
+
+                        // @formatter:off
+                        // KESt EUR              -55,77
+                        // @formatter:on
+                        .section("tax", "currency").optional() //
+                        .match("^KESt (?<currency>[A-Z]{3})[\\s]+(\\-)?(?<tax>[\\.,\\d]+)$") //
+                        .assign((t, v) -> {
+                            if (!type.getCurrentContext().getBoolean("noTax"))
+                                processTaxEntries(t, v, type);
+                        })
+
+                        // @formatter:off
+                        // Auslands-KESt USD               -0,26
+                        // @formatter:on
+                        .section("tax", "currency").optional() //
+                        .match("^Auslands-KESt (?<currency>[A-Z]{3})[\\s]+(\\-)?(?<tax>[\\.,\\d]+)$") //
+                        .assign((t, v) -> {
+                            if (!type.getCurrentContext().getBoolean("noTax"))
+                                processTaxEntries(t, v, type);
+                        })
+
+                        // @formatter:off
+                        // Ausländische Steuern USD               -1,01
+                        // @formatter:on
+                        .section("tax", "currency").optional() //
+                        .match("^Ausl.ndische Steuern (?<currency>[A-Z]{3})[\\s]+(\\-)?(?<tax>[\\.,\\d]+)$") //
+                        .assign((t, v) -> {
+                            if (!type.getCurrentContext().getBoolean("noTax"))
+                                processTaxEntries(t, v, type);
+                        })
+
+                        // @formatter:off
+                        // Kupon jährlich KESt EUR             -100,10
+                        // @formatter:on
+                        .section("tax", "currency").optional() //
+                        .match("^Kupon j.hrlich KESt (?<currency>[A-Z]{3})[\\s]+(\\-)?(?<tax>[\\.,\\d]+)$") //
+                        .assign((t, v) -> {
+                            if (!type.getCurrentContext().getBoolean("noTax"))
+                                processTaxEntries(t, v, type);
+                        });
     }
 }
