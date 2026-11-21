@@ -3,9 +3,10 @@ package name.abuchen.portfolio.ui.addons;
 import java.io.IOException;
 import java.text.MessageFormat;
 import java.time.Instant;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.concurrent.Callable;
-import java.util.concurrent.atomic.AtomicReference;
+import java.util.concurrent.CompletableFuture;
 
 import jakarta.annotation.PreDestroy;
 import jakarta.inject.Inject;
@@ -25,6 +26,7 @@ import org.osgi.service.event.Event;
 
 import name.abuchen.portfolio.PortfolioLog;
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
 import name.abuchen.portfolio.rest.ApiRoutes;
 import name.abuchen.portfolio.rest.FileAccessRegistry;
@@ -35,12 +37,15 @@ import name.abuchen.portfolio.rest.RestApiWorkspace;
 import name.abuchen.portfolio.rest.spi.ApiAccessRequest;
 import name.abuchen.portfolio.rest.spi.HostApplication;
 import name.abuchen.portfolio.rest.spi.OpenFile;
+import name.abuchen.portfolio.rest.spi.WriteConfirmation;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.dialogs.ApiAccessApprovalDialog;
+import name.abuchen.portfolio.ui.dialogs.ModelWriteApprovalDialog;
 import name.abuchen.portfolio.ui.editor.ClientInput;
 import name.abuchen.portfolio.ui.editor.ClientInputFactory;
 import name.abuchen.portfolio.ui.editor.EditorActivationState;
+import name.abuchen.portfolio.ui.jobs.priceupdate.UpdatePricesJob;
 
 /**
  * Starts and stops the REST API server with the application and implements
@@ -97,23 +102,60 @@ public class RestApiAddon
         }
 
         @Override
-        public <T> T syncExec(Callable<T> callable) throws Exception
+        public <T> CompletableFuture<T> asyncExec(Callable<T> callable)
         {
-            var result = new AtomicReference<T>();
-            var failure = new AtomicReference<Exception>();
-            Display.getDefault().syncExec(() -> {
-                try
-                {
-                    result.set(callable.call());
-                }
-                catch (Exception e)
-                {
-                    failure.set(e);
-                }
-            });
-            if (failure.get() != null)
-                throw failure.get();
-            return result.get();
+            var display = Display.getDefault();
+
+            // on the UI thread already: queueing the callable behind the code
+            // that is running and waiting for it would wait for ever
+            if (display.getThread() == Thread.currentThread())
+                return run(callable);
+
+            var future = new CompletableFuture<T>();
+            try
+            {
+                display.asyncExec(() -> {
+                    try
+                    {
+                        future.complete(callable.call());
+                    }
+                    catch (Exception e)
+                    {
+                        future.completeExceptionally(e);
+                    }
+                    catch (Error e)
+                    {
+                        // the caller learns of it; the application's error
+                        // handler still sees it, as it did with syncExec
+                        future.completeExceptionally(e);
+                        throw e;
+                    }
+                });
+            }
+            catch (RuntimeException e)
+            {
+                // the display is disposed: the application is shutting down
+                future.completeExceptionally(e);
+            }
+            return future;
+        }
+
+        private static <T> CompletableFuture<T> run(Callable<T> callable)
+        {
+            try
+            {
+                return CompletableFuture.completedFuture(callable.call());
+            }
+            catch (Exception e)
+            {
+                return CompletableFuture.failedFuture(e);
+            }
+            catch (Error e)
+            {
+                // as on the queue: the caller learns of it, and so does the log
+                PortfolioLog.error(e);
+                return CompletableFuture.failedFuture(e);
+            }
         }
 
         @Override
@@ -137,6 +179,29 @@ public class RestApiAddon
         public void requestApiAccessApproval(ApiAccessRequest request)
         {
             Display.getDefault().asyncExec(() -> showApprovalWhenIdle(this, request));
+        }
+
+        @Override
+        public void requestModelWriteApproval(WriteConfirmation request)
+        {
+            // called from an HTTP worker thread; the dialog belongs to the UI
+            // thread and the call must not wait, because the caller parks on the
+            // answer rather than on this method
+            Display.getDefault().asyncExec(() -> showWriteApprovalWhenIdle(this, request));
+        }
+
+        @Override
+        public void updateQuotes(Client client, List<Security> securities)
+        {
+            // the application's own job, exactly as the menu item schedules it:
+            // its progress dialog, its feeds, its markDirty() when a quote lands
+            new UpdatePricesJob(client, securities).schedule();
+        }
+
+        @Override
+        public void updateAllQuotes(Client client)
+        {
+            new UpdatePricesJob(client, EnumSet.allOf(UpdatePricesJob.Target.class)).schedule();
         }
     }
 
@@ -231,6 +296,38 @@ public class RestApiAddon
 
         new ApiAccessApprovalDialog(Display.getDefault().getActiveShell(), request, anyFileEnabled,
                         this::openRestApiPreferences).open();
+    }
+
+    /**
+     * Shows the dialog asking whether a change to a file may be made, on the UI
+     * thread and not while the user is in the middle of an edit. Unlike the
+     * access prompt this one has an owner waiting: the route parks on the answer,
+     * so a prompt deferred too long simply ends with the request's expiry and the
+     * change is refused as unanswered - never applied without a yes.
+     */
+    private void showWriteApprovalWhenIdle(HostApplication host, WriteConfirmation request)
+    {
+        if (!Instant.now().isBefore(request.getExpiresAt()))
+            return; // expired while waiting; the caller already reported it
+
+        if (host.isUserEditing())
+        {
+            Display.getDefault().timerExec(500, () -> showWriteApprovalWhenIdle(host, request));
+            return;
+        }
+
+        try
+        {
+            new ModelWriteApprovalDialog(Display.getDefault().getActiveShell(), request).open();
+        }
+        catch (RuntimeException | Error e)
+        {
+            // nothing was shown, so nothing was ever asked. Refuse rather than
+            // let the caller sit out the expiry of a question nobody could see:
+            // a refusal says plainly that no change was made, and it says it now
+            PortfolioLog.error(e);
+            request.decline();
+        }
     }
 
     private void openRestApiPreferences()

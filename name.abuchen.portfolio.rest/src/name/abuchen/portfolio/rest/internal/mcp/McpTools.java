@@ -17,7 +17,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 /**
- * Reads the sixteen tools from {@code mcp-tools.json}. Hand-authored and
+ * Reads the tools from {@code mcp-tools.json}. Hand-authored and
  * guarded by {@code McpToolsDriftTest}, which is how {@code openapi.yaml} is
  * kept honest too; there is no generator and no {@code package.json}.
  * <p/>
@@ -82,10 +82,9 @@ public final class McpTools
             for (var entry : json.getAsJsonArray("bindings")) //$NON-NLS-1$
             {
                 var binding = entry.getAsJsonObject();
-                var explode = binding.get("explode"); //$NON-NLS-1$
                 bindings.add(new McpTool.Binding(binding.get("arg").getAsString(), //$NON-NLS-1$
                                 McpTool.Where.valueOf(binding.get("where").getAsString().toUpperCase()), //$NON-NLS-1$
-                                binding.get("wire").getAsString(), explode == null || explode.getAsBoolean())); //$NON-NLS-1$
+                                binding.get("wire").getAsString())); //$NON-NLS-1$
             }
 
             tools.add(new McpTool(json.get("name").getAsString(), json.get("operationId").getAsString(), //$NON-NLS-1$ //$NON-NLS-2$

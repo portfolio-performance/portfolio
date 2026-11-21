@@ -116,10 +116,110 @@ public class ApiException extends RuntimeException
                         Map.of("Retry-After", String.valueOf(retryAfterSeconds))); //$NON-NLS-1$
     }
 
+    /**
+     * The vehicle asked about exists, and so does the class, but the class does
+     * not hold that vehicle - so there is nothing to take out. Not {@link
+     * #notFound()}, which would leave the caller hunting for an entity that is
+     * not missing: what is missing is the relation between two things that are
+     * both there.
+     */
+    public static ApiException notAssigned(String detail)
+    {
+        return new ApiException(404, "not-assigned", "Not assigned to this class", detail, List.of(), //$NON-NLS-1$ //$NON-NLS-2$
+                        Map.of());
+    }
+
     public static ApiException locked()
     {
         return new ApiException(423, "user-interaction", "User interaction in progress, retry later", null, //$NON-NLS-1$ //$NON-NLS-2$
                         List.of(), Map.of("Retry-After", "5")); //$NON-NLS-1$ //$NON-NLS-2$
+    }
+
+    /**
+     * The user looked at the change and refused it. That is an answer, not a
+     * failure to reach the application: nothing will change by asking again, so
+     * this carries no {@code Retry-After}.
+     */
+    public static ApiException writeDeclined(String detail)
+    {
+        return new ApiException(403, "write-declined", "Refused by the user in the application", detail, //$NON-NLS-1$ //$NON-NLS-2$
+                        List.of(), Map.of());
+    }
+
+    /**
+     * Nobody answered - the prompt expired while the user was away. Nothing was
+     * changed, so this is retryable, unlike a refusal.
+     */
+    public static ApiException writeUnanswered(String operation)
+    {
+        return new ApiException(423, "write-unanswered", "The user did not answer in time", //$NON-NLS-1$ //$NON-NLS-2$
+                        operation + " was not applied: the request to approve it expired", //$NON-NLS-1$
+                        List.of(), Map.of("Retry-After", "5")); //$NON-NLS-1$ //$NON-NLS-2$
+    }
+
+    /**
+     * The UI thread did not take the request on within the deadline, so it was
+     * not executed and never will be. Refused rather than waited: a request
+     * parked on a busy UI thread (a long repaint, a slow job running there)
+     * would otherwise hold a worker indefinitely, and the whole API would look
+     * dead while only the UI is busy. Safe to send again.
+     */
+    public static ApiException uiBusy(long timeoutMillis)
+    {
+        return new ApiException(503, "ui-busy", "Application busy, retry later", //$NON-NLS-1$ //$NON-NLS-2$
+                        "The application did not take the request on within " + timeoutMillis + " ms", //$NON-NLS-1$ //$NON-NLS-2$
+                        List.of(), Map.of("Retry-After", "5")); //$NON-NLS-1$ //$NON-NLS-2$
+    }
+
+    /**
+     * The deadline passed while a read was already running on the UI thread. A
+     * read changes nothing, so - unlike {@link #uiRequestUnderway} - it is the
+     * same retryable refusal as {@link #uiBusy}: the answer was thrown away, and
+     * sending the read again is the only way to get it.
+     */
+    public static ApiException uiReadTimedOut(long timeoutMillis)
+    {
+        return new ApiException(503, "ui-busy", "Application busy, retry later", //$NON-NLS-1$ //$NON-NLS-2$
+                        "The read was still running on the UI thread when the wait for it expired after " //$NON-NLS-1$
+                                        + timeoutMillis + " ms; it changes nothing, so it is safe to send again", //$NON-NLS-1$
+                        List.of(), Map.of("Retry-After", "5")); //$NON-NLS-1$ //$NON-NLS-2$
+    }
+
+    /**
+     * The deadline passed while the request was already running on the UI
+     * thread. Not {@link #uiBusy}: that one was not executed, this one will
+     * finish, so it carries no Retry-After and must not be presented as
+     * something the caller can safely send again - a second PATCH would apply
+     * the same change twice.
+     */
+    public static ApiException uiRequestUnderway(long timeoutMillis)
+    {
+        return new ApiException(503, "ui-request-underway", "Application busy; the request is still being executed", //$NON-NLS-1$ //$NON-NLS-2$
+                        "The request was already running on the UI thread when the wait for it expired after " //$NON-NLS-1$
+                                        + timeoutMillis + " ms", //$NON-NLS-1$
+                        List.of(), Map.of());
+    }
+
+    /**
+     * The calculation did not finish within its deadline. Asking again unchanged
+     * would take just as long, so there is no Retry-After: the caller has to ask
+     * a smaller question - a shorter interval, or one instrument.
+     */
+    public static ApiException calculationTimeout(long timeoutSeconds)
+    {
+        return new ApiException(503, "calculation-timeout", "Calculation took too long", //$NON-NLS-1$ //$NON-NLS-2$
+                        "The calculation did not finish within " + timeoutSeconds + " seconds", //$NON-NLS-1$ //$NON-NLS-2$
+                        List.of(), Map.of());
+    }
+
+    /**
+     * More requests are in flight than the server serves at once. Refused without
+     * keeping the body, which is what keeps the bound cheap to enforce.
+     */
+    public static ApiException serverBusy()
+    {
+        return new ApiException(503, "server-busy", "Too many requests in progress, retry shortly", null, //$NON-NLS-1$ //$NON-NLS-2$
+                        List.of(), Map.of("Retry-After", "1")); //$NON-NLS-1$ //$NON-NLS-2$
     }
 
     public int getStatus()

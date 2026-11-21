@@ -24,15 +24,15 @@ info:
     ## The MCP endpoint
 
     The same server also answers `POST /mcp`, a Model Context Protocol endpoint
-    over Streamable HTTP that offers sixteen of the operations below as named
-    tools, for chat clients that cannot run a script. Same switch, same port,
+    over Streamable HTTP that offers the operations below to a chat client as
+    named tools, for clients that cannot run a script. Same switch, same port,
     same bearer tokens — point a client at `http://127.0.0.1:{port}/mcp` and give
     it an `Authorization: Bearer …` header.
 
     It sits deliberately **outside `/v1`**, because MCP negotiates its own version
     in its `initialize` handshake, and it is therefore **not** covered by the
     promise below. It is described by `mcp-tools.json` in the same bundle as this
-    document rather than here: one JSON-RPC endpoint is not sixteen REST
+    document rather than here: one JSON-RPC endpoint is not a list of REST
     operations, and pretending otherwise would make this document claim a
     contract it does not define. Nothing about it changes anything for a client
     of this document.
@@ -100,8 +100,9 @@ info:
     - **No browser origin.** Any request that carries an `Origin` header is rejected
       `403 browser-origin-forbidden`. A web page therefore cannot reach this API.
     - **Bounded request body.** A body larger than 1 MiB is rejected
-      `413 request-too-large` without being read to the end. Every legitimate
-      request is far smaller; the limit exists because bodies are buffered whole.
+      `413 request-too-large`. Every legitimate request is far smaller; the limit
+      exists because bodies are buffered whole. A body that does not end within
+      another MiB gets no answer at all: the connection is closed.
     - **Per-file access.** Only files the user has individually enabled are visible.
       A file that exists but is not enabled answers exactly like one that does not
       exist (`404 not-found`) — the token must not let a client enumerate files the
@@ -120,16 +121,17 @@ info:
     `-0.000000000002438937940496544`.
 
     A rate the model cannot define for the interval is `null`, never `0` — handle
-    it rather than assuming a number. A **weight** is not a rate and is not
-    rounded: a dust holding is a legitimately tiny fraction of a portfolio, where
-    a rate that small is only ever noise.
+    it rather than assuming a number. A **weight** is not a rate, but it is
+    served at the same 8 decimal places: 1e-8 is a millionth of a percent, and a
+    holding below that still carries its exact `valuation`.
 
     ## Methods
 
-    A path serves only the methods listed for it in this document; the only
-    `POST` endpoint is the pairing request — v1 has **no create endpoints for
-    portfolio data**. Calling any method that a path does not list returns
-    `405 method-not-allowed`.
+    A path serves only the methods listed for it in this document. `POST` is
+    pairing and creation: the pairing request, a watchlist that did not exist, and
+    an instrument that did not — those two are all that v1 can bring into being,
+    and both are asked about before anything changes. Calling any method that a
+    path does not list returns `405 method-not-allowed`.
 
     ## Query parameters
 
@@ -169,6 +171,57 @@ info:
     **normal and temporary**: respect the `Retry-After` header and try again. Reads
     are unaffected.
 
+    ## Every change is asked about
+
+    Before a write is applied, the application asks the user — naming the file,
+    the thing being changed, and where it is going. Nothing is touched until the
+    answer comes back, and the answer decides what the caller is told:
+
+    - `403 write-declined`: the user said no. Nothing was changed, and the answer
+      stands — asking again is not going to change it.
+    - `423 write-unanswered`: nobody answered within two minutes. Nothing was
+      changed either, but this one can be tried again; respect `Retry-After`.
+    - `429 write-pending`: another change is still awaiting an answer, so that at
+      most one prompt is ever on screen. Try again once that window clears.
+
+    The user can allow further calls of the same operation without being asked
+    again, but never for every operation at once. Reads are never asked about. The
+    question is put before the change is queued for the UI thread, so waiting on a
+    person does not shorten the time the change itself may take there.
+
+    Every write also answers with `X-Portfolio-Changed: true|false`: whether *this*
+    call changed the model, and so whether the file now has unsaved changes. Some
+    bodies carry the same fact as `changed`; the header states it where a caller
+    need parse no body and read no English. A `false` says this call changed
+    nothing — earlier edits may still be unsaved. Whatever a write did, none of it
+    is on disk until the user saves in the application.
+
+    One write differs from the rest, and its answer differs with it: starting the
+    application's price update (`POST /v1/files/{file}/quotes/update`) changes no
+    record of the file — it asks the application to fetch what is missing. It
+    answers `202`, because the job runs on past the request, and its
+    `X-Portfolio-Changed` states only whether the file *can* end up unsaved. This
+    is also the only operation of the API that contacts anything outside this
+    application, which is the plain reason the user is asked about it first.
+
+    ## Busy, slow or overloaded
+
+    Any request may be answered with a `503`, whose `type` says what to do:
+
+    - `ui-busy`: the application did not take the request on within 10 seconds.
+      It was not executed and never will be — retry after `Retry-After`. A read
+      gets this answer even when it had started: it changes nothing, so sending
+      it again is safe.
+    - `ui-request-underway`: a write was already running when the wait expired
+      and will complete. There is no `Retry-After`: do not send it again, read
+      the state back instead.
+    - `calculation-timeout`: a calculation did not finish within 120 seconds.
+      The same question takes just as long again — ask a smaller one.
+    - `server-busy`: more requests are in flight than the server serves at once,
+      or no calculation slot came free while the request waited for one (up to
+      30 seconds, a few requests at most) — a calculation keeps its slot until it
+      really ends, even past its deadline. Retry after `Retry-After`.
+
 servers:
   - url: http://127.0.0.1:{port}
     description: Loopback interface of the running application
@@ -193,11 +246,19 @@ tags:
     description: Accounts holding cash in a single currency
   - name: Investment accounts
     description: Accounts holding instrument positions
+  - name: Investment plans
+    description: What a file schedules to book next, and between which accounts
+  - name: Watchlists
+    description: Named baskets of instruments a file keeps an eye on
   - name: Holdings
     description: The statement of assets — every holding valued at a date
+  - name: Taxonomies
+    description: How a file classifies its vehicles, with target weights and assignments
   - name: Performance
     description: Return and value-change of the file over an interval
   - name: Trades
+    description: Buys and sells matched into positions with their gain
+  - name: Transactions
     description: Matched buy/sell pairs, computed from the transactions
 
 paths:
@@ -228,6 +289,8 @@ paths:
           $ref: "#/components/responses/Forbidden"
         "500":
           $ref: "#/components/responses/InternalError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
 
   /v1/version:
     get:
@@ -277,6 +340,8 @@ paths:
           $ref: "#/components/responses/Forbidden"
         "500":
           $ref: "#/components/responses/InternalError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
 
   /v1/auth/requests:
     post:
@@ -332,6 +397,8 @@ paths:
           $ref: "#/components/responses/TooManyPairingRequests"
         "500":
           $ref: "#/components/responses/InternalError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
 
   /v1/auth/requests/{id}:
     get:
@@ -375,6 +442,8 @@ paths:
           $ref: "#/components/responses/NotFound"
         "500":
           $ref: "#/components/responses/InternalError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
 
   /v1/files:
     get:
@@ -383,7 +452,8 @@ paths:
       summary: List the files you may address
       description: |
         Lists only files that are **open and enabled**. Address a file in the
-        `{file}` path segment below by either its `id` or its `alias`.
+        `{file}` path segment below by its `use` value, which is always its
+        `id`; an `alias` is accepted too, for hand-written scripts.
       responses:
         "200":
           description: The addressable files
@@ -403,8 +473,13 @@ paths:
                     items:
                       - id: 5f3c1e2a-0b7d-4a1e-9c2f-8d6b3a1e0f42
                         alias: main
+                        use: 5f3c1e2a-0b7d-4a1e-9c2f-8d6b3a1e0f42
                         label: portfolio.xml
                         path: /Users/me/portfolio.xml
+                      - id: 9a2d7c30-4e18-4b27-8f35-6c04d1b7e2a9
+                        use: 9a2d7c30-4e18-4b27-8f35-6c04d1b7e2a9
+                        label: depot.xml
+                        path: /Users/me/depot.xml
         "400":
           $ref: "#/components/responses/BadRequest"
         "401":
@@ -413,6 +488,8 @@ paths:
           $ref: "#/components/responses/Forbidden"
         "500":
           $ref: "#/components/responses/InternalError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
 
   /v1/files/{file}/instruments:
     parameters:
@@ -421,6 +498,19 @@ paths:
       operationId: listInstruments
       tags: [Instruments]
       summary: List the instruments in a file
+      description: |
+        Every instrument in the file, or with `query` only the ones it finds.
+        A large file can hold hundreds of instruments; `query` is how a client
+        gets from a name, ISIN, WKN or ticker symbol to the `uuid` without
+        reading them all.
+
+        With `cursor` or `limit` the response is one page of that list, in
+        the order of the instruments' `uuid`, and says in `page` how to go on.
+        Without either, the whole list in the file's order.
+      parameters:
+        - $ref: "#/components/parameters/InstrumentQuery"
+        - $ref: "#/components/parameters/Cursor"
+        - $ref: "#/components/parameters/Limit"
       responses:
         "200":
           description: The instruments in the file
@@ -430,6 +520,8 @@ paths:
                 type: object
                 required: [items]
                 properties:
+                  page:
+                    $ref: "#/components/schemas/Page"
                   items:
                     type: array
                     items:
@@ -446,6 +538,126 @@ paths:
           $ref: "#/components/responses/Conflict"
         "500":
           $ref: "#/components/responses/InternalError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
+    post:
+      operationId: createInstrument
+      tags: [Instruments]
+      summary: Add an instrument to the file
+      description: |
+        A new instrument: its name, its trading currency, and the identifiers the
+        caller happens to have.
+
+        **No quote is fetched.** The application asks a provider for quotes and
+        identifiers when a user creates an instrument through its dialog; a request
+        that reached a provider in the background would cause a side effect the
+        caller can neither see nor order. What arrives therefore has no quote feed
+        and no price at all — the feed is set in the application. `Master data`
+        after that belongs to `PATCH` on the instrument.
+
+        `name` and `currencyCode` are required; both are refused by name when
+        missing. A currency-less series — what an index is — is not created here,
+        though a later patch can make an instrument one.
+
+        **An identifier the file already carries refuses the whole request.** If the
+        ISIN or the WKN belongs to another instrument, nothing is created and the
+        violation names that instrument with its `uuid`: two instruments answering to
+        one ISIN send every later search for it to whichever the file lists first. A
+        ticker symbol is not that kind of identifier — the same ticker is ordinary
+        across share classes and trading venues — so a shared ticker is reported
+        under `sameTickerAs` instead of refused, as a shared name is under
+        `sameNameAs`.
+
+        The user is asked before anything is added, naming the instrument as it will
+        be called: `403 write-declined`, `423 write-unanswered`, `429
+        write-pending`. A request that could not be carried out is refused before
+        anybody is asked about it.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name, currencyCode]
+              additionalProperties: false
+              properties:
+                name:
+                  type: string
+                  description: What the instrument is to be called; not blank.
+                currencyCode:
+                  type: string
+                  description: |
+                    The trading currency as an ISO 4217 code. Prices of the
+                    instrument are read in this currency. Unknown codes are refused
+                    (`unknown-currency`), as everywhere else.
+                isin:
+                  type: string
+                  description: |
+                    Twelve characters with a correct check digit, checked as the
+                    application checks it. Refused with `duplicate-identifier` when
+                    another instrument already carries it.
+                wkn:
+                  type: string
+                  description: |
+                    The German securities identifier. Refused with
+                    `duplicate-identifier` when another instrument already carries
+                    it.
+                tickerSymbol:
+                  type: string
+                  description: |
+                    The ticker symbol. May repeat across the file; those instruments
+                    are then listed under `sameTickerAs`.
+                note:
+                  type: string
+                  description: Free text shown with the instrument.
+                attributes:
+                  type: object
+                  description: |
+                    Optional, and shaped exactly as on `PATCH` of an instrument:
+                    custom attributes keyed by the opaque attribute `id` from the
+                    attribute-types endpoint, each value of the type declared there.
+                    The definitions belong to the file rather than to the
+                    instrument, so an attribute can already be set while the
+                    instrument is created.
+      responses:
+        "201":
+          description: |
+            The new instrument and what came with it. `hasQuoteFeed: false` and
+            `hasTransactions: false` say the two things the record cannot: nothing
+            was fetched, and nothing in the file refers to it yet - which is also
+            what lets `DELETE` on the instrument take it away again.
+          headers:
+            X-Portfolio-Changed:
+              description: |
+                Always `true`: an instrument that was not in the file is now, so the
+                file has unsaved changes.
+              schema:
+                type: string
+                enum: ["true"]
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InstrumentCreation"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "422":
+          $ref: "#/components/responses/ValidationFailed"
+        "423":
+          $ref: "#/components/responses/Locked"
+        "429":
+          $ref: "#/components/responses/WritePending"
+        "500":
+          $ref: "#/components/responses/InternalError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
 
   /v1/files/{file}/instruments/{uuid}:
     parameters:
@@ -484,6 +696,8 @@ paths:
           $ref: "#/components/responses/Conflict"
         "500":
           $ref: "#/components/responses/InternalError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
     patch:
       operationId: patchInstrument
       tags: [Instruments]
@@ -496,6 +710,10 @@ paths:
         Any field that is unknown or not writable is rejected `422`, never a silent
         no-op — a typo must not look like success. All violations are reported at
         once so they can be fixed in one round-trip.
+
+        A patch that only restates values the instrument already has changes
+        nothing and does not mark the file dirty; the `X-Portfolio-Changed`
+        response header says which of the two happened.
       requestBody:
         required: true
         content:
@@ -511,6 +729,17 @@ paths:
       responses:
         "200":
           description: The updated instrument
+          headers:
+            X-Portfolio-Changed:
+              description: |
+                Whether this patch changed a stored value: `true` when it did,
+                and the file then has unsaved changes; `false` when it named only
+                values the instrument already had, so this patch changed nothing.
+                It says nothing about the file as a whole - earlier edits may
+                still be unsaved after a `false`.
+              schema:
+                type: string
+                enum: ["true", "false"]
           content:
             application/json:
               schema:
@@ -529,8 +758,12 @@ paths:
           $ref: "#/components/responses/ValidationFailed"
         "423":
           $ref: "#/components/responses/Locked"
+        "429":
+          $ref: "#/components/responses/WritePending"
         "500":
           $ref: "#/components/responses/InternalError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
     delete:
       operationId: deleteInstrument
       tags: [Instruments]
@@ -543,6 +776,14 @@ paths:
       responses:
         "204":
           description: Deleted
+          headers:
+            X-Portfolio-Changed:
+              description: |
+                Always `true` here: an instrument that is gone is a change, so the
+                file now has unsaved changes. Nothing was written to disk.
+              schema:
+                type: string
+                enum: ["true"]
         "400":
           $ref: "#/components/responses/BadRequest"
         "401":
@@ -555,8 +796,12 @@ paths:
           $ref: "#/components/responses/Conflict"
         "423":
           $ref: "#/components/responses/Locked"
+        "429":
+          $ref: "#/components/responses/WritePending"
         "500":
           $ref: "#/components/responses/InternalError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
 
   /v1/files/{file}/instruments/attribute-types:
     parameters:
@@ -568,9 +813,11 @@ paths:
       description: |
         The user-defined and built-in attribute types that apply to an
         instrument. A client uses this to resolve an attribute id to its
-        display name and value `type`. Compound types (`limit-price`,
-        `bookmark`, `image`) are listed with `supported: false`; the API
-        does not read or write them in v1.
+        display name and value `type`. Of the compound types, `limit-price` is
+        fully supported as a string (`<=62.5`), `image` is written as base64
+        PNG (`writable: true`) yet never read back — its bytes would bloat
+        every listing — and `bookmark` is neither read nor written
+        (`supported: false`, `writable: false`).
       responses:
         "200":
           description: The applicable attribute definitions.
@@ -596,6 +843,267 @@ paths:
           $ref: "#/components/responses/Conflict"
         "500":
           $ref: "#/components/responses/InternalError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
+
+  /v1/files/{file}/instruments/{uuid}/prices:
+    parameters:
+      - $ref: "#/components/parameters/File"
+      - $ref: "#/components/parameters/Uuid"
+    get:
+      operationId: listInstrumentPrices
+      tags: [Instruments]
+      summary: The stored price history of one instrument
+      description: |
+        The quotes of one instrument as the application holds them, oldest first
+        and the newest quote last - the series the price chart draws and the
+        positions are valued from. An instrument record carries no price and a
+        holding names only the single price its own valuation rests on, so this
+        is the only way to ask how a series moved.
+
+        The list includes the instrument's latest quote even when a feed fetched
+        it and it was never stored as history, because that is the quote a
+        valuation rests on. There is no `order`: pages run forward only, so a
+        caller after the recent end of a long series narrows `from` instead of
+        walking everything. An instrument without a single stored price answers
+        with an empty list, not an error.
+      parameters:
+        - name: from
+          in: query
+          required: false
+          description: |
+            First day of the window, inclusive (YYYY-MM-DD). Without it, no lower
+            bound.
+          schema:
+            type: string
+            format: date
+        - name: to
+          in: query
+          required: false
+          description: |
+            Last day of the window, inclusive (YYYY-MM-DD). Without it, no upper
+            bound. Must not be before `from`.
+          schema:
+            type: string
+            format: date
+        - $ref: "#/components/parameters/Cursor"
+        - $ref: "#/components/parameters/Limit"
+      responses:
+        "200":
+          description: The prices of the instrument, oldest first
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [instrument, instrumentName, count, items]
+                properties:
+                  instrument:
+                    type: string
+                    description: The instrument's UUID, as asked for.
+                  instrumentName:
+                    type: string
+                    description: The instrument's name.
+                  currencyCode:
+                    type: string
+                    description: |
+                      The instrument's trading currency. Absent for a
+                      currency-less series such as an index, whose values are
+                      plain numbers.
+                  count:
+                    type: integer
+                    description: |
+                      How many prices the window holds in all, across every page.
+                  firstDate:
+                    type: string
+                    format: date
+                    description: |
+                      The date of the oldest price of the window. Absent when the
+                      window holds none.
+                  lastDate:
+                    type: string
+                    format: date
+                    description: |
+                      The date of the newest price of the window, and so the date
+                      a valuation at or after it rests on. Absent when the window
+                      holds none.
+                  page:
+                    $ref: "#/components/schemas/Page"
+                  items:
+                    type: array
+                    items:
+                      type: object
+                      required: [date, value]
+                      properties:
+                        date:
+                          type: string
+                          format: date
+                          description: |
+                            The day the quote is for. At most one price per day is
+                            stored, so the day alone names an entry of the series.
+                        value:
+                          type: number
+                          description: |
+                            The quote, in the instrument's trading currency.
+                        cursor:
+                          type: string
+                          description: |
+                            Send as `cursor` to continue after this price. Only on
+                            a paged request.
+              examples:
+                default:
+                  value:
+                    instrument: 8a1e0c4b-2f5d-4e6a-b1c3-7d9f0a2e4c68
+                    instrumentName: Apple Inc.
+                    currencyCode: USD
+                    count: 3
+                    firstDate: "2026-07-15"
+                    lastDate: "2026-07-17"
+                    page:
+                      limit: 2
+                      total: 3
+                      nextCursor: "c.p2026-07-16.QA"
+                    items:
+                      - date: "2026-07-15"
+                        value: 108.2
+                        cursor: "c.p2026-07-15.QA"
+                      - date: "2026-07-16"
+                        value: 112.4
+                        cursor: "c.p2026-07-16.QA"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "500":
+          $ref: "#/components/responses/InternalError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
+
+  /v1/files/{file}/quotes/update:
+    parameters:
+      - $ref: "#/components/parameters/File"
+    post:
+      operationId: updateQuotes
+      tags: [Instruments]
+      summary: Start the application's own price update, for a part of the file
+      description: |
+        Not a price of the caller's own: this starts the same job the
+        application's *Update quotes* menu item starts. Every instrument keeps
+        the feed the user gave it, the job runs inside the application with its
+        own progress dialog and its own error reporting, and the application is
+        what marks the file unsaved as quotes arrive. What this operation settles
+        is the scope - and, like every change of this API, it is asked about
+        before anything begins. It is also the only operation here that reaches
+        out over the network, which is the plain reason for asking.
+
+        `scope` chooses the part of the file. `all` (the default) is the whole
+        file the way the plain menu item takes it, indices and exchange rates
+        along with the instruments. `active` is every instrument not set to
+        retired. `instrument` is the single one named by `instrument`. `watchlist`
+        is the instruments of the list named by `watchlist`. Holdings are
+        deliberately not a scope of their own: the menu's version of that resolves
+        holdings through a valuation, which no part of this operation has a use
+        for.
+
+        What the answer describes is what was **started**, not what arrived: the
+        job runs on past this response. Either watch the application's progress
+        dialog, or read `/v1/files/{file}/instruments/{uuid}/prices` afterwards to
+        see what came in. No feed is set up by this operation, and none is
+        fetched for an instrument whose quote is maintained by hand.
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              description: |
+                All of it optional: a call that sends nothing refreshes the whole
+                file, which is what the plain menu item does. A field this schema
+                does not have is a `400` naming it.
+              properties:
+                scope:
+                  type: string
+                  enum: [all, active, instrument, watchlist]
+                  description: |
+                    Which part of the file to refresh. Defaults to `all`.
+                instrument:
+                  type: string
+                  description: |
+                    The uuid of the one instrument to refresh. Read only when
+                    `scope` is `instrument`; missing there, or a uuid the file
+                    does not have, is a `400` on this field.
+                watchlist:
+                  type: string
+                  description: |
+                    The name of a watchlist, spelled as the file names it. Read
+                    only when `scope` is `watchlist`; missing there, or a name the
+                    file does not have, is a `400` on this field.
+      responses:
+        "202":
+          description: |
+            The update is running in the application - 202 because the job outlives
+            this answer. `securities` counts what was handed to the job and
+            `withQuoteFeed` how many of those a feed could reach at all: an
+            instrument with a manually maintained quote is in the first count and
+            not the second, which is the application's own test rather than a
+            refusal. Whether a quote arrived is the job's news, and it is told in
+            the application.
+          headers:
+            X-Portfolio-Changed:
+              description: |
+                Whether the file can end up holding unsaved changes: `false` when
+                nothing in scope has a feed that could deliver anything, `true`
+                otherwise - and `true` for `all`, whose job covers exchange rates
+                and indices too. The job marks the file dirty itself as quotes
+                arrive; nothing reaches the disk either way.
+              schema:
+                type: string
+                enum: ["true", "false"]
+          content:
+            application/json:
+              schema:
+                type: object
+                description: What was started, as far as that is knowable from here.
+                properties:
+                  scope:
+                    type: string
+                    description: The scope as it was understood, `all` when none was given.
+                  securities:
+                    type: integer
+                    description: How many instruments the job was given.
+                  withQuoteFeed:
+                    type: integer
+                    description: |
+                      How many of those a feed could reach. `0` with a nonzero
+                      `securities` means the update will skip every one of them.
+                  started:
+                    type: boolean
+                    description: Always `true`; a start that did not happen is an error, not this answer.
+                  savedToDisk:
+                    type: boolean
+                    description: Always `false` - the file holds unsaved changes, and saving stays the user's.
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "423":
+          $ref: "#/components/responses/Locked"
+        "429":
+          $ref: "#/components/responses/WritePending"
+        "500":
+          $ref: "#/components/responses/InternalError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
 
   /v1/files/{file}/cash-accounts:
     parameters:
@@ -629,6 +1137,89 @@ paths:
           $ref: "#/components/responses/Conflict"
         "500":
           $ref: "#/components/responses/InternalError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
+
+    post:
+      operationId: createCashAccount
+      tags: [Cash accounts]
+      summary: Add a cash account to the file
+      description: |
+        A new account of one currency, and the money end of every structure a
+        caller might build. `currencyCode` left out takes the file's own base
+        currency; given, it must be a currency the file already moves in -
+        prices and reports read their rates from series the file holds - or the
+        call is refused as `unknown-currency`.
+
+        A name the file already carries, in the very same currency, is refused
+        as `409 name-taken`: an account has a uuid, so two of one name could be
+        told apart, but only by a caller that went and looked. Another currency
+        makes another account, and that pair is ordinary.
+
+        The user is asked before anything is created, naming the account and
+        its currency: `403 write-declined`, `423 write-unanswered`, `429
+        write-pending`. Nothing is saved to disk, and there is no undo - this
+        API creates accounts and never removes one.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name]
+              additionalProperties: false
+              properties:
+                name:
+                  type: string
+                  description: What the account is to be called.
+                currencyCode:
+                  type: string
+                  description: |
+                    The currency as an ISO 4217 code, e.g. `EUR`. Optional:
+                    left out it is the file's base currency.
+                note:
+                  type: string
+                  description: Free text shown with the account.
+      responses:
+        "201":
+          description: |
+            The account as it now stands, with its new `uuid` - which every
+            other account tool addresses it by - and `created: true`.
+          headers:
+            X-Portfolio-Changed:
+              description: |
+                Always `true`: an account that did not exist before is a change,
+                and the file then has unsaved changes.
+              schema:
+                type: string
+                enum: ["true"]
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/CashAccount"
+                  - type: object
+                    properties:
+                      created:
+                        type: boolean
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "423":
+          $ref: "#/components/responses/Locked"
+        "429":
+          $ref: "#/components/responses/WritePending"
+        "500":
+          $ref: "#/components/responses/InternalError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
 
   /v1/files/{file}/cash-accounts/{uuid}:
     parameters:
@@ -664,6 +1255,8 @@ paths:
           $ref: "#/components/responses/Conflict"
         "500":
           $ref: "#/components/responses/InternalError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
 
   /v1/files/{file}/investment-accounts:
     parameters:
@@ -697,6 +1290,88 @@ paths:
           $ref: "#/components/responses/Conflict"
         "500":
           $ref: "#/components/responses/InternalError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
+
+    post:
+      operationId: createInvestmentAccount
+      tags: [Investment accounts]
+      summary: Add an investment account to the file
+      description: |
+        A new depot: securities accounts hold instrument positions and nothing
+        else, the money that belongs with them living in the **reference cash
+        account** - every purchase booked into the depot draws its money from
+        that one account. `referenceCashAccount` is its uuid; left out, it must
+        be the file's one cash account in the base currency, and a file holding
+        none or several is refused rather than guessed at.
+
+        A name another depot already carries is refused as `409 name-taken`.
+        The user is asked before anything is created, naming the depot and the
+        money account it will point at: `403 write-declined`, `423
+        write-unanswered`, `429 write-pending`. Nothing is saved to disk, and
+        there is no undo - this API creates depots and never removes one.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name]
+              additionalProperties: false
+              properties:
+                name:
+                  type: string
+                  description: What the depot is to be called.
+                referenceCashAccount:
+                  type: string
+                  description: |
+                    The uuid of the cash account that belongs with this depot.
+                    Optional: left out, the file's one cash account in its base
+                    currency is used - and if there is not exactly one, the call
+                    asks for the uuid.
+                note:
+                  type: string
+                  description: Free text shown with the depot.
+      responses:
+        "201":
+          description: |
+            The depot as it now stands, with its new `uuid` and its
+            `referenceCashAccount`, and `created: true`.
+          headers:
+            X-Portfolio-Changed:
+              description: |
+                Always `true`: a depot that did not exist before is a change,
+                and the file then has unsaved changes.
+              schema:
+                type: string
+                enum: ["true"]
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/InvestmentAccount"
+                  - type: object
+                    properties:
+                      created:
+                        type: boolean
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "423":
+          $ref: "#/components/responses/Locked"
+        "429":
+          $ref: "#/components/responses/WritePending"
+        "500":
+          $ref: "#/components/responses/InternalError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
 
   /v1/files/{file}/investment-accounts/{uuid}:
     parameters:
@@ -735,6 +1410,766 @@ paths:
           $ref: "#/components/responses/Conflict"
         "500":
           $ref: "#/components/responses/InternalError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
+
+  /v1/files/{file}/info:
+    parameters:
+      - $ref: "#/components/parameters/File"
+    get:
+      operationId: getFileInfo
+      tags: [Files]
+      summary: The file's own facts - its currency and what it holds
+      description: |
+        The cheapest answer this API gives, and the one worth reading before
+        anything larger when a file is not known yet: the counts say whether
+        `/holdings` will return a handful of positions or a thousand, and
+        whether there are taxonomies at all before `/taxonomies` is a question
+        worth asking.
+
+        `baseCurrency` is the currency every report defaults to. `currencies`
+        are the ones the accounts, portfolios and instruments actually use, so
+        a `reportingCurrency` outside that list converts at 1:1 and names
+        itself in `fxWarnings`.
+
+        `counts` is an inventory, not a statement of assets: an instrument
+        without a position still counts, and so does a closed account. What is
+        owned and what it is worth on a date is `/holdings`. `fileVersion` is
+        the format version the file was read at - not a modification date, and
+        nothing about it says whether a newer copy lies on disk.
+      responses:
+        "200":
+          description: The file's facts
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [baseCurrency, currencies, fileVersion, counts]
+                properties:
+                  baseCurrency:
+                    type: string
+                    description: The currency every amount defaults to.
+                  currencies:
+                    type: array
+                    description: |
+                      Every currency the file moves in, the base currency among
+                      them.
+                    items:
+                      type: string
+                  fileVersion:
+                    type: integer
+                    description: The XML format version the file was read at.
+                  counts:
+                    type: object
+                    description: |
+                      How many of each kind of thing the file keeps. A thing
+                      that exists without ever having been used counts too.
+                    required:
+                    - instruments
+                    - cashAccounts
+                    - investmentAccounts
+                    - investmentPlans
+                    - watchlists
+                    - taxonomies
+                    - classes
+                    properties:
+                      instruments:
+                        type: integer
+                      cashAccounts:
+                        type: integer
+                      investmentAccounts:
+                        type: integer
+                      investmentPlans:
+                        type: integer
+                      watchlists:
+                        type: integer
+                      taxonomies:
+                        type: integer
+                      classes:
+                        type: integer
+                        description: Every class of every taxonomy, roots among them.
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "500":
+          $ref: "#/components/responses/InternalError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
+
+  /v1/files/{file}/watchlists:
+    parameters:
+      - $ref: "#/components/parameters/File"
+    get:
+      operationId: listWatchlists
+      tags: [Watchlists]
+      summary: The named baskets of instruments the file quotes
+      description: |
+        Named baskets of instruments that the application quotes together. A
+        watchlist is not an account and holds nothing - it is a selection of
+        names - and it is the one thing in a file without an identifier: `name`
+        is all a reader can quote back, and no uuid anywhere points at a list.
+
+        By default each list only says how full it is (`instrumentCount`);
+        `withInstruments=true` adds the instruments as `{uuid, name}` pairs.
+        Ask for that together with `instrument`, because a working list carries
+        several hundred and this answer is never paged.
+
+        A watchlist says nothing about ownership: an instrument can be watched
+        without being held, and held without being watched. What is owned and
+        what it is worth is `/holdings`. When nothing comes back, `empty` says
+        whether the file has no watchlists at all or only none holding what was
+        asked for - two answers an empty list cannot tell apart.
+      parameters:
+        - name: instrument
+          in: query
+          required: false
+          description: |
+            Only the lists holding this one instrument, as its `uuid`. The
+            answer then names the lists, not just the instrument.
+          schema:
+            type: string
+        - name: withInstruments
+          in: query
+          required: false
+          description: |
+            Whether each list also carries the instruments it holds. Off by
+            default: a working list holds several hundred, and
+            `instrumentCount` states the size either way.
+          schema:
+            type: boolean
+      responses:
+        "200":
+          description: The watchlists of the file, in the order the file keeps them.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [items]
+                properties:
+                  empty:
+                    type: string
+                    description: |
+                      Present only when no list came back, saying which kind of
+                      nothing that is: a file without watchlists says it has
+                      none, while an instrument no list holds says so.
+                  items:
+                    type: array
+                    items:
+                      type: object
+                      required: [name, instrumentCount]
+                      properties:
+                        name:
+                          type: string
+                          description: |
+                            The only thing a watchlist is known by - it has no
+                            uuid, and names need not be unique.
+                        instrumentCount:
+                          type: integer
+                        instruments:
+                          type: array
+                          description: |
+                            Only with `withInstruments=true`. Instruments the
+                            list quotes, whether or not the file holds them.
+                          items:
+                            type: object
+                            required: [uuid, name]
+                            properties:
+                              uuid:
+                                type: string
+                              name:
+                                type: string
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "500":
+          $ref: "#/components/responses/InternalError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
+    post:
+      operationId: createWatchlist
+      tags: [Watchlists]
+      summary: Add a watchlist to the file
+      description: |
+        A new named basket, optionally already holding instruments.
+
+        A watchlist has no identifier, so its name is both its address and its
+        only guarantee: a name the file already uses is refused as `409` with the
+        reason `name-taken`, because once two lists share a name nothing this API
+        returns could tell them apart. Names are compared exactly after the
+        spaces around them are gone; case is not folded. The model itself does
+        not forbid a duplicate - a file can arrive with one from an older
+        application or a hand edit - this operation simply declines to add one.
+
+        `name` is in the body rather than the path for the same reason a list has
+        no uuid: a name is free text, free text can hold a slash, and a path
+        segment cannot be asked to survive one.
+
+        The user is asked before anything is added, naming the list: a refusal is
+        `403 write-declined`, silence for two minutes is `423 write-unanswered`,
+        and while another change is being answered this is `429 write-pending`.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name]
+              additionalProperties: false
+              properties:
+                name:
+                  type: string
+                  description: |
+                    What the list is to be called, as the navigation will show
+                    it. Blank or missing is a `400` on this field.
+                instruments:
+                  type: array
+                  description: |
+                    Instruments the list should hold, by `uuid`. Any uuid the
+                    file does not have refuses the whole request - a caller that
+                    meant to add two and quietly got one would never hear of it.
+                    Omit it to create an empty list.
+                  items:
+                    type: string
+      responses:
+        "201":
+          description: |
+            The list as it now stands. `hasIdentifier: false` says what no other
+            answer of this API has to say: there is no uuid to remember, and the
+            name returned is the way to address this list from now on.
+          headers:
+            X-Portfolio-Changed:
+              description: |
+                Always `true` here: a list that did not exist before is a change,
+                so the file now has unsaved changes. Nothing was written to disk.
+              schema:
+                type: string
+                enum: ["true"]
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WatchlistChange"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "423":
+          $ref: "#/components/responses/Locked"
+        "429":
+          $ref: "#/components/responses/WritePending"
+        "500":
+          $ref: "#/components/responses/InternalError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
+    patch:
+      operationId: updateWatchlist
+      tags: [Watchlists]
+      summary: Put instruments into a watchlist and take others out
+      description: |
+        Both directions in one request, so that moving a name from one list to
+        another costs one call instead of two - and so that the surface does not
+        grow an operation per direction.
+
+        The list is named in the body, not addressed by uuid, because it has no
+        uuid; a name the file does not have is refused as `409` with the reason
+        `no-such-watchlist`, and the refusal names the lists the file does have.
+
+        At least one of `add` or `remove` must be given. A uuid the file does not
+        have refuses the whole request. A uuid under `remove` that the list does
+        not hold is **not** an error: the state asked for already holds, so it is
+        reported under `notHeld` and the request stays safe to send twice. Adding
+        what the list already holds changes nothing, as the model keeps a list
+        free of duplicates - and `changed: false` says so plainly.
+
+        The user is asked before anything moves, naming the list: `403
+        write-declined`, `423 write-unanswered`, `429 write-pending`.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name]
+              additionalProperties: false
+              properties:
+                name:
+                  type: string
+                  description: |
+                    Which list to change, spelled as `/watchlists` names it.
+                add:
+                  type: array
+                  description: |
+                    Instruments to put in, by `uuid`. One already in the list is
+                    left alone.
+                  items:
+                    type: string
+                remove:
+                  type: array
+                  description: |
+                    Instruments to take out, by `uuid`. Only the selection goes:
+                    the instrument itself stays in the file.
+                  items:
+                    type: string
+      responses:
+        "200":
+          description: |
+            The list as it now stands, with the counts around the change. Absent
+            instruments of `remove` are listed under `notHeld` when there were
+            any; a request that changed nothing says `changed: false` and leaves
+            the file as it was, unsaved changes included.
+          headers:
+            X-Portfolio-Changed:
+              description: |
+                Whether this call changed the model: `true` when it did and the
+                file then has unsaved changes, `false` when the list already held
+                exactly this selection. It repeats the body's `changed`. Earlier
+                edits may still be unsaved after a `false`.
+              schema:
+                type: string
+                enum: ["true", "false"]
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WatchlistChange"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "423":
+          $ref: "#/components/responses/Locked"
+        "429":
+          $ref: "#/components/responses/WritePending"
+        "500":
+          $ref: "#/components/responses/InternalError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
+
+    delete:
+      operationId: deleteWatchlist
+      tags: [Watchlists]
+      summary: Take a watchlist out of the file
+      description: |
+        The list is named in the body as it is for creating and changing one -
+        a list has no uuid, its name is the only address, and free text can hold
+        a slash a path segment cannot survive.
+
+        A name the file does not have is refused as `409 no-such-watchlist`,
+        naming the lists the file does have: sending this twice fails the second
+        time, and there is no undo - making the list again with `POST` under the
+        very name and with the very instruments is the way back.
+
+        What was watched stays: a watchlist only points at instruments. Removing
+        a list takes away a selection, never a security, and changes nothing
+        about the holdings, the bookings, or the other lists the same names
+        appear in.
+
+        The user is asked before the list goes, naming it: `403
+        write-declined`, `423 write-unanswered`, `429 write-pending`.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name]
+              additionalProperties: false
+              properties:
+                name:
+                  type: string
+                  description: |
+                    Which list to remove, spelled as `GET /v1/files/{file}/watchlists`
+                    names it.
+      responses:
+        "200":
+          description: |
+            The list as it last stood - its name, and how many instruments it
+            held - with `deleted: true`. The instruments themselves are in the
+            file as they were.
+          headers:
+            X-Portfolio-Changed:
+              description: |
+                Always `true`: a list that was there and is not now is a change,
+                and the file then has unsaved changes.
+              schema:
+                type: string
+                enum: ["true"]
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  name:
+                    type: string
+                  deleted:
+                    type: boolean
+                  hasIdentifier:
+                    type: boolean
+                  instrumentCountBefore:
+                    type: integer
+                  created:
+                    type: boolean
+                  added:
+                    type: integer
+                  removed:
+                    type: integer
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "423":
+          $ref: "#/components/responses/Locked"
+        "429":
+          $ref: "#/components/responses/WritePending"
+        "500":
+          $ref: "#/components/responses/InternalError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
+
+  /v1/files/{file}/performance/categories/{classification}:
+    parameters:
+      - $ref: "#/components/parameters/File"
+      - name: classification
+        in: path
+        required: true
+        description: |
+          The class to report on, as its `id` from the classes of `/taxonomies`.
+          Nothing else resolves: a class name is not an id, and the same name
+          appears in several trees.
+        schema:
+          type: string
+    get:
+      operationId: getCategoryPerformance
+      tags: [Performance]
+      summary: Performance of one class of a taxonomy between two valuation dates
+      description: |
+        The report of `/performance` with its scope narrowed from the whole file
+        to what one class holds: the same fields, the same signs, the same
+        reconciliation - read that endpoint for what the terms mean.
+
+        What a class holds is the application's own reckoning and not merely the
+        vehicles tagged to it: a cash account assigned to the class counts as
+        money, and the settlement cash of a securities account is shared out
+        between the classes its holdings belong to. The classes of one tree
+        therefore add back up to the whole file. It follows that an instrument's
+        own row in `/performance/instruments` need not match its share of a
+        class: the cash belongs to the class, not to the instrument.
+
+        One class per call. `taxonomy` is only needed when several taxonomies
+        define that same class id, which is otherwise refused rather than
+        guessed. A class holding nothing has no capital to measure a return on,
+        so `ttwror` and `irr` come back null and not 0 %, while
+        `category.assignedCount` states what it holds. `category` names the
+        class the figures belong to, because a report over a class would
+        otherwise carry nothing saying which one it is.
+      parameters:
+        - name: taxonomy
+          in: query
+          required: false
+          description: |
+            The taxonomy the class belongs to, as its `id`. Optional, because a
+            class id is unique within one tree.
+          schema:
+            type: string
+        - name: openingDate
+          in: query
+          required: true
+          description: |
+            The opening valuation date, as `YYYY-MM-DD`. As in `/performance`,
+            an activity dated exactly on it belongs to the opening balance.
+          schema:
+            type: string
+            format: date
+        - name: closingDate
+          in: query
+          required: false
+          description: |
+            The closing valuation date (default: today). Must be strictly after
+            `openingDate`; the same conventions as in `/performance`.
+          schema:
+            type: string
+            format: date
+        - $ref: "#/components/parameters/ReportingCurrency"
+        - name: costMethod
+          in: query
+          required: false
+          description: |
+            The cost basis method used to split capital gains into realized and
+            unrealized (default: `fifo`). Echoed in the response.
+          schema:
+            type: string
+            enum: [fifo, moving-average]
+            default: fifo
+      responses:
+        "200":
+          description: The performance of that class over the interval
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: "#/components/schemas/Performance"
+                - type: object
+                  required: [category]
+                  properties:
+                    category:
+                      type: object
+                      description: Which class the figures belong to.
+                      required: [taxonomy, id, name, assignedCount]
+                      properties:
+                        taxonomy:
+                          type: object
+                          required: [id, name]
+                          properties:
+                            id:
+                              type: string
+                            name:
+                              type: string
+                        id:
+                          type: string
+                        name:
+                          type: string
+                        parentId:
+                          type: string
+                          description: Absent for a class directly below the root.
+                        assignedCount:
+                          type: integer
+                          description: |
+                            How many vehicles the class holds. Zero means the
+                            report is over nothing at all.
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "500":
+          $ref: "#/components/responses/InternalError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
+
+  /v1/files/{file}/investment-plans:
+    parameters:
+      - $ref: "#/components/parameters/File"
+    get:
+      operationId: listInvestmentPlans
+      tags: [Investment plans]
+      summary: List the savings plans of the file
+      description: |
+        What the file intends to book next: the rate of each plan, its rhythm,
+        and the two accounts between which it moves money. Nothing else in this
+        API speaks of the future - holdings state what is there and
+        `/transactions` states what happened.
+
+        A plan is a schedule, not a booking. What it already executed are
+        ordinary transactions in the accounts it names, visible under
+        `/transactions`; this counts them (`executions`), names the date of the
+        last one and the date the next is due, and does not repeat them. An
+        `executions` of zero means the plan has never run, and then no
+        `lastExecution` comes back at all. `nextExecution` is the date the
+        application would use next: for a plan that never ran it is the plan's
+        `start`, so it can lie in the past, and it does not move until the
+        application generates something.
+
+        `interval` with `intervalUnit` is the rhythm, normalized for the reader:
+        the file keeps a weekly plan as a number of one hundred and more, which
+        is not the reader's business. So `1` with `month` is a monthly plan and
+        `2` with `week` every second week.
+
+        A plan that buys names no cash account of its own: the `cashAccount`
+        stated for it is the settlement account of its securities account,
+        derived exactly as a purchase booking derives it. A plan is named, never
+        identified - it has no uuid, and plans cannot be written through this
+        API. Answers are never paged: a file holds plans by the dozen.
+      parameters:
+        - name: investmentAccount
+          in: query
+          required: false
+          description: |
+            Only the plans buying or delivering into this one securities
+            account, as its `uuid`. A plan that only moves money has none and is
+            never returned.
+          schema:
+            type: string
+        - name: cashAccount
+          in: query
+          required: false
+          description: |
+            Only the plans whose money moves through this one cash account, as
+            its `uuid` - for a plan that buys, its settlement account.
+          schema:
+            type: string
+        - name: instrument
+          in: query
+          required: false
+          description: Only the plans feeding this one instrument, as its `uuid`.
+          schema:
+            type: string
+      responses:
+        '200':
+          description: The plans of the file, in the order the file keeps them.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [items]
+                properties:
+                  empty:
+                    type: string
+                    description: |
+                      Present only when no plan came back, saying which kind of
+                      nothing that is: a file without plans says it has none,
+                      while a filter that matched nothing says nothing of the
+                      file matches it. An empty `items` alone cannot tell the
+                      two apart, and they lead to different next calls.
+                  items:
+                    type: array
+                    items:
+                      type: object
+                      required:
+                      - name
+                      - type
+                      - amount
+                      - interval
+                      - intervalUnit
+                      - start
+                      - autoGenerate
+                      - executions
+                      - nextExecution
+                      properties:
+                        name:
+                          type: string
+                        type:
+                          type: string
+                          enum: [PURCHASE_OR_DELIVERY, DEPOSIT, REMOVAL, INTEREST]
+                          description: |
+                            `PURCHASE_OR_DELIVERY` buys or delivers into
+                            `investmentAccount`; `DEPOSIT` pays into a cash
+                            account, `REMOVAL` takes out of one, `INTEREST`
+                            books interest on one.
+                        amount:
+                          type: object
+                          description: The rate of one execution.
+                          required: [value, currency]
+                          properties:
+                            value:
+                              type: number
+                            currency:
+                              type: string
+                        fees:
+                          type: object
+                          description: Charged per execution; only when not zero.
+                          required: [value, currency]
+                          properties:
+                            value:
+                              type: number
+                            currency:
+                              type: string
+                        taxes:
+                          type: object
+                          description: Withheld per execution; only when not zero.
+                          required: [value, currency]
+                          properties:
+                            value:
+                              type: number
+                            currency:
+                              type: string
+                        interval:
+                          type: integer
+                          description: Every so many `intervalUnit`s.
+                        intervalUnit:
+                          type: string
+                          enum: [month, week]
+                        start:
+                          type: string
+                          format: date
+                          description: The date the plan began to run on.
+                        autoGenerate:
+                          type: boolean
+                          description: Whether the application creates the bookings on its own.
+                        executions:
+                          type: integer
+                          description: How many bookings the plan has already produced.
+                        lastExecution:
+                          type: string
+                          format: date
+                          description: The date of the newest one; absent when the plan never ran.
+                        nextExecution:
+                          type: string
+                          format: date
+                          description: |
+                            The next date due, moved off a public holiday of the
+                            instrument's trading calendar.
+                        instrument:
+                          type: object
+                          description: The vehicle the plan feeds; absent for a money-only plan.
+                          required: [uuid, name]
+                          properties:
+                            uuid:
+                              type: string
+                            name:
+                              type: string
+                        investmentAccount:
+                          type: object
+                          description: The securities account it buys into.
+                          required: [uuid, name]
+                          properties:
+                            uuid:
+                              type: string
+                            name:
+                              type: string
+                        cashAccount:
+                          type: object
+                          description: |
+                            The account the money moves through: the plan's own,
+                            or the settlement account of its securities account.
+                          required: [uuid, name]
+                          properties:
+                            uuid:
+                              type: string
+                            name:
+                              type: string
+                        note:
+                          type: string
+        '400':
+          description: A named account or instrument is not of this file.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Problem"
 
   /v1/files/{file}/holdings:
     parameters:
@@ -760,6 +2195,28 @@ paths:
           schema:
             type: string
             format: date
+        - name: investmentAccount
+          in: query
+          required: false
+          description: |
+            Restrict the report to the positions of this one investment account,
+            given as its uuid. The answer then carries `scope`, `totalAssets` is
+            that account's value, and every `weight` is the share of it rather
+            than of the file. The settlement cash of a portfolio is a cash account
+            of its own - named in `scope.referenceCashAccount` - and is not among
+            these rows. An account closed by the date is still valued. Cannot be
+            combined with `cashAccount`.
+          schema:
+            type: string
+        - name: cashAccount
+          in: query
+          required: false
+          description: |
+            Restrict the report to the balance of this one cash account, given as
+            its uuid. Same effect on `scope`, `totalAssets` and `weight` as
+            `investmentAccount`; cannot be combined with it.
+          schema:
+            type: string
         - $ref: "#/components/parameters/ReportingCurrency"
       responses:
         "200":
@@ -768,7 +2225,7 @@ paths:
             application/json:
               schema:
                 type: object
-                required: [date, reportingCurrency, totalAssets, items]
+                required: [date, reportingCurrency, totalAssets, fxWarnings, fxStaleRates, items]
                 properties:
                   date:
                     type: string
@@ -784,6 +2241,44 @@ paths:
                       `currencyCode` (its own declared currency).
                   totalAssets:
                     $ref: "#/components/schemas/MonetaryValue"
+                  scope:
+                    type: object
+                    description: |
+                      Present only when `investmentAccount` or `cashAccount` narrowed
+                      the report: the one account these numbers are about. Without a
+                      scope the key is absent and the report is the whole file. In a
+                      scoped report `totalAssets` is this account's value, so every
+                      holding's `weight` is its share of the account rather than of
+                      the file.
+                    required: [type, uuid, name]
+                    properties:
+                      type:
+                        type: string
+                        description: |
+                          `investment-account` or `cash-account`, in the same words a
+                          holding's `type` uses.
+                      uuid:
+                        type: string
+                        description: The account the report was narrowed to, as it was sent.
+                      name:
+                        type: string
+                        description: Its name.
+                      referenceCashAccount:
+                        type: object
+                        description: |
+                          For an investment account: where the money belonging to it
+                          is kept. Its balance is not among these rows - ask for it
+                          with `cashAccount`.
+                        required: [uuid, name]
+                        properties:
+                          uuid:
+                            type: string
+                          name:
+                            type: string
+                  fxWarnings:
+                    $ref: "#/components/schemas/FxWarnings"
+                  fxStaleRates:
+                    $ref: "#/components/schemas/FxStaleRates"
                   items:
                     type: array
                     items:
@@ -794,12 +2289,17 @@ paths:
                     date: "2026-07-20"
                     reportingCurrency: EUR
                     totalAssets: { value: 1600, currency: EUR }
+                    fxWarnings: []
+                    fxStaleRates: []
                     items:
                       - type: instrument
                         uuid: 8a1e0c4b-2f5d-4e6a-b1c3-7d9f0a2e4c68
                         name: Apple Inc.
                         shares: 10
                         price: { value: 110.5, currency: USD, date: "2026-07-17" }
+                        priceStale: false
+                        priceAgeDays: 3
+                        priceMissedTradingDays: 0
                         valuation: { value: 1100, currency: EUR }
                         localValuation: { value: 1105, currency: USD }
                         weight: 0.6875
@@ -820,6 +2320,764 @@ paths:
           $ref: "#/components/responses/Conflict"
         "500":
           $ref: "#/components/responses/InternalError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
+
+  /v1/files/{file}/taxonomies:
+    parameters:
+      - $ref: "#/components/parameters/File"
+    get:
+      operationId: listTaxonomies
+      tags: [Taxonomies]
+      summary: The file's taxonomies, with their classes, weights and assignments
+      description: |
+        Two shapes in one answer. `items` are the taxonomies themselves - always
+        all of them, each with its `classCount`. `classes` is one flat list of the
+        classes, in the order the application shows them (`rank`, a parent before
+        its children), each with its `parent`, the `targetWeight` rebalancing
+        aims at, and how many vehicles are assigned to it. No other read of this
+        API states a classification - a holding states a value, an instrument
+        states master data.
+
+        `classes` is what `limit` and `cursor` page through, and `taxonomy` narrows
+        the answer to one tree: a working file has more classes than fit in one
+        response, and one class of a real file holds several hundred vehicles.
+        Those vehicles are off by default; `withAssignments=true` brings them,
+        together with a `limit` for the classes.
+
+        **Every ratio is a fraction** - `0.6` is the 60 % the application shows -
+        the same rule as a holding's `weight`. Two of those ratios mean different
+        things: a class's `targetWeight` is what rebalancing aims at for the
+        class, while an `assignments[].weight` is the factor that class applies to
+        one vehicle's value - `1` in full - which is not the slice the class's pie
+        chart draws, since that follows from value times factor. A class the
+        application creates starts at a whole (`1`), so a `targetWeight` of `1`
+        marks a fresh class rather than a decided one. The value travels
+        exactly as the file stores it: it can
+        exceed a whole, the levels of one tree can sum to far more than a
+        hundred percent, and a negative one can only come from an older version
+        of the application whose dialog still accepted a minus - the current
+        dialog does not. Nothing is clamped or corrected here, because those
+        are the numbers the application itself displays. A taxonomy covers only
+        what is assigned to it: the application's view ends with a row `Ohne
+        Klassifizierung` - unclassified - for the vehicles belonging to no class
+        of that taxonomy, and that row is not a class. It is neither in `items`
+        nor in `classes`, and no `assignedCount` says how much of the file is
+        missing from the tree; the remainder is what is left of pp_list_holdings
+        once the taxonomy's assignments are subtracted. A file with no taxonomies
+        answers with empty lists.
+      parameters:
+        - name: taxonomy
+          in: query
+          required: false
+          description: |
+            Read one taxonomy instead of all of them, as its `id` from `items`. An
+            id this file does not have is reported as `invalid-value`.
+          schema:
+            type: string
+        - name: class
+          in: query
+          required: false
+          description: |
+            Read one class instead of a whole tree, as its `id`. The way to ask for
+            the vehicles of a single class: together with `withAssignments=true` it
+            answers that class and its vehicles, instead of paging through every
+            other class until that one arrives. A class id is unique within a
+            taxonomy only - without `taxonomy` the id is looked for in all of them,
+            and one several taxonomies define is refused. Only the class itself is
+            returned, never its subclasses.
+          schema:
+            type: string
+        - name: withAssignments
+          in: query
+          required: false
+          description: |
+            Whether every class carries the vehicles assigned to it. Off by
+            default: one class of a working file holds several hundred, which is
+            more than one page holds - `assignedCount` states the size either way.
+            Send it together with `limit`: seven classes of a real file carried
+            838 vehicles between them.
+
+            Narrowed to one class with `class` and asked for its vehicles, the
+            page moves from the classes to those vehicles: `classes` then holds
+            that one class whole - its `assignedCount` the total in all - while
+            `assignments` is the paged list, in the order of the application's
+            table, every row carrying a `cursor` and `page.nextCursor` naming
+            where to continue. A cursor of the class list is no cursor of the
+            vehicles and is refused rather than obeyed.
+          schema:
+            type: boolean
+            default: false
+        - name: withPath
+          in: query
+          required: false
+          description: |
+            Whether every class also carries the `path` of ids from the root down
+            to it. Off by default: `parent` already links each class to the one
+            above, and a page of classes is enough to walk the tree, while the
+            path costs one uuid per step - in a working file about half of the
+            whole class list.
+          schema:
+            type: boolean
+            default: false
+        - $ref: "#/components/parameters/Cursor"
+        - $ref: "#/components/parameters/Limit"
+      responses:
+        "200":
+          description: Every taxonomy of the file
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [items, classes]
+                properties:
+                  items:
+                    type: array
+                    items:
+                      type: object
+                      required: [id, name, classCount]
+                      properties:
+                        id:
+                          type: string
+                          description: |
+                            The taxonomy's id - what the application lists it
+                            under, and the id a write addresses it by.
+                        name:
+                          type: string
+                          description: The taxonomy's name.
+                        source:
+                          type: string
+                          description: |
+                            Where the taxonomy came from, when it was imported
+                            from a template. Absent for a local one.
+                        dimensions:
+                          type: array
+                          items:
+                            type: string
+                          description: |
+                            The rebalancing dimensions it defines, when it
+                            defines any.
+                        classCount:
+                          type: integer
+                          description: |
+                            How many classes the tree holds - the length of
+                            `classes`, stated so a caller sees the size of what
+                            it was given.
+                  classes:
+                    type: array
+                    description: |
+                      The classes of every taxonomy the request covers, in one
+                      flat list: a parent before its children, children by `rank`
+                      and then by name - the order the application shows. This is
+                      what `limit` and `cursor` page through, because a working
+                      file holds more classes than fit in one answer; one class of
+                      a real file holds several hundred vehicles. `page` appears
+                      only when paging was asked for, and then every row carries
+                      its own `cursor`.
+                    items:
+                      type: object
+                      required: [taxonomy, id, name, rank, targetWeight, assignedCount]
+                      properties:
+                        taxonomy:
+                          type: string
+                          description: |
+                            The id of the taxonomy this class belongs to, so that
+                            a page of classes can be read without the headers.
+                        id:
+                          type: string
+                          description: The class id, unique within its taxonomy.
+                        name:
+                          type: string
+                          description: The class name as the application shows it.
+                        parent:
+                          type: string
+                          description: |
+                            The id of the class above. Absent on the root class,
+                            which carries the taxonomy's own id.
+                        path:
+                          type: array
+                          items:
+                            type: string
+                          description: |
+                            The ids from the root down to this class. Only present
+                            when `withPath=true`: `parent` already links each class
+                            to the one above, so a page of classes is enough to
+                            rebuild the tree.
+                        rank:
+                          type: integer
+                          description: The position among its siblings.
+                        targetWeight:
+                          type: number
+                          description: |
+                            What rebalancing aims at for this class, as a fraction
+                            (0.6 = 60 %). A new class of the application starts at
+                            a whole (1 = 100 %).
+                        note:
+                          type: string
+                          description: The class note, when set.
+                        assignedCount:
+                          type: integer
+                          description: |
+                            How many vehicles are assigned to this class - stated
+                            whether or not `withAssignments` was sent, so the shape
+                            of a tree is cheap to read.
+                        assignments:
+                          type: array
+                          description: |
+                            The vehicles assigned directly to this class. Present
+                            only when `withAssignments=true` and the class has any.
+                          items:
+                            type: object
+                            required: [uuid, name, type, weight]
+                            properties:
+                              uuid:
+                                type: string
+                                description: The vehicle's uuid, as pp_list_instruments gives it.
+                              name:
+                                type: string
+                                description: The vehicle's name.
+                              type:
+                                type: string
+                                description: |
+                                  Which kind of vehicle: `instrument` or
+                                  `cash-account`. `vehicle` is the fallback for a
+                                  kind this API does not name yet.
+                              rank:
+                                type: integer
+                                description: |
+                                  The place within the class, from 0 - the order
+                                  the application's table shows, and the order a
+                                  page of one class's vehicles continues in.
+                              weight:
+                                type: number
+                                description: |
+                                  The factor this class applies to the vehicle's
+                                  value, as a fraction: `1` counts it in full,
+                                  `0.6` at 60 %. Not a target - and not the slice
+                                  the class's pie chart draws, which follows from
+                                  the value times this factor.
+                        cursor:
+                          type: string
+                          description: |
+                            Present when paging: send it, or `page.nextCursor`, as
+                            `cursor` to continue after this class.
+                  page:
+                    $ref: "#/components/schemas/Page"
+              examples:
+                default:
+                  value:
+                    items:
+                      - id: asset_classes
+                        name: Asset Classes
+                        classCount: 3
+                    classes:
+                      - taxonomy: asset_classes
+                        id: asset_classes
+                        name: Asset Classes
+                        path: [asset_classes]
+                        rank: 0
+                        targetWeight: 1
+                        assignedCount: 0
+                      - taxonomy: asset_classes
+                        id: equity
+                        name: Equities
+                        parent: asset_classes
+                        path: [asset_classes, equity]
+                        rank: 0
+                        targetWeight: 0.6
+                        assignedCount: 1
+                      - taxonomy: asset_classes
+                        id: bonds
+                        name: Bonds
+                        parent: asset_classes
+                        path: [asset_classes, bonds]
+                        rank: 1
+                        targetWeight: 0.4
+                        assignedCount: 0
+
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "500":
+          $ref: "#/components/responses/InternalError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
+
+  /v1/files/{file}/taxonomies/{taxonomy}/classes:
+    post:
+      operationId: createClass
+      tags: [Taxonomies]
+      summary: Add a class to a taxonomy
+      description: |
+        The other half of `updateClass`: that one moves the target weight of a
+        class that already has an id, this one gives the class its id - what the
+        application's `New category` does, given as a name and the parent to
+        hang it under.
+
+        `parent` is the id of one class of the same tree; left out, the class
+        hangs under the root. `targetWeight` left out starts the class at a
+        whole (`1`), exactly as a fresh class of the application does.
+
+        A name the parent already carries is refused as `409 name-taken`:
+        classes do have ids, so two of one name could be told apart - but only
+        by a caller that went and looked. Another parent makes another class,
+        and that pair is ordinary.
+
+        The user is asked before anything is created, naming the new class and
+        the tree it joins: `403 write-declined`, `423 write-unanswered`, `429
+        write-pending`. Nothing is saved to disk, and there is no undo - this
+        API creates classes and never removes one.
+      parameters:
+        - $ref: "#/components/parameters/File"
+        - name: taxonomy
+          in: path
+          required: true
+          description: The taxonomy's `id`, from the `items` of `GET /v1/files/{file}/taxonomies`.
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name]
+              additionalProperties: false
+              properties:
+                name:
+                  type: string
+                  description: What the class is to be called.
+                parent:
+                  type: string
+                  description: |
+                    The id of the class the new one hangs under. Optional: left
+                    out it is the taxonomy's root.
+                targetWeight:
+                  type: number
+                  minimum: 0
+                  description: |
+                    The target weight as a fraction. Optional: left out the
+                    class starts at a whole (1). Negative is refused.
+      responses:
+        "201":
+          description: |
+            The class as it now stands, with its new id - which the assignment
+            and weight writes accept at once - `created: true`, and the tree.
+          headers:
+            X-Portfolio-Changed:
+              description: |
+                Always `true`: a class that did not exist before is a change.
+              schema:
+                type: string
+                enum: ["true"]
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [taxonomy, class, targetWeight, created, changed]
+                properties:
+                  taxonomy:
+                    type: object
+                    required: [id, name]
+                    properties:
+                      id:
+                        type: string
+                      name:
+                        type: string
+                  class:
+                    type: object
+                    required: [id, name, parent]
+                    properties:
+                      id:
+                        type: string
+                      name:
+                        type: string
+                      parent:
+                        type: string
+                        description: The id of the class this one hangs under.
+                  targetWeight:
+                    type: number
+                    description: The class's target weight as a fraction.
+                  created:
+                    type: boolean
+                  changed:
+                    type: boolean
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "423":
+          $ref: "#/components/responses/Locked"
+        "429":
+          $ref: "#/components/responses/WritePending"
+        "500":
+          $ref: "#/components/responses/InternalError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
+
+  /v1/files/{file}/taxonomies/{taxonomy}/classes/{classification}:
+    patch:
+      operationId: updateClass
+      tags: [Taxonomies]
+      summary: Change the target weight of a class
+      description: |
+        The one number the file keeps that says what a class should be worth -
+        readable since `GET /v1/files/{file}/taxonomies` carried `targetWeight`,
+        and untouched by every operation until this one.
+
+        `targetWeight` travels as a fraction, the figure the read gives back:
+        `0.6` is the 60 % the application shows. It may be more than a whole -
+        the classes of one tree need not add up to a hundred percent - but never
+        negative: a minus came in through an older version of the application
+        whose dialog still accepted one, while the current dialog, like this
+        operation, refuses it.
+
+        A PATCH although targetWeight is the only field it takes: a PUT would
+        promise the request states the class whole, and one field is one field.
+        Setting the same weight again changes nothing and answers `changed:
+        false`, so the call may be sent twice.
+
+        The user is asked before the number moves, naming the class and the
+        taxonomy it belongs to: `403 write-declined`, `423 write-unanswered`,
+        `429 write-pending`.
+      parameters:
+        - $ref: "#/components/parameters/File"
+        - name: taxonomy
+          in: path
+          required: true
+          description: The taxonomy's `id`, from the `items` of `GET /v1/files/{file}/taxonomies`.
+          schema:
+            type: string
+        - name: classification
+          in: path
+          required: true
+          description: |
+            The class's `id`, from the `classes` of `GET /v1/files/{file}/taxonomies`.
+            Unique only inside the taxonomy named above, so that one is asked for too.
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [targetWeight]
+              additionalProperties: false
+              properties:
+                targetWeight:
+                  type: number
+                  minimum: 0
+                  description: |
+                    The new target weight as a fraction: `0.6` is the 60 % the
+                    application shows. 0 is allowed; more than 1 is stored as
+                    given; negative is refused.
+      responses:
+        "200":
+          description: |
+            The class and its tree, the weight as it was and as it is now, and
+            `changed` - false when the number was the one the class already
+            carried, in which case the file, unsaved changes included, stays as
+            it was.
+          headers:
+            X-Portfolio-Changed:
+              description: |
+                Whether this call changed the model: `true` when it did and the
+                file then has unsaved changes, `false` when the weight already
+                was what was asked for. It repeats the body's `changed`. Earlier
+                edits may still be unsaved after a `false`.
+              schema:
+                type: string
+                enum: ["true", "false"]
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  taxonomy:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      name:
+                        type: string
+                  class:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      name:
+                        type: string
+                      parent:
+                        type: string
+                  previousTargetWeight:
+                    type: number
+                  targetWeight:
+                    type: number
+                  changed:
+                    type: boolean
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "423":
+          $ref: "#/components/responses/Locked"
+        "429":
+          $ref: "#/components/responses/WritePending"
+        "500":
+          $ref: "#/components/responses/InternalError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
+
+  /v1/files/{file}/taxonomies/{taxonomy}/classes/{classification}/vehicles/{vehicle}:
+    put:
+      operationId: assignVehicle
+      tags: [Taxonomies]
+      summary: Put one vehicle into one class
+      description: |
+        Makes sure one instrument or one cash account belongs to one class of a
+        taxonomy. A `PUT`, so sending it twice has done exactly what sending it
+        once did — the second call changes nothing and answers with
+        `created: false, changed: false`.
+
+        A vehicle is an instrument or a cash account. An **investment account has
+        a uuid but cannot be placed** in a class: it is refused as
+        `vehicle-not-assignable`, because what a class divides up is the money and
+        the papers, and a depot is only the drawer they sit in. Assign the depot's
+        reference cash account instead.
+
+        `weight` is the factor the class's report multiplies the vehicle's value
+        by, as a fraction: `1` counts it in full — which is what every existing
+        assignment of a real file does — and `0.6` counts it at 60 %. Left out, a
+        vehicle newly placed takes `1`, the same as its new class mates.
+
+        This writes to a file open in the application. The model changes, the file
+        is marked dirty, and the open parts recalculate - a classification report
+        the user is looking at moves at once. Nothing is written to disk: closing
+        the file without saving discards the change, and there is no undo.
+        While the user has a dialog open, or is part-way through editing a cell,
+        the write is refused `423` until they finish.
+      parameters:
+        - $ref: "#/components/parameters/File"
+        - name: taxonomy
+          in: path
+          required: true
+          description: The taxonomy's `id`, from the `items` of `GET /v1/files/{file}/taxonomies`.
+          schema:
+            type: string
+        - name: classification
+          in: path
+          required: true
+          description: |
+            The class's `id`, from the `classes` of `GET /v1/files/{file}/taxonomies`.
+            Unique only inside the taxonomy named above, so that one is asked for too.
+          schema:
+            type: string
+        - name: vehicle
+          in: path
+          required: true
+          description: |
+            The uuid of the instrument or cash account to place, as
+            `/v1/files/{file}/instruments` or `/v1/files/{file}/cash-accounts`
+            give them.
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                weight:
+                  type: number
+                  exclusiveMinimum: 0
+                  maximum: 1
+                  description: |
+                    The factor the class applies to the vehicle's value, as a
+                    fraction: `1` counts it in full, `0.6` at 60 %. More than 0
+                    and at most 1. Omit it - or send `{}` - to count the vehicle
+                    in full, as every existing assignment of a real file does, or
+                    to leave an existing factor alone.
+      responses:
+        "200":
+          description: |
+            The class, the vehicle and the counts around the change. `created` is
+            true only for a vehicle that was not in the class before; `changed` is
+            false when the request only restated what was already stored, and the
+            file then has no new unsaved changes.
+          headers:
+            X-Portfolio-Changed:
+              description: |
+                Whether this call changed the model: `true` when the vehicle was
+                put in or its factor moved, `false` when the request only restated
+                the assignment. It repeats the body's `changed`. Earlier edits may
+                still be unsaved after a `false`.
+              schema:
+                type: string
+                enum: ["true", "false"]
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - taxonomy
+                  - class
+                  - className
+                  - vehicle
+                  - assignedBefore
+                  - assignedAfter
+                  - rank
+                  - created
+                  - changed
+                properties:
+                  taxonomy:
+                    type: object
+                    required: [id, name]
+                    properties:
+                      id:
+                        type: string
+                      name:
+                        type: string
+                  class:
+                    type: string
+                  className:
+                    type: string
+                  vehicle:
+                    type: object
+                    required: [uuid, name, type]
+                    properties:
+                      uuid:
+                        type: string
+                      name:
+                        type: string
+                      type:
+                        type: string
+                        description: |
+                          Which kind of vehicle this is, in the words the rest of
+                          this API uses: `instrument` or `cash-account`.
+                  weight:
+                    type: number
+                    description: |
+                      The share within the class as a fraction, after the change.
+                      Absent when the assignment was removed.
+                  assignedBefore:
+                    type: integer
+                    description: How many vehicles the class held before.
+                  assignedAfter:
+                    type: integer
+                    description: How many it holds now.
+                  rank:
+                    type: integer
+                    description: |
+                      The place within the class, from 0. A vehicle newly placed
+                      comes last, as it does in the application's table.
+                  created:
+                    type: boolean
+                  changed:
+                    type: boolean
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "423":
+          $ref: "#/components/responses/Locked"
+        "429":
+          $ref: "#/components/responses/WritePending"
+        "500":
+          $ref: "#/components/responses/InternalError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
+    delete:
+      operationId: unassignVehicle
+      tags: [Taxonomies]
+      summary: Take one vehicle out of one class
+      description: |
+        Removes the assignment and nothing else: the instrument or cash account
+        stays in the file, with its bookings and its place in every other
+        taxonomy.
+
+        Refused **`404 not-assigned`** when the class does not hold that vehicle.
+        Unlike a missing entity there is nothing to go and look up, so the refusal
+        says that both things are there and only the relation between them never
+        was - which is also why sending this twice fails the second time.
+
+        A write to a file open in the application, with the same consequences as
+        `PUT` above: the parts recalculate, nothing is saved to disk, and there is
+        no undo.
+      parameters:
+        - $ref: "#/components/parameters/File"
+        - name: taxonomy
+          in: path
+          required: true
+          description: The taxonomy's `id`.
+          schema:
+            type: string
+        - name: classification
+          in: path
+          required: true
+          description: The class's `id`.
+          schema:
+            type: string
+        - name: vehicle
+          in: path
+          required: true
+          description: The uuid of the instrument or cash account to take out.
+          schema:
+            type: string
+      responses:
+        "204":
+          description: |
+            Removed. The assignment that was removed is described in the response
+            to the MCP tool of the same name, and not in this body.
+          headers:
+            X-Portfolio-Changed:
+              description: |
+                Always `true` here: an assignment that is gone is a change, so the
+                file now has unsaved changes. Nothing was written to disk.
+              schema:
+                type: string
+                enum: ["true"]
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "423":
+          $ref: "#/components/responses/Locked"
+        "429":
+          $ref: "#/components/responses/WritePending"
+        "500":
+          $ref: "#/components/responses/InternalError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
 
   /v1/files/{file}/performance:
     parameters:
@@ -838,12 +3096,24 @@ paths:
         closing value:
         `openingValue + unrealizedCapitalGains + realizedCapitalGains + income +
         fees + taxes + currencyGains + netDeposits = closingValue`. `fees` and
-        `taxes` are therefore negative. `netDeposits` is the external capital
+        `taxes` are therefore negative when they cost money, and positive for a
+        refund. The identity usually holds to the cent; first-in-first-out
+        rounding can leave a few cents, and with foreign currencies the terms
+        are converted at the dates they happened and the opening and closing
+        values at the interval's ends, which can leave a larger residual — the
+        application's own calculation shows the same figures.
+
+        Capital gains are stated before fees and taxes, which stand as terms of
+        their own — the same as the per-instrument report with
+        `taxesAndFees=excluded`, and the only way the sum can add up. `taxes` is
+        what was booked in the period (withholding, advance lump sums, taxes on
+        sales), not a tax computed from the period's gains, so it can exceed them. `netDeposits` is the external capital
         flow (deposits less removals) over the period; it is *not* part of the
         performance-driven change, but is required for the value reconciliation.
 
         `costMethod` chooses how a security's gains split into realized and
-        unrealized; it does not affect their sum, nor the returns.
+        unrealized; it does not affect their sum beyond rounding, nor the
+        returns.
 
         `openingDate` and `closingDate` are **valuation snapshot dates, not a
         record range**. The opening balance is measured as of the end of
@@ -872,7 +3142,9 @@ paths:
             The closing valuation date (default: today). `closingValue` equals
             `GET .../holdings?date={closingDate}`'s `totalAssets`. Must be
             strictly after `openingDate`; an empty or inverted range is rejected
-            `400 invalid-range`.
+            `400 invalid-range`. Future dates are accepted and value at the last
+            known prices; `ttwror` stops at today, which the response states as
+            `timeWeightedUntil`.
           schema:
             type: string
             format: date
@@ -899,6 +3171,7 @@ paths:
                   value:
                     openingDate: "2024-01-01"
                     closingDate: "2024-12-31"
+                    timeWeightedUntil: "2024-12-31"
                     reportingCurrency: EUR
                     costMethod: fifo
                     ttwror: 0.0723
@@ -913,6 +3186,8 @@ paths:
                       currencyGains: { value: 210, currency: EUR }
                       netDeposits: { value: 5000, currency: EUR }
                       closingValue: { value: 111390, currency: EUR }
+                    fxWarnings: []
+                    fxStaleRates: []
         "400":
           $ref: "#/components/responses/BadRequest"
         "401":
@@ -925,6 +3200,8 @@ paths:
           $ref: "#/components/responses/Conflict"
         "500":
           $ref: "#/components/responses/InternalError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
 
   /v1/files/{file}/performance/instruments:
     parameters:
@@ -936,7 +3213,8 @@ paths:
       description: |
         Per-instrument return, valuation, gains, income, expenses and risk over
         the same interval the aggregate `GET .../performance` covers, in the
-        reporting currency. Items are sorted by name.
+        reporting currency. Items are sorted by name, then by `uuid` for
+        instruments of the same name.
 
         **Which instruments appear.** Every instrument the interval touched:
         any transaction inside it, or a non-zero position at either end. A
@@ -951,6 +3229,11 @@ paths:
         `risk` together costs no more than asking for either, as they share one
         series. A request for all groups over every instrument of a large file
         with a long interval is slow; there is no pagination.
+
+        **Matching the aggregate report.** Capital gains match the aggregate
+        endpoint with `taxesAndFees=excluded`, its fees and taxes being separate
+        terms there. The rows still do not add up to it: cash accounts, account
+        fees and fees on transfers belong to no instrument.
 
         **Signs.** Every money field here is a magnitude: `fees` is the sum of
         the fees charged and is positive. Only fields that are terms of a
@@ -987,11 +3270,14 @@ paths:
                   value:
                     openingDate: "2025-01-01"
                     closingDate: "2025-12-31"
+                    timeWeightedUntil: "2025-12-31"
                     reportingCurrency: EUR
                     costMethod: fifo
                     taxesAndFees: included
                     metrics:
                       [valuation, gains, income, expenses, moneyWeighted, timeWeighted, risk]
+                    fxWarnings: []
+                    fxStaleRates: []
                     items:
                       - uuid: 5c1a0b7e-3d4f-4a2b-9c8e-1f0a2b3c4d5e
                         name: iShares Core MSCI World
@@ -1032,6 +3318,8 @@ paths:
           $ref: "#/components/responses/Conflict"
         "500":
           $ref: "#/components/responses/InternalError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
 
   /v1/files/{file}/performance/instruments/{uuid}:
     parameters:
@@ -1055,6 +3343,14 @@ paths:
 
         Note that `reportingCurrency` and `currencyCode` sit next to each other
         here and mean different things — see `MonetaryValue.currency`.
+
+        `fxWarnings` and `fxStaleRates` cover the conversions behind this
+        instrument's figures and those made while the file's shared calculation
+        is built, so they can name a pair that only another instrument was
+        converted with. Figures of other instruments are not computed for this
+        response, and conversions only they need are not covered: an empty list
+        says nothing fell back or used a stale rate for this instrument, not
+        for the file - the collection covers the file.
       parameters:
         - $ref: "#/components/parameters/OpeningDate"
         - $ref: "#/components/parameters/ClosingDate"
@@ -1076,10 +3372,20 @@ paths:
                   value:
                     openingDate: "2025-01-01"
                     closingDate: "2025-12-31"
+                    timeWeightedUntil: "2025-12-31"
                     reportingCurrency: EUR
                     costMethod: fifo
                     taxesAndFees: included
                     metrics: [valuation]
+                    # one pair with nothing to convert with: its ARS amounts are
+                    # shown at face value, not exchanged into EUR. USD would be
+                    # the more familiar example, but the built-in ECB series
+                    # covers it, so it would not be a fallback.
+                    fxWarnings:
+                      - currency: ARS
+                        reportingCurrency: EUR
+                        reason: no-series
+                    fxStaleRates: []
                     uuid: 5c1a0b7e-3d4f-4a2b-9c8e-1f0a2b3c4d5e
                     name: iShares Core MSCI World
                     currencyCode: USD
@@ -1108,6 +3414,219 @@ paths:
           $ref: "#/components/responses/Conflict"
         "500":
           $ref: "#/components/responses/InternalError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
+
+  /v1/files/{file}/transactions:
+    parameters:
+      - $ref: "#/components/parameters/File"
+    get:
+      operationId: listTransactions
+      tags: [Transactions]
+      summary: List the bookings of the file
+      description: |
+        One row per transaction as it was recorded: deposits and removals,
+        interest, dividends, fees and taxes, purchases, sales and transfers.
+        Where `/trades` answers how a position did, this answers what happened
+        on a day - and nothing else in this API reaches a deposit or a fee.
+
+        Rows come back **oldest first**. A page belongs to the period it was
+        asked for: `page.nextCursor` is valid only under the same `from` and
+        `to`.
+
+        `amount` is stated in the currency the booking was made in, so a file
+        holding foreign positions answers in several currencies at once - this
+        read has no reporting currency. `grossAmount` comes with a security
+        booking, `fees` and `taxes` only where they are not zero, and `shares`
+        only where shares moved.
+
+        For a purchase or a sale the cash side is the settlement account of the
+        securities account: the file derives it, the booking does not store it.
+        A transfer appears twice, once in each account it joins, and no row
+        names its counterpart. Cash bookings and security bookings are two
+        families of types; `TRANSFER_IN` and `TRANSFER_OUT` exist in both.
+      parameters:
+        - name: from
+          in: query
+          required: false
+          description: |
+            First day of the period, inclusive, as YYYY-MM-DD. A booking on
+            this day is part of the answer. Without it, no lower bound.
+          schema:
+            type: string
+            format: date
+        - name: to
+          in: query
+          required: false
+          description: |
+            Last day of the period, inclusive, as YYYY-MM-DD, on or after
+            `from`. Without it, no upper bound.
+          schema:
+            type: string
+            format: date
+        - name: cashAccount
+          in: query
+          required: false
+          description: |
+            Only bookings with a side in this cash account, as its uuid. For a
+            purchase or a sale that is the settlement account of the securities
+            account, stated as `referenceCashAccount` by the investment-accounts
+            resource.
+          schema:
+            type: string
+        - name: investmentAccount
+          in: query
+          required: false
+          description: |
+            Only the bookings of this securities account, as its uuid. A
+            deposit, a fee or interest is booked in a cash account and never
+            matches this filter.
+          schema:
+            type: string
+        - name: instrument
+          in: query
+          required: false
+          description: |
+            Only bookings naming this instrument, as its uuid: the purchase, the
+            sale, the dividend, and the fees and taxes attached to them.
+          schema:
+            type: string
+        - name: type
+          in: query
+          required: false
+          description: |
+            Only these types, comma-separated and case-insensitive, as the
+            `type` field spells them. An unknown name fails as a field error
+            that lists all of them.
+          schema:
+            type: string
+        - $ref: "#/components/parameters/Cursor"
+        - $ref: "#/components/parameters/Limit"
+      responses:
+        "200":
+          description: The bookings of the file, oldest first
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [items]
+                properties:
+                  items:
+                    type: array
+                    items:
+                      type: object
+                      required: [date, time, type, uuid, amount]
+                      properties:
+                        date:
+                          type: string
+                          format: date
+                          description: The day the booking was recorded
+                        time:
+                          type: string
+                          description: |
+                            The time of day as HH:mm:ss. The order of the list
+                            follows date and time together.
+                        type:
+                          type: string
+                          description: |
+                            One of the types of the family the booking belongs
+                            to, spelled as in the application.
+                        uuid:
+                          type: string
+                          description: |
+                            The identity of the booking itself, stable across
+                            calls and different for the two sides of a transfer.
+                        instrument:
+                          type: object
+                          description: The security the booking is about
+                          required: [uuid, name]
+                          properties:
+                            uuid:
+                              type: string
+                            name:
+                              type: string
+                        amount:
+                          type: object
+                          description: |
+                            What was booked, in the currency of the booking. On
+                            a purchase or a sale this is the amount the cash
+                            account moved by, charges included.
+                          required: [value, currency]
+                          properties:
+                            value:
+                              type: number
+                            currency:
+                              type: string
+                        shares:
+                          type: number
+                          description: |
+                            Only where the booking moved shares; absent for a
+                            booking that moved nothing but money.
+                        grossAmount:
+                          type: object
+                          description: |
+                            Only with a security booking: the value of the
+                            shares before charges, so that `amount` less
+                            `grossAmount` accounts for fees and taxes.
+                          required: [value, currency]
+                          properties:
+                            value:
+                              type: number
+                            currency:
+                              type: string
+                        fees:
+                          type: object
+                          description: Only when not zero
+                          required: [value, currency]
+                          properties:
+                            value:
+                              type: number
+                            currency:
+                              type: string
+                        taxes:
+                          type: object
+                          description: Only when not zero
+                          required: [value, currency]
+                          properties:
+                            value:
+                              type: number
+                            currency:
+                              type: string
+                        cashAccount:
+                          type: object
+                          description: |
+                            The cash account on the money side: the owner of a
+                            cash booking, the settlement account of a security
+                            booking.
+                          required: [uuid, name]
+                          properties:
+                            uuid:
+                              type: string
+                            name:
+                              type: string
+                        investmentAccount:
+                          type: object
+                          description: Only with a security booking
+                          required: [uuid, name]
+                          properties:
+                            uuid:
+                              type: string
+                            name:
+                              type: string
+                        note:
+                          type: string
+                          description: Only when the booking carries one
+                  page:
+                    $ref: "#/components/schemas/Page"
+        "400":
+          description: |
+            A named account or instrument is not of this file, a `type` filter
+            names no booking, or the two dates ask for a period the other way
+            round.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Problem"
 
   /v1/files/{file}/trades:
     parameters:
@@ -1152,6 +3671,10 @@ paths:
         - $ref: "#/components/parameters/TradeCostMethod"
         - $ref: "#/components/parameters/TradeTaxesAndFees"
         - $ref: "#/components/parameters/ReportingCurrency"
+        - $ref: "#/components/parameters/TradeFrom"
+        - $ref: "#/components/parameters/TradeTo"
+        - $ref: "#/components/parameters/Cursor"
+        - $ref: "#/components/parameters/Limit"
       responses:
         "200":
           description: The file's trades
@@ -1168,6 +3691,8 @@ paths:
                     grouping: combined
                     valuationDate: "2026-08-27"
                     status: [open, closed]
+                    fxWarnings: []
+                    fxStaleRates: []
                     warnings: []
                     items:
                       - status: closed
@@ -1202,6 +3727,8 @@ paths:
           $ref: "#/components/responses/Conflict"
         "500":
           $ref: "#/components/responses/InternalError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
 
   /v1/files/{file}/instruments/{uuid}/trades:
     parameters:
@@ -1253,6 +3780,10 @@ paths:
         - $ref: "#/components/parameters/TradeCostMethod"
         - $ref: "#/components/parameters/TradeTaxesAndFees"
         - $ref: "#/components/parameters/ReportingCurrency"
+        - $ref: "#/components/parameters/TradeFrom"
+        - $ref: "#/components/parameters/TradeTo"
+        - $ref: "#/components/parameters/Cursor"
+        - $ref: "#/components/parameters/Limit"
       responses:
         "200":
           description: The instrument's trades
@@ -1269,6 +3800,8 @@ paths:
                     grouping: combined
                     valuationDate: "2026-08-27"
                     status: [open, closed]
+                    fxWarnings: []
+                    fxStaleRates: []
                     warnings: []
                     items:
                       - status: closed
@@ -1303,6 +3836,8 @@ paths:
           $ref: "#/components/responses/Conflict"
         "500":
           $ref: "#/components/responses/InternalError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
 
 components:
   securitySchemes:
@@ -1321,8 +3856,11 @@ components:
       in: path
       required: true
       description: |
-        A file's `id` or `alias`, as returned by `GET /v1/files`. An alias that
-        matches several records is rejected `409 ambiguous-alias`; use the `id`.
+        The file's `use` value, as returned by `GET /v1/files` — always its `id`.
+        Send it exactly; a `label` is a display name and never an address. An
+        `alias` is accepted too, for hand-written scripts, but the user can
+        rename it at any time; an alias that matches several records is
+        rejected `409 ambiguous-alias`.
       schema:
         type: string
     Uuid:
@@ -1350,7 +3888,8 @@ components:
         The closing valuation date (default: today). Must be strictly after
         `openingDate`; an empty or inverted range is rejected `400
         invalid-range`. Future dates are accepted and value at the last known
-        prices.
+        prices; the time-weighted figures stop at today, which the response
+        states as `timeWeightedUntil`.
       schema:
         type: string
         format: date
@@ -1437,6 +3976,71 @@ components:
         default: [open, closed]
       style: form
       explode: false
+    InstrumentQuery:
+      name: query
+      in: query
+      required: false
+      description: |
+        Only the instruments this finds: one whose name contains it, or whose
+        ISIN, WKN or ticker symbol equals it — all ignoring case and
+        surrounding whitespace. Omit it to list every instrument; a blank
+        value is rejected `400 invalid-request`, with an `errors` entry for
+        `query` whose code is `invalid-value`.
+      schema:
+        type: string
+        minLength: 1
+    TradeFrom:
+      name: from
+      in: query
+      required: false
+      description: |
+        The first day of the period, as `YYYY-MM-DD`. Only trades still held
+        on or after it are returned: a trade that closed before it is left
+        out, an open one is kept. Omit it for no lower bound. Echoed in the
+        response when given.
+      schema:
+        type: string
+        format: date
+    TradeTo:
+      name: to
+      in: query
+      required: false
+      description: |
+        The last day of the period, as `YYYY-MM-DD`, not before `from`
+        (`invalid-range` otherwise). Only trades that started on or before it
+        are returned. With `from`, this keeps every trade held at some point
+        of the period — closed within it, or open through it. Omit it for no
+        upper bound. Echoed in the response when given.
+      schema:
+        type: string
+        format: date
+    Cursor:
+      name: cursor
+      in: query
+      required: false
+      description: |
+        Where a page continues: the `page.nextCursor` of the page before, or
+        the `cursor` of any item of a page - the page then starts after that
+        item. Empty for the first page. Opaque, and only good for the list it
+        came from: the same file, for one instrument's trades that instrument,
+        and the same filters that decide which items the list holds (`query`;
+        `status`, `grouping`, `from`, `to`) - `invalid-value` otherwise, as for
+        a cursor this API did not write. Cost method, taxes and currency change
+        only the figures and keep a cursor good. With `cursor` or `limit` the
+        response carries `page`, and every item its `cursor`.
+      schema:
+        type: string
+    Limit:
+      name: limit
+      in: query
+      required: false
+      description: |
+        At most this many items. Omit it for every item after `cursor`. A
+        whole number of at least 1 (`invalid-value` otherwise). With `cursor`
+        or `limit` the response carries `page`.
+      schema:
+        type: integer
+        minimum: 1
     TradeGrouping:
       name: grouping
       in: query
@@ -1463,8 +4067,11 @@ components:
         average cost of the shares rather than the matched lots.
 
         It does **not** change `irr`, which is derived from the actual cash
-        flows and has no moving-average counterpart — so a request with
-        `moving-average` returns a deliberately mixed-basis item. Nor does it
+        flows of the lots matched first in, first out — as in the
+        application's trades view — and has no moving-average counterpart. A
+        request with `moving-average` therefore returns a deliberately
+        mixed-basis item, whose `irr` can even differ in sign from its
+        `profitLoss`. Nor does it
         change `exitValue`, which is what the shares realized or are worth.
 
         `entryValue`, `profitLoss` and `return` are `null` — always all three
@@ -1510,6 +4117,8 @@ components:
           grouping,
           valuationDate,
           status,
+          fxWarnings,
+          fxStaleRates,
           warnings,
           items,
         ]
@@ -1537,12 +4146,35 @@ components:
           description: |
             The date the open trades were valued at, and the date their holding
             period runs to. Closed trades do not depend on it.
+        from:
+          type: string
+          format: date
+          description: The `from` query parameter, when one was given.
+        to:
+          type: string
+          format: date
+          description: The `to` query parameter, when one was given.
         status:
           type: array
           description: The selected statuses, in declaration order.
           items:
             type: string
             enum: [open, closed]
+        fxWarnings:
+          $ref: "#/components/schemas/FxWarnings"
+          description: |
+            As on every report - here for every trade the collector matched for
+            the instruments of the request, also one that `status`, `from` or
+            `to` leaves out of `items`: the collector matches all of an
+            instrument's trades, and a conversion cannot be traced back to one
+            of them.
+        fxStaleRates:
+          $ref: "#/components/schemas/FxStaleRates"
+          description: |
+            Like `fxWarnings`, for every trade matched, also one that `status`,
+            `from` or `to` leaves out of `items`.
+        page:
+          $ref: "#/components/schemas/Page"
         warnings:
           type: array
           description: |
@@ -1556,6 +4188,38 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/Trade"
+
+    Page:
+      type: object
+      description: |
+        How a paged list goes on - present only when the request named
+        `cursor` or `limit`. A paged list is in an order of keys that an edit
+        elsewhere in the file does not change: instruments by `uuid`; trades by
+        instrument, start, investment account, closing transaction and the
+        shares, amount and id of the opening transaction. A page continues
+        after the key of its cursor, so an item added or removed between two
+        pages does not shift the others: every item that stays in the list for
+        the whole walk comes exactly once. An item added before the cursor comes
+        only with a new walk from the first page; a trade whose start,
+        investment account or closing transaction changes gets a new key, and
+        may then come twice or not at all. Trades opened by transactions of the
+        file are told apart by the id of that transaction, so removing one of
+        several alike lots cannot hide the others from a cursor that has passed
+        them. For trades, `fxWarnings`, `fxStaleRates` and `warnings` describe
+        the whole list, not only the page.
+      required: [limit, total, nextCursor]
+      properties:
+        limit:
+          type: [integer, "null"]
+          description: The `limit` asked for, or `null` for none.
+        total:
+          type: integer
+          description: How many items the whole list holds.
+        nextCursor:
+          type: [string, "null"]
+          description: |
+            The `cursor` for the next page - the cursor of this page's last
+            item - or `null` when this is the last one.
 
     TradeWarning:
       type: object
@@ -1639,6 +4303,11 @@ components:
           return,
         ]
       properties:
+        cursor:
+          type: string
+          description: |
+            Only in a paged list: the `cursor` for the page that continues
+            after this trade.
         status:
           type: string
           enum: [open, closed]
@@ -1711,13 +4380,26 @@ components:
           description: |
             The share-weighted average number of days the shares were held,
             counted to `end` or, for an open trade, to `valuationDate`.
+        transactionsAfterValuationDate:
+          type: integer
+          description: |
+            How many of the trade's transactions are dated after
+            `valuationDate` — a savings plan booked ahead, say. Omitted when
+            none is. Trades are matched over every transaction, as in the
+            application's trades view, while an open trade is valued at the
+            price of `valuationDate`: with such transactions, `shares`,
+            `entryValue`, `exitValue` and `profitLoss` are those after the last
+            of them, not the position held on `valuationDate`. That position is
+            in `GET .../holdings`.
         irr:
           type: [number, "null"]
           description: |
             The internal rate of return as a fraction (0.0523 is 5.23 %),
-            annualized, from the trade's actual cash flows. Does **not** follow
-            `costMethod` or `taxesAndFees` — there is no variant of it. `null`
-            when the model cannot define it.
+            annualized, from the actual cash flows of the lots matched first
+            in, first out. Does **not** follow `costMethod` or `taxesAndFees` —
+            there is no variant of it — so under `moving-average` it can differ
+            in sign from `profitLoss`. Annualizing makes it extreme for a short
+            holding period. `null` when the model cannot define it.
         return:
           type: [number, "null"]
           description: |
@@ -1731,16 +4413,25 @@ components:
     File:
       type: object
       description: An open, enabled portfolio file you may address.
-      required: [id, label, path]
+      required: [id, label, path, use]
       properties:
         id:
           type: string
           description: |
-            Stable identity of the file, keyed by path. Address the file by this or
-            by `alias`.
+            Stable identity of the file, keyed by path. This is what `use`
+            carries.
         alias:
           type: string
-          description: Optional human-friendly handle the user assigned to the file.
+          description: |
+            Optional human-friendly handle the user assigned to the file. It is
+            accepted as an address, but the user can rename it at any time, so
+            a client that stores an address should store `use`.
+        use:
+          type: string
+          description: |
+            The value to pass as the `{file}` path parameter — always the `id`,
+            because an alias can be renamed between listing the files and the
+            next call. Included so a caller never has to choose between the two.
         label:
           type: string
           description: The file's display label in the application.
@@ -1791,6 +4482,11 @@ components:
       properties:
         uuid:
           type: string
+        cursor:
+          type: string
+          description: |
+            Only in a paged list: the `cursor` for the page that continues
+            after this item.
         name:
           type: string
         currencyCode:
@@ -1801,25 +4497,25 @@ components:
             `required`); only its value may be null.
         isin:
           type: string
-          description: Omitted when not set.
+          description: Omitted when not set or blank.
         wkn:
           type: string
-          description: Omitted when not set.
+          description: Omitted when not set or blank.
         tickerSymbol:
           type: string
-          description: Omitted when not set.
+          description: Omitted when not set or blank.
         note:
           type: string
-          description: Omitted when not set.
+          description: Omitted when not set or blank.
         attributes:
           type: object
           description: |
             The instrument's set custom attributes, keyed by attribute id.
-            Only attributes that have a value and a supported scalar type
-            appear; the key is omitted entirely when none do. Each value is
-            typed JSON — a string, number, or boolean (dates are ISO-8601
-            strings). Resolve an id to its precise type via
-            `GET /v1/files/{file}/instruments/attribute-types`.
+            Only attributes that have a value and a readable type appear; the
+            key is omitted entirely when none do — an image is never among
+            them. Each value is typed JSON — a string, number, or boolean
+            (dates are ISO-8601 strings). Resolve an id to its precise type
+            via `GET /v1/files/{file}/instruments/attribute-types`.
           additionalProperties:
             oneOf:
               - type: string
@@ -1850,6 +4546,11 @@ components:
             (`locked-by-transactions`), matching the UI's rule.
         isin:
           type: [string, "null"]
+          description: |
+            Checked as the application's ISIN column checks it: surrounding
+            whitespace is ignored, and what is left must be twelve characters
+            with a matching check digit, or the patch is rejected with
+            `invalid-isin`. A blank value clears the ISIN, like `null`.
         wkn:
           type: [string, "null"]
         tickerSymbol:
@@ -1862,9 +4563,15 @@ components:
             A nested merge patch over the custom attributes, keyed by attribute
             id: a present value sets the attribute, an explicit `null` clears it,
             an absent id is left untouched. Values are typed JSON per the
-            attribute's `type` (see the attribute-types endpoint). Writing an
-            unknown id, a non-applicable or compound-typed attribute, or a value
-            of the wrong type is rejected with 422 `validation`.
+            attribute's `type` (see the attribute-types endpoint). An `image`
+            takes a PNG as base64, with or without the `data:image/png;base64,`
+            prefix and at most 64 KiB of bytes — the icon/symbol variant of a
+            logo, not its full-size wordmark, which is what the cap refuses;
+            an `image` is stored in that prefixed,
+            rendered form and never read back, while a `limit-price` is the
+            string `` `<=62.5` `` and reads back unchanged. Writing an unknown id, a
+            non-applicable attribute, one of the compound types this API cannot
+            take, or a value of the wrong type is rejected with 422 `validation`.
           additionalProperties:
             oneOf:
               - type: string
@@ -1875,7 +4582,7 @@ components:
     AttributeDefinition:
       type: object
       description: A custom attribute definition applicable to an instrument.
-      required: [id, name, type, supported]
+      required: [id, name, type, supported, writable]
       properties:
         id:
           type: string
@@ -1893,11 +4600,14 @@ components:
             (ISO-8601), `amount`, `quote`, `shares`, `percent` (a fraction,
             e.g. 0.007 for 0.7%), `number` (an unscaled decimal; where the
             desktop reads such an attribute as a percentage — the expected
-            dividends column — 5 means 5%). Compound — `limit-price`,
-            `bookmark`, `image` — appear with `supported: false`.
+            dividends column — 5 means 5%). Of the compound types, `image`
+            appears with `supported: false` (`writable: true`), `bookmark`
+            with both false; `limit-price` is fully supported as the string
+            `` `<=62.5` `` — operator `<`, `<=`, `>`, `>=` and a dot-decimal price.
 
             **Open set:** new types may be added within v1, as the application
-            gains them. Treat an unknown type as `supported: false`.
+            gains them. Treat an unknown type as `supported: false` and
+            `writable: false`.
           x-extensible-enum:
             - string
             - boolean
@@ -1912,7 +4622,12 @@ components:
             - image
         supported:
           type: boolean
-          description: Whether v1 can read and write this attribute.
+          description: |
+            Whether v1 reads this attribute back in a response. An image is
+            `false` although it is writable: its bytes travel in, never out.
+        writable:
+          type: boolean
+          description: Whether v1 accepts a value for this attribute.
 
     CashAccount:
       type: object
@@ -1928,7 +4643,7 @@ components:
           description: ISO 4217 currency code.
         note:
           type: string
-          description: Omitted when not set.
+          description: Omitted when not set or blank.
 
     InvestmentAccount:
       type: object
@@ -1948,7 +4663,7 @@ components:
             when not set.
         note:
           type: string
-          description: Omitted when not set.
+          description: Omitted when not set or blank.
 
     MonetaryValue:
       type: object
@@ -1988,6 +4703,92 @@ components:
           format: date
           description: The date the price is from.
 
+    FxWarning:
+      type: object
+      description: |
+        One currency pair a report converted at a rate of 1 because the file has
+        nothing to convert with — amounts of `currency` are shown at face value in
+        `reportingCurrency`, not exchanged. Only pairs the report's calculation
+        actually converted are named: an empty account or an instrument not held
+        never is.
+      required: [currency, reportingCurrency, reason]
+      properties:
+        currency:
+          type: string
+          description: The currency the amounts are natively in, shown unconverted.
+        reportingCurrency:
+          type: string
+          description: |
+            The currency the amounts were converted into: the report's reporting
+            currency, or an instrument's own currency for the figures stated in
+            it (such as `localValuation`).
+        reason:
+          type: string
+          description: |
+            **Open set:** further reasons may be added within v1; treat an unknown
+            one as "this pair was converted at 1:1, for a reason not described
+            here". `no-series` — no exchange rate series exists for the pair at
+            all. `no-rate` — a series exists but answered no rate for at least one
+            date the report converted at (it holds no rates, or — for a series
+            built from an exchange-rate instrument — its quote for that day is
+            zero). Neither is the case where a series holds rates and answers a
+            date before its first quote with that first quote, which is a
+            different inaccuracy and not reported here.
+          x-extensible-enum: [no-series, no-rate]
+
+    FxWarnings:
+      type: array
+      description: |
+        Every currency pair this report converted at 1:1 because nothing to
+        convert with was configured. Always present, empty when every pair has
+        rates — the same rule as `warnings` on a computed collection, so a client
+        can tell "nothing fell back" apart from "this report did not look". A
+        pair can be named whose only amount came out as zero: some calculations
+        look up the rate before they know the amount.
+      items:
+        $ref: "#/components/schemas/FxWarning"
+
+    FxStaleRates:
+      type: array
+      description: |
+        Every currency pair this report converted at a rate more than seven
+        days older than the date it converted at (or than today, for a later
+        date) — a series that stopped being published goes on answering with
+        its last rate, and the currency effect of those amounts is then frozen
+        at it rather than measured. A stale conversion is not 1:1, so it is
+        no `fxWarnings` entry itself; the same pair can still be one for
+        another conversion that fell back. Always present, empty when every
+        rate used was recent.
+      items:
+        $ref: "#/components/schemas/FxStaleRate"
+
+    FxStaleRate:
+      type: object
+      required: [currency, reportingCurrency, rateDate, daysOld]
+      properties:
+        currency:
+          type: string
+          description: The currency the amounts were natively in.
+        reportingCurrency:
+          type: string
+          description: |
+            The currency they were converted into: the report's reporting
+            currency, or an instrument's own currency for its local figures.
+        rateDate:
+          type: string
+          format: date
+          description: |
+            The date of the oldest rate a stale conversion of this pair used;
+            a conversion at a rate that was recent for its date does not count,
+            however old that date. For a pair reached through a third currency
+            (USD to CHF through EUR), the oldest of its steps.
+        daysOld:
+          type: integer
+          description: |
+            How many days a rate was older than the date it converted at — the
+            largest gap the stale conversions of this pair met, not necessarily
+            that of the conversion at `rateDate`.
+
     Holding:
       type: object
       description: |
@@ -2016,13 +4817,57 @@ components:
           allOf:
             - $ref: "#/components/schemas/Price"
           description: Instruments only.
+        priceStale:
+          type: boolean
+          description: |
+            Instruments only, when `price.date` is known. Whether the quote behind
+            this valuation is out of date: `true` when more than one trading day
+            passed without a quote (`priceMissedTradingDays` > 1) — a quote feed
+            that stopped, or a valuation that fell back to the price of the last
+            transaction. A weekend or a holiday does not make a quote stale, and
+            one missed trading day is tolerated because funds publish their price
+            a day late. Never `true` for an instrument priced by hand (quote feed
+            `MANUAL`): its price changes when the user decides, as in the
+            application's data quality view — its age fields still say how old
+            the price is.
+        priceAgeDays:
+          type: integer
+          description: |
+            Instruments only, when `price.date` is known. Calendar days between
+            `price.date` and the response's `date` — or today, when `date` lies
+            in the future, since no quote can be younger than today's. Never
+            negative, so a quote dated after `date` reads 0 rather than implying
+            the valuation happened before it.
+        priceMissedTradingDays:
+          type: integer
+          description: |
+            Instruments only, when `price.date` is known. The trading days strictly
+            between `price.date` and the response's `date` — or today, when
+            `date` lies in the future — counted in the instrument's own trade
+            calendar. That end day itself does not count: its close cannot be
+            known before the day is over. On a Sunday, Friday's quote has missed
+            none, and valued at a future date today's quote has missed none
+            either.
+        priceManual:
+          type: boolean
+          description: |
+            Instruments only, present and `true` when the instrument is priced
+            by hand (quote feed `MANUAL`). Such a price changes when the user
+            decides, so `priceStale` is never `true` for it however old it is —
+            this field says why; the age fields still say how old it is.
         valuation:
           allOf:
             - $ref: "#/components/schemas/MonetaryValue"
           description: The holding's value in the reporting currency.
         weight:
           type: number
-          description: The holding's fraction (0–1) of total assets — not a percentage.
+          description: |
+            The holding's fraction of total assets — not a percentage. A cash
+            account can hold a negative balance (a loan, a credit card); its
+            weight is then negative and the others are divided by the smaller
+            net total, so a weight can exceed 1. Rounded to 8 decimal places, so
+            the weights add up to 1 within that rounding, unless total assets are
+            zero - then every weight is 0.
         localValuation:
           allOf:
             - $ref: "#/components/schemas/MonetaryValue"
@@ -2037,11 +4882,14 @@ components:
       required:
         - openingDate
         - closingDate
+        - timeWeightedUntil
         - reportingCurrency
         - costMethod
         - ttwror
         - irr
         - breakdown
+        - fxWarnings
+        - fxStaleRates
       properties:
         openingDate:
           type: string
@@ -2051,6 +4899,18 @@ components:
           type: string
           format: date
           description: The effective closing valuation date.
+        timeWeightedUntil:
+          type: string
+          format: date
+          description: |
+            The last day `ttwror` is measured to: `closingDate`, or today when
+            `closingDate` lies in the future, because the time-weighted engine
+            never runs past today. The breakdown and `irr` run to `closingDate`
+            and include the transactions dated after today, valued at the
+            latest known prices — a planned transaction shows its effect there.
+            When the two dates differ the report mixes two periods, and neither
+            return is a forecast. When `openingDate` is today or later nothing
+            could be measured, and `ttwror` and `irr` are `null`.
         reportingCurrency:
           type: string
           description: |
@@ -2070,15 +4930,24 @@ components:
           description: |
             The true time-weighted rate of return over the interval, as a
             fraction (0.0723 is 7.23 %) — not a percentage. `null` when the
-            model cannot define it for the interval.
+            model cannot define it for the interval, when `openingDate` is
+            today or later - such a period has no price movement to measure -
+            and when the file held nothing and moved no money at any time in
+            the interval, which leaves no capital to measure a return on.
         irr:
           type: [number, "null"]
           description: |
             The internal (money-weighted) rate of return over the interval, as a
-            fraction — not a percentage. `null` when the model cannot define it
-            for the interval.
+            fraction — not a percentage, and annualized, so over a period of a
+            few days it can be extreme. `null` when `openingDate` is today or
+            later, when the file held nothing in the interval (see `ttwror`),
+            and when the model cannot define it for the interval.
         breakdown:
           $ref: "#/components/schemas/PerformanceBreakdown"
+        fxWarnings:
+          $ref: "#/components/schemas/FxWarnings"
+        fxStaleRates:
+          $ref: "#/components/schemas/FxStaleRates"
 
     PerformanceBreakdown:
       type: object
@@ -2142,15 +5011,19 @@ components:
       type: object
       description: |
         The interval and the parameters a per-instrument report was computed
-        with. All six are echoed, so that a stored or forwarded response stays
-        interpretable — three of them move the numbers.
+        with, plus the currency pairs it converted at 1:1. All six parameters are
+        echoed, so that a stored or forwarded response stays interpretable —
+        three of them move the numbers.
       required:
         - openingDate
         - closingDate
+        - timeWeightedUntil
         - reportingCurrency
         - costMethod
         - taxesAndFees
         - metrics
+        - fxWarnings
+        - fxStaleRates
       properties:
         openingDate:
           type: string
@@ -2160,6 +5033,20 @@ components:
           type: string
           format: date
           description: The effective closing valuation date.
+        timeWeightedUntil:
+          type: string
+          format: date
+          description: |
+            The last day the `timeWeighted` and `risk` figures are measured to:
+            `closingDate`, or today when `closingDate` lies in the future,
+            because the time-weighted engine never runs past today. Valuation,
+            gains, income, expenses and `moneyWeighted` run to `closingDate`
+            and include the transactions dated after today, valued at the latest
+            known prices. When the two dates differ the report mixes two
+            periods, and neither return is a forecast. When `openingDate` is
+            today or later nothing could be measured: every return and every
+            risk ratio is `null`; `longestDrawdownDays`, which the 1.0 contract
+            keeps non-null, is `0`.
         reportingCurrency:
           type: string
           description: |
@@ -2184,6 +5071,10 @@ components:
             type: string
             enum:
               [valuation, gains, income, expenses, moneyWeighted, timeWeighted, risk]
+        fxWarnings:
+          $ref: "#/components/schemas/FxWarnings"
+        fxStaleRates:
+          $ref: "#/components/schemas/FxStaleRates"
 
     InstrumentPerformance:
       type: object
@@ -2344,20 +5235,25 @@ components:
       description: |
         What the instrument cost during the interval: the charges embedded in
         its trades and dividends, plus the standalone fee and tax bookings
-        attributed to it, net of refunds.
+        attributed to it, net of refunds. Both are positive magnitudes as a
+        rule, but negative when refunds outweigh the charges in the interval —
+        a tax refund booked against the instrument, for example.
       required: [fees, taxes]
       properties:
         fees:
           allOf:
             - $ref: "#/components/schemas/MonetaryValue"
           description: |
-            The fees charged, as a positive magnitude — unlike the aggregate
-            endpoint's `breakdown.fees`, which is negated so that its
-            decomposition adds up.
+            The fees charged net of fee refunds, as a positive magnitude unless
+            refunds outweigh them — unlike the aggregate endpoint's
+            `breakdown.fees`, which is negated so that its decomposition adds
+            up.
         taxes:
           allOf:
             - $ref: "#/components/schemas/MonetaryValue"
-          description: The taxes charged, as a positive magnitude.
+          description: |
+            The taxes charged net of tax refunds, as a positive magnitude
+            unless refunds outweigh them.
 
     InstrumentRisk:
       type: object
@@ -2368,10 +5264,23 @@ components:
       properties:
         volatility:
           type: [number, "null"]
-          description: The standard deviation of the return series.
+          description: |
+            The spread of the daily returns over the whole interval - not per
+            day, and not annualized. With r = ln(1 + daily return) for each of
+            the n returns that count and m their mean, it is
+            sqrt(n · Σ (r − m)² / (n − 1)), as the application computes it,
+            rounded. Only days the instrument was held on, as was the day
+            before, and that are no holiday count, up to `timeWeightedUntil`.
+            `null` when fewer than two returns count: one return has no spread,
+            and 0 would read as a measured absence of risk.
         semiVolatility:
           type: [number, "null"]
-          description: The standard deviation of the negative returns only.
+          description: |
+            The downside spread: the same formula with the sum taken only over
+            the returns with r below m - which can be positive ones, so a
+            series that only rose can have a semi-volatility above 0. The
+            divisor stays n − 1 for all n returns. `null` under the same
+            condition as `volatility`.
         maxDrawdown:
           type: [number, "null"]
           description: |
@@ -2387,7 +5296,126 @@ components:
             between data points, it is never shorter than the sampling interval
             — a period with no drawdown at all still reports 1. This is **not**
             the duration of the deepest drawdown, which is a different and
-            shorter interval — hence the name.
+            shorter interval — hence the name. `0` when `openingDate` is today
+            or later: nothing could be measured, and the 1.0 contract keeps this
+            field non-null — the `null` ratios next to it say so.
+
+    InstrumentCreation:
+      type: object
+      description: |
+        An instrument that did not exist before this call, and what the call says
+        about it that the instrument record itself cannot.
+      required: [instrument, fields, hasQuoteFeed, hasTransactions]
+      properties:
+        instrument:
+          description: |
+            The instrument as it now stands, `uuid` included - unlike a watchlist
+            this has an identifier, and that `uuid` is how every instrument tool
+            addresses it from here on.
+          allOf:
+            - $ref: "#/components/schemas/Instrument"
+        fields:
+          type: array
+          description: |
+            The fields it was created with, as the caller named them, with the value
+            the model holds of each now. Not a difference list: a new instrument
+            already answers to the file's currency before anything is set on it, so
+            comparing with an earlier value would leave out the one field that is
+            never empty.
+          items:
+            type: object
+            required: [field, value]
+            properties:
+              field:
+                type: string
+              value:
+                type: string
+        hasQuoteFeed:
+          type: boolean
+          description: |
+            Always `false`: no provider was asked, and no quote exists. The feed is
+            set in the application.
+        hasTransactions:
+          type: boolean
+          description: |
+            Always `false`, and worth saying: while nothing refers to this
+            instrument, `DELETE` on it can undo this creation.
+        sameNameAs:
+          type: array
+          description: |
+            Only when there are any: the instruments the file already has of this
+            very name. Not a refusal - they are addressable by `uuid` - but a caller
+            who did not mean to add a second one should hear that there are now two.
+          items:
+            $ref: "#/components/schemas/InstrumentReference"
+        sameTickerAs:
+          type: array
+          description: |
+            Only when there are any: the instruments carrying the same ticker symbol,
+            which is ordinary across share classes and trading venues.
+          items:
+            $ref: "#/components/schemas/InstrumentReference"
+
+    WatchlistChange:
+      type: object
+      description: |
+        One watchlist after a change to it. The counts around the change are here
+        rather than only in its absence, because a caller that asked for two names
+        to be added wants to read, without a second call, how full the list is now.
+      required: [name, created, hasIdentifier, instrumentCount, added, removed]
+      properties:
+        name:
+          type: string
+          description: |
+            The list's name — its only address. Nothing else in this API can refer
+            to a watchlist, and no uuid of it exists to remember.
+        created:
+          type: boolean
+          description: |
+            Whether this call brought the list into being. `false` on an update.
+        hasIdentifier:
+          type: boolean
+          description: |
+            Always `false`, and stated because every other entity of a file carries
+            a `uuid`: the name above is the whole address of this one.
+        instrumentCount:
+          type: integer
+          description: The instruments the list holds now.
+        added:
+          type: integer
+          description: |
+            How many of the instruments asked for the call put in. Fewer than the
+            number named means some were already there, which is not an error.
+        removed:
+          type: integer
+          description: |
+            How many of the instruments asked for the call took out. Fewer than the
+            number named means they were not in the list; see `notHeld`.
+        changed:
+          type: boolean
+          description: |
+            On an update: whether anything moved. `false` leaves the file exactly as
+            it was, unsaved changes included.
+        instrumentCountBefore:
+          type: integer
+          description: How full the list was before the update.
+        instrumentCountAfter:
+          type: integer
+          description: How full it is after the update.
+        watchlistsBefore:
+          type: integer
+          description: How many lists the file had before this one was created.
+        watchlistsAfter:
+          type: integer
+          description: How many lists the file has now.
+        notHeld:
+          type: array
+          description: |
+            On an update, and only when there were any: the instruments `remove`
+            named that the list did not hold. Asked-for state that already held,
+            reported rather than refused.
+          items:
+            $ref: "#/components/schemas/InstrumentReference"
 
     FieldError:
       type: object
@@ -2409,6 +5437,7 @@ components:
             - invalid-type
             - invalid-value
             - invalid-range
+            - out-of-range
             - too-long
             - unknown-field
             - unknown-parameter
@@ -2416,10 +5445,13 @@ components:
             - unknown-currency
             - locked-by-transactions
             - exchange-rate-requires-currency
+            - invalid-isin
+            - duplicate-identifier
             - referenced
             - unknown-attribute
             - attribute-not-applicable
             - unsupported-attribute-type
+            - vehicle-not-assignable
         message:
           type: string
           description: Human-readable explanation of this one violation.
@@ -2443,9 +5475,12 @@ components:
             *does* exist, and that the three
             **409** kinds each call for a different response:
             `file-not-open` (a human must open the file), `ambiguous-alias` (retry
-            with the `id`), `delete-blocked` (give up — the instrument is referenced).
+            with the `id`), `delete-blocked` (give up — the instrument is referenced),
+            and the two of a watchlist: `name-taken` (that name exists and could not
+            be addressed twice) or `no-such-watchlist` (no list of that name).
             `method-not-allowed` (405) is returned for any method a path does not
-            list; v1 has no create endpoints.
+            list; what v1 can bring into being is a watchlist and an instrument, both
+            by `POST`.
 
             **Open set:** new problem types may be added within v1. Treat an
             unknown `type` by its HTTP `status`.
@@ -2466,6 +5501,10 @@ components:
             - https://portfolio-performance.info/rest/problems/pairing-pending
             - https://portfolio-performance.info/rest/problems/pairing-cooldown
             - https://portfolio-performance.info/rest/problems/internal-error
+            - https://portfolio-performance.info/rest/problems/ui-busy
+            - https://portfolio-performance.info/rest/problems/ui-request-underway
+            - https://portfolio-performance.info/rest/problems/calculation-timeout
+            - https://portfolio-performance.info/rest/problems/server-busy
         title:
           type: string
           description: Short, human-readable summary of the problem kind.
@@ -2531,7 +5570,10 @@ components:
     Forbidden:
       description: |
         The request was not addressed as loopback (`forbidden-host`) or it carried
-        an `Origin` header (`browser-origin-forbidden`).
+        an `Origin` header (`browser-origin-forbidden`). For a write it can also
+        mean that the user was asked about the change and refused it
+        (`write-declined`): nothing was changed, and the answer stands — asking
+        again is not going to change it.
       content:
         application/problem+json:
           schema:
@@ -2551,9 +5593,11 @@ components:
       description: |
         The addressed file or entity cannot serve the request in its current state:
         `file-not-open` (enabled but not open — a human must open it),
-        `ambiguous-alias` (the alias matches several records — use the `id`), or, on
-        delete, `delete-blocked` (the instrument is referenced by transactions or
-        plans).
+        `ambiguous-alias` (the alias matches several records — use the `id`), on
+        delete `delete-blocked` (the instrument is referenced by transactions or
+        plans), and for a watchlist `name-taken` (a list of that name exists and a
+        second one could not be addressed) or `no-such-watchlist` (no list of that
+        name; the violation lists the names the file does have).
       content:
         application/problem+json:
           schema:
@@ -2598,6 +5642,25 @@ components:
         A modal dialog is open or the user is editing a table cell, so the write was
         refused rather than clobbered (`user-interaction`). **Normal and
         temporary** — respect `Retry-After` and try again.
+
+        For a write this can also mean that nobody answered the prompt asking about
+        the change (`write-unanswered`). Nothing was changed, so unlike a refusal
+        this one may be tried again.
+      headers:
+        Retry-After:
+          description: Seconds to wait before retrying.
+          schema:
+            type: integer
+      content:
+        application/problem+json:
+          schema:
+            $ref: "#/components/schemas/Problem"
+
+    WritePending:
+      description: |
+        Another change is still awaiting the user's decision, so this one was not
+        even asked about (`write-pending`). At most one prompt is ever on screen.
+        Respect `Retry-After` and try again once that window clears.
       headers:
         Retry-After:
           description: Seconds to wait before retrying.
@@ -2614,3 +5677,25 @@ components:
         application/problem+json:
           schema:
             $ref: "#/components/schemas/Problem"
+
+    ServiceUnavailable:
+      description: |
+        Not answered now; see the overview of 503 answers above. `server-busy`
+        (more requests in flight than the server serves at once, or no
+        calculation slot came free in time) can reach every operation. `ui-busy`
+        can reach every operation that runs on the application's UI thread -
+        the file list and everything under a file - but not the version or this
+        document; `ui-request-underway` only the writes among them, as a read
+        that had started is refused as `ui-busy`; `calculation-timeout` only the
+        calculations. Every one but `ui-request-underway` and
+        `calculation-timeout` carries a `Retry-After` and is safe to send again.
+      headers:
+        Retry-After:
+          description: Seconds to wait before sending the same request again.
+          schema:
+            type: integer
+      content:
+        application/problem+json:
+          schema:
+            $ref: "#/components/schemas/Problem"
+
