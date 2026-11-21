@@ -17,6 +17,7 @@ import org.eclipse.swt.widgets.Shell;
 
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.util.viewers.SharesLabelProvider;
+import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
 import name.abuchen.portfolio.util.TextUtil;
 
 public class TreeViewerCSVExporter extends AbstractCSVExporter
@@ -49,11 +50,11 @@ public class TreeViewerCSVExporter extends AbstractCSVExporter
             extractLabelProvider(labels);
 
             // write header
-            String label = viewer.getTree().getColumn(0).getText();
+            var label = ShowHideColumnHelper.getColumnLabel(viewer.getTree().getColumn(0));
             for (int ii = 0; ii < depth; ii++)
                 printer.print(label + " " + (ii + 1)); //$NON-NLS-1$
             for (int ii = 1; ii < columnCount; ii++)
-                printer.print(viewer.getTree().getColumn(ii).getText());
+                printer.print(ShowHideColumnHelper.getColumnLabel(viewer.getTree().getColumn(ii)));
             printer.println();
 
             // write body
