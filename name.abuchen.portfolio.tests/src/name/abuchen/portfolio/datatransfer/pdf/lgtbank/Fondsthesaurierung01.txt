@@ -1,0 +1,58 @@
+PDFBox Version: 3.0.8
+Portfolio Performance Version: 0.89.0
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+LGT Bank AG
+Zweigniederlassung Österreich
+Bankgasse 9, A-1010 Wien
+Tel. +43 1 22759-0
+lgt.austria@lgt.com, www.lgt.at, BIC BLFLATWW
+FN 383530s HG Wien, Sitz Wien, UID Nr. ATU57631067
+DACz
+YhEOo vfhdqmz Qgr CYSIr
+kMYGGGrCXs 81/24
+1415 WCbw 1 / 2
+Wien, 29. Juli 2026
+ 
+Fondsthesaurierung Portfolio: 3945370.004
+Auftragsnummer: 197707898 Kontonummer: 3852893.339
+Kunde: DuPhq aFt SpSyA IBAN: AT50 9944 0038 4017 4177  
+ 
+Ihr Bestand am 28. Juli 2026:
+228,889 LGT PB AIF SICAV - LGT Global Private Credit (LGPC) Feeder Fund
+ Inhaber-Anteile -C- / Class EUR
+ ISIN: LI1286282879, Valoren-Nr.: 128628287
+Wir rechnen folgende Erträge unter Eingangsvorbehalt ab:
+Fondsergebnis der Meldeperiode EUR 6,2315
+Meldedatum 28. Juli 2026
+KESt EUR -323,35
+Netto EUR -323,35
+Zu Ihren Lasten EUR 323,35
+Valuta 28. August 2026
+3852370 13E T VIE I SEA0107 8799436 17:33 29.07.2026 %Media:XML-A4H
+LGT Bank AG
+Zweigniederlassung Österreich
+Bankgasse 9, A-1010 Wien
+Tel. +43 1 22759-0
+lgt.austria@lgt.com, www.lgt.at, BIC BLFLATWW
+FN 383530s HG Wien, Sitz Wien, UID Nr. ATU57631067
+2 / 2
+Fondsthesaurierung Portfolio: 3882670.004
+Auftragsnummer: 197707898 Kontonummer: 3801370.188
+Kunde: PDZTQ uBK CSGGQ
+Steuerliche Informationen (Werte in EUR)
+Steuerliche Behandlung
+KESt je Anteil EUR 1,4127
+Anpassung Anschaffungskosten je Anteil EUR 5,1372
+Neubestand
+Veränderung Anschaffungskosten EUR 1.175,84
+Anschaffungskosten nach Abwicklung der Transaktion EUR 262.291,71
+Anschaffungskosten pro Stück EUR 1.145,93
+KESt Zusammenfassung
+Verlustausgleichsfähiger Ertrag EUR 1.175,82
+KESt Bemessungsgrundlage EUR 1.175,82
+Bezahlte KESt EUR 323,35
+Eine allfällige KESt-Abfuhr erfolgt an das Finanzamt für Großbetriebe.
+LGT Bank AG, Zweigniederlassung Österreich ist eine Zweigniederlassung der LGT Bank AG, eingetragen im Handelsregister des Fürstentum Liechtenstein;
+HR Nr.: 1122356-7, Sitz: 9490 Vaduz, MWST-Nr. 50119, CH-260 887 880
+3852370 13E T VIE I SEA0107 8799436 17:33 29.07.2026 %Media:XML-A4H

@@ -1,0 +1,31 @@
+PDFBox Version: 3.0.8
+Portfolio Performance Version: 0.89.0
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+LGT Bank AG 
+Zweigniederlassung Österreich 
+Bankgasse 9, A-1010 Wien 
+Tel. +43 1 22759-0 
+lgt.austria@lgt.com, www.lgt.at, BIC BLFLATWW 
+FN 383530s HG Wien, Sitz Wien, UID Nr. ATU57631067 
+sbKZ 
+guxBY gsVhnZf Mkb rrGlk 
+ToSRXsttkm 11/99 
+8289 NVbh 
+1 /  1 
+Wien, 8. Oktober 2026 
+Devisenkassageschäft 
+Auftragsnummer: 204939646 Portfolio: 5982370.181 
+Kunde: qJZrd MzS fJsvu UTI: 7KDSOB6Z0X4S67TMX170AT204939646 
+Ihr Kauf  USD 70,22 
+Ihr Verkauf  SGD 90,85 
+Transaktionsdatum  08.10.2026  09:09:52 
+Valuta  08.10.2026 
+Ausführungsart Bestens 
+Kassakurs  1,293876 
+Gutschrift USD Konto 3894370.206 USD 70,22 
+Belastung SGD Konto 3287370.268 SGD 90,85 
+Eine allfällige KESt-Abfuhr erfolgt an das Finanzamt für Großbetriebe. 
+LGT Bank AG, Zweigniederlassung Österreich ist eine Zweigniederlassung der LGT Bank AG, eingetragen im Handelsregister des Fürstentum Liechtenstein; 
+HR Nr.: 1122356-7, Sitz: 9490 Vaduz, MWST-Nr. 50119, CH-260 887 880 
+3852370 13E T VIE I TRD2010 8799436 9:19 08.10.2026 %Media:XML-A4H
