@@ -45,12 +45,12 @@ public class FidelityInternationalPDFExtractor extends AbstractPDFExtractor
 
     private void addBuySellTransaction()
     {
-        DocumentType type = new DocumentType("YOU (PURCHASED|SOLD)");
+        final var type = new DocumentType("YOU (PURCHASED|SOLD)");
         this.addDocumentTyp(type);
 
-        Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
+        var pdfTransaction = new Transaction<BuySellEntry>();
 
-        Block firstRelevantLine = new Block("^PARTICIPANT NO\\.$");
+        var firstRelevantLine = new Block("^PARTICIPANT NO\\.$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -154,12 +154,12 @@ public class FidelityInternationalPDFExtractor extends AbstractPDFExtractor
 
     private void addSummaryStatementBuySellTransaction()
     {
-        DocumentType type = new DocumentType("Transaction Confirmation");
+        final var type = new DocumentType("Transaction Confirmation");
         this.addDocumentTyp(type);
 
-        Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
+        var pdfTransaction = new Transaction<BuySellEntry>();
 
-        Block firstRelevantLine = new Block("^REFERENCE NO\\. .*$");
+        var firstRelevantLine = new Block("^REFERENCE NO\\. .*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 

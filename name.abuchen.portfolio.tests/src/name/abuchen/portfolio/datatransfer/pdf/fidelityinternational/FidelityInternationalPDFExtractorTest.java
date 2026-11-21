@@ -101,7 +101,7 @@ public class FidelityInternationalPDFExtractorTest
 
         // check buy sell transaction
         assertThat(results, hasItem(sale( //
-                        hasDate("2023-12-12T00:00"), hasShares(14), //
+                        hasDate("2023-12-12T00:00"), hasShares(14.00), //
                         hasSource("SecuritySale01.txt"), //
                         hasNote("Ref. No. 23346-K9T1Q9"), //
                         hasAmount("USD", 2423.41), hasGrossValue("USD", 2423.54), //
@@ -135,7 +135,7 @@ public class FidelityInternationalPDFExtractorTest
 
         // check buy sell transaction
         assertThat(results, hasItem(sale( //
-                        hasDate("2022-07-19T00:00"), hasShares(30), //
+                        hasDate("2022-07-19T00:00"), hasShares(30.00), //
                         hasSource("SecuritySale02.txt"), //
                         hasNote("Ref. No. 33107-zz91lf"), //
                         hasAmount("USD", 2887.43), hasGrossValue("USD", 2887.50), //
@@ -189,7 +189,7 @@ public class FidelityInternationalPDFExtractorTest
 
         // check 1st buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2021-01-04T00:00"), hasShares(40), //
+                        hasDate("2021-01-04T00:00"), hasShares(40.00), //
                         hasSource("TradeConfirmation01.txt"), //
                         hasNote("Ref. No. 20123-1XXXXX | Ord. No. 20123-XXXXX"), //
                         hasAmount("USD", 1011.60), hasGrossValue("USD", 1011.60), //
@@ -197,7 +197,7 @@ public class FidelityInternationalPDFExtractorTest
 
         // check 2nd buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2021-01-04T00:00"), hasShares(24), //
+                        hasDate("2021-01-04T00:00"), hasShares(24.00), //
                         hasSource("TradeConfirmation01.txt"), //
                         hasNote("Ref. No. 20123-7RRRRRR | Ord. No. 20123-A2B3C"), //
                         hasAmount("USD", 4994.40), hasGrossValue("USD", 4994.40), //
@@ -205,7 +205,7 @@ public class FidelityInternationalPDFExtractorTest
 
         // check 3rd buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2021-01-04T00:00"), hasShares(50), //
+                        hasDate("2021-01-04T00:00"), hasShares(50.00), //
                         hasSource("TradeConfirmation01.txt"), //
                         hasNote("Ref. No. 20123-XXXXX | Ord. No. 20123-XXXXX"), //
                         hasAmount("USD", 5082.50), hasGrossValue("USD", 5082.50), //
@@ -213,7 +213,7 @@ public class FidelityInternationalPDFExtractorTest
 
         // check 4th buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2021-01-04T00:00"), hasShares(114), //
+                        hasDate("2021-01-04T00:00"), hasShares(114.00), //
                         hasSource("TradeConfirmation01.txt"), //
                         hasNote("Ref. No. 20123-9JAVAC | Ord. No. 20123-ASDFG"), //
                         hasAmount("USD", 5016.00), hasGrossValue("USD", 5016.00), //
@@ -221,7 +221,7 @@ public class FidelityInternationalPDFExtractorTest
 
         // check 5th buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2021-01-04T00:00"), hasShares(35), //
+                        hasDate("2021-01-04T00:00"), hasShares(35.00), //
                         hasSource("TradeConfirmation01.txt"), //
                         hasNote("Ref. No. 20123-3COCOA | Ord. No. 20123-I789U"), //
                         hasAmount("USD", 1969.45), hasGrossValue("USD", 1969.45), //
@@ -266,7 +266,7 @@ public class FidelityInternationalPDFExtractorTest
 
         // check 1st buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2023-12-14T00:00"), hasShares(30), //
+                        hasDate("2023-12-14T00:00"), hasShares(30.00), //
                         hasSource("TradeConfirmation02.txt"), //
                         hasNote("Ref. No. 12345-XXX45X | Ord. No. 12345-XX72X"), //
                         hasAmount("USD", 3990.00), hasGrossValue("USD", 3990.00), //
@@ -274,7 +274,7 @@ public class FidelityInternationalPDFExtractorTest
 
         // check 2nd buy sell transaction
         assertThat(results, hasItem(sale( //
-                        hasDate("2023-12-14T00:00"), hasShares(203), //
+                        hasDate("2023-12-14T00:00"), hasShares(203.00), //
                         hasSource("TradeConfirmation02.txt"), //
                         hasNote("Ref. No. 12345-XX78X | Ord. No. 67890-I5XYZ"), //
                         hasAmount("USD", 7935.20), hasGrossValue("USD", 7935.27), //
@@ -290,7 +290,7 @@ public class FidelityInternationalPDFExtractorTest
 
         // check 4th buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2023-12-14T00:00"), hasShares(80), //
+                        hasDate("2023-12-14T00:00"), hasShares(80.00), //
                         hasSource("TradeConfirmation02.txt"), //
                         hasNote("Ref. No. 12345-1X2X3X | Ord. No. 12345-A1B2C"), //
                         hasAmount("USD", 4427.59), hasGrossValue("USD", 4427.59), //
