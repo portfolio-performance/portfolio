@@ -6,6 +6,7 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.fee;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasAmount;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasCurrencyCode;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasDate;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasExDate;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasFeed;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasFeedProperty;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasFees;
@@ -758,6 +759,7 @@ public class PostfinancePDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-06-05T00:00")));
+        assertThat(transaction.getExDate(), is(LocalDateTime.parse("2019-05-02T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(60)));
         assertThat(transaction.getSource(), is("Dividende01.txt"));
         assertThat(transaction.getNote(), is("Ref.-Nr.: 169933304"));
@@ -803,6 +805,7 @@ public class PostfinancePDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2017-09-08T00:00")));
+        assertThat(transaction.getExDate(), is(LocalDateTime.parse("2017-09-06T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(34)));
         assertThat(transaction.getSource(), is("Dividende02.txt"));
         assertThat(transaction.getNote(), is("Ref.-Nr.: 130516418"));
@@ -848,6 +851,7 @@ public class PostfinancePDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-07-05T00:00")));
+        assertThat(transaction.getExDate(), is(LocalDateTime.parse("2018-07-03T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(19)));
         assertThat(transaction.getSource(), is("Dividende03.txt"));
         assertThat(transaction.getNote(), is("Ref.-Nr.: 149619136"));
@@ -885,7 +889,7 @@ public class PostfinancePDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2023-10-25T00:00"), hasShares(275.00), //
+                        hasDate("2023-10-25T00:00"), hasExDate("2023-10-12T00:00"), hasShares(275.00), //
                         hasSource("Dividende04.txt"), //
                         hasNote("Ref.-Nr.: 7790541"), //
                         hasAmount("CHF", 4.07), hasGrossValue("CHF", 4.07), //
@@ -919,7 +923,7 @@ public class PostfinancePDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2023-09-13T00:00"), hasShares(42.00), //
+                        hasDate("2023-09-13T00:00"), hasExDate("2023-09-08T00:00"), hasShares(42.00), //
                         hasSource("Dividende05.txt"), //
                         hasNote("Ref.-Nr.: 7600589"), //
                         hasAmount("CHF", 3.28), hasGrossValue("CHF", 5.04), //

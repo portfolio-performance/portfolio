@@ -434,8 +434,16 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("date") //
-                                                        .match(".* Valuta[\\s]{1,}(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*") //
+                                                        .match("^.* Valuta[\\s]{1,}(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
                                                         .assign((t, v) -> t.setDateTime(asDate(v.get("date")))))
+
+                        // @formatter:off
+                        // Ausführungsdatum 02.05.2019
+                        // Ausführung 12.10.2023
+                        // @formatter:on
+                        .section("exDate").optional() //
+                        .match("^Ausf.hrung(sdatum)? (?<exDate>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
+                        .assign((t, v) -> t.setExDate(asDate(v.get("exDate"))))
 
                         // @formatter:off
                         // Total EUR 20.93
