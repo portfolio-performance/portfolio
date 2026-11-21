@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.datatransfer.pdf.oberbankag;
 
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.dividend;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.fee;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasAmount;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasCurrencyCode;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasDate;
@@ -16,6 +17,8 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasSource;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTaxes;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTicker;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasWkn;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.inboundDelivery;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.outboundDelivery;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.purchase;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.sale;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.security;
@@ -287,6 +290,82 @@ public class OberbankAGPDFExtractorTest
                         hasNote("Auftrags-Nr. 999999 | Abrechnungs-Nr. 888888"), //
                         hasAmount("EUR", 909.89), hasGrossValue("EUR", 923.74), //
                         hasTaxes("EUR", 13.85), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testFreieLieferung01()
+    {
+        var extractor = new OberbankAGPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FreieLieferung01.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00BYZK4552"), hasWkn(null), hasTicker(null), //
+                        hasName("iShsIV-Automation&Robot.U.ETF Registered Shares o.N."), //
+                        hasCurrencyCode("EUR"))));
+
+        // check delivery outbound (Auslieferung) transaction
+        assertThat(results, hasItem(outboundDelivery( //
+                        hasDate("2021-02-05T00:00"), hasShares(123.00), //
+                        hasSource("FreieLieferung01.txt"), //
+                        hasNote("Auftrags-Nr. 999999 | Abrechnungs-Nr. 888888"), //
+                        hasAmount("EUR", 1199.76), hasGrossValue("EUR", 1199.76), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testFreierErhalt01()
+    {
+        var extractor = new OberbankAGPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FreierErhalt01.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(2L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(3));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00BYZK4552"), hasWkn(null), hasTicker(null), //
+                        hasName("iShsIV-Automation&Robot.U.ETF Registered Shares o.N."), //
+                        hasCurrencyCode("EUR"))));
+
+        // check delivery inbound (Einlieferung) transaction
+        assertThat(results, hasItem(inboundDelivery( //
+                        hasDate("2021-02-05T00:00"), hasShares(123.00), //
+                        hasSource("FreierErhalt01.txt"), //
+                        hasNote("Abrechnungs-Nr. 888888"), //
+                        hasAmount("EUR", 1199.76), hasGrossValue("EUR", 1199.76), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check fee transaction
+        assertThat(results, hasItem(fee( //
+                        hasDate("2021-02-05T00:00"), //
+                        hasSource("FreierErhalt01.txt"), //
+                        hasNote("Abrechnungs-Nr. 888888"), //
+                        hasAmount("EUR", 7.25), hasGrossValue("EUR", 7.25), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
     @Test

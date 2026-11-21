@@ -25,6 +25,7 @@ public class OberbankAGPDFExtractor extends AbstractPDFExtractor
 
         addBuySellTransaction();
         addDividendTransaction();
+        addDeliveryInOutBoundTransaction();
     }
 
     @Override
@@ -344,5 +345,138 @@ public class OberbankAGPDFExtractor extends AbstractPDFExtractor
 
         addTaxesSectionsTransaction(pdfTransaction, type);
         addFeesSectionsTransaction(pdfTransaction, type);
+    }
+
+    private void addDeliveryInOutBoundTransaction()
+    {
+        final var type = new DocumentType("(Durchf.hrungsanzeig[\\s]*e[\\s]+" //
+                        + "(Freier Erhalt" //
+                        + "|Freie Lieferung))", //
+                        documentContext -> documentContext //
+                                        // @formatter:off
+                                        // Schlusstag 05.02.2021
+                                        // @formatter:on
+                                        .section("date") //
+                                        .match("^Schlusstag (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$") //
+                                        .assign((ctx, v) -> ctx.put("date", v.get("date")))
+
+                                        // @formatter:off
+                                        // Auftrags-Nr. 999999-05.02.2021
+                                        // @formatter:on
+                                        .section("note").optional() //
+                                        .match("^(?<note>Auftrags-Nr\\. [\\d]+)-[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}$") //
+                                        .assign((ctx, v) -> ctx.put("note", v.get("note")))
+
+                                        // @formatter:off
+                                        // 888888 - 05.02.2021
+                                        // @formatter:on
+                                        .section("note1").optional() //
+                                        .match("^(?<note1>[\\d]+) - [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}$") //
+                                        .assign((ctx, v) -> ctx.put("note1", v.get("note1"))));
+        this.addDocumentTyp(type);
+
+        var pdfTransaction = new Transaction<PortfolioTransaction>();
+
+        // The document contains a single transaction, but repeats the header
+        // line on every page. The block therefore spans the whole document.
+        var firstRelevantLine = new Block();
+        type.addBlock(firstRelevantLine);
+        firstRelevantLine.set(pdfTransaction);
+
+        pdfTransaction //
+
+                        .subject(() -> new PortfolioTransaction(PortfolioTransaction.Type.DELIVERY_INBOUND))
+
+                        // Is type --> "Freie Lieferung" change from DELIVERY_INBOUND to DELIVERY_OUTBOUND
+                        .section("type").optional() //
+                        .match("^Durchf.hrungsanzeig[\\s]*e[\\s]+(?<type>Freie Lieferung)$") //
+                        .assign((t, v) -> t.setType(PortfolioTransaction.Type.DELIVERY_OUTBOUND))
+
+                        // @formatter:off
+                        // IE00BYZK4552 iShsIV-Automation&Robot.U.ETF Zugang Stk.              123,00
+                        // Registered Shares o.N.
+                        //   Anschaffungskurswert:                                                 1.199,76 EUR
+                        //
+                        // IE00BYZK4552 iShsIV-Automation&Robot.U.ETF Abgang Stk.              123,00
+                        // Registered Shares o.N.
+                        //   Anschaffungskurswert:                                                 1.199,76 EUR
+                        // @formatter:on
+                        .section("isin", "name", "nameContinued", "currency") //
+                        .match("^(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) (?<name>.*) (Zugang|Abgang) Stk[\\s]*\\.[\\s]+[\\.,\\d]+$") //
+                        .match("^(?<nameContinued>.*)$") //
+                        .match("^[\\s]*Anschaffungskurswert:[\\s]+[\\.,\\d]+ (?<currency>[A-Z]{3})$") //
+                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
+
+                        // @formatter:off
+                        // IE00BYZK4552 iShsIV-Automation&Robot.U.ETF Zugang Stk.              123,00
+                        // IE00BYZK4552 iShsIV-Automation&Robot.U.ETF Abgang Stk.              123,00
+                        // @formatter:on
+                        .section("shares") //
+                        .match("^[A-Z]{2}[A-Z0-9]{9}[0-9] .* (Zugang|Abgang) Stk[\\s]*\\.[\\s]+(?<shares>[\\.,\\d]+)$") //
+                        .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
+
+                        // @formatter:off
+                        // Schlusstag 05.02.2021
+                        // @formatter:on
+                        .section("date") //
+                        .match("^Schlusstag (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$") //
+                        .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
+
+                        // @formatter:off
+                        //   Anschaffungskurswert:                                                 1.199,76 EUR
+                        // @formatter:on
+                        .section("amount", "currency") //
+                        .match("^[\\s]*Anschaffungskurswert:[\\s]+(?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
+                        .assign((t, v) -> {
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                            t.setAmount(asAmount(v.get("amount")));
+                        })
+
+                        // @formatter:off
+                        // Auftrags-Nr. 999999-05.02.2021
+                        // @formatter:on
+                        .section("note").optional() //
+                        .match("^(?<note>Auftrags-Nr\\. [\\d]+)-[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}$") //
+                        .assign((t, v) -> t.setNote(v.get("note")))
+
+                        // @formatter:off
+                        // 888888 - 05.02.2021
+                        // @formatter:on
+                        .section("note1").optional() //
+                        .match("^(?<note1>[\\d]+) - [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}$") //
+                        .assign((t, v) -> {
+                            t.setNote(concatenate(t.getNote(), "Abrechnungs-Nr. " + v.get("note1"), " | "));
+                        })
+
+                        .wrap(TransactionItem::new);
+
+        // The incidental costs are not part of the acquisition value, they are
+        // charged to the account separately.
+        var feeBlock = new Block("^[\\s]*Nebenkosten:[\\s]+[\\.,\\d]+ [A-Z]{3}$");
+        type.addBlock(feeBlock);
+        feeBlock.set(new Transaction<AccountTransaction>()
+
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.FEES))
+
+                        // @formatter:off
+                        //   Nebenkosten:                                                                       7,25 EUR
+                        // @formatter:on
+                        .section("amount", "currency") //
+                        .documentContext("date") //
+                        .documentContextOptionally("note", "note1") //
+                        .match("^[\\s]*Nebenkosten:[\\s]+(?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
+                        .assign((t, v) -> {
+                            t.setDateTime(asDate(v.get("date")));
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                            t.setAmount(asAmount(v.get("amount")));
+
+                            if (v.containsKey("note"))
+                                t.setNote(v.get("note"));
+
+                            if (v.containsKey("note1"))
+                                t.setNote(concatenate(t.getNote(), "Abrechnungs-Nr. " + v.get("note1"), " | "));
+                        })
+
+                        .wrap(TransactionItem::new));
     }
 }
