@@ -512,19 +512,38 @@ public class DashboardView extends AbstractHistoricView
         if (parent.isDisposed())
             return;
 
-        Composite grandparent = parent.getParent();
-        if (grandparent.isDisposed())
+        if (container.isDisposed())
             return;
 
-        Rectangle clientArea = grandparent.getClientArea();
-        Point size = container.computeSize(clientArea.width, SWT.DEFAULT);
+        // the scrolled composite is only the upper pane of the sash: the view
+        // around it, being the header plus both panes, is larger. Whether SWT
+        // shows a vertical scrollbar depends on the size of the scrolled
+        // composite itself, so measure against that size and not the view
+
+        Rectangle area = scrolledComposite.getBounds();
+        int insets = scrolledComposite.getBorderWidth() * 2;
+
+        int width = area.width - insets;
+        int height = area.height - insets;
+        if (width <= 0 || height <= 0)
+            return;
+
+        Point size = container.computeSize(width, SWT.DEFAULT);
 
         // On windows only, we do not have an overlay scrollbar and hence have
-        // to reduce the visible area to make room for the vertical scrollbar
-        if (Platform.OS_WIN32.equals(Platform.getOS()) && size.y > clientArea.height)
+        // to reduce the visible area to make room for the vertical scrollbar:
+        // it is drawn over the content and would hide the right side of the
+        // last column. SWT reports the width of the scrollbar even while it is
+        // not shown, and it never grows the content beyond the client area of
+        // the scrolled composite - and that client area does not include the
+        // scrollbar itself
+
+        var verticalBar = scrolledComposite.getVerticalBar();
+        int barWidth = verticalBar != null ? verticalBar.getSize().x : 0;
+
+        if (Platform.OS_WIN32.equals(Platform.getOS()) && barWidth > 0 && size.y > height)
         {
-            int width = clientArea.width - scrolledComposite.getVerticalBar().getSize().x;
-            size = container.computeSize(width, SWT.DEFAULT);
+            size = container.computeSize(Math.max(1, width - barWidth), SWT.DEFAULT);
         }
 
         scrolledComposite.setMinSize(size);
