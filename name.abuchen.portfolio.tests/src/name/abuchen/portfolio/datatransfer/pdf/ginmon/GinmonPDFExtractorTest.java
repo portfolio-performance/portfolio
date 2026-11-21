@@ -3,8 +3,11 @@ package name.abuchen.portfolio.datatransfer.pdf.ginmon;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.fee;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasAmount;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasDate;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasFees;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasGrossValue;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasNote;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasSource;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTaxes;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransactions;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransfers;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countBuySell;
@@ -49,7 +52,11 @@ public class GinmonPDFExtractorTest
         new AssertImportActions().check(results, "EUR");
 
         // assert transaction
-        assertThat(results, hasItem(fee(hasDate("2024-10-31"), hasAmount("EUR", 0.04), //
-                        hasSource("FeeInvoice01.txt"), hasNote("R.-Nr.: 00000002024101 | 01.10.2024 – 31.10.2024"))));
+        assertThat(results, hasItem(fee( //
+                        hasDate("2024-10-31"), //
+                        hasSource("FeeInvoice01.txt"), //
+                        hasNote("R.-Nr.: 00000002024101 | 01.10.2024 – 31.10.2024"), //
+                        hasAmount("EUR", 0.04), hasGrossValue("EUR", 0.04), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 }
