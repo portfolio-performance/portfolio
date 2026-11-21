@@ -72,7 +72,7 @@ public class FondsdepotBankPDFExtractorTest
 
         // check 1st buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2025-09-15"), hasShares(0.125), //
+                        hasDate("2025-09-15T00:00"), hasShares(0.125), //
                         hasSource("Kauf01.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 50.00), hasGrossValue("EUR", 48.57), //
@@ -80,7 +80,7 @@ public class FondsdepotBankPDFExtractorTest
 
         // check 2nd buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2025-10-15"), hasShares(0.126), //
+                        hasDate("2025-10-15T00:00"), hasShares(0.126), //
                         hasSource("Kauf01.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 50.00), hasGrossValue("EUR", 48.62), //
@@ -114,7 +114,7 @@ public class FondsdepotBankPDFExtractorTest
 
         // check 1st buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2025-02-18"), hasShares(0.050), //
+                        hasDate("2025-02-18T00:00"), hasShares(0.050), //
                         hasSource("Kauf02.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 50.00), hasGrossValue("EUR", 47.41), //
@@ -123,7 +123,7 @@ public class FondsdepotBankPDFExtractorTest
 
         // check 2nd buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2025-03-17"), hasShares(0.062), //
+                        hasDate("2025-03-17T00:00"), hasShares(0.062), //
                         hasSource("Kauf02.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 50.00), hasGrossValue("EUR", 47.82), //
@@ -132,7 +132,7 @@ public class FondsdepotBankPDFExtractorTest
 
         // check 3rd buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2025-04-15"), hasShares(0.072), //
+                        hasDate("2025-04-15T00:00"), hasShares(0.072), //
                         hasSource("Kauf02.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 50.00), hasGrossValue("EUR", 47.87), //
@@ -141,7 +141,7 @@ public class FondsdepotBankPDFExtractorTest
 
         // check 4th buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2025-05-15"), hasShares(0.059), //
+                        hasDate("2025-05-15T00:00"), hasShares(0.059), //
                         hasSource("Kauf02.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 50.00), hasGrossValue("EUR", 47.40), //
@@ -150,7 +150,7 @@ public class FondsdepotBankPDFExtractorTest
 
         // check 5th buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2025-06-16"), hasShares(0.058), //
+                        hasDate("2025-06-16T00:00"), hasShares(0.058), //
                         hasSource("Kauf02.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 50.00), hasGrossValue("EUR", 47.33), //
@@ -186,7 +186,7 @@ public class FondsdepotBankPDFExtractorTest
 
         // check 1st buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2025-02-18"), hasShares(0.050), //
+                        hasDate("2025-02-18T00:00"), hasShares(0.050), //
                         hasSource("Kauf02.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 50.00), hasGrossValue("EUR", 47.41), //
@@ -194,7 +194,7 @@ public class FondsdepotBankPDFExtractorTest
 
         // check 2nd buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2025-03-17"), hasShares(0.062), //
+                        hasDate("2025-03-17T00:00"), hasShares(0.062), //
                         hasSource("Kauf02.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 50.00), hasGrossValue("EUR", 47.82), //
@@ -202,7 +202,7 @@ public class FondsdepotBankPDFExtractorTest
 
         // check 3rd buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2025-04-15"), hasShares(0.072), //
+                        hasDate("2025-04-15T00:00"), hasShares(0.072), //
                         hasSource("Kauf02.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 50.00), hasGrossValue("EUR", 47.87), //
@@ -210,7 +210,7 @@ public class FondsdepotBankPDFExtractorTest
 
         // check 4th buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2025-05-15"), hasShares(0.059), //
+                        hasDate("2025-05-15T00:00"), hasShares(0.059), //
                         hasSource("Kauf02.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 50.00), hasGrossValue("EUR", 47.40), //
@@ -218,7 +218,7 @@ public class FondsdepotBankPDFExtractorTest
 
         // check 5th buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2025-06-16"), hasShares(0.058), //
+                        hasDate("2025-06-16T00:00"), hasShares(0.058), //
                         hasSource("Kauf02.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 50.00), hasGrossValue("EUR", 47.33), //
@@ -252,7 +252,7 @@ public class FondsdepotBankPDFExtractorTest
 
         // check buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2025-09-05"), hasShares(6.104), //
+                        hasDate("2025-09-05T00:00"), hasShares(6.104), //
                         hasSource("Kauf03.txt"), //
                         hasNote("Tausch"), //
                         hasAmount("EUR", 4723.15), hasGrossValue("EUR", 4580.93), //
@@ -286,7 +286,7 @@ public class FondsdepotBankPDFExtractorTest
 
         // check buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2025-09-02"), hasShares(20.803), //
+                        hasDate("2025-09-02T00:00"), hasShares(20.803), //
                         hasSource("Kauf04.txt"), //
                         hasNote("Tausch"), //
                         hasAmount("EUR", 5000.00), hasGrossValue("EUR", 4757.20), //
@@ -322,7 +322,7 @@ public class FondsdepotBankPDFExtractorTest
 
         // check buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2025-09-02"), hasShares(20.803), //
+                        hasDate("2025-09-02T00:00"), hasShares(20.803), //
                         hasSource("Kauf04.txt"), //
                         hasNote("Tausch"), //
                         hasAmount("EUR", 5000.00), hasGrossValue("EUR", 4757.20), //
@@ -356,7 +356,7 @@ public class FondsdepotBankPDFExtractorTest
 
         // check buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2025-07-16"), hasShares(2.590), //
+                        hasDate("2025-07-16T00:00"), hasShares(2.590), //
                         hasSource("Kauf05.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 25.00), hasGrossValue("EUR", 24.85), //
@@ -392,7 +392,7 @@ public class FondsdepotBankPDFExtractorTest
 
         // check buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2025-07-16"), hasShares(2.590), //
+                        hasDate("2025-07-16T00:00"), hasShares(2.590), //
                         hasSource("Kauf05.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 25.00), hasGrossValue("EUR", 24.85), //
@@ -426,7 +426,7 @@ public class FondsdepotBankPDFExtractorTest
 
         // check buy sell transaction
         assertThat(results, hasItem(sale( //
-                        hasDate("2025-09-02"), hasShares(12.791), //
+                        hasDate("2025-09-02T00:00"), hasShares(12.791), //
                         hasSource("Verkauf01.txt"), //
                         hasNote("Tausch"), //
                         hasAmount("EUR", 4723.15), hasGrossValue("EUR", 4859.43), //
@@ -460,7 +460,7 @@ public class FondsdepotBankPDFExtractorTest
 
         // check buy sell transaction
         assertThat(results, hasItem(sale( //
-                        hasDate("2025-09-02"), hasShares(6.340), //
+                        hasDate("2025-09-02T00:00"), hasShares(6.340), //
                         hasSource("Verkauf02.txt"), //
                         hasNote("Tausch"), //
                         hasAmount("EUR", 5000.00), hasGrossValue("EUR", 5471.32), //
@@ -496,7 +496,7 @@ public class FondsdepotBankPDFExtractorTest
 
         // check buy sell transaction
         assertThat(results, hasItem(sale( //
-                        hasDate("2025-09-02"), hasShares(6.340), //
+                        hasDate("2025-09-02T00:00"), hasShares(6.340), //
                         hasSource("Verkauf02.txt"), //
                         hasNote("Tausch"), //
                         hasAmount("EUR", 5000.00), hasGrossValue("EUR", 5471.32), //
@@ -530,7 +530,7 @@ public class FondsdepotBankPDFExtractorTest
 
         // check buy sell transaction
         assertThat(results, hasItem(sale( //
-                        hasDate("2020-04-01"), hasShares(0.201), //
+                        hasDate("2020-04-01T00:00"), hasShares(0.201), //
                         hasSource("Verkauf03.txt"), //
                         hasNote("Gebührenverkauf"), //
                         hasAmount("EUR", 45.83), hasGrossValue("EUR", 45.83), //
@@ -572,7 +572,7 @@ public class FondsdepotBankPDFExtractorTest
 
         // check buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2025-11-11"), hasShares(0.775), //
+                        hasDate("2025-11-11T00:00"), hasShares(0.775), //
                         hasSource("Wiederanlage01.txt"), //
                         hasNote("Wiederanlage Ertrag"), //
                         hasAmount("EUR", 19.81), hasGrossValue("EUR", 19.81), //
@@ -612,5 +612,93 @@ public class FondsdepotBankPDFExtractorTest
                         hasNote(null), //
                         hasAmount("EUR", 19.81), hasGrossValue("EUR", 24.29), //
                         hasTaxes("EUR", 4.25 + 0.23 + 0.00), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testDividende01MitWiederanlage01()
+    {
+        var extractor = new FondsdepotBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende01.txt", "Wiederanlage01.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(3));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("LU0731782404"), hasWkn("A1JSY0"), hasTicker(null), //
+                        hasName("FF-GloDivFd A-QINCOME(G)Eur"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2025-11-11"), hasExDate("2025-11-03"), //
+                        hasShares(157.501), //
+                        hasSource("Dividende01.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 19.81), hasGrossValue("EUR", 24.29), //
+                        hasTaxes("EUR", 4.25 + 0.23 + 0.00), hasFees("EUR", 0.00))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2025-11-11T00:00"), hasShares(0.775), //
+                        hasSource("Wiederanlage01.txt"), //
+                        hasNote("Wiederanlage Ertrag"), //
+                        hasAmount("EUR", 19.81), hasGrossValue("EUR", 19.81), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00 + 0.00))));
+    }
+
+    @Test
+    public void testDividende01MitWiederanlage01_SourceFilesReversed()
+    {
+        var extractor = new FondsdepotBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Wiederanlage01.txt", "Dividende01.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(3));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("LU0731782404"), hasWkn("A1JSY0"), hasTicker(null), //
+                        hasName("FF-GloDivFd A-QINCOME(G)Eur"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2025-11-11"), hasExDate("2025-11-03"), //
+                        hasShares(157.501), //
+                        hasSource("Dividende01.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 19.81), hasGrossValue("EUR", 24.29), //
+                        hasTaxes("EUR", 4.25 + 0.23 + 0.00), hasFees("EUR", 0.00))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2025-11-11T00:00"), hasShares(0.775), //
+                        hasSource("Wiederanlage01.txt"), //
+                        hasNote("Wiederanlage Ertrag"), //
+                        hasAmount("EUR", 19.81), hasGrossValue("EUR", 19.81), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00 + 0.00))));
     }
 }
