@@ -1107,14 +1107,38 @@ public class QuirinPrivatbankAGPDFExtractorTest
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Depotauszug01.txt"), errors);
 
         assertThat(errors, empty());
-        assertThat(countSecurities(results), is(0L));
-        assertThat(countBuySell(results), is(0L));
-        assertThat(countAccountTransactions(results), is(9L));
+        assertThat(countSecurities(results), is(4L));
+        assertThat(countBuySell(results), is(4L));
+        assertThat(countAccountTransactions(results), is(11L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
         assertThat(countSkippedItems(results), is(0L));
-        assertThat(results.size(), is(9));
+        assertThat(results.size(), is(19));
         new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00BL25JM42"), hasWkn(null), hasTicker(null), //
+                        hasName("Xtr.(IE)MSCI World Value Registered Shares 1C USD o.N."), //
+                        hasCurrencyCode("EUR"))));
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("LU1681045370"), hasWkn(null), hasTicker(null), //
+                        hasName("AIS-Amundi MSCI EMERG.MARKETS Namens-Anteile C Cap.EUR o.N."), //
+                        hasCurrencyCode("EUR"))));
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00BCBJG560"), hasWkn(null), hasTicker(null), //
+                        hasName("SPDR MSCI Wrld Small Cap U.ETF Registered Shares o.N."), //
+                        hasCurrencyCode("EUR"))));
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00B42THM37"), hasWkn(null), hasTicker(null), //
+                        hasName("Dimensional Fds-Emerg.Mkts Va. Registered Shares EUR Dis.o.N."), //
+                        hasCurrencyCode("EUR"))));
 
         // assert transaction
         assertThat(results, hasItem(deposit(hasDate("2019-05-28"), hasAmount("EUR", 3000.00), //
@@ -1152,6 +1176,54 @@ public class QuirinPrivatbankAGPDFExtractorTest
         // assert transaction
         assertThat(results, hasItem(fee(hasDate("2019-09-30"), hasAmount("EUR", 6.98), //
                         hasSource("Depotauszug01.txt"), hasNote("Vermögensverwaltungshonorar | Ref.-Nr.: 97492689"))));
+
+        // check buy transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2020-12-10T00:00"), hasShares(16.091), //
+                        hasSource("Depotauszug01.txt"), //
+                        hasNote("Ref.-Nr.: 174680182"), //
+                        hasAmount("EUR", 428.06), hasGrossValue("EUR", 428.06), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2020-06-03T00:00"), hasShares(102.054), //
+                        hasSource("Depotauszug01.txt"), //
+                        hasNote("Ref.-Nr.: 133305911"), //
+                        hasAmount("EUR", 408.26), hasGrossValue("EUR", 408.26), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check taxes transaction
+        assertThat(results, hasItem(taxes( //
+                        hasDate("2020-01-02T00:00"), hasShares(28.476), //
+                        hasSource("Depotauszug01.txt"), //
+                        hasNote("Thesaurierung | Ref.-Nr.: 111353113"), //
+                        hasAmount("EUR", 0.40), hasGrossValue("EUR", 0.40), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check taxes transaction
+        assertThat(results, hasItem(taxes( //
+                        hasDate("2020-01-03T00:00"), hasShares(449.231), //
+                        hasSource("Depotauszug01.txt"), //
+                        hasNote("Thesaurierung | Ref.-Nr.: 111727648"), //
+                        hasAmount("EUR", 0.49), hasGrossValue("EUR", 0.49), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2019-05-08T00:00"), hasShares(3.648), //
+                        hasSource("Depotauszug01.txt"), //
+                        hasNote("Ref.-Nr.: 85249245"), //
+                        hasAmount("EUR", 235.86), hasGrossValue("EUR", 235.86), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2020-01-03T00:00"), hasShares(10.763), //
+                        hasSource("Depotauszug01.txt"), //
+                        hasNote("Ref.-Nr.: 106663542"), //
+                        hasAmount("EUR", 110.86), hasGrossValue("EUR", 110.86), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -1164,18 +1236,158 @@ public class QuirinPrivatbankAGPDFExtractorTest
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Depotauszug02.txt"), errors);
 
         assertThat(errors, empty());
-        assertThat(countSecurities(results), is(0L));
-        assertThat(countBuySell(results), is(0L));
+        assertThat(countSecurities(results), is(10L));
+        assertThat(countBuySell(results), is(10L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
         assertThat(countSkippedItems(results), is(0L));
-        assertThat(results.size(), is(1));
+        assertThat(results.size(), is(21));
         new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("LU1931974692"), hasWkn(null), hasTicker(null), //
+                        hasName("Amundi Index Solu.-A.PRIME GL. Nam.-Ant.UCI.ETF DR USD Dis.oN"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("LU1650487413"), hasWkn(null), hasTicker(null), //
+                        hasName("MUL-LYX.EO Gov.Bd 1-3Y(DR)U.E. Inhaber-Anteile Acc o.N."), //
+                        hasCurrencyCode("EUR"))));
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00BDBRDM35"), hasWkn(null), hasTicker(null), //
+                        hasName("iShsIII-Core Gl.Aggr.Bd UC.ETF Registered Shs EUR Acc.hgd o.N"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00BL25JN58"), hasWkn(null), hasTicker(null), //
+                        hasName("Xtr.(IE)-MSCI World Minim.Vol. Registered Shares 1C USD o.N."), //
+                        hasCurrencyCode("EUR"))));
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00BFY0GT14"), hasWkn(null), hasTicker(null), //
+                        hasName("SPDR MSCI World UCITS ETF Reg.Shares USD Unhgd Acc. o.N."), //
+                        hasCurrencyCode("EUR"))));
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("LU2037748774"), hasWkn(null), hasTicker(null), //
+                        hasName("Am.I.S.-AM.IDX EO COR.SRI 0-3Y Act.Nom.UCITS ETF EUR DR Ac.oN"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00BL25JP72"), hasWkn(null), hasTicker(null), //
+                        hasName("Xtr.(IE)MSCI World Momentum Registered Shares 1C USD o.N."), //
+                        hasCurrencyCode("EUR"))));
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("LU1931975079"), hasWkn(null), hasTicker(null), //
+                        hasName("Amundi I.S.-A.PRIME EURO CORP. Nam.-Ant.UC.ETF DR EUR Dis.oN"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00BKM4GZ66"), hasWkn(null), hasTicker(null), //
+                        hasName("iShs Core MSCI EM IMI U.ETF Registered Shares o.N."), //
+                        hasCurrencyCode("EUR"))));
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("LU1109942653"), hasWkn(null), hasTicker(null), //
+                        hasName("Xtr.II EUR H.Yield Corp.Bond Inhaber-Anteile 1D o.N."), //
+                        hasCurrencyCode("EUR"))));
 
         // assert transaction
         assertThat(results, hasItem(fee(hasDate("2019-12-31"), hasAmount("EUR", 1.70), //
                         hasSource("Depotauszug02.txt"), hasNote("Vermögensverwaltungshonorar | Ref.-Nr.: 123458336"))));
+
+        // check buy transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2019-12-02T00:00"), hasShares(4.466), //
+                        hasSource("Depotauszug02.txt"), //
+                        hasNote("Ref.-Nr.: 123456385"), //
+                        hasAmount("EUR", 96.46), hasGrossValue("EUR", 96.46), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2019-12-02T00:00"), hasShares(0.526), //
+                        hasSource("Depotauszug02.txt"), //
+                        hasNote("Ref.-Nr.: 123456399"), //
+                        hasAmount("EUR", 65.63), hasGrossValue("EUR", 65.63), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2019-12-02T00:00"), hasShares(11.802), //
+                        hasSource("Depotauszug02.txt"), //
+                        hasNote("Ref.-Nr.: 123456407"), //
+                        hasAmount("EUR", 63.23), hasGrossValue("EUR", 63.23), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2019-12-02T00:00"), hasShares(2.079), //
+                        hasSource("Depotauszug02.txt"), //
+                        hasNote("Ref.-Nr.: 123456416"), //
+                        hasAmount("EUR", 61.07), hasGrossValue("EUR", 61.07), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2019-12-02T00:00"), hasShares(2.338), //
+                        hasSource("Depotauszug02.txt"), //
+                        hasNote("Ref.-Nr.: 123456427"), //
+                        hasAmount("EUR", 49.88), hasGrossValue("EUR", 49.88), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2019-12-02T00:00"), hasShares(0.946), //
+                        hasSource("Depotauszug02.txt"), //
+                        hasNote("Ref.-Nr.: 123456431"), //
+                        hasAmount("EUR", 47.53), hasGrossValue("EUR", 47.53), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2019-12-02T00:00"), hasShares(1.181), //
+                        hasSource("Depotauszug02.txt"), //
+                        hasNote("Ref.-Nr.: 123456440"), //
+                        hasAmount("EUR", 45.93), hasGrossValue("EUR", 45.93), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2019-12-02T00:00"), hasShares(2.186), //
+                        hasSource("Depotauszug02.txt"), //
+                        hasNote("Ref.-Nr.: 123456446"), //
+                        hasAmount("EUR", 45.65), hasGrossValue("EUR", 45.65), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2019-12-02T00:00"), hasShares(1.245), //
+                        hasSource("Depotauszug02.txt"), //
+                        hasNote("Ref.-Nr.: 123456450"), //
+                        hasAmount("EUR", 34.89), hasGrossValue("EUR", 34.89), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2019-12-02T00:00"), hasShares(1.651), //
+                        hasSource("Depotauszug02.txt"), //
+                        hasNote("Ref.-Nr.: 123456453"), //
+                        hasAmount("EUR", 28.83), hasGrossValue("EUR", 28.83), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -1463,14 +1675,98 @@ public class QuirinPrivatbankAGPDFExtractorTest
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Depotauszug05.txt"), errors);
 
         assertThat(errors, empty());
-        assertThat(countSecurities(results), is(0L));
-        assertThat(countBuySell(results), is(0L));
+        assertThat(countSecurities(results), is(14L));
+        assertThat(countBuySell(results), is(14L));
         assertThat(countAccountTransactions(results), is(2L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
         assertThat(countSkippedItems(results), is(0L));
-        assertThat(results.size(), is(2));
+        assertThat(results.size(), is(30));
         new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("LU1931974692"), hasWkn(null), hasTicker(null), //
+                        hasName("Amundi Index Solu.-A.PRIME GL. Nam.-Ant.UCI.ETF DR USD Dis.oN"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00BFY0GT14"), hasWkn(null), hasTicker(null), //
+                        hasName("SPDR MSCI World UCITS ETF Reg.Shares USD Unhgd Acc. o.N."), //
+                        hasCurrencyCode("EUR"))));
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00BF4RFH31"), hasWkn(null), hasTicker(null), //
+                        hasName("iShsIII-MSCI Wld Sm.Ca.UCI.ETF Registered Shares USD(Acc)o.N."), //
+                        hasCurrencyCode("EUR"))));
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00BL25JM42"), hasWkn(null), hasTicker(null), //
+                        hasName("Xtr.(IE)MSCI World Value Registered Shares 1C USD o.N."), //
+                        hasCurrencyCode("EUR"))));
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00BKM4GZ66"), hasWkn(null), hasTicker(null), //
+                        hasName("iShs Core MSCI EM IMI U.ETF Registered Shares o.N."), //
+                        hasCurrencyCode("EUR"))));
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00BDBRDM35"), hasWkn(null), hasTicker(null), //
+                        hasName("iShsIII-Core Gl.Aggr.Bd UC.ETF Registered Shs EUR Acc.hgd o.N"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("LU1109942653"), hasWkn(null), hasTicker(null), //
+                        hasName("Xtr.II EUR H.Yield Corp.Bond Inhaber-Anteile 1D o.N."), //
+                        hasCurrencyCode("EUR"))));
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("FR0010754135"), hasWkn(null), hasTicker(null), //
+                        hasName("AMUN.GOV.BD EO BR.IG 1-3 U.ETF Actions au Porteur o.N."), //
+                        hasCurrencyCode("EUR"))));
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("LU1931975079"), hasWkn(null), hasTicker(null), //
+                        hasName("Amundi I.S.-A.PRIME EURO CORP. Nam.-Ant.UC.ETF DR EUR Dis.oN"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("LU2037748774"), hasWkn(null), hasTicker(null), //
+                        hasName("Am.I.S.-AM.IDX EO COR.SRI 0-3Y Act.Nom.UCITS ETF EUR DR Ac.oN"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00BL25JN58"), hasWkn(null), hasTicker(null), //
+                        hasName("Xtr.(IE)-MSCI World Minim.Vol. Registered Shares 1C USD o.N."), //
+                        hasCurrencyCode("EUR"))));
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00BGJWWY63"), hasWkn(null), hasTicker(null), //
+                        hasName("InvescoMI2 EUR Gov B 1-3Y ETF Reg. Shs EUR Dis. oN"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00BG0SKF03"), hasWkn(null), hasTicker(null), //
+                        hasName("iShsIV-Edge MSCI EM Value F. Registered Shares USD (Acc.)oN"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00B3F81G20"), hasWkn(null), hasTicker(null), //
+                        hasName("iShsIII-MSCI EM Sm.Cap U.ETF Registered Shares o.N."), //
+                        hasCurrencyCode("EUR"))));
 
         // assert transaction
         assertThat(results, hasItem(deposit(hasDate("2023-10-02"), hasAmount("EUR", 250.00), //
@@ -1479,6 +1775,118 @@ public class QuirinPrivatbankAGPDFExtractorTest
         // assert transaction
         assertThat(results, hasItem(fee(hasDate("2023-10-16"), hasAmount("EUR", 0.48), //
                         hasSource("Depotauszug05.txt"), hasNote("Vermögensverwaltungshonorar | Ref.-Nr.: 4******6"))));
+
+        // check buy transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2023-10-05T00:00"), hasShares(1.6866), //
+                        hasSource("Depotauszug05.txt"), //
+                        hasNote("Ref.-Nr.: 403747782"), //
+                        hasAmount("EUR", 45.77), hasGrossValue("EUR", 45.77), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2023-10-05T00:00"), hasShares(1.4495), //
+                        hasSource("Depotauszug05.txt"), //
+                        hasNote("Ref.-Nr.: 403747787"), //
+                        hasAmount("EUR", 40.37), hasGrossValue("EUR", 40.37), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2023-10-05T00:00"), hasShares(6.3384), //
+                        hasSource("Depotauszug05.txt"), //
+                        hasNote("Ref.-Nr.: 403747790"), //
+                        hasAmount("EUR", 36.34), hasGrossValue("EUR", 36.34), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2023-10-05T00:00"), hasShares(0.8758), //
+                        hasSource("Depotauszug05.txt"), //
+                        hasNote("Ref.-Nr.: 403747793"), //
+                        hasAmount("EUR", 31.46), hasGrossValue("EUR", 31.46), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2023-10-05T00:00"), hasShares(0.612), //
+                        hasSource("Depotauszug05.txt"), //
+                        hasNote("Ref.-Nr.: 403747796"), //
+                        hasAmount("EUR", 16.71), hasGrossValue("EUR", 16.71), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2023-10-05T00:00"), hasShares(2.7067), //
+                        hasSource("Depotauszug05.txt"), //
+                        hasNote("Ref.-Nr.: 403747798"), //
+                        hasAmount("EUR", 12.08), hasGrossValue("EUR", 12.08), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2023-10-05T00:00"), hasShares(0.7906), //
+                        hasSource("Depotauszug05.txt"), //
+                        hasNote("Ref.-Nr.: 403747802"), //
+                        hasAmount("EUR", 12.02), hasGrossValue("EUR", 12.02), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2023-10-05T00:00"), hasShares(0.0743), //
+                        hasSource("Depotauszug05.txt"), //
+                        hasNote("Ref.-Nr.: 403747807"), //
+                        hasAmount("EUR", 11.91), hasGrossValue("EUR", 11.91), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2023-10-05T00:00"), hasShares(0.543), //
+                        hasSource("Depotauszug05.txt"), //
+                        hasNote("Ref.-Nr.: 403747811"), //
+                        hasAmount("EUR", 9.55), hasGrossValue("EUR", 9.55), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2023-10-05T00:00"), hasShares(0.179), //
+                        hasSource("Depotauszug05.txt"), //
+                        hasNote("Ref.-Nr.: 403747815"), //
+                        hasAmount("EUR", 8.80), hasGrossValue("EUR", 8.80), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2023-10-05T00:00"), hasShares(0.2334), //
+                        hasSource("Depotauszug05.txt"), //
+                        hasNote("Ref.-Nr.: 403747821"), //
+                        hasAmount("EUR", 8.22), hasGrossValue("EUR", 8.22), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2023-10-05T00:00"), hasShares(0.2069), //
+                        hasSource("Depotauszug05.txt"), //
+                        hasNote("Ref.-Nr.: 403747828"), //
+                        hasAmount("EUR", 7.72), hasGrossValue("EUR", 7.72), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2023-10-05T00:00"), hasShares(0.1258), //
+                        hasSource("Depotauszug05.txt"), //
+                        hasNote("Ref.-Nr.: 403747834"), //
+                        hasAmount("EUR", 4.66), hasGrossValue("EUR", 4.66), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2023-10-05T00:00"), hasShares(0.0482), //
+                        hasSource("Depotauszug05.txt"), //
+                        hasNote("Ref.-Nr.: 403747842"), //
+                        hasAmount("EUR", 3.57), hasGrossValue("EUR", 3.57), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -1491,18 +1899,292 @@ public class QuirinPrivatbankAGPDFExtractorTest
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Depotauszug06.txt"), errors);
 
         assertThat(errors, empty());
-        assertThat(countSecurities(results), is(0L));
-        assertThat(countBuySell(results), is(0L));
+        assertThat(countSecurities(results), is(15L));
+        assertThat(countBuySell(results), is(23L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
         assertThat(countSkippedItems(results), is(0L));
-        assertThat(results.size(), is(1));
+        assertThat(results.size(), is(39));
         new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("LU1931974692"), hasWkn(null), hasTicker(null), //
+                        hasName("Amundi Index Solu.-A.PRIME GL. Nam.-Ant.UCI.ETF DR USD Dis.oN"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00BFY0GT14"), hasWkn(null), hasTicker(null), //
+                        hasName("SPDR MSCI World UCITS ETF Reg.Shares USD Unhgd Acc. o.N."), //
+                        hasCurrencyCode("EUR"))));
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00BL25JM42"), hasWkn(null), hasTicker(null), //
+                        hasName("Xtr.(IE)MSCI World Value Registered Shares 1C USD o.N."), //
+                        hasCurrencyCode("EUR"))));
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00BKM4GZ66"), hasWkn(null), hasTicker(null), //
+                        hasName("iShs Core MSCI EM IMI U.ETF Registered Shares o.N."), //
+                        hasCurrencyCode("EUR"))));
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00BL25JP72"), hasWkn(null), hasTicker(null), //
+                        hasName("Xtr.(IE)MSCI World Momentum Registered Shares 1C USD o.N."), //
+                        hasCurrencyCode("EUR"))));
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00BCBJG560"), hasWkn(null), hasTicker(null), //
+                        hasName("SPDR MSCI Wrld Small Cap U.ETF Registered Shares o.N."), //
+                        hasCurrencyCode("EUR"))));
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00BL25JN58"), hasWkn(null), hasTicker(null), //
+                        hasName("Xtr.(IE)-MSCI World Minim.Vol. Registered Shares 1C USD o.N."), //
+                        hasCurrencyCode("EUR"))));
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("LU1650487413"), hasWkn(null), hasTicker(null), //
+                        hasName("MUL-LYX.EO Gov.Bd 1-3Y(DR)U.E. Inhaber-Anteile Acc o.N."), //
+                        hasCurrencyCode("EUR"))));
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00BDBRDM35"), hasWkn(null), hasTicker(null), //
+                        hasName("iShsIII-Core Gl.Aggr.Bd UC.ETF Registered Shs EUR Acc.hgd o.N"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("LU1109942653"), hasWkn(null), hasTicker(null), //
+                        hasName("Xtr.II EUR H.Yield Corp.Bond Inhaber-Anteile 1D o.N."), //
+                        hasCurrencyCode("EUR"))));
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("LU2037748774"), hasWkn(null), hasTicker(null), //
+                        hasName("Am.I.S.-AM.IDX EO COR.SRI 0-3Y Act.Nom.UCITS ETF EUR DR Ac.oN"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("LU1931975079"), hasWkn(null), hasTicker(null), //
+                        hasName("Amundi I.S.-A.PRIME EURO CORP. Nam.-Ant.UC.ETF DR EUR Dis.oN"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00BG0SKF03"), hasWkn(null), hasTicker(null), //
+                        hasName("iShsIV-Edge MSCI EM Value F. Registered Shares USD (Acc.)oN"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00B3F81G20"), hasWkn(null), hasTicker(null), //
+                        hasName("iShsIII-MSCI EM Sm.Cap U.ETF Registered Shares o.N."), //
+                        hasCurrencyCode("EUR"))));
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("LU0690964092"), hasWkn(null), hasTicker(null), //
+                        hasName("Xtrackers II Global Gov.Bond Inhaber-Anteile 1D EUR Hgd oN"), //
+                        hasCurrencyCode("EUR"))));
 
         // assert transaction
         assertThat(results, hasItem(deposit(hasDate("2021-02-23"), hasAmount("EUR", 1000.00), //
                         hasSource("Depotauszug06.txt"), hasNote("Sammelgutschrift | Ref.-Nr.: 193396101"))));
+
+        // check buy transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2021-02-25T00:00"), hasShares(8.514), //
+                        hasSource("Depotauszug06.txt"), //
+                        hasNote("Ref.-Nr.: 194293223"), //
+                        hasAmount("EUR", 196.50), hasGrossValue("EUR", 196.50), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2021-02-25T00:00"), hasShares(7.582), //
+                        hasSource("Depotauszug06.txt"), //
+                        hasNote("Ref.-Nr.: 194293228"), //
+                        hasAmount("EUR", 173.09), hasGrossValue("EUR", 173.09), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2021-02-25T00:00"), hasShares(4.024), //
+                        hasSource("Depotauszug06.txt"), //
+                        hasNote("Ref.-Nr.: 194293232"), //
+                        hasAmount("EUR", 118.59), hasGrossValue("EUR", 118.59), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2021-02-25T00:00"), hasShares(2.245), //
+                        hasSource("Depotauszug06.txt"), //
+                        hasNote("Ref.-Nr.: 194293236"), //
+                        hasAmount("EUR", 70.90), hasGrossValue("EUR", 70.90), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2021-02-25T00:00"), hasShares(1.697), //
+                        hasSource("Depotauszug06.txt"), //
+                        hasNote("Ref.-Nr.: 194293242"), //
+                        hasAmount("EUR", 70.72), hasGrossValue("EUR", 70.72), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2021-02-25T00:00"), hasShares(0.759), //
+                        hasSource("Depotauszug06.txt"), //
+                        hasNote("Ref.-Nr.: 194293246"), //
+                        hasAmount("EUR", 62.76), hasGrossValue("EUR", 62.76), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2021-02-25T00:00"), hasShares(1.884), //
+                        hasSource("Depotauszug06.txt"), //
+                        hasNote("Ref.-Nr.: 194293250"), //
+                        hasAmount("EUR", 54.85), hasGrossValue("EUR", 54.85), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2021-02-25T00:00"), hasShares(0.341), //
+                        hasSource("Depotauszug06.txt"), //
+                        hasNote("Ref.-Nr.: 194293255"), //
+                        hasAmount("EUR", 42.39), hasGrossValue("EUR", 42.39), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2021-02-25T00:00"), hasShares(8.058), //
+                        hasSource("Depotauszug06.txt"), //
+                        hasNote("Ref.-Nr.: 194293259"), //
+                        hasAmount("EUR", 42.32), hasGrossValue("EUR", 42.32), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2021-02-25T00:00"), hasShares(1.857), //
+                        hasSource("Depotauszug06.txt"), //
+                        hasNote("Ref.-Nr.: 194293265"), //
+                        hasAmount("EUR", 32.76), hasGrossValue("EUR", 32.76), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2021-02-25T00:00"), hasShares(0.615), //
+                        hasSource("Depotauszug06.txt"), //
+                        hasNote("Ref.-Nr.: 194293270"), //
+                        hasAmount("EUR", 30.87), hasGrossValue("EUR", 30.87), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2021-02-25T00:00"), hasShares(1.39), //
+                        hasSource("Depotauszug06.txt"), //
+                        hasNote("Ref.-Nr.: 194293274"), //
+                        hasAmount("EUR", 28.83), hasGrossValue("EUR", 28.83), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2021-02-25T00:00"), hasShares(0.624), //
+                        hasSource("Depotauszug06.txt"), //
+                        hasNote("Ref.-Nr.: 194293279"), //
+                        hasAmount("EUR", 23.81), hasGrossValue("EUR", 23.81), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2021-02-25T00:00"), hasShares(0.23), //
+                        hasSource("Depotauszug06.txt"), //
+                        hasNote("Ref.-Nr.: 194293284"), //
+                        hasAmount("EUR", 15.80), hasGrossValue("EUR", 15.80), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2021-02-25T00:00"), hasShares(0.07), //
+                        hasSource("Depotauszug06.txt"), //
+                        hasNote("Ref.-Nr.: 194293290"), //
+                        hasAmount("EUR", 15.40), hasGrossValue("EUR", 15.40), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2021-02-26T00:00"), hasShares(0.151), //
+                        hasSource("Depotauszug06.txt"), //
+                        hasNote("Ref.-Nr.: 194569182"), //
+                        hasAmount("EUR", 3.44), hasGrossValue("EUR", 3.44), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2021-02-26T00:00"), hasShares(0.14), //
+                        hasSource("Depotauszug06.txt"), //
+                        hasNote("Ref.-Nr.: 194569185"), //
+                        hasAmount("EUR", 3.15), hasGrossValue("EUR", 3.15), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2021-02-26T00:00"), hasShares(0.04), //
+                        hasSource("Depotauszug06.txt"), //
+                        hasNote("Ref.-Nr.: 194569191"), //
+                        hasAmount("EUR", 1.65), hasGrossValue("EUR", 1.65), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2021-02-26T00:00"), hasShares(0.056), //
+                        hasSource("Depotauszug06.txt"), //
+                        hasNote("Ref.-Nr.: 194569195"), //
+                        hasAmount("EUR", 1.62), hasGrossValue("EUR", 1.62), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2021-02-26T00:00"), hasShares(0.017), //
+                        hasSource("Depotauszug06.txt"), //
+                        hasNote("Ref.-Nr.: 194569200"), //
+                        hasAmount("EUR", 1.38), hasGrossValue("EUR", 1.38), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2021-02-26T00:00"), hasShares(0.035), //
+                        hasSource("Depotauszug06.txt"), //
+                        hasNote("Ref.-Nr.: 194569205"), //
+                        hasAmount("EUR", 1.08), hasGrossValue("EUR", 1.08), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2021-02-26T00:00"), hasShares(0.034), //
+                        hasSource("Depotauszug06.txt"), //
+                        hasNote("Ref.-Nr.: 194569209"), //
+                        hasAmount("EUR", 0.98), hasGrossValue("EUR", 0.98), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2021-02-26T00:00"), hasShares(0.108), //
+                        hasSource("Depotauszug06.txt"), //
+                        hasNote("Ref.-Nr.: 194569213"), //
+                        hasAmount("EUR", 0.57), hasGrossValue("EUR", 0.57), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -1515,14 +2197,122 @@ public class QuirinPrivatbankAGPDFExtractorTest
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Depotauszug07.txt"), errors);
 
         assertThat(errors, empty());
-        assertThat(countSecurities(results), is(0L));
-        assertThat(countBuySell(results), is(0L));
+        assertThat(countSecurities(results), is(18L));
+        assertThat(countBuySell(results), is(18L));
         assertThat(countAccountTransactions(results), is(9L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
         assertThat(countSkippedItems(results), is(0L));
-        assertThat(results.size(), is(9));
+        assertThat(results.size(), is(45));
         new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00B3M0BZ05"), hasWkn(null), hasTicker(null), //
+                        hasName("Dimens.Fds-Glbl Core Equity Fd Registered Shs EUR Dis.o.N."), //
+                        hasCurrencyCode("EUR"))));
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00B3QL0Y14"), hasWkn(null), hasTicker(null), //
+                        hasName("Dim.Fds-Gl Short Fixed Income Registered Shares EUR Dis.o.N."), //
+                        hasCurrencyCode("EUR"))));
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("LU1274520086"), hasWkn(null), hasTicker(null), //
+                        hasName("Rob.C.Gr.Fds-R.QI Gl.De.Co.Eq. Actions Nom. I EUR o.N."), //
+                        hasCurrencyCode("EUR"))));
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00B03HD191"), hasWkn(null), hasTicker(null), //
+                        hasName("Vang.Inv.S.-Global Stk.Ind.Fd Reg.Shs EUR Acc o.N."), //
+                        hasCurrencyCode("EUR"))));
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00B60SX394"), hasWkn(null), hasTicker(null), //
+                        hasName("InvescoMI MSCI World ETF Registered Shares Acc o.N"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00BF4RFH31"), hasWkn(null), hasTicker(null), //
+                        hasName("iShsIII-MSCI Wld Sm.Ca.UCI.ETF Registered Shares USD(Acc)o.N."), //
+                        hasCurrencyCode("EUR"))));
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("LU1650487413"), hasWkn(null), hasTicker(null), //
+                        hasName("MUL Amundi EUR GovBond 1-3Y UCITS ETF Inh.Anteile Acc"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("LU1048314196"), hasWkn(null), hasTicker(null), //
+                        hasName("UBS(L)FS-BBG EO A.L.Crp1-5UETF Inhaber-Anteile A Dis.EUR o.N."), //
+                        hasCurrencyCode("EUR"))));
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00B6YX5F63"), hasWkn(null), hasTicker(null), //
+                        hasName("SPDR Bl.1-3Y.Eu.Go.Bd U.ETF Registered Shares o.N."), //
+                        hasCurrencyCode("EUR"))));
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00BC7GZW19"), hasWkn(null), hasTicker(null), //
+                        hasName("SPDR Bl.0-3Y.Eu.Co.Bd UETF Registered Shares o.N."), //
+                        hasCurrencyCode("EUR"))));
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00BF3N7219"), hasWkn(null), hasTicker(null), //
+                        hasName("iShsIV-Fa.An.Hi.Yi.Co.Bd U.ETF Reg.Shares EUR Hdgd Dist o.N."), //
+                        hasCurrencyCode("EUR"))));
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00B66F4759"), hasWkn(null), hasTicker(null), //
+                        hasName("iShs EO H.Yield Corp Bd U.ETF Registered Shares o.N."), //
+                        hasCurrencyCode("EUR"))));
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00BL25JM42"), hasWkn(null), hasTicker(null), //
+                        hasName("Xtr.(IE)MSCI World Value Registered Shares 1C USD o.N."), //
+                        hasCurrencyCode("EUR"))));
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("LU0690964092"), hasWkn(null), hasTicker(null), //
+                        hasName("Xtrackers II Global Gov.Bond Inhaber-Anteile 1D EUR Hgd oN"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("LU2146179432"), hasWkn(null), hasTicker(null), //
+                        hasName("Assenagon Funds Val.Size Glob. Act. Nom. RS EUR Dis. oN"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00B42THM37"), hasWkn(null), hasTicker(null), //
+                        hasName("Dimensional Fds-Emerg.Mkts Va. Registered Shares EUR Dis.o.N."), //
+                        hasCurrencyCode("EUR"))));
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00BD45KH83"), hasWkn(null), hasTicker(null), //
+                        hasName("iShs Core MSCI EM IMI U.ETF Registered Shs USD (Dist) o.N."), //
+                        hasCurrencyCode("EUR"))));
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("LU1233758587"), hasWkn(null), hasTicker(null), //
+                        hasName("Robeco C.G.Fds-R.QI.Em.Con.Eq. Actions Nominat. IE EUR o.N."), //
+                        hasCurrencyCode("EUR"))));
 
         // assert transaction
         assertThat(results, hasItem(taxRefund(hasDate("2024-04-02"), hasAmount("EUR", 56.07), //
@@ -1561,6 +2351,150 @@ public class QuirinPrivatbankAGPDFExtractorTest
         // assert transaction
         assertThat(results, hasItem(fee(hasDate("2024-06-30"), hasAmount("EUR", 451.89), //
                         hasSource("Depotauszug07.txt"), hasNote("Vermögensverwaltungshonorar | Ref.-Nr.: 494534896"))));
+
+        // check sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2024-05-14T00:00"), hasShares(436.2506), //
+                        hasSource("Depotauszug07.txt"), //
+                        hasNote("Ref.-Nr.: 479524253"), //
+                        hasAmount("EUR", 13380.85), hasGrossValue("EUR", 13380.85 + 1209.03 + 66.49), //
+                        hasTaxes("EUR", 1209.03 + 66.49), hasFees("EUR", 0.00))));
+
+        // check buy transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2024-05-14T00:00"), hasShares(132.0151), //
+                        hasSource("Depotauszug07.txt"), //
+                        hasNote("Ref.-Nr.: 479524302"), //
+                        hasAmount("EUR", 1160.74), hasGrossValue("EUR", 1160.74), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2024-05-15T00:00"), hasShares(1.6316), //
+                        hasSource("Depotauszug07.txt"), //
+                        hasNote("Ref.-Nr.: 479524262"), //
+                        hasAmount("EUR", 278.66), hasGrossValue("EUR", 278.66 + 15.95 + 0.87), //
+                        hasTaxes("EUR", 15.95 + 0.87), hasFees("EUR", 0.00))));
+
+        // check sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2024-05-16T00:00"), hasShares(59.4386), //
+                        hasSource("Depotauszug07.txt"), //
+                        hasNote("Ref.-Nr.: 479524267"), //
+                        hasAmount("EUR", 2487.89), hasGrossValue("EUR", 2487.89 + 213.79 + 11.75), //
+                        hasTaxes("EUR", 213.79 + 11.75), hasFees("EUR", 0.00))));
+
+        // check sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2024-05-16T00:00"), hasShares(29.7082), //
+                        hasSource("Depotauszug07.txt"), //
+                        hasNote("Ref.-Nr.: 479524273"), //
+                        hasAmount("EUR", 2716.08), hasGrossValue("EUR", 2716.08 + 204.71 + 11.25), //
+                        hasTaxes("EUR", 204.71 + 11.25), hasFees("EUR", 0.00))));
+
+        // check sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2024-05-16T00:00"), hasShares(632.6936), //
+                        hasSource("Depotauszug07.txt"), //
+                        hasNote("Ref.-Nr.: 479524292"), //
+                        hasAmount("EUR", 3971.53), hasGrossValue("EUR", 3971.53 + 267.54 + 14.71), //
+                        hasTaxes("EUR", 267.54 + 14.71), hasFees("EUR", 0.00))));
+
+        // check buy transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2024-05-16T00:00"), hasShares(6.6838), //
+                        hasSource("Depotauszug07.txt"), //
+                        hasNote("Ref.-Nr.: 479524309"), //
+                        hasAmount("EUR", 812.75), hasGrossValue("EUR", 812.75), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2024-05-16T00:00"), hasShares(65.5288), //
+                        hasSource("Depotauszug07.txt"), //
+                        hasNote("Ref.-Nr.: 479524318"), //
+                        hasAmount("EUR", 855.03), hasGrossValue("EUR", 855.03), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2024-05-16T00:00"), hasShares(15.8913), //
+                        hasSource("Depotauszug07.txt"), //
+                        hasNote("Ref.-Nr.: 479524326"), //
+                        hasAmount("EUR", 811.99), hasGrossValue("EUR", 811.99), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2024-05-16T00:00"), hasShares(27.8929), //
+                        hasSource("Depotauszug07.txt"), //
+                        hasNote("Ref.-Nr.: 479524337"), //
+                        hasAmount("EUR", 831.54), hasGrossValue("EUR", 831.54), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2024-05-16T00:00"), hasShares(112.7489), //
+                        hasSource("Depotauszug07.txt"), //
+                        hasNote("Ref.-Nr.: 479524346"), //
+                        hasAmount("EUR", 533.00), hasGrossValue("EUR", 533.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2024-05-16T00:00"), hasShares(8.1735), //
+                        hasSource("Depotauszug07.txt"), //
+                        hasNote("Ref.-Nr.: 479524355"), //
+                        hasAmount("EUR", 753.46), hasGrossValue("EUR", 753.46), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2024-05-16T00:00"), hasShares(413.8243), //
+                        hasSource("Depotauszug07.txt"), //
+                        hasNote("Ref.-Nr.: 479524362"), //
+                        hasAmount("EUR", 17058.37), hasGrossValue("EUR", 17058.37), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2024-05-16T00:00"), hasShares(9.5408), //
+                        hasSource("Depotauszug07.txt"), //
+                        hasNote("Ref.-Nr.: 479524367"), //
+                        hasAmount("EUR", 1691.00), hasGrossValue("EUR", 1691.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2024-05-17T00:00"), hasShares(18.8472), //
+                        hasSource("Depotauszug07.txt"), //
+                        hasNote("Ref.-Nr.: 479524283"), //
+                        hasAmount("EUR", 1413.93), hasGrossValue("EUR", 1413.93 + 101.15 + 5.56), //
+                        hasTaxes("EUR", 101.15 + 5.56), hasFees("EUR", 0.00))));
+
+        // check buy transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2024-05-17T00:00"), hasShares(1083.3492), //
+                        hasSource("Depotauszug07.txt"), //
+                        hasNote("Ref.-Nr.: 480189188"), //
+                        hasAmount("EUR", 12774.34), hasGrossValue("EUR", 12774.34), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2024-05-21T00:00"), hasShares(6096.0503), //
+                        hasSource("Depotauszug07.txt"), //
+                        hasNote("Ref.-Nr.: 480189180"), //
+                        hasAmount("EUR", 27128.21), hasGrossValue("EUR", 27128.21), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2024-05-21T00:00"), hasShares(131.3616), //
+                        hasSource("Depotauszug07.txt"), //
+                        hasNote("Ref.-Nr.: 480189194"), //
+                        hasAmount("EUR", 13236.33), hasGrossValue("EUR", 13236.33), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -1630,14 +2564,68 @@ public class QuirinPrivatbankAGPDFExtractorTest
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Depotauszug10.txt"), errors);
 
         assertThat(errors, empty());
-        assertThat(countSecurities(results), is(0L));
+        assertThat(countSecurities(results), is(9L));
         assertThat(countBuySell(results), is(0L));
-        assertThat(countAccountTransactions(results), is(4L));
+        assertThat(countAccountTransactions(results), is(13L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
         assertThat(countSkippedItems(results), is(0L));
-        assertThat(results.size(), is(4));
+        assertThat(results.size(), is(22));
         new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00B03HD191"), hasWkn(null), hasTicker(null), //
+                        hasName("Vang.Inv.S.-Global Stk.Ind.Fd Reg.Shs EUR Acc o.N."), //
+                        hasCurrencyCode("EUR"))));
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("LU1274520086"), hasWkn(null), hasTicker(null), //
+                        hasName("Rob.C.Gr.Fds-R.QI Gl.De.Co.Eq. Actions Nom. I EUR o.N."), //
+                        hasCurrencyCode("EUR"))));
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00B60SX394"), hasWkn(null), hasTicker(null), //
+                        hasName("InvescoMI MSCI World ETF Registered Shares Acc o.N"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00B6YX5F63"), hasWkn(null), hasTicker(null), //
+                        hasName("SPDR Bl.1-3Y.Eu.Go.Bd U.ETF Registered Shares o.N."), //
+                        hasCurrencyCode("EUR"))));
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("LU1681041114"), hasWkn(null), hasTicker(null), //
+                        hasName("AIS-Amundi EUR F.R.Corp.Bd ESG Nam.-Ant.UCITS ETF DR-EUR C oN"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00BL25JM42"), hasWkn(null), hasTicker(null), //
+                        hasName("Xtr.(IE)MSCI World Value Registered Shares 1C USD o.N."), //
+                        hasCurrencyCode("EUR"))));
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00B48X4842"), hasWkn(null), hasTicker(null), //
+                        hasName("SPDR MSCI Emer.Mkts Sm.Cap ETF Registered Shares o.N."), //
+                        hasCurrencyCode("EUR"))));
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00BF4RFH31"), hasWkn(null), hasTicker(null), //
+                        hasName("iShsIII-MSCI Wld Sm.Ca.UCI.ETF Registered Shares USD(Acc)o.N."), //
+                        hasCurrencyCode("EUR"))));
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("LU1650487413"), hasWkn(null), hasTicker(null), //
+                        hasName("MUL Amundi EUR GovBond 1-3Y UCITS ETF Inh.Anteile Acc"), //
+                        hasCurrencyCode("EUR"))));
 
         // assert transaction
         assertThat(results, hasItem(taxRefund(hasDate("2025-01-02"), hasAmount("EUR", 60.16), //
@@ -1657,6 +2645,77 @@ public class QuirinPrivatbankAGPDFExtractorTest
         assertThat(results, hasItem(fee(hasDate("2025-01-31"), hasAmount("EUR", 507.98), //
                         hasSource("Depotauszug10.txt"), hasNote("Vermögensverwaltungshonorar | Ref.-Nr.: 563214268"))));
 
+        // check taxes transaction
+        assertThat(results, hasItem(taxes( //
+                        hasDate("2025-01-02T00:00"), hasShares(1645.069), //
+                        hasSource("Depotauszug10.txt"), //
+                        hasNote("Thesaurierung | Ref.-Nr.: 557786429"), //
+                        hasAmount("EUR", 200.20), hasGrossValue("EUR", 200.20), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check taxes transaction
+        assertThat(results, hasItem(taxes( //
+                        hasDate("2025-01-02T00:00"), hasShares(91.1668), //
+                        hasSource("Depotauszug10.txt"), //
+                        hasNote("Thesaurierung | Ref.-Nr.: 557794194"), //
+                        hasAmount("EUR", 45.64), hasGrossValue("EUR", 45.64), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check taxes transaction
+        assertThat(results, hasItem(taxes( //
+                        hasDate("2025-01-02T00:00"), hasShares(766.6823), //
+                        hasSource("Depotauszug10.txt"), //
+                        hasNote("Thesaurierung | Ref.-Nr.: 557849822"), //
+                        hasAmount("EUR", 200.20), hasGrossValue("EUR", 200.20), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check taxes transaction
+        assertThat(results, hasItem(taxes( //
+                        hasDate("2025-01-02T00:00"), hasShares(318.52), //
+                        hasSource("Depotauszug10.txt"), //
+                        hasNote("Thesaurierung | Ref.-Nr.: 558428333"), //
+                        hasAmount("EUR", 52.40), hasGrossValue("EUR", 52.40), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check taxes transaction
+        assertThat(results, hasItem(taxes( //
+                        hasDate("2025-01-02T00:00"), hasShares(87.7672), //
+                        hasSource("Depotauszug10.txt"), //
+                        hasNote("Thesaurierung | Ref.-Nr.: 558778401"), //
+                        hasAmount("EUR", 6.41), hasGrossValue("EUR", 6.41), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check taxes transaction
+        assertThat(results, hasItem(taxes( //
+                        hasDate("2025-01-02T00:00"), hasShares(1429.5971), //
+                        hasSource("Depotauszug10.txt"), //
+                        hasNote("Thesaurierung | Ref.-Nr.: 559609470"), //
+                        hasAmount("EUR", 141.98), hasGrossValue("EUR", 141.98), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check taxes transaction
+        assertThat(results, hasItem(taxes( //
+                        hasDate("2025-01-02T00:00"), hasShares(43.0035), //
+                        hasSource("Depotauszug10.txt"), //
+                        hasNote("Thesaurierung | Ref.-Nr.: 559227626"), //
+                        hasAmount("EUR", 12.31), hasGrossValue("EUR", 12.31), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check taxes transaction
+        assertThat(results, hasItem(taxes( //
+                        hasDate("2025-01-02T00:00"), hasShares(3197.6858), //
+                        hasSource("Depotauszug10.txt"), //
+                        hasNote("Thesaurierung | Ref.-Nr.: 559351476"), //
+                        hasAmount("EUR", 59.93), hasGrossValue("EUR", 59.93), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check taxes transaction
+        assertThat(results, hasItem(taxes( //
+                        hasDate("2025-01-02T00:00"), hasShares(196.7106), //
+                        hasSource("Depotauszug10.txt"), //
+                        hasNote("Thesaurierung | Ref.-Nr.: 559732387"), //
+                        hasAmount("EUR", 57.77), hasGrossValue("EUR", 57.77), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -1669,14 +2728,98 @@ public class QuirinPrivatbankAGPDFExtractorTest
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Depotauszug11.txt"), errors);
 
         assertThat(errors, empty());
-        assertThat(countSecurities(results), is(0L));
-        assertThat(countBuySell(results), is(0L));
+        assertThat(countSecurities(results), is(14L));
+        assertThat(countBuySell(results), is(14L));
         assertThat(countAccountTransactions(results), is(4L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
         assertThat(countSkippedItems(results), is(0L));
-        assertThat(results.size(), is(4));
+        assertThat(results.size(), is(32));
         new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00B42THM37"), hasWkn(null), hasTicker(null), //
+                        hasName("Dimensional Fds-Emerg.Mkts Va. Registered Shares EUR Dis.o.N."), //
+                        hasCurrencyCode("EUR"))));
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00B3M0BZ05"), hasWkn(null), hasTicker(null), //
+                        hasName("Dimens.Fds-Glbl Core Equity Fd Registered Shs EUR Dis.o.N."), //
+                        hasCurrencyCode("EUR"))));
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("LU1233758587"), hasWkn(null), hasTicker(null), //
+                        hasName("Robeco C.G.Fds-R.QI.Em.Con.Eq. Actions Nominat. IE EUR o.N."), //
+                        hasCurrencyCode("EUR"))));
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("LU1650487413"), hasWkn(null), hasTicker(null), //
+                        hasName("MUL Amundi EUR GovBond 1-3Y UCITS ETF Inh.Anteile Acc"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00B6YX5F63"), hasWkn(null), hasTicker(null), //
+                        hasName("SPDR Bl.1-3Y.Eu.Go.Bd U.ETF Registered Shares o.N."), //
+                        hasCurrencyCode("EUR"))));
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00BF4RFH31"), hasWkn(null), hasTicker(null), //
+                        hasName("iShsIII-MSCI Wld Sm.Ca.UCI.ETF Registered Shares USD(Acc)o.N."), //
+                        hasCurrencyCode("EUR"))));
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00BL25JM42"), hasWkn(null), hasTicker(null), //
+                        hasName("Xtr.(IE)MSCI World Value Registered Shares 1C USD o.N."), //
+                        hasCurrencyCode("EUR"))));
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00B14X4Q57"), hasWkn(null), hasTicker(null), //
+                        hasName("iShs EO Govt Bd 1-3yr U.ETF Registered Shares o.N."), //
+                        hasCurrencyCode("EUR"))));
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("LU1708330235"), hasWkn(null), hasTicker(null), //
+                        hasName("AIS-Amundi Ind.JPM Gl.GBI Gov. Act.Nom.UCITS ETF DR EUR Hd oN"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00B48X4842"), hasWkn(null), hasTicker(null), //
+                        hasName("SPDR MSCI Emer.Mkts Sm.Cap ETF Registered Shares o.N."), //
+                        hasCurrencyCode("EUR"))));
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("LU1274520086"), hasWkn(null), hasTicker(null), //
+                        hasName("Rob.C.Gr.Fds-R.QI Gl.De.Co.Eq. Actions Nom. I EUR o.N."), //
+                        hasCurrencyCode("EUR"))));
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00B03HD191"), hasWkn(null), hasTicker(null), //
+                        hasName("Vang.Inv.S.-Global Stk.Ind.Fd Reg.Shs EUR Acc o.N."), //
+                        hasCurrencyCode("EUR"))));
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00BD45KH83"), hasWkn(null), hasTicker(null), //
+                        hasName("iShs Core MSCI EM IMI U.ETF Registered Shs USD (Dist) o.N."), //
+                        hasCurrencyCode("EUR"))));
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("LU2146179432"), hasWkn(null), hasTicker(null), //
+                        hasName("Assenagon Funds Val.Size Glob. Act. Nom. RS EUR Dis. oN"), //
+                        hasCurrencyCode("EUR"))));
 
         // assert transaction
         assertThat(results, hasItem(taxRefund(hasDate("2025-06-02"), hasAmount("EUR", 58.85), //
@@ -1693,6 +2836,118 @@ public class QuirinPrivatbankAGPDFExtractorTest
         // assert transaction
         assertThat(results, hasItem(fee(hasDate("2025-06-30"), hasAmount("EUR", 469.61), //
                         hasSource("Depotauszug11.txt"), hasNote("Vermögensverwaltungshonorar | Ref.-Nr.: 620879559"))));
+
+        // check sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2025-06-11T00:00"), hasShares(1453.3036), //
+                        hasSource("Depotauszug11.txt"), //
+                        hasNote("Ref.-Nr.: 614687808"), //
+                        hasAmount("EUR", 16823.87), hasGrossValue("EUR", 16823.87 + 388.97 + 21.39), //
+                        hasTaxes("EUR", 388.97 + 21.39), hasFees("EUR", 0.00))));
+
+        // check buy transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2025-06-11T00:00"), hasShares(1083.763), //
+                        hasSource("Depotauszug11.txt"), //
+                        hasNote("Ref.-Nr.: 614687922"), //
+                        hasAmount("EUR", 38497.21), hasGrossValue("EUR", 38497.21), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2025-06-13T00:00"), hasShares(178.3279), //
+                        hasSource("Depotauszug11.txt"), //
+                        hasNote("Ref.-Nr.: 614687823"), //
+                        hasAmount("EUR", 18291.39), hasGrossValue("EUR", 18291.39 + 207.47 + 11.41), //
+                        hasTaxes("EUR", 207.47 + 11.41), hasFees("EUR", 0.00))));
+
+        // check sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2025-06-13T00:00"), hasShares(6.0675), //
+                        hasSource("Depotauszug11.txt"), //
+                        hasNote("Ref.-Nr.: 614687838"), //
+                        hasAmount("EUR", 767.24), hasGrossValue("EUR", 767.24), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2025-06-13T00:00"), hasShares(7.1805), //
+                        hasSource("Depotauszug11.txt"), //
+                        hasNote("Ref.-Nr.: 614687853"), //
+                        hasAmount("EUR", 378.13), hasGrossValue("EUR", 378.13), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2025-06-13T00:00"), hasShares(1938.3874), //
+                        hasSource("Depotauszug11.txt"), //
+                        hasNote("Ref.-Nr.: 614687866"), //
+                        hasAmount("EUR", 12416.83), hasGrossValue("EUR", 12416.83 + 830.92 + 45.70), //
+                        hasTaxes("EUR", 830.92 + 45.70), hasFees("EUR", 0.00))));
+
+        // check sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2025-06-13T00:00"), hasShares(316.0119), //
+                        hasSource("Depotauszug11.txt"), //
+                        hasNote("Ref.-Nr.: 614687879"), //
+                        hasAmount("EUR", 13345.74), hasGrossValue("EUR", 13345.74 + 480.27 + 26.41), //
+                        hasTaxes("EUR", 480.27 + 26.41), hasFees("EUR", 0.00))));
+
+        // check sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2025-06-13T00:00"), hasShares(2.1008), //
+                        hasSource("Depotauszug11.txt"), //
+                        hasNote("Ref.-Nr.: 614687889"), //
+                        hasAmount("EUR", 297.43), hasGrossValue("EUR", 297.43), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2025-06-13T00:00"), hasShares(6.4513), //
+                        hasSource("Depotauszug11.txt"), //
+                        hasNote("Ref.-Nr.: 614687901"), //
+                        hasAmount("EUR", 299.33), hasGrossValue("EUR", 299.33), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2025-06-13T00:00"), hasShares(43.0035), //
+                        hasSource("Depotauszug11.txt"), //
+                        hasNote("Ref.-Nr.: 614687912"), //
+                        hasAmount("EUR", 4541.91), hasGrossValue("EUR", 4541.91 + 121.98 + 6.70), //
+                        hasTaxes("EUR", 121.98 + 6.70), hasFees("EUR", 0.00))));
+
+        // check buy transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2025-06-13T00:00"), hasShares(28.0779), //
+                        hasSource("Depotauszug11.txt"), //
+                        hasNote("Ref.-Nr.: 614687930"), //
+                        hasAmount("EUR", 5791.33), hasGrossValue("EUR", 5791.33), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2025-06-13T00:00"), hasShares(7.4825), //
+                        hasSource("Depotauszug11.txt"), //
+                        hasNote("Ref.-Nr.: 614687935"), //
+                        hasAmount("EUR", 375.90), hasGrossValue("EUR", 375.90), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2025-06-13T00:00"), hasShares(4650.3717), //
+                        hasSource("Depotauszug11.txt"), //
+                        hasNote("Ref.-Nr.: 614687949"), //
+                        hasAmount("EUR", 21242.99), hasGrossValue("EUR", 21242.99), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2025-06-16T00:00"), hasShares(35.995), //
+                        hasSource("Depotauszug11.txt"), //
+                        hasNote("Ref.-Nr.: 614687943"), //
+                        hasAmount("EUR", 2948.14), hasGrossValue("EUR", 2948.14), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -1705,14 +2960,92 @@ public class QuirinPrivatbankAGPDFExtractorTest
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Depotauszug12.txt"), errors);
 
         assertThat(errors, empty());
-        assertThat(countSecurities(results), is(0L));
-        assertThat(countBuySell(results), is(0L));
+        assertThat(countSecurities(results), is(13L));
+        assertThat(countBuySell(results), is(37L));
         assertThat(countAccountTransactions(results), is(2L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
         assertThat(countSkippedItems(results), is(0L));
-        assertThat(results.size(), is(2));
+        assertThat(results.size(), is(52));
         new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("LU1931974692"), hasWkn(null), hasTicker(null), //
+                        hasName("Amundi Index Solu.-A.PRIME GL. Nam.-Ant.UCI.ETF DR USD Dis.oN"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00BFY0GT14"), hasWkn(null), hasTicker(null), //
+                        hasName("SPDR MSCI World UCITS ETF Reg.Shares USD Unhgd Acc. o.N."), //
+                        hasCurrencyCode("EUR"))));
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00BL25JM42"), hasWkn(null), hasTicker(null), //
+                        hasName("Xtr.(IE)MSCI World Value Registered Shares 1C USD o.N."), //
+                        hasCurrencyCode("EUR"))));
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00BF4RFH31"), hasWkn(null), hasTicker(null), //
+                        hasName("iShsIII-MSCI Wld Sm.Ca.UCI.ETF Registered Shares USD(Acc)o.N."), //
+                        hasCurrencyCode("EUR"))));
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00BKM4GZ66"), hasWkn(null), hasTicker(null), //
+                        hasName("iShs Core MSCI EM IMI U.ETF Registered Shares o.N."), //
+                        hasCurrencyCode("EUR"))));
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00BG0SKF03"), hasWkn(null), hasTicker(null), //
+                        hasName("iShsIV-Edge MSCI EM Value F. Registered Shares USD (Acc.)oN"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("LU1650487413"), hasWkn(null), hasTicker(null), //
+                        hasName("MUL Amundi EUR GovBond 1-3Y UCITS ETF Inh.Anteile Acc"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00B48X4842"), hasWkn(null), hasTicker(null), //
+                        hasName("SPDR MSCI Emer.Mkts Sm.Cap ETF Registered Shares o.N."), //
+                        hasCurrencyCode("EUR"))));
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("LU1109942653"), hasWkn(null), hasTicker(null), //
+                        hasName("Xtr.II EUR H.Yield Corp.Bond Inhaber-Anteile 1D o.N."), //
+                        hasCurrencyCode("EUR"))));
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00BF1QPL78"), hasWkn(null), hasTicker(null), //
+                        hasName("SPDR Bloom.Gl.Ag.Bd U.ETF Reg.Shs EUR Hdg UCITS ETF oN"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("LU2037748774"), hasWkn(null), hasTicker(null), //
+                        hasName("Am.I.S.-AM.IDX EO COR.SRI 0-3Y Act.Nom.UCITS ETF EUR DR Ac.oN"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("LU1931975079"), hasWkn(null), hasTicker(null), //
+                        hasName("Amundi I.S.-A.PRIME EURO CORP. Nam.-Ant.UC.ETF DR EUR Dis.oN"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00BGJWWY63"), hasWkn(null), hasTicker(null), //
+                        hasName("InvescoMI2 EUR Gov B 1-3Y ETF Reg. Shs EUR Dis. oN"), //
+                        hasCurrencyCode("EUR"))));
 
         // assert transaction
         assertThat(results, hasItem(deposit(hasDate("2024-07-10"), hasAmount("EUR", 2.00), //
@@ -1723,5 +3056,522 @@ public class QuirinPrivatbankAGPDFExtractorTest
         assertThat(results, hasItem(deposit(hasDate("2024-07-25"), hasAmount("EUR", 25.00), //
                         hasSource("Depotauszug12.txt"),
                         hasNote("Überweisungsgutschrift Inland | Ref.-Nr.: 231123912"))));
+
+        // check buy transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2024-07-17T00:00"), hasShares(0.1796), //
+                        hasSource("Depotauszug12.txt"), //
+                        hasNote("Ref.-Nr.: 810613137"), //
+                        hasAmount("EUR", 6.01), hasGrossValue("EUR", 6.01), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2024-07-17T00:00"), hasShares(0.1584), //
+                        hasSource("Depotauszug12.txt"), //
+                        hasNote("Ref.-Nr.: 789323993"), //
+                        hasAmount("EUR", 5.53), hasGrossValue("EUR", 5.53), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2024-07-17T00:00"), hasShares(0.116), //
+                        hasSource("Depotauszug12.txt"), //
+                        hasNote("Ref.-Nr.: 515457226"), //
+                        hasAmount("EUR", 4.86), hasGrossValue("EUR", 4.86), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2024-07-17T00:00"), hasShares(0.6296), //
+                        hasSource("Depotauszug12.txt"), //
+                        hasNote("Ref.-Nr.: 605189398"), //
+                        hasAmount("EUR", 4.36), hasGrossValue("EUR", 4.36), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2024-07-17T00:00"), hasShares(0.052), //
+                        hasSource("Depotauszug12.txt"), //
+                        hasNote("Ref.-Nr.: 500470782"), //
+                        hasAmount("EUR", 1.67), hasGrossValue("EUR", 1.67), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2024-07-17T00:00"), hasShares(0.0257), //
+                        hasSource("Depotauszug12.txt"), //
+                        hasNote("Ref.-Nr.: 500470790"), //
+                        hasAmount("EUR", 1.20), hasGrossValue("EUR", 1.20), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2024-07-17T00:00"), hasShares(0.0046), //
+                        hasSource("Depotauszug12.txt"), //
+                        hasNote("Ref.-Nr.: 500470797"), //
+                        hasAmount("EUR", 0.56), hasGrossValue("EUR", 0.56), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2024-07-17T00:00"), hasShares(0.0042), //
+                        hasSource("Depotauszug12.txt"), //
+                        hasNote("Ref.-Nr.: 500470805"), //
+                        hasAmount("EUR", 0.48), hasGrossValue("EUR", 0.48), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2024-07-17T00:00"), hasShares(0.0278), //
+                        hasSource("Depotauszug12.txt"), //
+                        hasNote("Ref.-Nr.: 030025354"), //
+                        hasAmount("EUR", 0.44), hasGrossValue("EUR", 0.44), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2024-07-17T00:00"), hasShares(0.0166), //
+                        hasSource("Depotauszug12.txt"), //
+                        hasNote("Ref.-Nr.: 086981855"), //
+                        hasAmount("EUR", 0.44), hasGrossValue("EUR", 0.44), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2024-07-17T00:00"), hasShares(0.0081), //
+                        hasSource("Depotauszug12.txt"), //
+                        hasNote("Ref.-Nr.: 496756247"), //
+                        hasAmount("EUR", 0.41), hasGrossValue("EUR", 0.41), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2024-07-17T00:00"), hasShares(0.02), //
+                        hasSource("Depotauszug12.txt"), //
+                        hasNote("Ref.-Nr.: 500470826"), //
+                        hasAmount("EUR", 0.37), hasGrossValue("EUR", 0.37), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2024-07-17T00:00"), hasShares(0.0089), //
+                        hasSource("Depotauszug12.txt"), //
+                        hasNote("Ref.-Nr.: 500470831"), //
+                        hasAmount("EUR", 0.33), hasGrossValue("EUR", 0.33), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2024-07-19T00:00"), hasShares(0.0278), //
+                        hasSource("Depotauszug12.txt"), //
+                        hasNote("Ref.-Nr.: 500904894"), //
+                        hasAmount("EUR", 0.44), hasGrossValue("EUR", 0.44), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2024-07-19T00:00"), hasShares(0.0046), //
+                        hasSource("Depotauszug12.txt"), //
+                        hasNote("Ref.-Nr.: 500904906"), //
+                        hasAmount("EUR", 0.56), hasGrossValue("EUR", 0.56), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2024-07-19T00:00"), hasShares(0.0166), //
+                        hasSource("Depotauszug12.txt"), //
+                        hasNote("Ref.-Nr.: 500904915"), //
+                        hasAmount("EUR", 0.44), hasGrossValue("EUR", 0.44), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2024-07-19T00:00"), hasShares(0.02), //
+                        hasSource("Depotauszug12.txt"), //
+                        hasNote("Ref.-Nr.: 500904924"), //
+                        hasAmount("EUR", 0.37), hasGrossValue("EUR", 0.37), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2024-07-19T00:00"), hasShares(0.0081), //
+                        hasSource("Depotauszug12.txt"), //
+                        hasNote("Ref.-Nr.: 500904933"), //
+                        hasAmount("EUR", 0.41), hasGrossValue("EUR", 0.41), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2024-07-19T00:00"), hasShares(0.0089), //
+                        hasSource("Depotauszug12.txt"), //
+                        hasNote("Ref.-Nr.: 500904941"), //
+                        hasAmount("EUR", 0.33), hasGrossValue("EUR", 0.33), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2024-07-19T00:00"), hasShares(0.0005), //
+                        hasSource("Depotauszug12.txt"), //
+                        hasNote("Ref.-Nr.: 831292531"), //
+                        hasAmount("EUR", 0.06), hasGrossValue("EUR", 0.06), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2024-07-19T00:00"), hasShares(0.0068), //
+                        hasSource("Depotauszug12.txt"), //
+                        hasNote("Ref.-Nr.: 500904958"), //
+                        hasAmount("EUR", 0.22), hasGrossValue("EUR", 0.22), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2024-07-19T00:00"), hasShares(0.0114), //
+                        hasSource("Depotauszug12.txt"), //
+                        hasNote("Ref.-Nr.: 500904963"), //
+                        hasAmount("EUR", 0.47), hasGrossValue("EUR", 0.47), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2024-07-19T00:00"), hasShares(0.0704), //
+                        hasSource("Depotauszug12.txt"), //
+                        hasNote("Ref.-Nr.: 500904971"), //
+                        hasAmount("EUR", 0.48), hasGrossValue("EUR", 0.48), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2024-07-19T00:00"), hasShares(0.0032), //
+                        hasSource("Depotauszug12.txt"), //
+                        hasNote("Ref.-Nr.: 500904980"), //
+                        hasAmount("EUR", 0.15), hasGrossValue("EUR", 0.15), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2024-07-19T00:00"), hasShares(0.0216), //
+                        hasSource("Depotauszug12.txt"), //
+                        hasNote("Ref.-Nr.: 500904987"), //
+                        hasAmount("EUR", 0.72), hasGrossValue("EUR", 0.72), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2024-07-19T00:00"), hasShares(0.0191), //
+                        hasSource("Depotauszug12.txt"), //
+                        hasNote("Ref.-Nr.: 500904994"), //
+                        hasAmount("EUR", 0.66), hasGrossValue("EUR", 0.66), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2024-07-26T00:00"), hasShares(0.1921), //
+                        hasSource("Depotauszug12.txt"), //
+                        hasNote("Ref.-Nr.: 502262339"), //
+                        hasAmount("EUR", 6.29), hasGrossValue("EUR", 6.29), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2024-07-26T00:00"), hasShares(0.169), //
+                        hasSource("Depotauszug12.txt"), //
+                        hasNote("Ref.-Nr.: 502262349"), //
+                        hasAmount("EUR", 5.77), hasGrossValue("EUR", 5.77), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2024-07-26T00:00"), hasShares(0.1226), //
+                        hasSource("Depotauszug12.txt"), //
+                        hasNote("Ref.-Nr.: 502262358"), //
+                        hasAmount("EUR", 5.06), hasGrossValue("EUR", 5.06), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2024-07-26T00:00"), hasShares(0.6534), //
+                        hasSource("Depotauszug12.txt"), //
+                        hasNote("Ref.-Nr.: 502262367"), //
+                        hasAmount("EUR", 4.50), hasGrossValue("EUR", 4.50), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2024-07-26T00:00"), hasShares(0.056), //
+                        hasSource("Depotauszug12.txt"), //
+                        hasNote("Ref.-Nr.: 502262374"), //
+                        hasAmount("EUR", 1.76), hasGrossValue("EUR", 1.76), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2024-07-26T00:00"), hasShares(0.0277), //
+                        hasSource("Depotauszug12.txt"), //
+                        hasNote("Ref.-Nr.: 502262381"), //
+                        hasAmount("EUR", 1.26), hasGrossValue("EUR", 1.26), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2024-07-26T00:00"), hasShares(0.0045), //
+                        hasSource("Depotauszug12.txt"), //
+                        hasNote("Ref.-Nr.: 502262389"), //
+                        hasAmount("EUR", 0.50), hasGrossValue("EUR", 0.50), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2024-07-29T00:00"), hasShares(0.0015), //
+                        hasSource("Depotauszug12.txt"), //
+                        hasNote("Ref.-Nr.: 502844109"), //
+                        hasAmount("EUR", 0.06), hasGrossValue("EUR", 0.06), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2024-07-29T00:00"), hasShares(0.0111), //
+                        hasSource("Depotauszug12.txt"), //
+                        hasNote("Ref.-Nr.: 502844116"), //
+                        hasAmount("EUR", 0.08), hasGrossValue("EUR", 0.08), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2024-07-29T00:00"), hasShares(0.0015), //
+                        hasSource("Depotauszug12.txt"), //
+                        hasNote("Ref.-Nr.: 502844123"), //
+                        hasAmount("EUR", 0.05), hasGrossValue("EUR", 0.05), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2024-07-29T00:00"), hasShares(0.0011), //
+                        hasSource("Depotauszug12.txt"), //
+                        hasNote("Ref.-Nr.: 502844130"), //
+                        hasAmount("EUR", 0.04), hasGrossValue("EUR", 0.04), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testDepotauszug13()
+    {
+        var extractor = new QuirinBankAGPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Depotauszug13.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(14L));
+        assertThat(countBuySell(results), is(14L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(29));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("LU1650487413"), hasWkn(null), hasTicker(null), //
+                        hasName("MUL Amundi EUR GovBond 1-3Y UCITS ETF Inh.Anteile Acc"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00BZ163H91"), hasWkn(null), hasTicker(null), //
+                        hasName("Vanguard EUR Euroz.Gov.B.U.ETF Registered Shares EUR Dis.oN"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00B6YX5F63"), hasWkn(null), hasTicker(null), //
+                        hasName("SPDR Bl.1-3Y.Eu.Go.Bd U.ETF Registered Shares o.N."), //
+                        hasCurrencyCode("EUR"))));
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("LU1708330235"), hasWkn(null), hasTicker(null), //
+                        hasName("AIS-Amundi Ind.JPM Gl.GBI Gov. Act.Nom.UCITS ETF DR EUR Hd oN"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00BGJWWY63"), hasWkn(null), hasTicker(null), //
+                        hasName("InvescoMI2 EUR Gov B 1-3Y ETF Reg. Shs EUR Dis. oN"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00BF5GB717"), hasWkn(null), hasTicker(null), //
+                        hasName("iShs II-iSh E.Flt.Ra.Bd ESG UE Reg. Shares EUR Dis. o.N."), //
+                        hasCurrencyCode("EUR"))));
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00BCRY6557"), hasWkn(null), hasTicker(null), //
+                        hasName("iShsIV-EO Ultrashort Bd U.ETF Registered Shares o.N."), //
+                        hasCurrencyCode("EUR"))));
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00BL25JM42"), hasWkn(null), hasTicker(null), //
+                        hasName("Xtr.(IE)MSCI World Value Registered Shares 1C USD o.N."), //
+                        hasCurrencyCode("EUR"))));
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE000QIF5N15"), hasWkn(null), hasTicker(null), //
+                        hasName("Amu.ETF ICAV-PRIME Glbl ETF Bear.Shs USD Dis. oN"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00BF4RFH31"), hasWkn(null), hasTicker(null), //
+                        hasName("iShsIII-MSCI Wld Sm.Ca.UCI.ETF Registered Shares USD(Acc)o.N."), //
+                        hasCurrencyCode("EUR"))));
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00BFY0GT14"), hasWkn(null), hasTicker(null), //
+                        hasName("SPDR MSCI World UCITS ETF Reg.Shares USD Unhgd Acc. o.N."), //
+                        hasCurrencyCode("EUR"))));
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00BKM4GZ66"), hasWkn(null), hasTicker(null), //
+                        hasName("iShs Core MSCI EM IMI U.ETF Registered Shares o.N."), //
+                        hasCurrencyCode("EUR"))));
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00BG0SKF03"), hasWkn(null), hasTicker(null), //
+                        hasName("iShsIV-Edge MSCI EM Value F. Registered Shares USD (Acc.)oN"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00B48X4842"), hasWkn(null), hasTicker(null), //
+                        hasName("SPDR MSCI Emer.Mkts Sm.Cap ETF Registered Shares o.N."), //
+                        hasCurrencyCode("EUR"))));
+
+        // assert transaction
+        assertThat(results, hasItem(fee(hasDate("2025-04-30"), hasAmount("EUR", 4.34), //
+                        hasSource("Depotauszug13.txt"),
+                        hasNote("Vermögensverwaltungshonorar | Ref.-Nr.: 599612351"))));
+
+        // check sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2025-04-15T00:00"), hasShares(0.4979), //
+                        hasSource("Depotauszug13.txt"), //
+                        hasNote("Ref.-Nr.: 595326918"), //
+                        hasAmount("EUR", 62.37), hasGrossValue("EUR", 62.37 + 0.51 + 0.02), //
+                        hasTaxes("EUR", 0.51 + 0.02), hasFees("EUR", 0.00))));
+
+        // check sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2025-04-15T00:00"), hasShares(2.5449), //
+                        hasSource("Depotauszug13.txt"), //
+                        hasNote("Ref.-Nr.: 595326928"), //
+                        hasAmount("EUR", 57.12), hasGrossValue("EUR", 57.12 + 0.20 + 0.01), //
+                        hasTaxes("EUR", 0.20 + 0.01), hasFees("EUR", 0.00))));
+
+        // check sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2025-04-15T00:00"), hasShares(0.8201), //
+                        hasSource("Depotauszug13.txt"), //
+                        hasNote("Ref.-Nr.: 595326932"), //
+                        hasAmount("EUR", 43.19), hasGrossValue("EUR", 43.19 + 0.07), //
+                        hasTaxes("EUR", 0.07), hasFees("EUR", 0.00))));
+
+        // check sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2025-04-15T00:00"), hasShares(0.8967), //
+                        hasSource("Depotauszug13.txt"), //
+                        hasNote("Ref.-Nr.: 595326938"), //
+                        hasAmount("EUR", 41.64), hasGrossValue("EUR", 41.64 + 0.04), //
+                        hasTaxes("EUR", 0.04), hasFees("EUR", 0.00))));
+
+        // check sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2025-04-15T00:00"), hasShares(0.9745), //
+                        hasSource("Depotauszug13.txt"), //
+                        hasNote("Ref.-Nr.: 595326944"), //
+                        hasAmount("EUR", 36.99), hasGrossValue("EUR", 36.99 + 0.07), //
+                        hasTaxes("EUR", 0.07), hasFees("EUR", 0.00))));
+
+        // check sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2025-04-15T00:00"), hasShares(4.1955), //
+                        hasSource("Depotauszug13.txt"), //
+                        hasNote("Ref.-Nr.: 595326952"), //
+                        hasAmount("EUR", 21.29), hasGrossValue("EUR", 21.29), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2025-04-15T00:00"), hasShares(0.2079), //
+                        hasSource("Depotauszug13.txt"), //
+                        hasNote("Ref.-Nr.: 595326959"), //
+                        hasAmount("EUR", 21.18), hasGrossValue("EUR", 21.18 + 0.01), //
+                        hasTaxes("EUR", 0.01), hasFees("EUR", 0.00))));
+
+        // check buy transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2025-04-15T00:00"), hasShares(1.8838), //
+                        hasSource("Depotauszug13.txt"), //
+                        hasNote("Ref.-Nr.: 595326968"), //
+                        hasAmount("EUR", 75.82), hasGrossValue("EUR", 75.82), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2025-04-15T00:00"), hasShares(2.089), //
+                        hasSource("Depotauszug13.txt"), //
+                        hasNote("Ref.-Nr.: 595326975"), //
+                        hasAmount("EUR", 65.49), hasGrossValue("EUR", 65.49), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2025-04-15T00:00"), hasShares(10.362), //
+                        hasSource("Depotauszug13.txt"), //
+                        hasNote("Ref.-Nr.: 595326980"), //
+                        hasAmount("EUR", 64.44), hasGrossValue("EUR", 64.44), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2025-04-15T00:00"), hasShares(1.8241), //
+                        hasSource("Depotauszug13.txt"), //
+                        hasNote("Ref.-Nr.: 595326985"), //
+                        hasAmount("EUR", 60.69), hasGrossValue("EUR", 60.69), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2025-04-15T00:00"), hasShares(0.6691), //
+                        hasSource("Depotauszug13.txt"), //
+                        hasNote("Ref.-Nr.: 595326990"), //
+                        hasAmount("EUR", 20.08), hasGrossValue("EUR", 20.08), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2025-04-15T00:00"), hasShares(0.3901), //
+                        hasSource("Depotauszug13.txt"), //
+                        hasNote("Ref.-Nr.: 595326996"), //
+                        hasAmount("EUR", 17.20), hasGrossValue("EUR", 17.20), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2025-04-15T00:00"), hasShares(0.101), //
+                        hasSource("Depotauszug13.txt"), //
+                        hasNote("Ref.-Nr.: 595327001"), //
+                        hasAmount("EUR", 9.74), hasGrossValue("EUR", 9.74), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 }
