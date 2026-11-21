@@ -237,6 +237,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         // check tax refund transaction
         assertThat(results, hasItem(taxRefund( //
                         hasDate("2014-03-10T00:00"), hasShares(0.1318), //
+                        hasSecurity(hasIsin("FR0010135103")), //
                         hasSource("Kauf04.txt"), //
                         hasNote("Zwischengewinn 0,17 EUR | Ref.-Nr.: O:002831939:1"), //
                         hasAmount("EUR", 0.05), hasGrossValue("EUR", 0.05), //
@@ -1140,46 +1141,55 @@ public class QuirinPrivatbankAGPDFExtractorTest
                         hasName("Dimensional Fds-Emerg.Mkts Va. Registered Shares EUR Dis.o.N."), //
                         hasCurrencyCode("EUR"))));
 
-        // assert transaction
+        // check deposit transaction
         assertThat(results, hasItem(deposit(hasDate("2019-05-28"), hasAmount("EUR", 3000.00), //
                         hasSource("Depotauszug01.txt"), hasNote("Kontoübertrag 1197537 | Ref.-Nr.: 86991330"))));
 
-        // assert transaction
+        // check deposit transaction
         assertThat(results, hasItem(deposit(hasDate("2019-12-19"), hasAmount("EUR", 5000.00), //
                         hasSource("Depotauszug01.txt"), hasNote("Sammelgutschrift | Ref.-Nr.: 105892216"))));
 
-        // assert transaction
+        // check deposit transaction
         assertThat(results, hasItem(deposit(hasDate("2020-01-31"), hasAmount("EUR", 2.84), //
                         hasSource("Depotauszug01.txt"), hasNote("Interne Buchung | Ref.-Nr.: 110934428"))));
 
-        // assert transaction
+        // check deposit transaction
         assertThat(results, hasItem(deposit(hasDate("2019-12-27"), hasAmount("EUR", 2000.00), //
-                        hasSource("Depotauszug01.txt"),
+                        hasSource("Depotauszug01.txt"), //
                         hasNote("Überweisungsgutschrift Inland | Ref.-Nr.: 106509889"))));
 
-        // assert transaction
+        // check removal transaction
         assertThat(results, hasItem(removal(hasDate("2019-12-19"), hasAmount("EUR", 5002.84), //
                         hasSource("Depotauszug01.txt"), hasNote("Rücküberweisung Inland | Ref.-Nr.: 106317528"))));
 
-        // assert transaction
+        // check tax refund transaction
         assertThat(results, hasItem(taxRefund(hasDate("2020-06-12"), hasAmount("EUR", 36.82), //
                         hasSource("Depotauszug01.txt"), hasNote("Steueroptimierung | Ref.-Nr.: 135435928"))));
 
-        // assert transaction
+        // check tax refund transaction
         assertThat(results, hasItem(taxRefund(hasDate("2020-01-03"), hasAmount("EUR", 0.40), //
                         hasSource("Depotauszug01.txt"), hasNote("Steueroptimierung | Ref.-Nr.: 107410183"))));
 
-        // assert transaction
-        assertThat(results, hasItem(fee(hasDate("2019-08-31"), hasAmount("EUR", 5.75), //
-                        hasSource("Depotauszug01.txt"), hasNote("Vermögensverwaltungshonorar | Ref.-Nr.: 94613532"))));
+        // check fees transaction
+        assertThat(results, hasItem(fee( //
+                        hasDate("2019-08-31"), //
+                        hasSource("Depotauszug01.txt"), //
+                        hasNote("Vermögensverwaltungshonorar | Ref.-Nr.: 94613532"), //
+                        hasAmount("EUR", 5.75), hasGrossValue("EUR", 5.75), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
-        // assert transaction
-        assertThat(results, hasItem(fee(hasDate("2019-09-30"), hasAmount("EUR", 6.98), //
-                        hasSource("Depotauszug01.txt"), hasNote("Vermögensverwaltungshonorar | Ref.-Nr.: 97492689"))));
+        // check fees transaction
+        assertThat(results, hasItem(fee( //
+                        hasDate("2019-09-30"), //
+                        hasSource("Depotauszug01.txt"), //
+                        hasNote("Vermögensverwaltungshonorar | Ref.-Nr.: 97492689"), //
+                        hasAmount("EUR", 6.98), hasGrossValue("EUR", 6.98), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check buy transaction
         assertThat(results, hasItem(purchase( //
                         hasDate("2020-12-10T00:00"), hasShares(16.091), //
+                        hasSecurity(hasIsin("IE00BL25JM42")), //
                         hasSource("Depotauszug01.txt"), //
                         hasNote("Ref.-Nr.: 174680182"), //
                         hasAmount("EUR", 428.06), hasGrossValue("EUR", 428.06), //
@@ -1188,6 +1198,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         // check buy transaction
         assertThat(results, hasItem(purchase( //
                         hasDate("2020-06-03T00:00"), hasShares(102.054), //
+                        hasSecurity(hasIsin("LU1681045370")), //
                         hasSource("Depotauszug01.txt"), //
                         hasNote("Ref.-Nr.: 133305911"), //
                         hasAmount("EUR", 408.26), hasGrossValue("EUR", 408.26), //
@@ -1196,6 +1207,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         // check taxes transaction
         assertThat(results, hasItem(taxes( //
                         hasDate("2020-01-02T00:00"), hasShares(28.476), //
+                        hasSecurity(hasIsin("IE00BCBJG560")), //
                         hasSource("Depotauszug01.txt"), //
                         hasNote("Thesaurierung | Ref.-Nr.: 111353113"), //
                         hasAmount("EUR", 0.40), hasGrossValue("EUR", 0.40), //
@@ -1204,6 +1216,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         // check taxes transaction
         assertThat(results, hasItem(taxes( //
                         hasDate("2020-01-03T00:00"), hasShares(449.231), //
+                        hasSecurity(hasIsin("LU1681045370")), //
                         hasSource("Depotauszug01.txt"), //
                         hasNote("Thesaurierung | Ref.-Nr.: 111727648"), //
                         hasAmount("EUR", 0.49), hasGrossValue("EUR", 0.49), //
@@ -1212,6 +1225,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         // check buy transaction
         assertThat(results, hasItem(purchase( //
                         hasDate("2019-05-08T00:00"), hasShares(3.648), //
+                        hasSecurity(hasIsin("IE00BCBJG560")), //
                         hasSource("Depotauszug01.txt"), //
                         hasNote("Ref.-Nr.: 85249245"), //
                         hasAmount("EUR", 235.86), hasGrossValue("EUR", 235.86), //
@@ -1220,6 +1234,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         // check sell transaction
         assertThat(results, hasItem(sale( //
                         hasDate("2020-01-03T00:00"), hasShares(10.763), //
+                        hasSecurity(hasIsin("IE00B42THM37")), //
                         hasSource("Depotauszug01.txt"), //
                         hasNote("Ref.-Nr.: 106663542"), //
                         hasAmount("EUR", 110.86), hasGrossValue("EUR", 110.86), //
@@ -1238,11 +1253,11 @@ public class QuirinPrivatbankAGPDFExtractorTest
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(10L));
         assertThat(countBuySell(results), is(10L));
-        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransactions(results), is(2L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
         assertThat(countSkippedItems(results), is(0L));
-        assertThat(results.size(), is(21));
+        assertThat(results.size(), is(22));
         new AssertImportActions().check(results, "EUR");
 
         // check security
@@ -1305,13 +1320,22 @@ public class QuirinPrivatbankAGPDFExtractorTest
                         hasName("Xtr.II EUR H.Yield Corp.Bond Inhaber-Anteile 1D o.N."), //
                         hasCurrencyCode("EUR"))));
 
-        // assert transaction
-        assertThat(results, hasItem(fee(hasDate("2019-12-31"), hasAmount("EUR", 1.70), //
-                        hasSource("Depotauszug02.txt"), hasNote("Vermögensverwaltungshonorar | Ref.-Nr.: 123458336"))));
+        // check deposit transaction
+        assertThat(results, hasItem(deposit(hasDate("2019-12-02"), hasAmount("EUR", 500.00), //
+                        hasSource("Depotauszug02.txt"), hasNote("Überweisungsgutschrift aus dem Ausland | Ref.-Nr.: 123453609"))));
+
+        // check fees transaction
+        assertThat(results, hasItem(fee( //
+                        hasDate("2019-12-31"), //
+                        hasSource("Depotauszug02.txt"), //
+                        hasNote("Vermögensverwaltungshonorar | Ref.-Nr.: 123458336"), //
+                        hasAmount("EUR", 1.70), hasGrossValue("EUR", 1.70), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check buy transaction
         assertThat(results, hasItem(purchase( //
                         hasDate("2019-12-02T00:00"), hasShares(4.466), //
+                        hasSecurity(hasIsin("LU1931974692")), //
                         hasSource("Depotauszug02.txt"), //
                         hasNote("Ref.-Nr.: 123456385"), //
                         hasAmount("EUR", 96.46), hasGrossValue("EUR", 96.46), //
@@ -1320,6 +1344,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         // check buy transaction
         assertThat(results, hasItem(purchase( //
                         hasDate("2019-12-02T00:00"), hasShares(0.526), //
+                        hasSecurity(hasIsin("LU1650487413")), //
                         hasSource("Depotauszug02.txt"), //
                         hasNote("Ref.-Nr.: 123456399"), //
                         hasAmount("EUR", 65.63), hasGrossValue("EUR", 65.63), //
@@ -1328,6 +1353,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         // check buy transaction
         assertThat(results, hasItem(purchase( //
                         hasDate("2019-12-02T00:00"), hasShares(11.802), //
+                        hasSecurity(hasIsin("IE00BDBRDM35")), //
                         hasSource("Depotauszug02.txt"), //
                         hasNote("Ref.-Nr.: 123456407"), //
                         hasAmount("EUR", 63.23), hasGrossValue("EUR", 63.23), //
@@ -1336,6 +1362,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         // check buy transaction
         assertThat(results, hasItem(purchase( //
                         hasDate("2019-12-02T00:00"), hasShares(2.079), //
+                        hasSecurity(hasIsin("IE00BL25JN58")), //
                         hasSource("Depotauszug02.txt"), //
                         hasNote("Ref.-Nr.: 123456416"), //
                         hasAmount("EUR", 61.07), hasGrossValue("EUR", 61.07), //
@@ -1344,6 +1371,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         // check buy transaction
         assertThat(results, hasItem(purchase( //
                         hasDate("2019-12-02T00:00"), hasShares(2.338), //
+                        hasSecurity(hasIsin("IE00BFY0GT14")), //
                         hasSource("Depotauszug02.txt"), //
                         hasNote("Ref.-Nr.: 123456427"), //
                         hasAmount("EUR", 49.88), hasGrossValue("EUR", 49.88), //
@@ -1352,6 +1380,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         // check buy transaction
         assertThat(results, hasItem(purchase( //
                         hasDate("2019-12-02T00:00"), hasShares(0.946), //
+                        hasSecurity(hasIsin("LU2037748774")), //
                         hasSource("Depotauszug02.txt"), //
                         hasNote("Ref.-Nr.: 123456431"), //
                         hasAmount("EUR", 47.53), hasGrossValue("EUR", 47.53), //
@@ -1360,6 +1389,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         // check buy transaction
         assertThat(results, hasItem(purchase( //
                         hasDate("2019-12-02T00:00"), hasShares(1.181), //
+                        hasSecurity(hasIsin("IE00BL25JP72")), //
                         hasSource("Depotauszug02.txt"), //
                         hasNote("Ref.-Nr.: 123456440"), //
                         hasAmount("EUR", 45.93), hasGrossValue("EUR", 45.93), //
@@ -1368,6 +1398,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         // check buy transaction
         assertThat(results, hasItem(purchase( //
                         hasDate("2019-12-02T00:00"), hasShares(2.186), //
+                        hasSecurity(hasIsin("LU1931975079")), //
                         hasSource("Depotauszug02.txt"), //
                         hasNote("Ref.-Nr.: 123456446"), //
                         hasAmount("EUR", 45.65), hasGrossValue("EUR", 45.65), //
@@ -1376,6 +1407,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         // check buy transaction
         assertThat(results, hasItem(purchase( //
                         hasDate("2019-12-02T00:00"), hasShares(1.245), //
+                        hasSecurity(hasIsin("IE00BKM4GZ66")), //
                         hasSource("Depotauszug02.txt"), //
                         hasNote("Ref.-Nr.: 123456450"), //
                         hasAmount("EUR", 34.89), hasGrossValue("EUR", 34.89), //
@@ -1384,6 +1416,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         // check buy transaction
         assertThat(results, hasItem(purchase( //
                         hasDate("2019-12-02T00:00"), hasShares(1.651), //
+                        hasSecurity(hasIsin("LU1109942653")), //
                         hasSource("Depotauszug02.txt"), //
                         hasNote("Ref.-Nr.: 123456453"), //
                         hasAmount("EUR", 28.83), hasGrossValue("EUR", 28.83), //
@@ -1409,25 +1442,34 @@ public class QuirinPrivatbankAGPDFExtractorTest
         assertThat(results.size(), is(4));
         new AssertImportActions().check(results, "EUR");
 
-        // assert transaction
+        // check taxes transaction
         assertThat(results, hasItem(taxes(hasDate("2010-06-30"), hasAmount("EUR", 1.28), //
-                        hasSource("Depotauszug03.txt"),
+                        hasSource("Depotauszug03.txt"), //
                         hasNote("Steuerbuchung Abgeltungsteuer | Ref.-Nr.: H-0139925023"))));
 
-        // assert transaction
-        assertThat(results, hasItem(fee(hasDate("2010-06-30"), hasAmount("EUR", 75.00), //
-                        hasSource("Depotauszug03.txt"),
-                        hasNote("Flatrate Gebühren 01.06.2010 - 30.06.2010 | Ref.-Nr.: KA-0139816662"))));
+        // check fees transaction
+        assertThat(results, hasItem(fee( //
+                        hasDate("2010-06-30"), //
+                        hasSource("Depotauszug03.txt"), //
+                        hasNote("Flatrate Gebühren 01.06.2010 - 30.06.2010 | Ref.-Nr.: KA-0139816662"), //
+                        hasAmount("EUR", 75.00), hasGrossValue("EUR", 75.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
-        // assert transaction
-        assertThat(results, hasItem(fee(hasDate("2010-06-30"), hasAmount("EUR", 29.55), //
-                        hasSource("Depotauszug03.txt"),
-                        hasNote("Volumen Fee Gebühren 01.04.2010 - 30.06.2010 | Ref.-Nr.: KA-0139816664"))));
+        // check fees transaction
+        assertThat(results, hasItem(fee( //
+                        hasDate("2010-06-30"), //
+                        hasSource("Depotauszug03.txt"), //
+                        hasNote("Volumen Fee Gebühren 01.04.2010 - 30.06.2010 | Ref.-Nr.: KA-0139816664"), //
+                        hasAmount("EUR", 29.55), hasGrossValue("EUR", 29.55), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
-        // assert transaction
-        assertThat(results, hasItem(interest(hasDate("2010-06-30"), hasAmount("EUR", 4.61), //
-                        hasSource("Depotauszug03.txt"),
-                        hasNote("Haben-Zinsen Kontoabschluss | Ref.-Nr.: KA-0139907281"))));
+        // check interest transaction
+        assertThat(results, hasItem(interest( //
+                        hasDate("2010-06-30"), //
+                        hasSource("Depotauszug03.txt"), //
+                        hasNote("Haben-Zinsen Kontoabschluss | Ref.-Nr.: KA-0139907281"), //
+                        hasAmount("EUR", 4.61), hasGrossValue("EUR", 4.61), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -1449,220 +1491,286 @@ public class QuirinPrivatbankAGPDFExtractorTest
         assertThat(results.size(), is(43));
         new AssertImportActions().check(results, "EUR");
 
-        // assert transaction
+        // check taxes transaction
         assertThat(results, hasItem(taxes(hasDate("2010-07-30"), hasAmount("EUR", 0.73), //
-                        hasSource("Depotauszug04.txt"),
+                        hasSource("Depotauszug04.txt"), //
                         hasNote("Steuerbuchung Abgeltungsteuer | Ref.-Nr.: H-0144748177"))));
 
-        // assert transaction
+        // check taxes transaction
         assertThat(results, hasItem(taxes(hasDate("2010-07-30"), hasAmount("EUR", 3.77), //
-                        hasSource("Depotauszug04.txt"),
+                        hasSource("Depotauszug04.txt"), //
                         hasNote("Steuerbuchung Abgeltungsteuer | Ref.-Nr.: H-0144754954"))));
 
-        // assert transaction
+        // check taxes transaction
         assertThat(results, hasItem(taxes(hasDate("2010-07-30"), hasAmount("EUR", 1.59), //
-                        hasSource("Depotauszug04.txt"),
+                        hasSource("Depotauszug04.txt"), //
                         hasNote("Steuerbuchung Abgeltungsteuer | Ref.-Nr.: H-0144767171"))));
 
-        // assert transaction
+        // check taxes transaction
         assertThat(results, hasItem(taxes(hasDate("2010-07-30"), hasAmount("EUR", 0.28), //
-                        hasSource("Depotauszug04.txt"),
+                        hasSource("Depotauszug04.txt"), //
                         hasNote("Steuerbuchung Abgeltungsteuer | Ref.-Nr.: H-0144772794"))));
 
-        // assert transaction
+        // check taxes transaction
         assertThat(results, hasItem(taxes(hasDate("2010-07-30"), hasAmount("EUR", 0.24), //
-                        hasSource("Depotauszug04.txt"),
+                        hasSource("Depotauszug04.txt"), //
                         hasNote("Steuerbuchung Abgeltungsteuer | Ref.-Nr.: H-0144774420"))));
 
-        // assert transaction
+        // check taxes transaction
         assertThat(results, hasItem(taxes(hasDate("2010-07-30"), hasAmount("EUR", 1.33), //
-                        hasSource("Depotauszug04.txt"),
+                        hasSource("Depotauszug04.txt"), //
                         hasNote("Steuerbuchung Abgeltungsteuer | Ref.-Nr.: H-0144775628"))));
 
-        // assert transaction
+        // check taxes transaction
         assertThat(results, hasItem(taxes(hasDate("2010-07-30"), hasAmount("EUR", 0.19), //
-                        hasSource("Depotauszug04.txt"),
+                        hasSource("Depotauszug04.txt"), //
                         hasNote("Steuerbuchung Abgeltungsteuer | Ref.-Nr.: H-0144776788"))));
 
-        // assert transaction
+        // check taxes transaction
         assertThat(results, hasItem(taxes(hasDate("2010-07-30"), hasAmount("EUR", 0.65), //
-                        hasSource("Depotauszug04.txt"),
+                        hasSource("Depotauszug04.txt"), //
                         hasNote("Steuerbuchung Abgeltungsteuer | Ref.-Nr.: H-0144794566"))));
 
-        // assert transaction
+        // check taxes transaction
         assertThat(results, hasItem(taxes(hasDate("2010-07-30"), hasAmount("EUR", 0.52), //
-                        hasSource("Depotauszug04.txt"),
+                        hasSource("Depotauszug04.txt"), //
                         hasNote("Steuerbuchung Abgeltungsteuer | Ref.-Nr.: H-0144796585"))));
 
-        // assert transaction
+        // check taxes transaction
         assertThat(results, hasItem(taxes(hasDate("2010-07-30"), hasAmount("EUR", 1.39), //
-                        hasSource("Depotauszug04.txt"),
+                        hasSource("Depotauszug04.txt"), //
                         hasNote("Steuerbuchung Abgeltungsteuer | Ref.-Nr.: H-0144798144"))));
 
-        // assert transaction
+        // check taxes transaction
         assertThat(results, hasItem(taxes(hasDate("2010-07-30"), hasAmount("EUR", 0.19), //
-                        hasSource("Depotauszug04.txt"),
+                        hasSource("Depotauszug04.txt"), //
                         hasNote("Steuerbuchung Abgeltungsteuer | Ref.-Nr.: H-0144802453"))));
 
-        // assert transaction
+        // check taxes transaction
         assertThat(results, hasItem(taxes(hasDate("2010-07-30"), hasAmount("EUR", 1.20), //
-                        hasSource("Depotauszug04.txt"),
+                        hasSource("Depotauszug04.txt"), //
                         hasNote("Steuerbuchung Abgeltungsteuer | Ref.-Nr.: H-0144802618"))));
 
-        // assert transaction
+        // check taxes transaction
         assertThat(results, hasItem(taxes(hasDate("2010-07-30"), hasAmount("EUR", 10.57), //
-                        hasSource("Depotauszug04.txt"),
+                        hasSource("Depotauszug04.txt"), //
                         hasNote("Steuerbuchung Abgeltungsteuer | Ref.-Nr.: H-0144827860"))));
 
-        // assert transaction
+        // check taxes transaction
         assertThat(results, hasItem(taxes(hasDate("2010-07-30"), hasAmount("EUR", 0.07), //
-                        hasSource("Depotauszug04.txt"),
+                        hasSource("Depotauszug04.txt"), //
                         hasNote("Steuerbuchung Abgeltungsteuer | Ref.-Nr.: H-0144835278"))));
 
-        // assert transaction
+        // check taxes transaction
         assertThat(results, hasItem(taxes(hasDate("2010-07-30"), hasAmount("EUR", 2.52), //
-                        hasSource("Depotauszug04.txt"),
+                        hasSource("Depotauszug04.txt"), //
                         hasNote("Steuerbuchung Abgeltungsteuer | Ref.-Nr.: H-0144836892"))));
 
-        // assert transaction
+        // check taxes transaction
         assertThat(results, hasItem(taxes(hasDate("2010-07-30"), hasAmount("EUR", 0.35), //
-                        hasSource("Depotauszug04.txt"),
+                        hasSource("Depotauszug04.txt"), //
                         hasNote("Steuerbuchung Abgeltungsteuer | Ref.-Nr.: H-0144976464"))));
 
-        // assert transaction
+        // check taxes transaction
         assertThat(results, hasItem(taxes(hasDate("2010-07-30"), hasAmount("EUR", 0.56), //
-                        hasSource("Depotauszug04.txt"),
+                        hasSource("Depotauszug04.txt"), //
                         hasNote("Steuerbuchung Abgeltungsteuer | Ref.-Nr.: H-0144989517"))));
 
-        // assert transaction
+        // check taxes transaction
         assertThat(results, hasItem(taxes(hasDate("2010-07-30"), hasAmount("EUR", 0.73), //
-                        hasSource("Depotauszug04.txt"),
+                        hasSource("Depotauszug04.txt"), //
                         hasNote("Steuerbuchung Abgeltungsteuer | Ref.-Nr.: H-0144994720"))));
 
-        // assert transaction
+        // check taxes transaction
         assertThat(results, hasItem(taxes(hasDate("2010-07-30"), hasAmount("EUR", 0.24), //
-                        hasSource("Depotauszug04.txt"),
+                        hasSource("Depotauszug04.txt"), //
                         hasNote("Steuerbuchung Abgeltungsteuer | Ref.-Nr.: H-0144996297"))));
 
-        // assert transaction
+        // check taxes transaction
         assertThat(results, hasItem(taxes(hasDate("2010-07-30"), hasAmount("EUR", 0.26), //
-                        hasSource("Depotauszug04.txt"),
+                        hasSource("Depotauszug04.txt"), //
                         hasNote("Steuerbuchung Abgeltungsteuer | Ref.-Nr.: H-0144996479"))));
 
-        // assert transaction
+        // check taxes transaction
         assertThat(results, hasItem(taxes(hasDate("2010-07-30"), hasAmount("EUR", 0.72), //
-                        hasSource("Depotauszug04.txt"),
+                        hasSource("Depotauszug04.txt"), //
                         hasNote("Steuerbuchung Abgeltungsteuer | Ref.-Nr.: H-0144999672"))));
 
-        // assert transaction
-        assertThat(results, hasItem(fee(hasDate("2010-07-30"), hasAmount("EUR", 75.00), //
-                        hasSource("Depotauszug04.txt"),
-                        hasNote("Flatrate Gebühren 01.07.2010 - 30.07.2010 | Ref.-Nr.: KA-0144715444"))));
+        // check fees transaction
+        assertThat(results, hasItem(fee( //
+                        hasDate("2010-07-30"), //
+                        hasSource("Depotauszug04.txt"), //
+                        hasNote("Flatrate Gebühren 01.07.2010 - 30.07.2010 | Ref.-Nr.: KA-0144715444"), //
+                        hasAmount("EUR", 75.00), hasGrossValue("EUR", 75.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
-        // assert transaction
-        assertThat(results, hasItem(feeRefund(hasDate("2010-07-30"), hasAmount("EUR", 2.63), //
-                        hasSource("Depotauszug04.txt"),
-                        hasNote("Bestandsprovision LU0140363002 | Ref.-Nr.: KA -0144680022"))));
+        // check fee refund transaction
+        assertThat(results, hasItem(feeRefund( //
+                        hasDate("2010-07-30"), //
+                        hasSource("Depotauszug04.txt"), //
+                        hasNote("Bestandsprovision LU0140363002 | Ref.-Nr.: KA -0144680022"), //
+                        hasAmount("EUR", 2.63), hasGrossValue("EUR", 2.63), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
-        // assert transaction
-        assertThat(results, hasItem(feeRefund(hasDate("2010-07-30"), hasAmount("EUR", 2.03), //
-                        hasSource("Depotauszug04.txt"),
-                        hasNote("Bestandsprovision LU0303756539 | Ref.-Nr.: KA-0144683460"))));
+        // check fee refund transaction
+        assertThat(results, hasItem(feeRefund( //
+                        hasDate("2010-07-30"), //
+                        hasSource("Depotauszug04.txt"), //
+                        hasNote("Bestandsprovision LU0303756539 | Ref.-Nr.: KA-0144683460"), //
+                        hasAmount("EUR", 2.03), hasGrossValue("EUR", 2.03), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
-        // assert transaction
-        assertThat(results, hasItem(feeRefund(hasDate("2010-07-30"), hasAmount("EUR", 1.02), //
-                        hasSource("Depotauszug04.txt"),
-                        hasNote("Bestandsprovision LU0075056555 | Ref.-Nr.: KA-0144689194"))));
+        // check fee refund transaction
+        assertThat(results, hasItem(feeRefund( //
+                        hasDate("2010-07-30"), //
+                        hasSource("Depotauszug04.txt"), //
+                        hasNote("Bestandsprovision LU0075056555 | Ref.-Nr.: KA-0144689194"), //
+                        hasAmount("EUR", 1.02), hasGrossValue("EUR", 1.02), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
-        // assert transaction
-        assertThat(results, hasItem(feeRefund(hasDate("2010-07-30"), hasAmount("EUR", 0.85), //
-                        hasSource("Depotauszug04.txt"),
-                        hasNote("Bestandsprovision LU0066902890 | Ref.-Nr.: KA-0144691722"))));
+        // check fee refund transaction
+        assertThat(results, hasItem(feeRefund( //
+                        hasDate("2010-07-30"), //
+                        hasSource("Depotauszug04.txt"), //
+                        hasNote("Bestandsprovision LU0066902890 | Ref.-Nr.: KA-0144691722"), //
+                        hasAmount("EUR", 0.85), hasGrossValue("EUR", 0.85), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
-        // assert transaction
-        assertThat(results, hasItem(feeRefund(hasDate("2010-07-30"), hasAmount("EUR", 0.90), //
-                        hasSource("Depotauszug04.txt"),
-                        hasNote("Bestandsprovision LU0121747215 | Ref.-Nr.: KA-0144692430"))));
+        // check fee refund transaction
+        assertThat(results, hasItem(feeRefund( //
+                        hasDate("2010-07-30"), //
+                        hasSource("Depotauszug04.txt"), //
+                        hasNote("Bestandsprovision LU0121747215 | Ref.-Nr.: KA-0144692430"), //
+                        hasAmount("EUR", 0.90), hasGrossValue("EUR", 0.90), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
-        // assert transaction
-        assertThat(results, hasItem(feeRefund(hasDate("2010-07-30"), hasAmount("EUR", 3.12), //
-                        hasSource("Depotauszug04.txt"),
-                        hasNote("Bestandsprovision DE0008490822 | Ref.-Nr.: KA-0144692886"))));
+        // check fee refund transaction
+        assertThat(results, hasItem(feeRefund( //
+                        hasDate("2010-07-30"), //
+                        hasSource("Depotauszug04.txt"), //
+                        hasNote("Bestandsprovision DE0008490822 | Ref.-Nr.: KA-0144692886"), //
+                        hasAmount("EUR", 3.12), hasGrossValue("EUR", 3.12), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
-        // assert transaction
-        assertThat(results, hasItem(feeRefund(hasDate("2010-07-30"), hasAmount("EUR", 4.78), //
-                        hasSource("Depotauszug04.txt"),
-                        hasNote("Bestandsprovision LU0052750758 | Ref.-Nr.: KA-0144693436"))));
+        // check fee refund transaction
+        assertThat(results, hasItem(feeRefund( //
+                        hasDate("2010-07-30"), //
+                        hasSource("Depotauszug04.txt"), //
+                        hasNote("Bestandsprovision LU0052750758 | Ref.-Nr.: KA-0144693436"), //
+                        hasAmount("EUR", 4.78), hasGrossValue("EUR", 4.78), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
-        // assert transaction
-        assertThat(results, hasItem(feeRefund(hasDate("2010-07-30"), hasAmount("EUR", 2.10), //
-                        hasSource("Depotauszug04.txt"),
-                        hasNote("Bestandsprovision LU0303756539 | Ref.-Nr.: KA-0144700356"))));
+        // check fee refund transaction
+        assertThat(results, hasItem(feeRefund( //
+                        hasDate("2010-07-30"), //
+                        hasSource("Depotauszug04.txt"), //
+                        hasNote("Bestandsprovision LU0303756539 | Ref.-Nr.: KA-0144700356"), //
+                        hasAmount("EUR", 2.10), hasGrossValue("EUR", 2.10), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
-        // assert transaction
-        assertThat(results, hasItem(feeRefund(hasDate("2010-07-30"), hasAmount("EUR", 2.59), //
-                        hasSource("Depotauszug04.txt"),
-                        hasNote("Bestandsprovision LU0140363002 | Ref.-Nr.: KA-0144701132"))));
+        // check fee refund transaction
+        assertThat(results, hasItem(feeRefund( //
+                        hasDate("2010-07-30"), //
+                        hasSource("Depotauszug04.txt"), //
+                        hasNote("Bestandsprovision LU0140363002 | Ref.-Nr.: KA-0144701132"), //
+                        hasAmount("EUR", 2.59), hasGrossValue("EUR", 2.59), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
-        // assert transaction
-        assertThat(results, hasItem(feeRefund(hasDate("2010-07-30"), hasAmount("EUR", 0.88), //
-                        hasSource("Depotauszug04.txt"),
-                        hasNote("Bestandsprovision LU0121747215 | Ref.-Nr.: KA-0144701836"))));
+        // check fee refund transaction
+        assertThat(results, hasItem(feeRefund( //
+                        hasDate("2010-07-30"), //
+                        hasSource("Depotauszug04.txt"), //
+                        hasNote("Bestandsprovision LU0121747215 | Ref.-Nr.: KA-0144701836"), //
+                        hasAmount("EUR", 0.88), hasGrossValue("EUR", 0.88), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
-        // assert transaction
-        assertThat(results, hasItem(feeRefund(hasDate("2010-07-30"), hasAmount("EUR", 4.93), //
-                        hasSource("Depotauszug04.txt"),
-                        hasNote("Bestandsprovision LU0052750758 | Ref.-Nr.: KA-01 44703846"))));
+        // check fee refund transaction
+        assertThat(results, hasItem(feeRefund( //
+                        hasDate("2010-07-30"), //
+                        hasSource("Depotauszug04.txt"), //
+                        hasNote("Bestandsprovision LU0052750758 | Ref.-Nr.: KA-01 44703846"), //
+                        hasAmount("EUR", 4.93), hasGrossValue("EUR", 4.93), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
-        // assert transaction
-        assertThat(results, hasItem(feeRefund(hasDate("2010-07-30"), hasAmount("EUR", 0.98), //
-                        hasSource("Depotauszug04.txt"),
-                        hasNote("Bestandsprovisio n LU0075056555 | Ref.-Nr.: KA-0144703918"))));
+        // check fee refund transaction
+        assertThat(results, hasItem(feeRefund( //
+                        hasDate("2010-07-30"), //
+                        hasSource("Depotauszug04.txt"), //
+                        hasNote("Bestandsprovisio n LU0075056555 | Ref.-Nr.: KA-0144703918"), //
+                        hasAmount("EUR", 0.98), hasGrossValue("EUR", 0.98), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
-        // assert transaction
-        assertThat(results, hasItem(feeRefund(hasDate("2010-07-30"), hasAmount("EUR", 0.89), //
-                        hasSource("Depotauszug04.txt"),
-                        hasNote("Bestandsprovision LU0066902890 | Ref.-Nr.: KA-0144717889"))));
+        // check fee refund transaction
+        assertThat(results, hasItem(feeRefund( //
+                        hasDate("2010-07-30"), //
+                        hasSource("Depotauszug04.txt"), //
+                        hasNote("Bestandsprovision LU0066902890 | Ref.-Nr.: KA-0144717889"), //
+                        hasAmount("EUR", 0.89), hasGrossValue("EUR", 0.89), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
-        // assert transaction
-        assertThat(results, hasItem(feeRefund(hasDate("2010-07-30"), hasAmount("EUR", 2.94), //
-                        hasSource("Depotauszug04.txt"),
-                        hasNote("Bestandsprovision DE0008490822 | Ref.-Nr.: KA-0144723419"))));
+        // check fee refund transaction
+        assertThat(results, hasItem(feeRefund( //
+                        hasDate("2010-07-30"), //
+                        hasSource("Depotauszug04.txt"), //
+                        hasNote("Bestandsprovision DE0008490822 | Ref.-Nr.: KA-0144723419"), //
+                        hasAmount("EUR", 2.94), hasGrossValue("EUR", 2.94), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
-        // assert transaction
-        assertThat(results, hasItem(feeRefund(hasDate("2010-07-30"), hasAmount("EUR", 4.83), //
-                        hasSource("Depotauszug04.txt"),
-                        hasNote("Bestandsprovision LU0052750758 | Ref.-Nr.: KA-0144724147"))));
+        // check fee refund transaction
+        assertThat(results, hasItem(feeRefund( //
+                        hasDate("2010-07-30"), //
+                        hasSource("Depotauszug04.txt"), //
+                        hasNote("Bestandsprovision LU0052750758 | Ref.-Nr.: KA-0144724147"), //
+                        hasAmount("EUR", 4.83), hasGrossValue("EUR", 4.83), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
-        // assert transaction
-        assertThat(results, hasItem(feeRefund(hasDate("2010-07-30"), hasAmount("EUR", 0.85), //
-                        hasSource("Depotauszug04.txt"),
-                        hasNote("Bestandsprovision LU0121747215 | Ref.-Nr.: KA-0144726719"))));
+        // check fee refund transaction
+        assertThat(results, hasItem(feeRefund( //
+                        hasDate("2010-07-30"), //
+                        hasSource("Depotauszug04.txt"), //
+                        hasNote("Bestandsprovision LU0121747215 | Ref.-Nr.: KA-0144726719"), //
+                        hasAmount("EUR", 0.85), hasGrossValue("EUR", 0.85), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
-        // assert transaction
-        assertThat(results, hasItem(feeRefund(hasDate("2010-07-30"), hasAmount("EUR", 2.05), //
-                        hasSource("Depotauszug04.txt"),
-                        hasNote("Bestandsprovision LU0303756539 | Ref.-Nr.: KA-0144732844"))));
+        // check fee refund transaction
+        assertThat(results, hasItem(feeRefund( //
+                        hasDate("2010-07-30"), //
+                        hasSource("Depotauszug04.txt"), //
+                        hasNote("Bestandsprovision LU0303756539 | Ref.-Nr.: KA-0144732844"), //
+                        hasAmount("EUR", 2.05), hasGrossValue("EUR", 2.05), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
-        // assert transaction
-        assertThat(results, hasItem(feeRefund(hasDate("2010-07-30"), hasAmount("EUR", 2.61), //
-                        hasSource("Depotauszug04.txt"),
-                        hasNote("Bestandsprovision DE0008490822 | Ref.-Nr.: KA-0144735471"))));
+        // check fee refund transaction
+        assertThat(results, hasItem(feeRefund( //
+                        hasDate("2010-07-30"), //
+                        hasSource("Depotauszug04.txt"), //
+                        hasNote("Bestandsprovision DE0008490822 | Ref.-Nr.: KA-0144735471"), //
+                        hasAmount("EUR", 2.61), hasGrossValue("EUR", 2.61), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
-        // assert transaction
-        assertThat(results, hasItem(feeRefund(hasDate("2010-07-30"), hasAmount("EUR", 0.86), //
-                        hasSource("Depotauszug04.txt"),
-                        hasNote("Bestandsprovision LU0066902890 | Ref.-Nr.: KA-0144736296"))));
+        // check fee refund transaction
+        assertThat(results, hasItem(feeRefund( //
+                        hasDate("2010-07-30"), //
+                        hasSource("Depotauszug04.txt"), //
+                        hasNote("Bestandsprovision LU0066902890 | Ref.-Nr.: KA-0144736296"), //
+                        hasAmount("EUR", 0.86), hasGrossValue("EUR", 0.86), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
-        // assert transaction
-        assertThat(results, hasItem(feeRefund(hasDate("2010-07-30"), hasAmount("EUR", 0.94), //
-                        hasSource("Depotauszug04.txt"),
-                        hasNote("Bestandsprovision LU0075056555 | Ref.-Nr.: KA-0144736391"))));
+        // check fee refund transaction
+        assertThat(results, hasItem(feeRefund( //
+                        hasDate("2010-07-30"), //
+                        hasSource("Depotauszug04.txt"), //
+                        hasNote("Bestandsprovision LU0075056555 | Ref.-Nr.: KA-0144736391"), //
+                        hasAmount("EUR", 0.94), hasGrossValue("EUR", 0.94), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
-        // assert transaction
-        assertThat(results, hasItem(feeRefund(hasDate("2010-07-30"), hasAmount("EUR", 2.58), //
-                        hasSource("Depotauszug04.txt"),
-                        hasNote("Bestandsprovision LU0140363002 | Ref.-Nr.: KA-01 44738244"))));
+        // check fee refund transaction
+        assertThat(results, hasItem(feeRefund( //
+                        hasDate("2010-07-30"), //
+                        hasSource("Depotauszug04.txt"), //
+                        hasNote("Bestandsprovision LU0140363002 | Ref.-Nr.: KA-01 44738244"), //
+                        hasAmount("EUR", 2.58), hasGrossValue("EUR", 2.58), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -1768,17 +1876,22 @@ public class QuirinPrivatbankAGPDFExtractorTest
                         hasName("iShsIII-MSCI EM Sm.Cap U.ETF Registered Shares o.N."), //
                         hasCurrencyCode("EUR"))));
 
-        // assert transaction
+        // check deposit transaction
         assertThat(results, hasItem(deposit(hasDate("2023-10-02"), hasAmount("EUR", 250.00), //
                         hasSource("Depotauszug05.txt"), hasNote("Sammelgutschrift | Ref.-Nr.: 4*******2"))));
 
-        // assert transaction
-        assertThat(results, hasItem(fee(hasDate("2023-10-16"), hasAmount("EUR", 0.48), //
-                        hasSource("Depotauszug05.txt"), hasNote("Vermögensverwaltungshonorar | Ref.-Nr.: 4******6"))));
+        // check fees transaction
+        assertThat(results, hasItem(fee( //
+                        hasDate("2023-10-16"), //
+                        hasSource("Depotauszug05.txt"), //
+                        hasNote("Vermögensverwaltungshonorar | Ref.-Nr.: 4******6"), //
+                        hasAmount("EUR", 0.48), hasGrossValue("EUR", 0.48), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check buy transaction
         assertThat(results, hasItem(purchase( //
                         hasDate("2023-10-05T00:00"), hasShares(1.6866), //
+                        hasSecurity(hasIsin("LU1931974692")), //
                         hasSource("Depotauszug05.txt"), //
                         hasNote("Ref.-Nr.: 403747782"), //
                         hasAmount("EUR", 45.77), hasGrossValue("EUR", 45.77), //
@@ -1787,6 +1900,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         // check buy transaction
         assertThat(results, hasItem(purchase( //
                         hasDate("2023-10-05T00:00"), hasShares(1.4495), //
+                        hasSecurity(hasIsin("IE00BFY0GT14")), //
                         hasSource("Depotauszug05.txt"), //
                         hasNote("Ref.-Nr.: 403747787"), //
                         hasAmount("EUR", 40.37), hasGrossValue("EUR", 40.37), //
@@ -1795,6 +1909,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         // check buy transaction
         assertThat(results, hasItem(purchase( //
                         hasDate("2023-10-05T00:00"), hasShares(6.3384), //
+                        hasSecurity(hasIsin("IE00BF4RFH31")), //
                         hasSource("Depotauszug05.txt"), //
                         hasNote("Ref.-Nr.: 403747790"), //
                         hasAmount("EUR", 36.34), hasGrossValue("EUR", 36.34), //
@@ -1803,6 +1918,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         // check buy transaction
         assertThat(results, hasItem(purchase( //
                         hasDate("2023-10-05T00:00"), hasShares(0.8758), //
+                        hasSecurity(hasIsin("IE00BL25JM42")), //
                         hasSource("Depotauszug05.txt"), //
                         hasNote("Ref.-Nr.: 403747793"), //
                         hasAmount("EUR", 31.46), hasGrossValue("EUR", 31.46), //
@@ -1811,6 +1927,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         // check buy transaction
         assertThat(results, hasItem(purchase( //
                         hasDate("2023-10-05T00:00"), hasShares(0.612), //
+                        hasSecurity(hasIsin("IE00BKM4GZ66")), //
                         hasSource("Depotauszug05.txt"), //
                         hasNote("Ref.-Nr.: 403747796"), //
                         hasAmount("EUR", 16.71), hasGrossValue("EUR", 16.71), //
@@ -1819,6 +1936,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         // check buy transaction
         assertThat(results, hasItem(purchase( //
                         hasDate("2023-10-05T00:00"), hasShares(2.7067), //
+                        hasSecurity(hasIsin("IE00BDBRDM35")), //
                         hasSource("Depotauszug05.txt"), //
                         hasNote("Ref.-Nr.: 403747798"), //
                         hasAmount("EUR", 12.08), hasGrossValue("EUR", 12.08), //
@@ -1827,6 +1945,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         // check buy transaction
         assertThat(results, hasItem(purchase( //
                         hasDate("2023-10-05T00:00"), hasShares(0.7906), //
+                        hasSecurity(hasIsin("LU1109942653")), //
                         hasSource("Depotauszug05.txt"), //
                         hasNote("Ref.-Nr.: 403747802"), //
                         hasAmount("EUR", 12.02), hasGrossValue("EUR", 12.02), //
@@ -1835,6 +1954,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         // check buy transaction
         assertThat(results, hasItem(purchase( //
                         hasDate("2023-10-05T00:00"), hasShares(0.0743), //
+                        hasSecurity(hasIsin("FR0010754135")), //
                         hasSource("Depotauszug05.txt"), //
                         hasNote("Ref.-Nr.: 403747807"), //
                         hasAmount("EUR", 11.91), hasGrossValue("EUR", 11.91), //
@@ -1843,6 +1963,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         // check buy transaction
         assertThat(results, hasItem(purchase( //
                         hasDate("2023-10-05T00:00"), hasShares(0.543), //
+                        hasSecurity(hasIsin("LU1931975079")), //
                         hasSource("Depotauszug05.txt"), //
                         hasNote("Ref.-Nr.: 403747811"), //
                         hasAmount("EUR", 9.55), hasGrossValue("EUR", 9.55), //
@@ -1851,6 +1972,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         // check buy transaction
         assertThat(results, hasItem(purchase( //
                         hasDate("2023-10-05T00:00"), hasShares(0.179), //
+                        hasSecurity(hasIsin("LU2037748774")), //
                         hasSource("Depotauszug05.txt"), //
                         hasNote("Ref.-Nr.: 403747815"), //
                         hasAmount("EUR", 8.80), hasGrossValue("EUR", 8.80), //
@@ -1859,6 +1981,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         // check buy transaction
         assertThat(results, hasItem(purchase( //
                         hasDate("2023-10-05T00:00"), hasShares(0.2334), //
+                        hasSecurity(hasIsin("IE00BL25JN58")), //
                         hasSource("Depotauszug05.txt"), //
                         hasNote("Ref.-Nr.: 403747821"), //
                         hasAmount("EUR", 8.22), hasGrossValue("EUR", 8.22), //
@@ -1867,6 +1990,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         // check buy transaction
         assertThat(results, hasItem(purchase( //
                         hasDate("2023-10-05T00:00"), hasShares(0.2069), //
+                        hasSecurity(hasIsin("IE00BGJWWY63")), //
                         hasSource("Depotauszug05.txt"), //
                         hasNote("Ref.-Nr.: 403747828"), //
                         hasAmount("EUR", 7.72), hasGrossValue("EUR", 7.72), //
@@ -1875,6 +1999,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         // check buy transaction
         assertThat(results, hasItem(purchase( //
                         hasDate("2023-10-05T00:00"), hasShares(0.1258), //
+                        hasSecurity(hasIsin("IE00BG0SKF03")), //
                         hasSource("Depotauszug05.txt"), //
                         hasNote("Ref.-Nr.: 403747834"), //
                         hasAmount("EUR", 4.66), hasGrossValue("EUR", 4.66), //
@@ -1883,6 +2008,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         // check buy transaction
         assertThat(results, hasItem(purchase( //
                         hasDate("2023-10-05T00:00"), hasShares(0.0482), //
+                        hasSecurity(hasIsin("IE00B3F81G20")), //
                         hasSource("Depotauszug05.txt"), //
                         hasNote("Ref.-Nr.: 403747842"), //
                         hasAmount("EUR", 3.57), hasGrossValue("EUR", 3.57), //
@@ -1998,13 +2124,14 @@ public class QuirinPrivatbankAGPDFExtractorTest
                         hasName("Xtrackers II Global Gov.Bond Inhaber-Anteile 1D EUR Hgd oN"), //
                         hasCurrencyCode("EUR"))));
 
-        // assert transaction
+        // check deposit transaction
         assertThat(results, hasItem(deposit(hasDate("2021-02-23"), hasAmount("EUR", 1000.00), //
                         hasSource("Depotauszug06.txt"), hasNote("Sammelgutschrift | Ref.-Nr.: 193396101"))));
 
         // check buy transaction
         assertThat(results, hasItem(purchase( //
                         hasDate("2021-02-25T00:00"), hasShares(8.514), //
+                        hasSecurity(hasIsin("LU1931974692")), //
                         hasSource("Depotauszug06.txt"), //
                         hasNote("Ref.-Nr.: 194293223"), //
                         hasAmount("EUR", 196.50), hasGrossValue("EUR", 196.50), //
@@ -2013,6 +2140,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         // check buy transaction
         assertThat(results, hasItem(purchase( //
                         hasDate("2021-02-25T00:00"), hasShares(7.582), //
+                        hasSecurity(hasIsin("IE00BFY0GT14")), //
                         hasSource("Depotauszug06.txt"), //
                         hasNote("Ref.-Nr.: 194293228"), //
                         hasAmount("EUR", 173.09), hasGrossValue("EUR", 173.09), //
@@ -2021,6 +2149,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         // check buy transaction
         assertThat(results, hasItem(purchase( //
                         hasDate("2021-02-25T00:00"), hasShares(4.024), //
+                        hasSecurity(hasIsin("IE00BL25JM42")), //
                         hasSource("Depotauszug06.txt"), //
                         hasNote("Ref.-Nr.: 194293232"), //
                         hasAmount("EUR", 118.59), hasGrossValue("EUR", 118.59), //
@@ -2029,6 +2158,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         // check buy transaction
         assertThat(results, hasItem(purchase( //
                         hasDate("2021-02-25T00:00"), hasShares(2.245), //
+                        hasSecurity(hasIsin("IE00BKM4GZ66")), //
                         hasSource("Depotauszug06.txt"), //
                         hasNote("Ref.-Nr.: 194293236"), //
                         hasAmount("EUR", 70.90), hasGrossValue("EUR", 70.90), //
@@ -2037,6 +2167,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         // check buy transaction
         assertThat(results, hasItem(purchase( //
                         hasDate("2021-02-25T00:00"), hasShares(1.697), //
+                        hasSecurity(hasIsin("IE00BL25JP72")), //
                         hasSource("Depotauszug06.txt"), //
                         hasNote("Ref.-Nr.: 194293242"), //
                         hasAmount("EUR", 70.72), hasGrossValue("EUR", 70.72), //
@@ -2045,6 +2176,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         // check buy transaction
         assertThat(results, hasItem(purchase( //
                         hasDate("2021-02-25T00:00"), hasShares(0.759), //
+                        hasSecurity(hasIsin("IE00BCBJG560")), //
                         hasSource("Depotauszug06.txt"), //
                         hasNote("Ref.-Nr.: 194293246"), //
                         hasAmount("EUR", 62.76), hasGrossValue("EUR", 62.76), //
@@ -2053,6 +2185,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         // check buy transaction
         assertThat(results, hasItem(purchase( //
                         hasDate("2021-02-25T00:00"), hasShares(1.884), //
+                        hasSecurity(hasIsin("IE00BL25JN58")), //
                         hasSource("Depotauszug06.txt"), //
                         hasNote("Ref.-Nr.: 194293250"), //
                         hasAmount("EUR", 54.85), hasGrossValue("EUR", 54.85), //
@@ -2061,6 +2194,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         // check buy transaction
         assertThat(results, hasItem(purchase( //
                         hasDate("2021-02-25T00:00"), hasShares(0.341), //
+                        hasSecurity(hasIsin("LU1650487413")), //
                         hasSource("Depotauszug06.txt"), //
                         hasNote("Ref.-Nr.: 194293255"), //
                         hasAmount("EUR", 42.39), hasGrossValue("EUR", 42.39), //
@@ -2069,6 +2203,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         // check buy transaction
         assertThat(results, hasItem(purchase( //
                         hasDate("2021-02-25T00:00"), hasShares(8.058), //
+                        hasSecurity(hasIsin("IE00BDBRDM35")), //
                         hasSource("Depotauszug06.txt"), //
                         hasNote("Ref.-Nr.: 194293259"), //
                         hasAmount("EUR", 42.32), hasGrossValue("EUR", 42.32), //
@@ -2077,6 +2212,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         // check buy transaction
         assertThat(results, hasItem(purchase( //
                         hasDate("2021-02-25T00:00"), hasShares(1.857), //
+                        hasSecurity(hasIsin("LU1109942653")), //
                         hasSource("Depotauszug06.txt"), //
                         hasNote("Ref.-Nr.: 194293265"), //
                         hasAmount("EUR", 32.76), hasGrossValue("EUR", 32.76), //
@@ -2085,6 +2221,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         // check buy transaction
         assertThat(results, hasItem(purchase( //
                         hasDate("2021-02-25T00:00"), hasShares(0.615), //
+                        hasSecurity(hasIsin("LU2037748774")), //
                         hasSource("Depotauszug06.txt"), //
                         hasNote("Ref.-Nr.: 194293270"), //
                         hasAmount("EUR", 30.87), hasGrossValue("EUR", 30.87), //
@@ -2093,6 +2230,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         // check buy transaction
         assertThat(results, hasItem(purchase( //
                         hasDate("2021-02-25T00:00"), hasShares(1.39), //
+                        hasSecurity(hasIsin("LU1931975079")), //
                         hasSource("Depotauszug06.txt"), //
                         hasNote("Ref.-Nr.: 194293274"), //
                         hasAmount("EUR", 28.83), hasGrossValue("EUR", 28.83), //
@@ -2101,6 +2239,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         // check buy transaction
         assertThat(results, hasItem(purchase( //
                         hasDate("2021-02-25T00:00"), hasShares(0.624), //
+                        hasSecurity(hasIsin("IE00BG0SKF03")), //
                         hasSource("Depotauszug06.txt"), //
                         hasNote("Ref.-Nr.: 194293279"), //
                         hasAmount("EUR", 23.81), hasGrossValue("EUR", 23.81), //
@@ -2109,6 +2248,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         // check buy transaction
         assertThat(results, hasItem(purchase( //
                         hasDate("2021-02-25T00:00"), hasShares(0.23), //
+                        hasSecurity(hasIsin("IE00B3F81G20")), //
                         hasSource("Depotauszug06.txt"), //
                         hasNote("Ref.-Nr.: 194293284"), //
                         hasAmount("EUR", 15.80), hasGrossValue("EUR", 15.80), //
@@ -2117,6 +2257,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         // check buy transaction
         assertThat(results, hasItem(purchase( //
                         hasDate("2021-02-25T00:00"), hasShares(0.07), //
+                        hasSecurity(hasIsin("LU0690964092")), //
                         hasSource("Depotauszug06.txt"), //
                         hasNote("Ref.-Nr.: 194293290"), //
                         hasAmount("EUR", 15.40), hasGrossValue("EUR", 15.40), //
@@ -2125,6 +2266,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         // check buy transaction
         assertThat(results, hasItem(purchase( //
                         hasDate("2021-02-26T00:00"), hasShares(0.151), //
+                        hasSecurity(hasIsin("LU1931974692")), //
                         hasSource("Depotauszug06.txt"), //
                         hasNote("Ref.-Nr.: 194569182"), //
                         hasAmount("EUR", 3.44), hasGrossValue("EUR", 3.44), //
@@ -2133,6 +2275,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         // check buy transaction
         assertThat(results, hasItem(purchase( //
                         hasDate("2021-02-26T00:00"), hasShares(0.14), //
+                        hasSecurity(hasIsin("IE00BFY0GT14")), //
                         hasSource("Depotauszug06.txt"), //
                         hasNote("Ref.-Nr.: 194569185"), //
                         hasAmount("EUR", 3.15), hasGrossValue("EUR", 3.15), //
@@ -2141,6 +2284,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         // check buy transaction
         assertThat(results, hasItem(purchase( //
                         hasDate("2021-02-26T00:00"), hasShares(0.04), //
+                        hasSecurity(hasIsin("IE00BL25JP72")), //
                         hasSource("Depotauszug06.txt"), //
                         hasNote("Ref.-Nr.: 194569191"), //
                         hasAmount("EUR", 1.65), hasGrossValue("EUR", 1.65), //
@@ -2149,6 +2293,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         // check buy transaction
         assertThat(results, hasItem(purchase( //
                         hasDate("2021-02-26T00:00"), hasShares(0.056), //
+                        hasSecurity(hasIsin("IE00BL25JM42")), //
                         hasSource("Depotauszug06.txt"), //
                         hasNote("Ref.-Nr.: 194569195"), //
                         hasAmount("EUR", 1.62), hasGrossValue("EUR", 1.62), //
@@ -2157,6 +2302,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         // check buy transaction
         assertThat(results, hasItem(purchase( //
                         hasDate("2021-02-26T00:00"), hasShares(0.017), //
+                        hasSecurity(hasIsin("IE00BCBJG560")), //
                         hasSource("Depotauszug06.txt"), //
                         hasNote("Ref.-Nr.: 194569200"), //
                         hasAmount("EUR", 1.38), hasGrossValue("EUR", 1.38), //
@@ -2165,6 +2311,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         // check buy transaction
         assertThat(results, hasItem(purchase( //
                         hasDate("2021-02-26T00:00"), hasShares(0.035), //
+                        hasSecurity(hasIsin("IE00BKM4GZ66")), //
                         hasSource("Depotauszug06.txt"), //
                         hasNote("Ref.-Nr.: 194569205"), //
                         hasAmount("EUR", 1.08), hasGrossValue("EUR", 1.08), //
@@ -2173,6 +2320,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         // check buy transaction
         assertThat(results, hasItem(purchase( //
                         hasDate("2021-02-26T00:00"), hasShares(0.034), //
+                        hasSecurity(hasIsin("IE00BL25JN58")), //
                         hasSource("Depotauszug06.txt"), //
                         hasNote("Ref.-Nr.: 194569209"), //
                         hasAmount("EUR", 0.98), hasGrossValue("EUR", 0.98), //
@@ -2181,6 +2329,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         // check buy transaction
         assertThat(results, hasItem(purchase( //
                         hasDate("2021-02-26T00:00"), hasShares(0.108), //
+                        hasSecurity(hasIsin("IE00BDBRDM35")), //
                         hasSource("Depotauszug06.txt"), //
                         hasNote("Ref.-Nr.: 194569213"), //
                         hasAmount("EUR", 0.57), hasGrossValue("EUR", 0.57), //
@@ -2314,47 +2463,66 @@ public class QuirinPrivatbankAGPDFExtractorTest
                         hasName("Robeco C.G.Fds-R.QI.Em.Con.Eq. Actions Nominat. IE EUR o.N."), //
                         hasCurrencyCode("EUR"))));
 
-        // assert transaction
+        // check tax refund transaction
         assertThat(results, hasItem(taxRefund(hasDate("2024-04-02"), hasAmount("EUR", 56.07), //
                         hasSource("Depotauszug07.txt"), hasNote("Steueroptimierung | Ref.-Nr.: 464710285"))));
 
-        // assert transaction
-        assertThat(results, hasItem(feeRefund(hasDate("2024-03-31"), hasAmount("EUR", 2.04), //
-                        hasSource("Depotauszug07.txt"),
-                        hasNote("Bestandsprovision LU1274520086 01.01.2024 - 31.03.2024 | Ref.-Nr.: 467260165"))));
+        // check fee refund transaction
+        assertThat(results, hasItem(feeRefund( //
+                        hasDate("2024-03-31"), //
+                        hasSource("Depotauszug07.txt"), //
+                        hasNote("Bestandsprovision LU1274520086 01.01.2024 - 31.03.2024 | Ref.-Nr.: 467260165"), //
+                        hasAmount("EUR", 2.04), hasGrossValue("EUR", 2.04), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
-        // assert transaction
-        assertThat(results, hasItem(feeRefund(hasDate("2024-03-31"), hasAmount("EUR", 3.17), //
-                        hasSource("Depotauszug07.txt"),
-                        hasNote("Bestandsprovision LU1233758587 01.01.2024 - 31.03.2024 | Ref.-Nr.: 467260166"))));
+        // check fee refund transaction
+        assertThat(results, hasItem(feeRefund( //
+                        hasDate("2024-03-31"), //
+                        hasSource("Depotauszug07.txt"), //
+                        hasNote("Bestandsprovision LU1233758587 01.01.2024 - 31.03.2024 | Ref.-Nr.: 467260166"), //
+                        hasAmount("EUR", 3.17), hasGrossValue("EUR", 3.17), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
-        // assert transaction
-        assertThat(results, hasItem(fee(hasDate("2024-04-30"), hasAmount("EUR", 440.14), //
-                        hasSource("Depotauszug07.txt"), hasNote("Vermögensverwaltungshonorar | Ref.-Nr.: 474917266"))));
+        // check fees transaction
+        assertThat(results, hasItem(fee( //
+                        hasDate("2024-04-30"), //
+                        hasSource("Depotauszug07.txt"), //
+                        hasNote("Vermögensverwaltungshonorar | Ref.-Nr.: 474917266"), //
+                        hasAmount("EUR", 440.14), hasGrossValue("EUR", 440.14), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
-        // assert transaction
+        // check tax refund transaction
         assertThat(results, hasItem(taxRefund(hasDate("2024-05-02"), hasAmount("EUR", 53.38), //
                         hasSource("Depotauszug07.txt"), hasNote("Steueroptimierung | Ref.-Nr.: 475292925"))));
 
-        // assert transaction
+        // check tax refund transaction
         assertThat(results, hasItem(taxRefund(hasDate("2024-05-21"), hasAmount("EUR", 132.52), //
                         hasSource("Depotauszug07.txt"), hasNote("Steueroptimierung | Ref.-Nr.: 481573598"))));
 
-        // assert transaction
-        assertThat(results, hasItem(fee(hasDate("2024-05-31"), hasAmount("EUR", 459.73), //
-                        hasSource("Depotauszug07.txt"), hasNote("Vermögensverwaltungshonorar | Ref.-Nr.: 484298415"))));
+        // check fees transaction
+        assertThat(results, hasItem(fee( //
+                        hasDate("2024-05-31"), //
+                        hasSource("Depotauszug07.txt"), //
+                        hasNote("Vermögensverwaltungshonorar | Ref.-Nr.: 484298415"), //
+                        hasAmount("EUR", 459.73), hasGrossValue("EUR", 459.73), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
-        // assert transaction
+        // check tax refund transaction
         assertThat(results, hasItem(taxRefund(hasDate("2024-06-03"), hasAmount("EUR", 55.78), //
                         hasSource("Depotauszug07.txt"), hasNote("Steueroptimierung | Ref.-Nr.: 484782044"))));
 
-        // assert transaction
-        assertThat(results, hasItem(fee(hasDate("2024-06-30"), hasAmount("EUR", 451.89), //
-                        hasSource("Depotauszug07.txt"), hasNote("Vermögensverwaltungshonorar | Ref.-Nr.: 494534896"))));
+        // check fees transaction
+        assertThat(results, hasItem(fee( //
+                        hasDate("2024-06-30"), //
+                        hasSource("Depotauszug07.txt"), //
+                        hasNote("Vermögensverwaltungshonorar | Ref.-Nr.: 494534896"), //
+                        hasAmount("EUR", 451.89), hasGrossValue("EUR", 451.89), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check sell transaction
         assertThat(results, hasItem(sale( //
                         hasDate("2024-05-14T00:00"), hasShares(436.2506), //
+                        hasSecurity(hasIsin("IE00B3M0BZ05")), //
                         hasSource("Depotauszug07.txt"), //
                         hasNote("Ref.-Nr.: 479524253"), //
                         hasAmount("EUR", 13380.85), hasGrossValue("EUR", 13380.85 + 1209.03 + 66.49), //
@@ -2363,6 +2531,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         // check buy transaction
         assertThat(results, hasItem(purchase( //
                         hasDate("2024-05-14T00:00"), hasShares(132.0151), //
+                        hasSecurity(hasIsin("IE00B3QL0Y14")), //
                         hasSource("Depotauszug07.txt"), //
                         hasNote("Ref.-Nr.: 479524302"), //
                         hasAmount("EUR", 1160.74), hasGrossValue("EUR", 1160.74), //
@@ -2371,6 +2540,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         // check sell transaction
         assertThat(results, hasItem(sale( //
                         hasDate("2024-05-15T00:00"), hasShares(1.6316), //
+                        hasSecurity(hasIsin("LU1274520086")), //
                         hasSource("Depotauszug07.txt"), //
                         hasNote("Ref.-Nr.: 479524262"), //
                         hasAmount("EUR", 278.66), hasGrossValue("EUR", 278.66 + 15.95 + 0.87), //
@@ -2379,6 +2549,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         // check sell transaction
         assertThat(results, hasItem(sale( //
                         hasDate("2024-05-16T00:00"), hasShares(59.4386), //
+                        hasSecurity(hasIsin("IE00B03HD191")), //
                         hasSource("Depotauszug07.txt"), //
                         hasNote("Ref.-Nr.: 479524267"), //
                         hasAmount("EUR", 2487.89), hasGrossValue("EUR", 2487.89 + 213.79 + 11.75), //
@@ -2387,6 +2558,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         // check sell transaction
         assertThat(results, hasItem(sale( //
                         hasDate("2024-05-16T00:00"), hasShares(29.7082), //
+                        hasSecurity(hasIsin("IE00B60SX394")), //
                         hasSource("Depotauszug07.txt"), //
                         hasNote("Ref.-Nr.: 479524273"), //
                         hasAmount("EUR", 2716.08), hasGrossValue("EUR", 2716.08 + 204.71 + 11.25), //
@@ -2395,6 +2567,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         // check sell transaction
         assertThat(results, hasItem(sale( //
                         hasDate("2024-05-16T00:00"), hasShares(632.6936), //
+                        hasSecurity(hasIsin("IE00BF4RFH31")), //
                         hasSource("Depotauszug07.txt"), //
                         hasNote("Ref.-Nr.: 479524292"), //
                         hasAmount("EUR", 3971.53), hasGrossValue("EUR", 3971.53 + 267.54 + 14.71), //
@@ -2403,6 +2576,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         // check buy transaction
         assertThat(results, hasItem(purchase( //
                         hasDate("2024-05-16T00:00"), hasShares(6.6838), //
+                        hasSecurity(hasIsin("LU1650487413")), //
                         hasSource("Depotauszug07.txt"), //
                         hasNote("Ref.-Nr.: 479524309"), //
                         hasAmount("EUR", 812.75), hasGrossValue("EUR", 812.75), //
@@ -2411,6 +2585,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         // check buy transaction
         assertThat(results, hasItem(purchase( //
                         hasDate("2024-05-16T00:00"), hasShares(65.5288), //
+                        hasSecurity(hasIsin("LU1048314196")), //
                         hasSource("Depotauszug07.txt"), //
                         hasNote("Ref.-Nr.: 479524318"), //
                         hasAmount("EUR", 855.03), hasGrossValue("EUR", 855.03), //
@@ -2419,6 +2594,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         // check buy transaction
         assertThat(results, hasItem(purchase( //
                         hasDate("2024-05-16T00:00"), hasShares(15.8913), //
+                        hasSecurity(hasIsin("IE00B6YX5F63")), //
                         hasSource("Depotauszug07.txt"), //
                         hasNote("Ref.-Nr.: 479524326"), //
                         hasAmount("EUR", 811.99), hasGrossValue("EUR", 811.99), //
@@ -2427,6 +2603,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         // check buy transaction
         assertThat(results, hasItem(purchase( //
                         hasDate("2024-05-16T00:00"), hasShares(27.8929), //
+                        hasSecurity(hasIsin("IE00BC7GZW19")), //
                         hasSource("Depotauszug07.txt"), //
                         hasNote("Ref.-Nr.: 479524337"), //
                         hasAmount("EUR", 831.54), hasGrossValue("EUR", 831.54), //
@@ -2435,6 +2612,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         // check buy transaction
         assertThat(results, hasItem(purchase( //
                         hasDate("2024-05-16T00:00"), hasShares(112.7489), //
+                        hasSecurity(hasIsin("IE00BF3N7219")), //
                         hasSource("Depotauszug07.txt"), //
                         hasNote("Ref.-Nr.: 479524346"), //
                         hasAmount("EUR", 533.00), hasGrossValue("EUR", 533.00), //
@@ -2443,6 +2621,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         // check buy transaction
         assertThat(results, hasItem(purchase( //
                         hasDate("2024-05-16T00:00"), hasShares(8.1735), //
+                        hasSecurity(hasIsin("IE00B66F4759")), //
                         hasSource("Depotauszug07.txt"), //
                         hasNote("Ref.-Nr.: 479524355"), //
                         hasAmount("EUR", 753.46), hasGrossValue("EUR", 753.46), //
@@ -2451,6 +2630,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         // check buy transaction
         assertThat(results, hasItem(purchase( //
                         hasDate("2024-05-16T00:00"), hasShares(413.8243), //
+                        hasSecurity(hasIsin("IE00BL25JM42")), //
                         hasSource("Depotauszug07.txt"), //
                         hasNote("Ref.-Nr.: 479524362"), //
                         hasAmount("EUR", 17058.37), hasGrossValue("EUR", 17058.37), //
@@ -2459,6 +2639,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         // check buy transaction
         assertThat(results, hasItem(purchase( //
                         hasDate("2024-05-16T00:00"), hasShares(9.5408), //
+                        hasSecurity(hasIsin("LU0690964092")), //
                         hasSource("Depotauszug07.txt"), //
                         hasNote("Ref.-Nr.: 479524367"), //
                         hasAmount("EUR", 1691.00), hasGrossValue("EUR", 1691.00), //
@@ -2467,6 +2648,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         // check sell transaction
         assertThat(results, hasItem(sale( //
                         hasDate("2024-05-17T00:00"), hasShares(18.8472), //
+                        hasSecurity(hasIsin("LU2146179432")), //
                         hasSource("Depotauszug07.txt"), //
                         hasNote("Ref.-Nr.: 479524283"), //
                         hasAmount("EUR", 1413.93), hasGrossValue("EUR", 1413.93 + 101.15 + 5.56), //
@@ -2475,6 +2657,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         // check buy transaction
         assertThat(results, hasItem(purchase( //
                         hasDate("2024-05-17T00:00"), hasShares(1083.3492), //
+                        hasSecurity(hasIsin("IE00B42THM37")), //
                         hasSource("Depotauszug07.txt"), //
                         hasNote("Ref.-Nr.: 480189188"), //
                         hasAmount("EUR", 12774.34), hasGrossValue("EUR", 12774.34), //
@@ -2483,6 +2666,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         // check sell transaction
         assertThat(results, hasItem(sale( //
                         hasDate("2024-05-21T00:00"), hasShares(6096.0503), //
+                        hasSecurity(hasIsin("IE00BD45KH83")), //
                         hasSource("Depotauszug07.txt"), //
                         hasNote("Ref.-Nr.: 480189180"), //
                         hasAmount("EUR", 27128.21), hasGrossValue("EUR", 27128.21), //
@@ -2491,6 +2675,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         // check buy transaction
         assertThat(results, hasItem(purchase( //
                         hasDate("2024-05-21T00:00"), hasShares(131.3616), //
+                        hasSecurity(hasIsin("LU1233758587")), //
                         hasSource("Depotauszug07.txt"), //
                         hasNote("Ref.-Nr.: 480189194"), //
                         hasAmount("EUR", 13236.33), hasGrossValue("EUR", 13236.33), //
@@ -2516,7 +2701,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         assertThat(results.size(), is(1));
         new AssertImportActions().check(results, "EUR");
 
-        // assert transaction
+        // check removal transaction
         assertThat(results, hasItem(removal(hasDate("2012-01-30"), hasAmount("EUR", 500.00), //
                         hasSource("Depotauszug08.txt"), hasNote("Überweisungsauftrag | Ref.-Nr.: UT-0239371469"))));
     }
@@ -2533,23 +2718,31 @@ public class QuirinPrivatbankAGPDFExtractorTest
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(0L));
-        assertThat(countAccountTransactions(results), is(3L));
+        assertThat(countAccountTransactions(results), is(4L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
         assertThat(countSkippedItems(results), is(0L));
-        assertThat(results.size(), is(3));
+        assertThat(results.size(), is(4));
         new AssertImportActions().check(results, "EUR");
 
-        // assert transaction
-        assertThat(results, hasItem(fee(hasDate("2014-03-03"), hasAmount("EUR", 100.00), //
-                        hasSource("Depotauszug09.txt"), hasNote("Honorar Feb/2014 | Ref.-Nr.: KA-0383911958"))));
+        // check deposit transaction
+        assertThat(results, hasItem(deposit(hasDate("2014-03-03"), hasAmount("EUR", 75.00), //
+                        hasSource("Depotauszug09.txt"), hasNote("Überweisungsgutschrift | Ref.-Nr.: EU-0384051229"))));
 
-        // assert transaction
+        // check fees transaction
+        assertThat(results, hasItem(fee( //
+                        hasDate("2014-03-03"), //
+                        hasSource("Depotauszug09.txt"), //
+                        hasNote("Honorar Feb/2014 | Ref.-Nr.: KA-0383911958"), //
+                        hasAmount("EUR", 100.00), hasGrossValue("EUR", 100.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check tax refund transaction
         assertThat(results, hasItem(taxRefund(hasDate("2014-03-03"), hasAmount("EUR", 13.91), //
-                        hasSource("Depotauszug09.txt"),
+                        hasSource("Depotauszug09.txt"), //
                         hasNote("Steuerbuchung Abgeltungsteuer | Ref.-Nr.: H-0383929197"))));
 
-        // assert transaction
+        // check removal transaction
         assertThat(results, hasItem(removal(hasDate("2014-03-09"), hasAmount("EUR", 1198.98), //
                         hasSource("Depotauszug09.txt"), hasNote("Überweisungsauftrag | Ref.-Nr.: UI-0385701357"))));
     }
@@ -2627,27 +2820,38 @@ public class QuirinPrivatbankAGPDFExtractorTest
                         hasName("MUL Amundi EUR GovBond 1-3Y UCITS ETF Inh.Anteile Acc"), //
                         hasCurrencyCode("EUR"))));
 
-        // assert transaction
+        // check tax refund transaction
         assertThat(results, hasItem(taxRefund(hasDate("2025-01-02"), hasAmount("EUR", 60.16), //
                         hasSource("Depotauszug10.txt"), hasNote("Steueroptimierung | Ref.-Nr.: 551694863"))));
 
-        // assert transaction
-        assertThat(results, hasItem(feeRefund(hasDate("2024-12-31"), hasAmount("EUR", 2.31), //
-                        hasSource("Depotauszug10.txt"),
-                        hasNote("Bestandsprovision LU1274520086 01.10.2024 - 31.12.2024 | Ref.-Nr.: 554023678"))));
+        // check fee refund transaction
+        assertThat(results, hasItem(feeRefund( //
+                        hasDate("2024-12-31"), //
+                        hasSource("Depotauszug10.txt"), //
+                        hasNote("Bestandsprovision LU1274520086 01.10.2024 - 31.12.2024 | Ref.-Nr.: 554023678"), //
+                        hasAmount("EUR", 2.31), hasGrossValue("EUR", 2.31), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
-        // assert transaction
-        assertThat(results, hasItem(feeRefund(hasDate("2024-12-31"), hasAmount("EUR", 6.96), //
-                        hasSource("Depotauszug10.txt"),
-                        hasNote("Bestandsprovision LU1233758587 01.10.2024 - 31.12.2024 | Ref.-Nr.: 554023693"))));
+        // check fee refund transaction
+        assertThat(results, hasItem(feeRefund( //
+                        hasDate("2024-12-31"), //
+                        hasSource("Depotauszug10.txt"), //
+                        hasNote("Bestandsprovision LU1233758587 01.10.2024 - 31.12.2024 | Ref.-Nr.: 554023693"), //
+                        hasAmount("EUR", 6.96), hasGrossValue("EUR", 6.96), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
-        // assert transaction
-        assertThat(results, hasItem(fee(hasDate("2025-01-31"), hasAmount("EUR", 507.98), //
-                        hasSource("Depotauszug10.txt"), hasNote("Vermögensverwaltungshonorar | Ref.-Nr.: 563214268"))));
+        // check fees transaction
+        assertThat(results, hasItem(fee( //
+                        hasDate("2025-01-31"), //
+                        hasSource("Depotauszug10.txt"), //
+                        hasNote("Vermögensverwaltungshonorar | Ref.-Nr.: 563214268"), //
+                        hasAmount("EUR", 507.98), hasGrossValue("EUR", 507.98), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check taxes transaction
         assertThat(results, hasItem(taxes( //
                         hasDate("2025-01-02T00:00"), hasShares(1645.069), //
+                        hasSecurity(hasIsin("IE00B03HD191")), //
                         hasSource("Depotauszug10.txt"), //
                         hasNote("Thesaurierung | Ref.-Nr.: 557786429"), //
                         hasAmount("EUR", 200.20), hasGrossValue("EUR", 200.20), //
@@ -2656,6 +2860,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         // check taxes transaction
         assertThat(results, hasItem(taxes( //
                         hasDate("2025-01-02T00:00"), hasShares(91.1668), //
+                        hasSecurity(hasIsin("LU1274520086")), //
                         hasSource("Depotauszug10.txt"), //
                         hasNote("Thesaurierung | Ref.-Nr.: 557794194"), //
                         hasAmount("EUR", 45.64), hasGrossValue("EUR", 45.64), //
@@ -2664,6 +2869,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         // check taxes transaction
         assertThat(results, hasItem(taxes( //
                         hasDate("2025-01-02T00:00"), hasShares(766.6823), //
+                        hasSecurity(hasIsin("IE00B60SX394")), //
                         hasSource("Depotauszug10.txt"), //
                         hasNote("Thesaurierung | Ref.-Nr.: 557849822"), //
                         hasAmount("EUR", 200.20), hasGrossValue("EUR", 200.20), //
@@ -2672,6 +2878,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         // check taxes transaction
         assertThat(results, hasItem(taxes( //
                         hasDate("2025-01-02T00:00"), hasShares(318.52), //
+                        hasSecurity(hasIsin("IE00B6YX5F63")), //
                         hasSource("Depotauszug10.txt"), //
                         hasNote("Thesaurierung | Ref.-Nr.: 558428333"), //
                         hasAmount("EUR", 52.40), hasGrossValue("EUR", 52.40), //
@@ -2680,6 +2887,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         // check taxes transaction
         assertThat(results, hasItem(taxes( //
                         hasDate("2025-01-02T00:00"), hasShares(87.7672), //
+                        hasSecurity(hasIsin("LU1681041114")), //
                         hasSource("Depotauszug10.txt"), //
                         hasNote("Thesaurierung | Ref.-Nr.: 558778401"), //
                         hasAmount("EUR", 6.41), hasGrossValue("EUR", 6.41), //
@@ -2688,6 +2896,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         // check taxes transaction
         assertThat(results, hasItem(taxes( //
                         hasDate("2025-01-02T00:00"), hasShares(1429.5971), //
+                        hasSecurity(hasIsin("IE00BL25JM42")), //
                         hasSource("Depotauszug10.txt"), //
                         hasNote("Thesaurierung | Ref.-Nr.: 559609470"), //
                         hasAmount("EUR", 141.98), hasGrossValue("EUR", 141.98), //
@@ -2696,6 +2905,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         // check taxes transaction
         assertThat(results, hasItem(taxes( //
                         hasDate("2025-01-02T00:00"), hasShares(43.0035), //
+                        hasSecurity(hasIsin("IE00B48X4842")), //
                         hasSource("Depotauszug10.txt"), //
                         hasNote("Thesaurierung | Ref.-Nr.: 559227626"), //
                         hasAmount("EUR", 12.31), hasGrossValue("EUR", 12.31), //
@@ -2704,6 +2914,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         // check taxes transaction
         assertThat(results, hasItem(taxes( //
                         hasDate("2025-01-02T00:00"), hasShares(3197.6858), //
+                        hasSecurity(hasIsin("IE00BF4RFH31")), //
                         hasSource("Depotauszug10.txt"), //
                         hasNote("Thesaurierung | Ref.-Nr.: 559351476"), //
                         hasAmount("EUR", 59.93), hasGrossValue("EUR", 59.93), //
@@ -2712,6 +2923,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         // check taxes transaction
         assertThat(results, hasItem(taxes( //
                         hasDate("2025-01-02T00:00"), hasShares(196.7106), //
+                        hasSecurity(hasIsin("LU1650487413")), //
                         hasSource("Depotauszug10.txt"), //
                         hasNote("Thesaurierung | Ref.-Nr.: 559732387"), //
                         hasAmount("EUR", 57.77), hasGrossValue("EUR", 57.77), //
@@ -2821,25 +3033,30 @@ public class QuirinPrivatbankAGPDFExtractorTest
                         hasName("Assenagon Funds Val.Size Glob. Act. Nom. RS EUR Dis. oN"), //
                         hasCurrencyCode("EUR"))));
 
-        // assert transaction
+        // check tax refund transaction
         assertThat(results, hasItem(taxRefund(hasDate("2025-06-02"), hasAmount("EUR", 58.85), //
                         hasSource("Depotauszug11.txt"), hasNote("Steueroptimierung | Ref.-Nr.: 610616214"))));
 
-        // assert transaction
+        // check tax refund transaction
         assertThat(results, hasItem(taxRefund(hasDate("2025-06-13"), hasAmount("EUR", 14.24), //
                         hasSource("Depotauszug11.txt"), hasNote("Steueroptimierung | Ref.-Nr.: 615820948"))));
 
-        // assert transaction
+        // check taxes transaction
         assertThat(results, hasItem(taxes(hasDate("2025-06-16"), hasAmount("EUR", 7.39), //
                         hasSource("Depotauszug11.txt"), hasNote("Steueroptimierung | Ref.-Nr.: 616720729"))));
 
-        // assert transaction
-        assertThat(results, hasItem(fee(hasDate("2025-06-30"), hasAmount("EUR", 469.61), //
-                        hasSource("Depotauszug11.txt"), hasNote("Vermögensverwaltungshonorar | Ref.-Nr.: 620879559"))));
+        // check fees transaction
+        assertThat(results, hasItem(fee( //
+                        hasDate("2025-06-30"), //
+                        hasSource("Depotauszug11.txt"), //
+                        hasNote("Vermögensverwaltungshonorar | Ref.-Nr.: 620879559"), //
+                        hasAmount("EUR", 469.61), hasGrossValue("EUR", 469.61), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check sell transaction
         assertThat(results, hasItem(sale( //
                         hasDate("2025-06-11T00:00"), hasShares(1453.3036), //
+                        hasSecurity(hasIsin("IE00B42THM37")), //
                         hasSource("Depotauszug11.txt"), //
                         hasNote("Ref.-Nr.: 614687808"), //
                         hasAmount("EUR", 16823.87), hasGrossValue("EUR", 16823.87 + 388.97 + 21.39), //
@@ -2848,6 +3065,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         // check buy transaction
         assertThat(results, hasItem(purchase( //
                         hasDate("2025-06-11T00:00"), hasShares(1083.763), //
+                        hasSecurity(hasIsin("IE00B3M0BZ05")), //
                         hasSource("Depotauszug11.txt"), //
                         hasNote("Ref.-Nr.: 614687922"), //
                         hasAmount("EUR", 38497.21), hasGrossValue("EUR", 38497.21), //
@@ -2856,6 +3074,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         // check sell transaction
         assertThat(results, hasItem(sale( //
                         hasDate("2025-06-13T00:00"), hasShares(178.3279), //
+                        hasSecurity(hasIsin("LU1233758587")), //
                         hasSource("Depotauszug11.txt"), //
                         hasNote("Ref.-Nr.: 614687823"), //
                         hasAmount("EUR", 18291.39), hasGrossValue("EUR", 18291.39 + 207.47 + 11.41), //
@@ -2864,6 +3083,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         // check sell transaction
         assertThat(results, hasItem(sale( //
                         hasDate("2025-06-13T00:00"), hasShares(6.0675), //
+                        hasSecurity(hasIsin("LU1650487413")), //
                         hasSource("Depotauszug11.txt"), //
                         hasNote("Ref.-Nr.: 614687838"), //
                         hasAmount("EUR", 767.24), hasGrossValue("EUR", 767.24), //
@@ -2872,6 +3092,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         // check sell transaction
         assertThat(results, hasItem(sale( //
                         hasDate("2025-06-13T00:00"), hasShares(7.1805), //
+                        hasSecurity(hasIsin("IE00B6YX5F63")), //
                         hasSource("Depotauszug11.txt"), //
                         hasNote("Ref.-Nr.: 614687853"), //
                         hasAmount("EUR", 378.13), hasGrossValue("EUR", 378.13), //
@@ -2880,6 +3101,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         // check sell transaction
         assertThat(results, hasItem(sale( //
                         hasDate("2025-06-13T00:00"), hasShares(1938.3874), //
+                        hasSecurity(hasIsin("IE00BF4RFH31")), //
                         hasSource("Depotauszug11.txt"), //
                         hasNote("Ref.-Nr.: 614687866"), //
                         hasAmount("EUR", 12416.83), hasGrossValue("EUR", 12416.83 + 830.92 + 45.70), //
@@ -2888,6 +3110,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         // check sell transaction
         assertThat(results, hasItem(sale( //
                         hasDate("2025-06-13T00:00"), hasShares(316.0119), //
+                        hasSecurity(hasIsin("IE00BL25JM42")), //
                         hasSource("Depotauszug11.txt"), //
                         hasNote("Ref.-Nr.: 614687879"), //
                         hasAmount("EUR", 13345.74), hasGrossValue("EUR", 13345.74 + 480.27 + 26.41), //
@@ -2896,6 +3119,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         // check sell transaction
         assertThat(results, hasItem(sale( //
                         hasDate("2025-06-13T00:00"), hasShares(2.1008), //
+                        hasSecurity(hasIsin("IE00B14X4Q57")), //
                         hasSource("Depotauszug11.txt"), //
                         hasNote("Ref.-Nr.: 614687889"), //
                         hasAmount("EUR", 297.43), hasGrossValue("EUR", 297.43), //
@@ -2904,6 +3128,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         // check sell transaction
         assertThat(results, hasItem(sale( //
                         hasDate("2025-06-13T00:00"), hasShares(6.4513), //
+                        hasSecurity(hasIsin("LU1708330235")), //
                         hasSource("Depotauszug11.txt"), //
                         hasNote("Ref.-Nr.: 614687901"), //
                         hasAmount("EUR", 299.33), hasGrossValue("EUR", 299.33), //
@@ -2912,6 +3137,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         // check sell transaction
         assertThat(results, hasItem(sale( //
                         hasDate("2025-06-13T00:00"), hasShares(43.0035), //
+                        hasSecurity(hasIsin("IE00B48X4842")), //
                         hasSource("Depotauszug11.txt"), //
                         hasNote("Ref.-Nr.: 614687912"), //
                         hasAmount("EUR", 4541.91), hasGrossValue("EUR", 4541.91 + 121.98 + 6.70), //
@@ -2920,6 +3146,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         // check buy transaction
         assertThat(results, hasItem(purchase( //
                         hasDate("2025-06-13T00:00"), hasShares(28.0779), //
+                        hasSecurity(hasIsin("LU1274520086")), //
                         hasSource("Depotauszug11.txt"), //
                         hasNote("Ref.-Nr.: 614687930"), //
                         hasAmount("EUR", 5791.33), hasGrossValue("EUR", 5791.33), //
@@ -2928,6 +3155,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         // check buy transaction
         assertThat(results, hasItem(purchase( //
                         hasDate("2025-06-13T00:00"), hasShares(7.4825), //
+                        hasSecurity(hasIsin("IE00B03HD191")), //
                         hasSource("Depotauszug11.txt"), //
                         hasNote("Ref.-Nr.: 614687935"), //
                         hasAmount("EUR", 375.90), hasGrossValue("EUR", 375.90), //
@@ -2936,6 +3164,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         // check buy transaction
         assertThat(results, hasItem(purchase( //
                         hasDate("2025-06-13T00:00"), hasShares(4650.3717), //
+                        hasSecurity(hasIsin("IE00BD45KH83")), //
                         hasSource("Depotauszug11.txt"), //
                         hasNote("Ref.-Nr.: 614687949"), //
                         hasAmount("EUR", 21242.99), hasGrossValue("EUR", 21242.99), //
@@ -2944,6 +3173,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         // check buy transaction
         assertThat(results, hasItem(purchase( //
                         hasDate("2025-06-16T00:00"), hasShares(35.995), //
+                        hasSecurity(hasIsin("LU2146179432")), //
                         hasSource("Depotauszug11.txt"), //
                         hasNote("Ref.-Nr.: 614687943"), //
                         hasAmount("EUR", 2948.14), hasGrossValue("EUR", 2948.14), //
@@ -3047,19 +3277,20 @@ public class QuirinPrivatbankAGPDFExtractorTest
                         hasName("InvescoMI2 EUR Gov B 1-3Y ETF Reg. Shs EUR Dis. oN"), //
                         hasCurrencyCode("EUR"))));
 
-        // assert transaction
+        // check deposit transaction
         assertThat(results, hasItem(deposit(hasDate("2024-07-10"), hasAmount("EUR", 2.00), //
-                        hasSource("Depotauszug12.txt"),
+                        hasSource("Depotauszug12.txt"), //
                         hasNote("Überweisungsgutschrift Inland | Ref.-Nr.: 499025059"))));
 
-        // assert transaction
+        // check deposit transaction
         assertThat(results, hasItem(deposit(hasDate("2024-07-25"), hasAmount("EUR", 25.00), //
-                        hasSource("Depotauszug12.txt"),
+                        hasSource("Depotauszug12.txt"), //
                         hasNote("Überweisungsgutschrift Inland | Ref.-Nr.: 231123912"))));
 
         // check buy transaction
         assertThat(results, hasItem(purchase( //
                         hasDate("2024-07-17T00:00"), hasShares(0.1796), //
+                        hasSecurity(hasIsin("LU1931974692")), //
                         hasSource("Depotauszug12.txt"), //
                         hasNote("Ref.-Nr.: 810613137"), //
                         hasAmount("EUR", 6.01), hasGrossValue("EUR", 6.01), //
@@ -3068,6 +3299,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         // check buy transaction
         assertThat(results, hasItem(purchase( //
                         hasDate("2024-07-17T00:00"), hasShares(0.1584), //
+                        hasSecurity(hasIsin("IE00BFY0GT14")), //
                         hasSource("Depotauszug12.txt"), //
                         hasNote("Ref.-Nr.: 789323993"), //
                         hasAmount("EUR", 5.53), hasGrossValue("EUR", 5.53), //
@@ -3076,6 +3308,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         // check buy transaction
         assertThat(results, hasItem(purchase( //
                         hasDate("2024-07-17T00:00"), hasShares(0.116), //
+                        hasSecurity(hasIsin("IE00BL25JM42")), //
                         hasSource("Depotauszug12.txt"), //
                         hasNote("Ref.-Nr.: 515457226"), //
                         hasAmount("EUR", 4.86), hasGrossValue("EUR", 4.86), //
@@ -3084,6 +3317,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         // check buy transaction
         assertThat(results, hasItem(purchase( //
                         hasDate("2024-07-17T00:00"), hasShares(0.6296), //
+                        hasSecurity(hasIsin("IE00BF4RFH31")), //
                         hasSource("Depotauszug12.txt"), //
                         hasNote("Ref.-Nr.: 605189398"), //
                         hasAmount("EUR", 4.36), hasGrossValue("EUR", 4.36), //
@@ -3092,6 +3326,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         // check buy transaction
         assertThat(results, hasItem(purchase( //
                         hasDate("2024-07-17T00:00"), hasShares(0.052), //
+                        hasSecurity(hasIsin("IE00BKM4GZ66")), //
                         hasSource("Depotauszug12.txt"), //
                         hasNote("Ref.-Nr.: 500470782"), //
                         hasAmount("EUR", 1.67), hasGrossValue("EUR", 1.67), //
@@ -3100,6 +3335,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         // check buy transaction
         assertThat(results, hasItem(purchase( //
                         hasDate("2024-07-17T00:00"), hasShares(0.0257), //
+                        hasSecurity(hasIsin("IE00BG0SKF03")), //
                         hasSource("Depotauszug12.txt"), //
                         hasNote("Ref.-Nr.: 500470790"), //
                         hasAmount("EUR", 1.20), hasGrossValue("EUR", 1.20), //
@@ -3108,6 +3344,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         // check buy transaction
         assertThat(results, hasItem(purchase( //
                         hasDate("2024-07-17T00:00"), hasShares(0.0046), //
+                        hasSecurity(hasIsin("LU1650487413")), //
                         hasSource("Depotauszug12.txt"), //
                         hasNote("Ref.-Nr.: 500470797"), //
                         hasAmount("EUR", 0.56), hasGrossValue("EUR", 0.56), //
@@ -3116,6 +3353,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         // check buy transaction
         assertThat(results, hasItem(purchase( //
                         hasDate("2024-07-17T00:00"), hasShares(0.0042), //
+                        hasSecurity(hasIsin("IE00B48X4842")), //
                         hasSource("Depotauszug12.txt"), //
                         hasNote("Ref.-Nr.: 500470805"), //
                         hasAmount("EUR", 0.48), hasGrossValue("EUR", 0.48), //
@@ -3124,6 +3362,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         // check buy transaction
         assertThat(results, hasItem(purchase( //
                         hasDate("2024-07-17T00:00"), hasShares(0.0278), //
+                        hasSecurity(hasIsin("LU1109942653")), //
                         hasSource("Depotauszug12.txt"), //
                         hasNote("Ref.-Nr.: 030025354"), //
                         hasAmount("EUR", 0.44), hasGrossValue("EUR", 0.44), //
@@ -3132,6 +3371,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         // check buy transaction
         assertThat(results, hasItem(purchase( //
                         hasDate("2024-07-17T00:00"), hasShares(0.0166), //
+                        hasSecurity(hasIsin("IE00BF1QPL78")), //
                         hasSource("Depotauszug12.txt"), //
                         hasNote("Ref.-Nr.: 086981855"), //
                         hasAmount("EUR", 0.44), hasGrossValue("EUR", 0.44), //
@@ -3140,6 +3380,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         // check buy transaction
         assertThat(results, hasItem(purchase( //
                         hasDate("2024-07-17T00:00"), hasShares(0.0081), //
+                        hasSecurity(hasIsin("LU2037748774")), //
                         hasSource("Depotauszug12.txt"), //
                         hasNote("Ref.-Nr.: 496756247"), //
                         hasAmount("EUR", 0.41), hasGrossValue("EUR", 0.41), //
@@ -3148,6 +3389,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         // check buy transaction
         assertThat(results, hasItem(purchase( //
                         hasDate("2024-07-17T00:00"), hasShares(0.02), //
+                        hasSecurity(hasIsin("LU1931975079")), //
                         hasSource("Depotauszug12.txt"), //
                         hasNote("Ref.-Nr.: 500470826"), //
                         hasAmount("EUR", 0.37), hasGrossValue("EUR", 0.37), //
@@ -3156,6 +3398,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         // check buy transaction
         assertThat(results, hasItem(purchase( //
                         hasDate("2024-07-17T00:00"), hasShares(0.0089), //
+                        hasSecurity(hasIsin("IE00BGJWWY63")), //
                         hasSource("Depotauszug12.txt"), //
                         hasNote("Ref.-Nr.: 500470831"), //
                         hasAmount("EUR", 0.33), hasGrossValue("EUR", 0.33), //
@@ -3164,6 +3407,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         // check sell transaction
         assertThat(results, hasItem(sale( //
                         hasDate("2024-07-19T00:00"), hasShares(0.0278), //
+                        hasSecurity(hasIsin("LU1109942653")), //
                         hasSource("Depotauszug12.txt"), //
                         hasNote("Ref.-Nr.: 500904894"), //
                         hasAmount("EUR", 0.44), hasGrossValue("EUR", 0.44), //
@@ -3172,6 +3416,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         // check sell transaction
         assertThat(results, hasItem(sale( //
                         hasDate("2024-07-19T00:00"), hasShares(0.0046), //
+                        hasSecurity(hasIsin("LU1650487413")), //
                         hasSource("Depotauszug12.txt"), //
                         hasNote("Ref.-Nr.: 500904906"), //
                         hasAmount("EUR", 0.56), hasGrossValue("EUR", 0.56), //
@@ -3180,6 +3425,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         // check sell transaction
         assertThat(results, hasItem(sale( //
                         hasDate("2024-07-19T00:00"), hasShares(0.0166), //
+                        hasSecurity(hasIsin("IE00BF1QPL78")), //
                         hasSource("Depotauszug12.txt"), //
                         hasNote("Ref.-Nr.: 500904915"), //
                         hasAmount("EUR", 0.44), hasGrossValue("EUR", 0.44), //
@@ -3188,6 +3434,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         // check sell transaction
         assertThat(results, hasItem(sale( //
                         hasDate("2024-07-19T00:00"), hasShares(0.02), //
+                        hasSecurity(hasIsin("LU1931975079")), //
                         hasSource("Depotauszug12.txt"), //
                         hasNote("Ref.-Nr.: 500904924"), //
                         hasAmount("EUR", 0.37), hasGrossValue("EUR", 0.37), //
@@ -3196,6 +3443,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         // check sell transaction
         assertThat(results, hasItem(sale( //
                         hasDate("2024-07-19T00:00"), hasShares(0.0081), //
+                        hasSecurity(hasIsin("LU2037748774")), //
                         hasSource("Depotauszug12.txt"), //
                         hasNote("Ref.-Nr.: 500904933"), //
                         hasAmount("EUR", 0.41), hasGrossValue("EUR", 0.41), //
@@ -3204,6 +3452,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         // check sell transaction
         assertThat(results, hasItem(sale( //
                         hasDate("2024-07-19T00:00"), hasShares(0.0089), //
+                        hasSecurity(hasIsin("IE00BGJWWY63")), //
                         hasSource("Depotauszug12.txt"), //
                         hasNote("Ref.-Nr.: 500904941"), //
                         hasAmount("EUR", 0.33), hasGrossValue("EUR", 0.33), //
@@ -3212,6 +3461,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         // check buy transaction
         assertThat(results, hasItem(purchase( //
                         hasDate("2024-07-19T00:00"), hasShares(0.0005), //
+                        hasSecurity(hasIsin("IE00B48X4842")), //
                         hasSource("Depotauszug12.txt"), //
                         hasNote("Ref.-Nr.: 831292531"), //
                         hasAmount("EUR", 0.06), hasGrossValue("EUR", 0.06), //
@@ -3220,6 +3470,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         // check buy transaction
         assertThat(results, hasItem(purchase( //
                         hasDate("2024-07-19T00:00"), hasShares(0.0068), //
+                        hasSecurity(hasIsin("IE00BKM4GZ66")), //
                         hasSource("Depotauszug12.txt"), //
                         hasNote("Ref.-Nr.: 500904958"), //
                         hasAmount("EUR", 0.22), hasGrossValue("EUR", 0.22), //
@@ -3228,6 +3479,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         // check buy transaction
         assertThat(results, hasItem(purchase( //
                         hasDate("2024-07-19T00:00"), hasShares(0.0114), //
+                        hasSecurity(hasIsin("IE00BL25JM42")), //
                         hasSource("Depotauszug12.txt"), //
                         hasNote("Ref.-Nr.: 500904963"), //
                         hasAmount("EUR", 0.47), hasGrossValue("EUR", 0.47), //
@@ -3236,6 +3488,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         // check buy transaction
         assertThat(results, hasItem(purchase( //
                         hasDate("2024-07-19T00:00"), hasShares(0.0704), //
+                        hasSecurity(hasIsin("IE00BF4RFH31")), //
                         hasSource("Depotauszug12.txt"), //
                         hasNote("Ref.-Nr.: 500904971"), //
                         hasAmount("EUR", 0.48), hasGrossValue("EUR", 0.48), //
@@ -3244,6 +3497,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         // check buy transaction
         assertThat(results, hasItem(purchase( //
                         hasDate("2024-07-19T00:00"), hasShares(0.0032), //
+                        hasSecurity(hasIsin("IE00BG0SKF03")), //
                         hasSource("Depotauszug12.txt"), //
                         hasNote("Ref.-Nr.: 500904980"), //
                         hasAmount("EUR", 0.15), hasGrossValue("EUR", 0.15), //
@@ -3252,6 +3506,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         // check buy transaction
         assertThat(results, hasItem(purchase( //
                         hasDate("2024-07-19T00:00"), hasShares(0.0216), //
+                        hasSecurity(hasIsin("LU1931974692")), //
                         hasSource("Depotauszug12.txt"), //
                         hasNote("Ref.-Nr.: 500904987"), //
                         hasAmount("EUR", 0.72), hasGrossValue("EUR", 0.72), //
@@ -3260,6 +3515,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         // check buy transaction
         assertThat(results, hasItem(purchase( //
                         hasDate("2024-07-19T00:00"), hasShares(0.0191), //
+                        hasSecurity(hasIsin("IE00BFY0GT14")), //
                         hasSource("Depotauszug12.txt"), //
                         hasNote("Ref.-Nr.: 500904994"), //
                         hasAmount("EUR", 0.66), hasGrossValue("EUR", 0.66), //
@@ -3268,6 +3524,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         // check buy transaction
         assertThat(results, hasItem(purchase( //
                         hasDate("2024-07-26T00:00"), hasShares(0.1921), //
+                        hasSecurity(hasIsin("LU1931974692")), //
                         hasSource("Depotauszug12.txt"), //
                         hasNote("Ref.-Nr.: 502262339"), //
                         hasAmount("EUR", 6.29), hasGrossValue("EUR", 6.29), //
@@ -3276,6 +3533,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         // check buy transaction
         assertThat(results, hasItem(purchase( //
                         hasDate("2024-07-26T00:00"), hasShares(0.169), //
+                        hasSecurity(hasIsin("IE00BFY0GT14")), //
                         hasSource("Depotauszug12.txt"), //
                         hasNote("Ref.-Nr.: 502262349"), //
                         hasAmount("EUR", 5.77), hasGrossValue("EUR", 5.77), //
@@ -3284,6 +3542,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         // check buy transaction
         assertThat(results, hasItem(purchase( //
                         hasDate("2024-07-26T00:00"), hasShares(0.1226), //
+                        hasSecurity(hasIsin("IE00BL25JM42")), //
                         hasSource("Depotauszug12.txt"), //
                         hasNote("Ref.-Nr.: 502262358"), //
                         hasAmount("EUR", 5.06), hasGrossValue("EUR", 5.06), //
@@ -3292,6 +3551,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         // check buy transaction
         assertThat(results, hasItem(purchase( //
                         hasDate("2024-07-26T00:00"), hasShares(0.6534), //
+                        hasSecurity(hasIsin("IE00BF4RFH31")), //
                         hasSource("Depotauszug12.txt"), //
                         hasNote("Ref.-Nr.: 502262367"), //
                         hasAmount("EUR", 4.50), hasGrossValue("EUR", 4.50), //
@@ -3300,6 +3560,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         // check buy transaction
         assertThat(results, hasItem(purchase( //
                         hasDate("2024-07-26T00:00"), hasShares(0.056), //
+                        hasSecurity(hasIsin("IE00BKM4GZ66")), //
                         hasSource("Depotauszug12.txt"), //
                         hasNote("Ref.-Nr.: 502262374"), //
                         hasAmount("EUR", 1.76), hasGrossValue("EUR", 1.76), //
@@ -3308,6 +3569,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         // check buy transaction
         assertThat(results, hasItem(purchase( //
                         hasDate("2024-07-26T00:00"), hasShares(0.0277), //
+                        hasSecurity(hasIsin("IE00BG0SKF03")), //
                         hasSource("Depotauszug12.txt"), //
                         hasNote("Ref.-Nr.: 502262381"), //
                         hasAmount("EUR", 1.26), hasGrossValue("EUR", 1.26), //
@@ -3316,6 +3578,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         // check buy transaction
         assertThat(results, hasItem(purchase( //
                         hasDate("2024-07-26T00:00"), hasShares(0.0045), //
+                        hasSecurity(hasIsin("IE00B48X4842")), //
                         hasSource("Depotauszug12.txt"), //
                         hasNote("Ref.-Nr.: 502262389"), //
                         hasAmount("EUR", 0.50), hasGrossValue("EUR", 0.50), //
@@ -3324,6 +3587,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         // check sell transaction
         assertThat(results, hasItem(sale( //
                         hasDate("2024-07-29T00:00"), hasShares(0.0015), //
+                        hasSecurity(hasIsin("IE00BL25JM42")), //
                         hasSource("Depotauszug12.txt"), //
                         hasNote("Ref.-Nr.: 502844109"), //
                         hasAmount("EUR", 0.06), hasGrossValue("EUR", 0.06), //
@@ -3332,6 +3596,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         // check sell transaction
         assertThat(results, hasItem(sale( //
                         hasDate("2024-07-29T00:00"), hasShares(0.0111), //
+                        hasSecurity(hasIsin("IE00BF4RFH31")), //
                         hasSource("Depotauszug12.txt"), //
                         hasNote("Ref.-Nr.: 502844116"), //
                         hasAmount("EUR", 0.08), hasGrossValue("EUR", 0.08), //
@@ -3340,6 +3605,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         // check sell transaction
         assertThat(results, hasItem(sale( //
                         hasDate("2024-07-29T00:00"), hasShares(0.0015), //
+                        hasSecurity(hasIsin("LU1931974692")), //
                         hasSource("Depotauszug12.txt"), //
                         hasNote("Ref.-Nr.: 502844123"), //
                         hasAmount("EUR", 0.05), hasGrossValue("EUR", 0.05), //
@@ -3348,6 +3614,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         // check sell transaction
         assertThat(results, hasItem(sale( //
                         hasDate("2024-07-29T00:00"), hasShares(0.0011), //
+                        hasSecurity(hasIsin("IE00BFY0GT14")), //
                         hasSource("Depotauszug12.txt"), //
                         hasNote("Ref.-Nr.: 502844130"), //
                         hasAmount("EUR", 0.04), hasGrossValue("EUR", 0.04), //
@@ -3457,14 +3724,18 @@ public class QuirinPrivatbankAGPDFExtractorTest
                         hasName("SPDR MSCI Emer.Mkts Sm.Cap ETF Registered Shares o.N."), //
                         hasCurrencyCode("EUR"))));
 
-        // assert transaction
-        assertThat(results, hasItem(fee(hasDate("2025-04-30"), hasAmount("EUR", 4.34), //
-                        hasSource("Depotauszug13.txt"),
-                        hasNote("Vermögensverwaltungshonorar | Ref.-Nr.: 599612351"))));
+        // check fees transaction
+        assertThat(results, hasItem(fee( //
+                        hasDate("2025-04-30"), //
+                        hasSource("Depotauszug13.txt"), //
+                        hasNote("Vermögensverwaltungshonorar | Ref.-Nr.: 599612351"), //
+                        hasAmount("EUR", 4.34), hasGrossValue("EUR", 4.34), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check sell transaction
         assertThat(results, hasItem(sale( //
                         hasDate("2025-04-15T00:00"), hasShares(0.4979), //
+                        hasSecurity(hasIsin("LU1650487413")), //
                         hasSource("Depotauszug13.txt"), //
                         hasNote("Ref.-Nr.: 595326918"), //
                         hasAmount("EUR", 62.37), hasGrossValue("EUR", 62.37 + 0.51 + 0.02), //
@@ -3473,6 +3744,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         // check sell transaction
         assertThat(results, hasItem(sale( //
                         hasDate("2025-04-15T00:00"), hasShares(2.5449), //
+                        hasSecurity(hasIsin("IE00BZ163H91")), //
                         hasSource("Depotauszug13.txt"), //
                         hasNote("Ref.-Nr.: 595326928"), //
                         hasAmount("EUR", 57.12), hasGrossValue("EUR", 57.12 + 0.20 + 0.01), //
@@ -3481,6 +3753,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         // check sell transaction
         assertThat(results, hasItem(sale( //
                         hasDate("2025-04-15T00:00"), hasShares(0.8201), //
+                        hasSecurity(hasIsin("IE00B6YX5F63")), //
                         hasSource("Depotauszug13.txt"), //
                         hasNote("Ref.-Nr.: 595326932"), //
                         hasAmount("EUR", 43.19), hasGrossValue("EUR", 43.19 + 0.07), //
@@ -3489,6 +3762,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         // check sell transaction
         assertThat(results, hasItem(sale( //
                         hasDate("2025-04-15T00:00"), hasShares(0.8967), //
+                        hasSecurity(hasIsin("LU1708330235")), //
                         hasSource("Depotauszug13.txt"), //
                         hasNote("Ref.-Nr.: 595326938"), //
                         hasAmount("EUR", 41.64), hasGrossValue("EUR", 41.64 + 0.04), //
@@ -3497,6 +3771,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         // check sell transaction
         assertThat(results, hasItem(sale( //
                         hasDate("2025-04-15T00:00"), hasShares(0.9745), //
+                        hasSecurity(hasIsin("IE00BGJWWY63")), //
                         hasSource("Depotauszug13.txt"), //
                         hasNote("Ref.-Nr.: 595326944"), //
                         hasAmount("EUR", 36.99), hasGrossValue("EUR", 36.99 + 0.07), //
@@ -3505,6 +3780,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         // check sell transaction
         assertThat(results, hasItem(sale( //
                         hasDate("2025-04-15T00:00"), hasShares(4.1955), //
+                        hasSecurity(hasIsin("IE00BF5GB717")), //
                         hasSource("Depotauszug13.txt"), //
                         hasNote("Ref.-Nr.: 595326952"), //
                         hasAmount("EUR", 21.29), hasGrossValue("EUR", 21.29), //
@@ -3513,6 +3789,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         // check sell transaction
         assertThat(results, hasItem(sale( //
                         hasDate("2025-04-15T00:00"), hasShares(0.2079), //
+                        hasSecurity(hasIsin("IE00BCRY6557")), //
                         hasSource("Depotauszug13.txt"), //
                         hasNote("Ref.-Nr.: 595326959"), //
                         hasAmount("EUR", 21.18), hasGrossValue("EUR", 21.18 + 0.01), //
@@ -3521,6 +3798,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         // check buy transaction
         assertThat(results, hasItem(purchase( //
                         hasDate("2025-04-15T00:00"), hasShares(1.8838), //
+                        hasSecurity(hasIsin("IE00BL25JM42")), //
                         hasSource("Depotauszug13.txt"), //
                         hasNote("Ref.-Nr.: 595326968"), //
                         hasAmount("EUR", 75.82), hasGrossValue("EUR", 75.82), //
@@ -3529,6 +3807,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         // check buy transaction
         assertThat(results, hasItem(purchase( //
                         hasDate("2025-04-15T00:00"), hasShares(2.089), //
+                        hasSecurity(hasIsin("IE000QIF5N15")), //
                         hasSource("Depotauszug13.txt"), //
                         hasNote("Ref.-Nr.: 595326975"), //
                         hasAmount("EUR", 65.49), hasGrossValue("EUR", 65.49), //
@@ -3537,6 +3816,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         // check buy transaction
         assertThat(results, hasItem(purchase( //
                         hasDate("2025-04-15T00:00"), hasShares(10.362), //
+                        hasSecurity(hasIsin("IE00BF4RFH31")), //
                         hasSource("Depotauszug13.txt"), //
                         hasNote("Ref.-Nr.: 595326980"), //
                         hasAmount("EUR", 64.44), hasGrossValue("EUR", 64.44), //
@@ -3545,6 +3825,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         // check buy transaction
         assertThat(results, hasItem(purchase( //
                         hasDate("2025-04-15T00:00"), hasShares(1.8241), //
+                        hasSecurity(hasIsin("IE00BFY0GT14")), //
                         hasSource("Depotauszug13.txt"), //
                         hasNote("Ref.-Nr.: 595326985"), //
                         hasAmount("EUR", 60.69), hasGrossValue("EUR", 60.69), //
@@ -3553,6 +3834,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         // check buy transaction
         assertThat(results, hasItem(purchase( //
                         hasDate("2025-04-15T00:00"), hasShares(0.6691), //
+                        hasSecurity(hasIsin("IE00BKM4GZ66")), //
                         hasSource("Depotauszug13.txt"), //
                         hasNote("Ref.-Nr.: 595326990"), //
                         hasAmount("EUR", 20.08), hasGrossValue("EUR", 20.08), //
@@ -3561,6 +3843,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         // check buy transaction
         assertThat(results, hasItem(purchase( //
                         hasDate("2025-04-15T00:00"), hasShares(0.3901), //
+                        hasSecurity(hasIsin("IE00BG0SKF03")), //
                         hasSource("Depotauszug13.txt"), //
                         hasNote("Ref.-Nr.: 595326996"), //
                         hasAmount("EUR", 17.20), hasGrossValue("EUR", 17.20), //
@@ -3569,6 +3852,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         // check buy transaction
         assertThat(results, hasItem(purchase( //
                         hasDate("2025-04-15T00:00"), hasShares(0.101), //
+                        hasSecurity(hasIsin("IE00B48X4842")), //
                         hasSource("Depotauszug13.txt"), //
                         hasNote("Ref.-Nr.: 595327001"), //
                         hasAmount("EUR", 9.74), hasGrossValue("EUR", 9.74), //
