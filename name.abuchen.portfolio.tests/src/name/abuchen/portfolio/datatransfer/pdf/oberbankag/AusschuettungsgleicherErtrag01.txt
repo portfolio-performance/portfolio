@@ -1,0 +1,41 @@
+PDFBox Version: 3.0.6
+Portfolio Performance Version: 0.81.6.qualifier
+System: macosx | aarch64 | 21.0.9+10-LTS | Eclipse Adoptium
+-----------------------------------------
+Wertpapier-Abrechnu n g     Ausschüttungsgleicher Ertrag
+888888 - 03.02.2021
+Depotnummer Betreuer
+Mustermann Max 111-1111.11 Z 3
+23
+Wertpapiernummer Bezeichnung Nominale/Stück
+AT0000A23YE9 3 Banken Mensch&Umwelt Aktienf.(R) Stk .               5,98
+Miteigentumsanteile - Thesaurierend
+Ertrag EUR                0,09
+Ertrag 0,0145 EUR
+KESt EUR               -0,09
+Summe EUR               -0,00
+0,0145 EUR KESt Substanzgewinn
+Extag 01.02.2021
+Verrechnung
+Verwahrart, Positionsdaten
+SVK Sammelverwahrung Wert 03.02.2021 EUR               -0,00
+Wien zu Gunsten Konto AT11 1111 1111 1111 1111
+      Seite 1 von 2
+Oberbank AG, Rechtsform: Aktiengesellschaft, Sitz: Linz, Firmenbuch Nr. FN 79063w, Landesgericht Linz, DVR: 0019020, UID-Nr. ATU22852606
+Wertpapier-Abrechnung
+888888 - 03.02.2021
+Depotbezeichnung Depotnummer Betreuer
+Mustermann Max 111-1111.11 Z 3
+23
+KESt-Neubestand mit Anschaffungskosten nach dem gleitenden                           5,98 STK
+Durchschnittsverfahren § 27a Abs. 4 Zi 3 EStG
+  ausschüttungsgleicher Ertrag:                                                      0,32 EUR
+  Anschaffungswertreduzierender Betrag:                                              0,09 EUR
+  steuerlicher Anschaffungswert:                                                    99,78 EUR
+---------------------------------------------------------------------------------------------
+Die KESt wird an das Finanzamt Linz abgeführt.
+Fondsgesellschaft: 3BANKEN GENERALI INVESTMENT-GES.M.B.H.
+KESTAUSSCHÜTTUNG - Depot ist:
+kestpflichtig / Abfuhr an Finanzamt
+kestfrei / Gutschrift an Kunden
+Oberbank AG, Rechtsform: Aktiengesellschaft, Sitz: Linz, Firmenbuch Nr. FN 79063w, Landesgericht Linz, DVR: 0019020, UID-Nr. ATU22852606       Seite 2 von 2

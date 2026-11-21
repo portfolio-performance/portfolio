@@ -1,9 +1,12 @@
 package name.abuchen.portfolio.datatransfer.pdf.oberbankag;
 
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.dividend;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasAmount;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasCurrencyCode;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasDate;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasExDate;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasFees;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasForexGrossValue;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasGrossValue;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasIsin;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasName;
@@ -16,6 +19,9 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasWkn;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.purchase;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.sale;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.security;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.skippedItem;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.taxRefund;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.taxes;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.withFailureMessage;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransactions;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransfers;
@@ -38,6 +44,7 @@ import name.abuchen.portfolio.datatransfer.actions.AssertImportActions;
 import name.abuchen.portfolio.datatransfer.pdf.OberbankAGPDFExtractor;
 import name.abuchen.portfolio.datatransfer.pdf.PDFInputFile;
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.Security;
 
 @SuppressWarnings("nls")
 public class OberbankAGPDFExtractorTest
@@ -280,5 +287,252 @@ public class OberbankAGPDFExtractorTest
                         hasNote("Auftrags-Nr. 999999 | Abrechnungs-Nr. 888888"), //
                         hasAmount("EUR", 909.89), hasGrossValue("EUR", 923.74), //
                         hasTaxes("EUR", 13.85), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testDividende01()
+    {
+        var extractor = new OberbankAGPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende01.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("US92826C8394"), hasWkn(null), hasTicker(null), //
+                        hasName("VISA Inc. Reg. Shares Class A DL -,0001"), //
+                        hasCurrencyCode("USD"))));
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2026-03-02T00:00"), hasShares(10.00), //
+                        hasExDate("2026-02-10T00:00"), hasSource("Dividende01.txt"), //
+                        hasNote("Abrechnungs-Nr. 888888"), //
+                        hasAmount("EUR", 4.11), hasGrossValue("EUR", 5.68), //
+                        hasTaxes("EUR", (0.84 + 1.01) / 1.1797), hasFees("EUR", 0.00), //
+                        hasForexGrossValue("USD", 5.68 * 1.1797))));
+    }
+
+    @Test
+    public void testDividende01WithSecurityInEUR()
+    {
+        var security = new Security("VISA Inc. Reg. Shares Class A DL -,0001", "EUR");
+        security.setIsin("US92826C8394");
+
+        var client = new Client();
+        client.addSecurity(security);
+
+        var extractor = new OberbankAGPDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende01.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, "EUR");
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2026-03-02T00:00"), hasShares(10.00), //
+                        hasExDate("2026-02-10T00:00"), hasSource("Dividende01.txt"), //
+                        hasNote("Abrechnungs-Nr. 888888"), //
+                        hasAmount("EUR", 4.11), hasGrossValue("EUR", 5.68), //
+                        hasTaxes("EUR", (0.84 + 1.01) / 1.1797), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testDividende02()
+    {
+        var extractor = new OberbankAGPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende02.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("AT0000821103"), hasWkn(null), hasTicker(null), //
+                        hasName("UNIQA Insurance Group AG Stamm-Aktien o.N."), //
+                        hasCurrencyCode("EUR"))));
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2025-06-16T00:00"), hasShares(338.00), //
+                        hasExDate("2025-06-12T00:00"), hasSource("Dividende02.txt"), //
+                        hasNote("Abrechnungs-Nr. 888888"), //
+                        hasAmount("EUR", 147.03), hasGrossValue("EUR", 202.80), //
+                        hasTaxes("EUR", 55.77), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testAusschuettungsgleicherErtrag01()
+    {
+        var extractor = new OberbankAGPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "AusschuettungsgleicherErtrag01.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(1L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("AT0000A23YE9"), hasWkn(null), hasTicker(null), //
+                        hasName("3 Banken Mensch&Umwelt Aktienf.(R) Miteigentumsanteile - Thesaurierend"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check skipped item
+        assertThat(results, hasItem(skippedItem( //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
+                        taxRefund( //
+                                        hasDate("2021-02-03T00:00"), hasShares(5.98), //
+                                        hasExDate("2021-02-01T00:00"), //
+                                        hasSource("AusschuettungsgleicherErtrag01.txt"), //
+                                        hasNote("Abrechnungs-Nr. 888888"), //
+                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
+                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
+    }
+
+    @Test
+    public void testAusschuettungsgleicherErtrag02()
+    {
+        var extractor = new OberbankAGPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "AusschuettungsgleicherErtrag02.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00BYZK4552"), hasWkn(null), hasTicker(null), //
+                        hasName("iShsIV-Automation&Robot.U.ETF Registered Shares o.N."), //
+                        hasCurrencyCode("USD"))));
+
+        // check taxes transaction
+        assertThat(results, hasItem(taxes( //
+                        hasDate("2022-11-09T00:00"), hasShares(123.00), //
+                        hasExDate("2022-11-09T00:00"), hasSource("AusschuettungsgleicherErtrag02.txt"), //
+                        hasNote("Abrechnungs-Nr. 888888"), //
+                        hasAmount("EUR", 22.83), hasGrossValue("EUR", 22.83), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00), //
+                        hasForexGrossValue("USD", 22.83 * 0.9976))));
+    }
+
+    @Test
+    public void testAusschuettungsgleicherErtrag02WithSecurityInEUR()
+    {
+        var security = new Security("iShsIV-Automation&Robot.U.ETF Registered Shares o.N.", "EUR");
+        security.setIsin("IE00BYZK4552");
+
+        var client = new Client();
+        client.addSecurity(security);
+
+        var extractor = new OberbankAGPDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "AusschuettungsgleicherErtrag02.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, "EUR");
+
+        // check taxes transaction
+        assertThat(results, hasItem(taxes( //
+                        hasDate("2022-11-09T00:00"), hasShares(123.00), //
+                        hasExDate("2022-11-09T00:00"), hasSource("AusschuettungsgleicherErtrag02.txt"), //
+                        hasNote("Abrechnungs-Nr. 888888"), //
+                        hasAmount("EUR", 22.83), hasGrossValue("EUR", 22.83), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testZinszahlung01()
+    {
+        var extractor = new OberbankAGPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Zinszahlung01.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("AT000B127337"), hasWkn(null), hasTicker(null), //
+                        hasName("Oberbank AG Nachr. Anleihe 2023-2031"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2024-02-26T00:00"), hasShares(80.00), //
+                        hasExDate("2024-02-24T00:00"), hasSource("Zinszahlung01.txt"), //
+                        hasNote("Abrechnungs-Nr. 888888"), //
+                        hasAmount("EUR", 263.90), hasGrossValue("EUR", 364.00), //
+                        hasTaxes("EUR", 100.10), hasFees("EUR", 0.00))));
     }
 }

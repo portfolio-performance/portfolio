@@ -1,14 +1,18 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
+import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetGrossUnit;
 import static name.abuchen.portfolio.util.TextUtil.concatenate;
 
 import name.abuchen.portfolio.Messages;
+import name.abuchen.portfolio.datatransfer.ExtractorUtils;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
+import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
+import name.abuchen.portfolio.money.Money;
 
 @SuppressWarnings("nls")
 public class OberbankAGPDFExtractor extends AbstractPDFExtractor
@@ -20,6 +24,7 @@ public class OberbankAGPDFExtractor extends AbstractPDFExtractor
         addBankIdentifier("Oberbank AG");
 
         addBuySellTransaction();
+        addDividendTransaction();
     }
 
     @Override
@@ -174,6 +179,168 @@ public class OberbankAGPDFExtractor extends AbstractPDFExtractor
                         })
 
                         .wrap(BuySellEntryItem::new);
+
+        addTaxesSectionsTransaction(pdfTransaction, type);
+        addFeesSectionsTransaction(pdfTransaction, type);
+    }
+
+    private void addDividendTransaction()
+    {
+        final var type = new DocumentType("(Wertpapier\\-.*" //
+                        + "(Dividende" //
+                        + "|Aussch.ttung" //
+                        + "|Zinszahlung" //
+                        + "|Aussch.ttungsgleicher Ertrag))");
+        this.addDocumentTyp(type);
+
+        var pdfTransaction = new Transaction<AccountTransaction>();
+
+        var firstRelevantLine = new Block("^Wertpapier\\-.*" //
+                        + "(Dividende" //
+                        + "|Aussch.ttung" //
+                        + "|Zinszahlung" //
+                        + "|Aussch.ttungsgleicher Ertrag)$");
+        type.addBlock(firstRelevantLine);
+        firstRelevantLine.set(pdfTransaction);
+
+        pdfTransaction //
+
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.DIVIDENDS))
+
+                        // If we have a positive amount and a gross reinvestment, there is a
+                        // tax refund. If the amount is negative, then it is taxes.
+                        .section("type", "sign").optional() //
+                        .match("^Wertpapier\\-.*" //
+                                        + "(?<type>(Aussch.ttungsgleicher Ertrag" //
+                                        + "))$") //
+                        .match("^.*zu (?<sign>(Gunsten|Lasten)) Konto .*$") //
+                        .assign((t, v) -> {
+                            if ("Gunsten".equals(v.get("sign")))
+                                t.setType(AccountTransaction.Type.TAX_REFUND);
+
+                            if ("Lasten".equals(v.get("sign")))
+                                t.setType(AccountTransaction.Type.TAXES);
+                        })
+
+                        .oneOf( //
+                                        // @formatter:off
+                                        // US92826C8394 VISA Inc. Stk .              10,00
+                                        // Reg. Shares Class A DL -,0001
+                                        // Ertrag 0,67 USD
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("isin", "name", "nameContinued", "currency") //
+                                                        .match("^(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) (?<name>.*) Stk[\\s]*\\.[\\s]+[\\.,\\d]+$") //
+                                                        .match("^(?<nameContinued>.*)$") //
+                                                        .match("^Ertrag [\\.,\\d]+ (?<currency>[A-Z]{3})[\\s]*$") //
+                                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
+                                        // @formatter:off
+                                        // AT000B127337 Oberbank AG EUR            8.000,00
+                                        // Nachr. Anleihe 2023-2031
+                                        // Ertrag f. 365 Tage EUR              364,00
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("isin", "name", "nameContinued", "currency") //
+                                                        .match("^(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) (?<name>.*) [A-Z]{3}[\\s]+[\\.,\\d]+$") //
+                                                        .match("^(?<nameContinued>.*)$") //
+                                                        .match("^Ertrag f. [\\d]+ Tage (?<currency>[A-Z]{3})[\\s]+[\\.,\\d]+[\\s]*$") //
+                                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))))
+
+                        .oneOf( //
+                                        // @formatter:off
+                                        // US92826C8394 VISA Inc. Stk .              10,00
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("shares") //
+                                                        .match("^[A-Z]{2}[A-Z0-9]{9}[0-9] .*Stk[\\s]*\\.[\\s]+(?<shares>[\\.,\\d]+)$") //
+                                                        .assign((t, v) -> t.setShares(asShares(v.get("shares")))),
+                                        // @formatter:off
+                                        // AT000B127337 Oberbank AG EUR            8.000,00
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("shares") //
+                                                        .match("^[A-Z]{2}[A-Z0-9]{9}[0-9] .* [A-Z]{3}[\\s]+(?<shares>[\\.,\\d]+)$") //
+                                                        .assign((t, v) -> t.setShares(asBondNominal(v.get("shares")))))
+
+                        // @formatter:off
+                        // Wertpapierrechnung Wert 02.03.2026 EUR                4,11
+                        // SVK Sammelverwahrung Wert 16.06.2025 EUR              147,03
+                        // @formatter:on
+                        .section("date") //
+                        .match("^(Wertpapierrechnung|SVK Sammelverwahrung) Wert (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) [A-Z]{3}[\\s]+(\\-)?[\\.,\\d]+$") //
+                        .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
+
+                        // @formatter:off
+                        // Extag 24.02.2024
+                        // @formatter:on
+                        .section("exDate").optional() //
+                        .match("^Extag (?<exDate>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$") //
+                        .assign((t, v) -> t.setExDate(asDate(v.get("exDate"))))
+
+                        // @formatter:off
+                        // Wertpapierrechnung Wert 02.03.2026 EUR                4,11
+                        // SVK Sammelverwahrung Wert 16.06.2025 EUR              147,03
+                        // @formatter:on
+                        .section("currency", "amount") //
+                        .match("^(Wertpapierrechnung|SVK Sammelverwahrung) Wert [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<currency>[A-Z]{3})[\\s]+(\\-)?(?<amount>[\\.,\\d]+)$") //
+                        .assign((t, v) -> {
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                            t.setAmount(asAmount(v.get("amount")));
+                        })
+
+                        .optionalOneOf( //
+                                        // @formatter:off
+                                        // Ertrag USD                6,70
+                                        // 15 % QUSt a 1,1797 v. 26.02.2026 EUR                4,11
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("termCurrency", "fxGross", "exchangeRate", "baseCurrency") //
+                                                        .match("^Ertrag (?<termCurrency>[A-Z]{3})[\\s]+(?<fxGross>[\\.,\\d]+)$") //
+                                                        .match("^.* a (?<exchangeRate>[\\.,\\d]+) v\\. [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<baseCurrency>[A-Z]{3})[\\s]+[\\.,\\d]+$") //
+                                                        .assign((t, v) -> {
+                                                            var rate = asExchangeRate(v);
+                                                            type.getCurrentContext().putType(rate);
+
+                                                            var fxGross = Money.of(rate.getTermCurrency(), asAmount(v.get("fxGross")));
+                                                            var gross = rate.convert(rate.getBaseCurrency(), fxGross);
+
+                                                            checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
+                                                        }),
+                                        // @formatter:off
+                                        // Zwischensumme USD               22,78
+                                        // 0,0006 EUR KESt a 0,9976 v. 07.11.2022 EUR               22,83
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("termCurrency", "fxGross", "exchangeRate", "baseCurrency") //
+                                                        .match("^Zwischensumme (?<termCurrency>[A-Z]{3})[\\s]+(?<fxGross>[\\.,\\d]+)$") //
+                                                        .match("^.* a (?<exchangeRate>[\\.,\\d]+) v\\. [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<baseCurrency>[A-Z]{3})[\\s]+[\\.,\\d]+$") //
+                                                        .assign((t, v) -> {
+                                                            var rate = asExchangeRate(v);
+                                                            type.getCurrentContext().putType(rate);
+
+                                                            var fxGross = Money.of(rate.getTermCurrency(), asAmount(v.get("fxGross")));
+                                                            var gross = rate.convert(rate.getBaseCurrency(), fxGross);
+
+                                                            checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
+                                                        }))
+
+                        // @formatter:off
+                        // 888888 - 02.03.2026
+                        // @formatter:on
+                        .section("note").optional() //
+                        .match("^(?<note>[\\d]+) - [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}$") //
+                        .assign((t, v) -> {
+                            t.setNote(concatenate(t.getNote(), "Abrechnungs-Nr. " + v.get("note"), " | "));
+                        })
+
+                        .conclude(ExtractorUtils.fixGrossValueA())
+
+                        .wrap(t -> {
+                            if (t.getCurrencyCode() != null && t.getAmount() == 0)
+                                return new SkippedItem(new TransactionItem(t), Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
+
+                            return new TransactionItem(t);
+                        });
 
         addTaxesSectionsTransaction(pdfTransaction, type);
         addFeesSectionsTransaction(pdfTransaction, type);
