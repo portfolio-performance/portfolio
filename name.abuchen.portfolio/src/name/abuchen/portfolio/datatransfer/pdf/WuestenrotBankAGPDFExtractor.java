@@ -7,6 +7,8 @@ import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.Transaction.Unit;
+import name.abuchen.portfolio.money.Money;
 
 @SuppressWarnings("nls")
 public class WuestenrotBankAGPDFExtractor extends AbstractPDFExtractor
@@ -74,6 +76,81 @@ public class WuestenrotBankAGPDFExtractor extends AbstractPDFExtractor
                             t.setCurrencyCode(v.get("currency"));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setNote(trim(v.get("note")));
+                        })
+
+                        .wrap(TransactionItem::new));
+
+        // @formatter:off
+        // 31.8. Habenzinsen 31.8. 0,28
+        // 31.8. Bonuszinsen 31.8. 70,99
+        // 31.8. Kapitalertragsteuer 31.8. -0,07
+        // 31.8. Kapitalertragsteuer 31.8. -17,75
+        // @formatter:on
+        var interestBlock_Format01 = new Block("^[\\d]{1,2}\\.[\\d]{1,2}\\. Habenzinsen [\\d]{1,2}\\.[\\d]{1,2}\\. [\\.,\\d]+$");
+        type.addBlock(interestBlock_Format01);
+        interestBlock_Format01.set(new Transaction<AccountTransaction>()
+
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.INTEREST))
+
+                        .section("date", "note", "amount") //
+                        .documentContext("currency", "year") //
+                        .match("^(?<date>[\\d]{1,2}\\.[\\d]{1,2}\\.) (?<note>Habenzinsen) [\\d]{1,2}\\.[\\d]{1,2}\\. (?<amount>[\\.,\\d]+)$") //
+                        .assign((t, v) -> {
+                            t.setDateTime(asDate(v.get("date") + v.get("year")));
+                            t.setCurrencyCode(v.get("currency"));
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setNote(trim(v.get("note")));
+                        })
+
+                        // The withholding tax on the credit interest is the
+                        // first capital gains tax booking of the statement.
+                        .section("tax").optional() //
+                        .documentContext("currency") //
+                        .match("^[\\d]{1,2}\\.[\\d]{1,2}\\. Kapitalertragsteuer [\\d]{1,2}\\.[\\d]{1,2}\\. \\-(?<tax>[\\.,\\d]+)$") //
+                        .assign((t, v) -> {
+                            var tax = Money.of(v.get("currency"), asAmount(v.get("tax")));
+
+                            t.addUnit(new Unit(Unit.Type.TAX, tax));
+
+                            t.setMonetaryAmount(t.getMonetaryAmount().subtract(tax));
+                        })
+
+                        .wrap(TransactionItem::new));
+
+        // @formatter:off
+        // 31.8. Bonuszinsen 31.8. 70,99
+        // 31.8. Kapitalertragsteuer 31.8. -0,07
+        // 31.8. Kapitalertragsteuer 31.8. -17,75
+        // @formatter:on
+        var interestBlock_Format02 = new Block("^[\\d]{1,2}\\.[\\d]{1,2}\\. Bonuszinsen [\\d]{1,2}\\.[\\d]{1,2}\\. [\\.,\\d]+$");
+        type.addBlock(interestBlock_Format02);
+        interestBlock_Format02.set(new Transaction<AccountTransaction>()
+
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.INTEREST))
+
+                        .section("date", "note", "amount") //
+                        .documentContext("currency", "year") //
+                        .match("^(?<date>[\\d]{1,2}\\.[\\d]{1,2}\\.) (?<note>Bonuszinsen) [\\d]{1,2}\\.[\\d]{1,2}\\. (?<amount>[\\.,\\d]+)$") //
+                        .assign((t, v) -> {
+                            t.setDateTime(asDate(v.get("date") + v.get("year")));
+                            t.setCurrencyCode(v.get("currency"));
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setNote(trim(v.get("note")));
+                        })
+
+                        // The withholding tax on the bonus interest follows the
+                        // capital gains tax booking of the credit interest and
+                        // is therefore the second one.
+                        .section("tax").optional() //
+                        .documentContext("currency") //
+                        .find("[\\d]{1,2}\\.[\\d]{1,2}\\. Kapitalertragsteuer [\\d]{1,2}\\.[\\d]{1,2}\\. \\-[\\.,\\d]+") //
+                        .match("^[\\d]{1,2}\\.[\\d]{1,2}\\. Kapitalertragsteuer [\\d]{1,2}\\.[\\d]{1,2}\\. \\-(?<tax>[\\.,\\d]+)$") //
+                        .assign((t, v) -> {
+                            var tax = Money.of(v.get("currency"), asAmount(v.get("tax")));
+
+                            t.addUnit(new Unit(Unit.Type.TAX, tax));
+
+                            t.setMonetaryAmount(t.getMonetaryAmount().subtract(tax));
                         })
 
                         .wrap(TransactionItem::new));
