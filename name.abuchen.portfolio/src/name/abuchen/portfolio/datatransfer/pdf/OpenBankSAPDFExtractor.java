@@ -42,12 +42,11 @@ public class OpenBankSAPDFExtractor extends AbstractPDFExtractor
 
                         .subject(() -> new BuySellEntry(PortfolioTransaction.Type.BUY))
 
-                        // Is type --> "Verkauf" change from BUY to SELL
+                        // Is type --> "Rückerstattung" or "Maximal verfügbare Erstattung" change from BUY to SELL
                         .section("type").optional() //
                         .match("^.* TRANSAKTION .* (?<type>(ZEICHNUNG|R.CKERSTATTUNG|MAXIMAL VERF.GBARE ERSTATTUNG))$") //
                         .assign((t, v) -> {
-                            if ("RÜCKERSTATTUNG".equals(v.get("type")) //
-                                            || "MAXIMAL VERFÜGBARE ERSTATTUNG".equals(v.get("type")))
+                            if (v.get("type").matches("^(R.CKERSTATTUNG|MAXIMAL VERF.GBARE ERSTATTUNG)$"))
                                 t.setType(PortfolioTransaction.Type.SELL);
                         })
 
