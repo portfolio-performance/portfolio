@@ -20,8 +20,11 @@ public final class HoldingsHandler
      * Values all holdings at the given date (default: today) in the given
      * currency (default: the file's base currency). A currency without an
      * exchange rate series converts 1:1 - the same silent fallback the UI
-     * applies. The factory is the host's per-file instance - it registers a
-     * listener on the client, so this handler must not construct its own.
+     * applies - and the report names every such pair it actually converted in
+     * {@code fxWarnings}, so an unconverted amount is never presented as a
+     * converted one. The factory
+     * is the host's per-file instance - it registers a listener on the client,
+     * so this handler must not construct its own.
      */
     public static JsonElement list(Client client, ExchangeRateProviderFactory factory, String dateParam,
                     String currencyParam)
@@ -34,7 +37,10 @@ public final class HoldingsHandler
         if (!errors.isEmpty())
             throw ApiException.badRequest(errors);
 
-        var converter = new CurrencyConverterImpl(factory, currency);
-        return EntityJson.toJson(ClientSnapshot.create(client, converter, date), currency);
+        var conversions = new ConversionRecorder(factory);
+        var converter = conversions.wrap(new CurrencyConverterImpl(factory, currency));
+        var report = EntityJson.toJson(ClientSnapshot.create(client, converter, date), currency);
+        FxWarnings.attach(report, conversions);
+        return report;
     }
 }
