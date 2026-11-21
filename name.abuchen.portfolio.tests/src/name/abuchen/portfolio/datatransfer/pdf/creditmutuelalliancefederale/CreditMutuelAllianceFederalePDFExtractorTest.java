@@ -66,7 +66,7 @@ public class CreditMutuelAllianceFederalePDFExtractorTest
 
         // check buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2020-06-04T00:00"), hasShares(90.1984), //
+                        hasDate("2020-06-05T00:00"), hasShares(90.1984), //
                         hasSource("CompteAChat01.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 3000.00), hasGrossValue("EUR", 3000.00), //
