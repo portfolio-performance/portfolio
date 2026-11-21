@@ -74,7 +74,7 @@ public class EventListWidget extends AbstractSecurityListWidget<EventListWidget.
                 types = EnumSet.allOf(SecurityEvent.Type.class);
 
             List<EventItem> items = new ArrayList<>();
-            for (Security security : getClient().getSecurities())
+            for (Security security : getDashboardData().getFilteredClient().getSecurities())
             {
                 for (var event : security.getEvents())
                 {

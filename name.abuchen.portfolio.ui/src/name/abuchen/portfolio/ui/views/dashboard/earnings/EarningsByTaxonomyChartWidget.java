@@ -35,6 +35,7 @@ import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.snapshot.filter.ClientFilter;
+import name.abuchen.portfolio.snapshot.filter.ReadOnlyAccount;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.util.Colors;
@@ -151,7 +152,7 @@ public class EarningsByTaxonomyChartWidget extends CircularChartWidget<Map<Inves
 
             CurrencyConverter converter = getDashboardData().getCurrencyConverter();
 
-            Client filteredClient = clientFilter.filter(getClient());
+            Client filteredClient = getDashboardData().getFilteredClient(clientFilter);
 
             for (Account account : filteredClient.getAccounts())
             {
@@ -163,7 +164,8 @@ public class EarningsByTaxonomyChartWidget extends CircularChartWidget<Map<Inves
                     if (!interval.contains(tx.getDateTime()))
                         continue;
 
-                    InvestmentVehicle vehicle = tx.getSecurity() != null ? tx.getSecurity() : account;
+                    InvestmentVehicle vehicle = tx.getSecurity() != null ? tx.getSecurity()
+                                    : ReadOnlyAccount.unwrap(account);
 
                     Money value = (grossNetType == GrossNetType.GROSS ? tx.getGrossValue() : tx.getMonetaryAmount())
                                     .with(converter.at(tx.getDateTime()));

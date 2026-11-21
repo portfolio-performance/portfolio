@@ -35,7 +35,9 @@ import com.google.common.collect.Lists;
 import name.abuchen.portfolio.snapshot.PerformanceIndex;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.util.AbstractCSVExporter;
+import name.abuchen.portfolio.ui.util.ClientFilterDropDown;
 import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.DropDown;
 import name.abuchen.portfolio.ui.util.LabelOnly;
@@ -97,6 +99,7 @@ public class ReturnsVolatilityChartView extends AbstractHistoricView
     private DataSeriesConfigurator configurator;
 
     private DataSeriesCache cache;
+    private ClientFilterDropDown clientFilter;
 
     @PostConstruct
     public void construct()
@@ -137,6 +140,11 @@ public class ReturnsVolatilityChartView extends AbstractHistoricView
     protected void addButtons(ToolBarManager toolBar)
     {
         super.addButtons(toolBar);
+
+        this.clientFilter = new ClientFilterDropDown(getClient(), getPreferenceStore(),
+                        ReturnsVolatilityChartView.class.getSimpleName(), filter -> reportingPeriodUpdated());
+        toolBar.add(clientFilter);
+
         toolBar.add(new ExportDropDown());
         toolBar.add(new DropDown(Messages.MenuConfigureChart, Images.CONFIG, SWT.NONE, manager -> {
 
@@ -199,6 +207,8 @@ public class ReturnsVolatilityChartView extends AbstractHistoricView
     protected Composite createBody(Composite parent)
     {
         cache = make(DataSeriesCache.class);
+        cache.setClientFilter(clientFilter.getSelectedFilter());
+        setToContext(UIConstants.Context.FILTERED_CLIENT, cache.getFilteredClient());
 
         Composite composite = new Composite(parent, SWT.NONE);
         composite.setBackground(Colors.theme().defaultBackground());
@@ -258,7 +268,8 @@ public class ReturnsVolatilityChartView extends AbstractHistoricView
     @Override
     public void reportingPeriodUpdated()
     {
-        cache.clear();
+        cache.setClientFilter(clientFilter.getSelectedFilter());
+        setToContext(UIConstants.Context.FILTERED_CLIENT, cache.getFilteredClient());
         updateChart();
     }
 

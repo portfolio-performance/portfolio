@@ -101,7 +101,7 @@ public class FollowUpWidget extends AbstractSecurityListWidget<FollowUpWidget.Fo
             List<AttributeType> types = get(AttributesConfig.class).getTypes();
 
             List<FollowUpItem> items = new ArrayList<>();
-            for (Security security : getClient().getSecurities())
+            for (Security security : getDashboardData().getFilteredClient().getSecurities())
             {
                 for (AttributeType t : types)
                 {

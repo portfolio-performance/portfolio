@@ -292,7 +292,7 @@ public class DividendListWidget extends AbstractSecurityListWidget<DividendListW
             case ACTIVE:
                 return getClient().getSecurities().stream().filter(s -> !s.isRetired()).toList();
             case OWNED:
-                var filteredClient = clientFilter.getSelectedFilter().filter(getClient());
+                var filteredClient = getDashboardData().getFilteredClient(clientFilter.getSelectedFilter());
                 var snapshot = ClientSnapshot.create(filteredClient, getDashboardData().getCurrencyConverter(), now);
                 return snapshot.getJointPortfolio().getPositions().stream().map(p -> p.getSecurity()).toList();
             default:

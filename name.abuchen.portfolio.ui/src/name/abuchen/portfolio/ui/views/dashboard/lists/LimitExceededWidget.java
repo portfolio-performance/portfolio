@@ -70,7 +70,7 @@ public class LimitExceededWidget extends AbstractSecurityListWidget<LimitExceede
 
             List<LimitItem> items = new ArrayList<>();
 
-            for (Security security : getClient().getSecurities())
+            for (Security security : getDashboardData().getFilteredClient().getSecurities())
             {
                 for (AttributeType t : types)
                 {
