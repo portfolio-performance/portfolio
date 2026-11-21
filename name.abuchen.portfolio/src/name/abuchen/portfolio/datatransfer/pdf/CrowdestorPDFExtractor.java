@@ -41,7 +41,7 @@ public class CrowdestorPDFExtractor extends AbstractPDFExtractor
 
         var pdfTransaction = new Transaction<AccountTransaction>();
 
-        var firstRelevantLine = new Block("^[\\d]{2}.[\\d]{2}.[\\d]{4} .* (Deposit|Profit) .*$");
+        var firstRelevantLine = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} .* (Deposit|Profit) .*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.setMaxSize(1);
         firstRelevantLine.set(pdfTransaction);
@@ -50,11 +50,13 @@ public class CrowdestorPDFExtractor extends AbstractPDFExtractor
 
                         .subject(() -> new AccountTransaction(AccountTransaction.Type.INTEREST))
 
+                        // @formatter:off
                         // 14.07.2022 CRF-6-4911 Deposit +50.00 50.00
                         // 16.07.2022 CRF-6-4911 Profit +0.03 50.03
+                        // @formatter:on
                         .section("date", "type", "amount") //
                         .documentContext("currency") //
-                        .match("^(?<date>[\\d]{2}.[\\d]{2}.[\\d]{4}) .* (?<type>(Deposit|Profit)) \\+(?<amount>[\\.,\\d]+) [\\.,\\d]+$") //
+                        .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) .* (?<type>(Deposit|Profit)) \\+(?<amount>[\\.,\\d]+) [\\.,\\d]+$") //
                         .assign((t, v) -> {
                             t.setDateTime(asDate(v.get("date")));
                             t.setAmount(asAmount(v.get("amount")));
@@ -75,6 +77,50 @@ public class CrowdestorPDFExtractor extends AbstractPDFExtractor
                         })
 
                         .wrap(TransactionItem::new);
+
+        // @formatter:off
+        // The profit is automatically paid out again ("Automatic withdrawal").
+        // The text of these lines is wrapped in different ways.
+        // @formatter:on
+        var removalBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} .* Automatic.*$");
+        type.addBlock(removalBlock);
+        removalBlock.setMaxSize(2);
+        removalBlock.set(new Transaction<AccountTransaction>()
+
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.REMOVAL))
+
+                        .oneOf( //
+                                        // @formatter:off
+                                        // 17.07.2022 CRF-6-4911 Automaticithdrawal -0.03 50.00w
+                                        // 23.07.2022 CRF-6-4911 Automatic -0.03 50.00
+                                        // withdrawal
+                                        // 16.07.2022 CRF-6-4911 Automatic withdrawal -0.03 50.00
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("date", "amount") //
+                                                        .documentContext("currency") //
+                                                        .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) .* Automatic( withdrawal|ithdrawal)? \\-(?<amount>[\\.,\\d]+) [\\.,\\d]+(w)?$") //
+                                                        .assign((t, v) -> {
+                                                            t.setDateTime(asDate(v.get("date")));
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                            t.setCurrencyCode(v.get("currency"));
+                                                        }),
+                                        // @formatter:off
+                                        // 16.07.2022 CRF-6-4911 Automatic
+                                        // withdrawal -0.03 50.00
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("date", "amount") //
+                                                        .documentContext("currency") //
+                                                        .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) .* Automatic$") //
+                                                        .match("^withdrawal \\-(?<amount>[\\.,\\d]+) [\\.,\\d]+$") //
+                                                        .assign((t, v) -> {
+                                                            t.setDateTime(asDate(v.get("date")));
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                            t.setCurrencyCode(v.get("currency"));
+                                                        }))
+
+                        .wrap(TransactionItem::new));
     }
 
     @Override
