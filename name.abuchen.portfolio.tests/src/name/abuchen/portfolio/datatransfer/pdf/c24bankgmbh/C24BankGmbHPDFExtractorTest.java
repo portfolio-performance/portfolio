@@ -6,11 +6,11 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasDate;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasFees;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasGrossValue;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasNote;
-import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasShares;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasSource;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTaxes;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.interest;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.removal;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.taxes;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransactions;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransfers;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countBuySell;
@@ -75,20 +75,28 @@ public class C24BankGmbHPDFExtractorTest
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(0L));
-        assertThat(countAccountTransactions(results), is(2L));
+        assertThat(countAccountTransactions(results), is(3L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
         assertThat(countSkippedItems(results), is(0L));
-        assertThat(results.size(), is(2));
+        assertThat(results.size(), is(3));
         new AssertImportActions().check(results, "EUR");
 
         // assert transaction
         assertThat(results, hasItem(interest( //
-                        hasDate("2024-05-31"), hasShares(0.00), //
+                        hasDate("2024-05-31"), //
                         hasSource("Kontoauszug02.txt"), //
                         hasNote("Zinsen | 16.05.2024-30.05.2024"), //
-                        hasAmount("EUR", 1.93), hasGrossValue("EUR", 4.22), //
-                        hasTaxes("EUR", 2.29), hasFees("EUR", 0.00))));
+                        hasAmount("EUR", 1.93), hasGrossValue("EUR", 1.93), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // assert transaction
+        assertThat(results, hasItem(taxes( //
+                        hasDate("2024-05-31"), //
+                        hasSource("Kontoauszug02.txt"), //
+                        hasNote("Steuern"), //
+                        hasAmount("EUR", 2.29), hasGrossValue("EUR", 2.29), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // assert transaction
         assertThat(results, hasItem(deposit(hasDate("2024-05-17"), hasAmount("EUR", 1460.11), //
@@ -116,10 +124,10 @@ public class C24BankGmbHPDFExtractorTest
 
         // assert transaction
         assertThat(results, hasItem(interest( //
-                        hasDate("2024-06-30"), hasShares(0.00), //
+                        hasDate("2024-06-30"), //
                         hasSource("Kontoauszug03.txt"), //
                         hasNote("Zinsen | 31.05.2024-29.06.2024"), //
-                        hasAmount("EUR", 15.32), hasGrossValue("EUR", 19.36), //
+                        hasAmount("EUR", 11.28), hasGrossValue("EUR", 15.32), //
                         hasTaxes("EUR", 4.04), hasFees("EUR", 0.00))));
     }
 
@@ -144,10 +152,10 @@ public class C24BankGmbHPDFExtractorTest
 
         // assert transaction
         assertThat(results, hasItem(interest( //
-                        hasDate("2024-07-31"), hasShares(0.00), //
+                        hasDate("2024-07-31"), //
                         hasSource("Kontoauszug04.txt"), //
                         hasNote("Zinsen | 30.06.2024-30.07.2024"), //
-                        hasAmount("EUR", 15.86), hasGrossValue("EUR", 20.04), //
+                        hasAmount("EUR", 11.68), hasGrossValue("EUR", 15.86), //
                         hasTaxes("EUR", 4.18), hasFees("EUR", 0.00))));
     }
 
