@@ -93,7 +93,7 @@ public class QuirinBankAGPDFExtractor extends AbstractPDFExtractor
                         // Handelstag / Zeit 30.12.2016 12:46:28
                         // @formatter:on
                         .section("date", "time").optional() //
-                        .match("^Handelstag \\/ Zeit (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}:[\\d]{2})$") //
+                        .match("^Handelstag \\/ Zeit (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<time>[\\d]{2}\\:[\\d]{2}\\:[\\d]{2})$") //
                         .assign((t, v) -> t.setDate(asDate(v.get("date"), v.get("time"))))
 
                         // @formatter:off
@@ -190,7 +190,7 @@ public class QuirinBankAGPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("date", "time") //
-                                                        .match("^(Urspr.ngl\\. )?Handelstag(\\/\\-zeit)? (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})[\\s]{1,}(?<time>[\\d]{2}:[\\d]{2}:[\\d]{2}).*$") //
+                                                        .match("^(Urspr.ngl\\. )?Handelstag(\\/\\-zeit)? (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})[\\s]{1,}(?<time>[\\d]{2}\\:[\\d]{2}\\:[\\d]{2}).*$") //
                                                         .assign((t, v) -> t.setDate(asDate(v.get("date"), v.get("time")))),
                                         // @formatter:off
                                         // Handelstag/-zeit 23.11.2009 Bank-Provision  0,00 EUR
