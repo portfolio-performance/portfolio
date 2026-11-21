@@ -3,6 +3,8 @@ package name.abuchen.portfolio.rest.internal;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
+import java.lang.reflect.Field;
+
 import org.junit.Test;
 
 import name.abuchen.portfolio.junit.SecurityBuilder;
@@ -16,6 +18,59 @@ public class InstrumentAttributesReadTest
     private static AttributeType typeById(Client client, String id)
     {
         return client.getSettings().getAttributeTypes().filter(a -> id.equals(a.getId())).findFirst().orElseThrow();
+    }
+
+    /**
+     * An attribute whose converter class cannot be loaded, as one written by a
+     * version with a converter this one does not have: the converter is looked
+     * up by name when the attribute is first used.
+     */
+    /* package */ static AttributeType unloadable(Client client, String id)
+    {
+        var type = new AttributeType(id);
+        type.setName(id);
+        type.setTarget(Security.class);
+        type.setType(String.class);
+        try
+        {
+            Field converterClass = AttributeType.class.getDeclaredField("converterClass");
+            converterClass.setAccessible(true);
+            converterClass.set(type, "name.abuchen.portfolio.model.AttributeType$NoSuchConverter");
+        }
+        catch (ReflectiveOperationException e)
+        {
+            throw new IllegalStateException(e);
+        }
+        client.getSettings().addAttributeType(type);
+        return type;
+    }
+
+    @Test
+    public void testAttributeWithUnloadableConverterIsSkippedNotThrown()
+    {
+        var client = new Client();
+        var security = new SecurityBuilder().addTo(client);
+        security.getAttributes().put(unloadable(client, "future"), "x");
+        security.getAttributes().put(typeById(client, "vendor"), "ACME");
+
+        var json = EntityJson.toJson(client, security);
+        var attributes = json.getAsJsonObject("attributes");
+
+        assertThat(attributes.has("vendor"), is(true));
+        assertThat(attributes.has("future"), is(false));
+    }
+
+    @Test
+    public void testAttributeTypeWithUnloadableConverterIsNotListed()
+    {
+        var client = new Client();
+        unloadable(client, "future");
+
+        var items = SecuritiesHandler.attributeTypes(client).getAsJsonObject().getAsJsonArray("items");
+
+        assertThat(items.isEmpty(), is(false));
+        for (var item : items)
+            assertThat(item.getAsJsonObject().get("id").getAsString().equals("future"), is(false));
     }
 
     @Test

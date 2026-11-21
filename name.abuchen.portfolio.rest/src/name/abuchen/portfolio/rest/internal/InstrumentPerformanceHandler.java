@@ -52,8 +52,11 @@ public final class InstrumentPerformanceHandler
                     String closingDateParam, String currencyParam, String costMethodParam, String taxesAndFeesParam,
                     String metricsParam)
     {
-        return list(client, converters(factory), openingDateParam, closingDateParam, currencyParam, costMethodParam,
-                        taxesAndFeesParam, metricsParam);
+        var conversions = new ConversionRecorder(factory);
+        var report = list(client, converters(factory, conversions), openingDateParam, closingDateParam,
+                        currencyParam, costMethodParam, taxesAndFeesParam, metricsParam).getAsJsonObject();
+        FxWarnings.attach(report, conversions);
+        return report;
     }
 
     /* package */ static JsonElement list(Client client, Function<String, CurrencyConverter> converters,
@@ -66,13 +69,26 @@ public final class InstrumentPerformanceHandler
         var records = snapshot(client, converters, params).getRecords();
 
         // the model yields the records in the iteration order of a HashMap, so
-        // sorting is what makes repeated calls comparable at all
+        // sorting is what makes repeated calls comparable at all; two instruments
+        // of the same name - or of names the collator holds equal - are told
+        // apart by their uuid
         var sorted = new ArrayList<>(records);
-        sorted.sort(Comparator.comparing(LazySecurityPerformanceRecord::getSecurityName, TextUtil::compare));
+        sorted.sort(Comparator.comparing(LazySecurityPerformanceRecord::getSecurityName, TextUtil::compare)
+                        .thenComparing(record -> record.getSecurity().getUUID()));
 
+        // serializing a record is what computes its lazy figures - the daily
+        // series behind timeWeighted and risk above all - so this loop is where
+        // the time goes, and where a streamed MCP call hears how far it has come
+        // and stops between two instruments when its caller gave up
+        var progress = Progress.current();
         var items = new JsonArray();
         for (LazySecurityPerformanceRecord record : sorted)
+        {
+            progress.checkCancelled();
+            progress.step(items.size(), sorted.size(),
+                            "instrument " + (items.size() + 1) + " of " + sorted.size()); //$NON-NLS-1$ //$NON-NLS-2$
             items.add(EntityJson.instrumentPerformance(record, params));
+        }
 
         var json = EntityJson.instrumentPerformanceContext(params);
         json.add("items", items); //$NON-NLS-1$
@@ -83,8 +99,11 @@ public final class InstrumentPerformanceHandler
                     String openingDateParam, String closingDateParam, String currencyParam, String costMethodParam,
                     String taxesAndFeesParam, String metricsParam)
     {
-        return get(client, converters(factory), uuid, openingDateParam, closingDateParam, currencyParam,
-                        costMethodParam, taxesAndFeesParam, metricsParam);
+        var conversions = new ConversionRecorder(factory);
+        var report = get(client, converters(factory, conversions), uuid, openingDateParam, closingDateParam,
+                        currencyParam, costMethodParam, taxesAndFeesParam, metricsParam).getAsJsonObject();
+        FxWarnings.attach(report, conversions);
+        return report;
     }
 
     /* package */ static JsonElement get(Client client, Function<String, CurrencyConverter> converters, String uuid,
@@ -116,9 +135,11 @@ public final class InstrumentPerformanceHandler
         return json;
     }
 
-    private static Function<String, CurrencyConverter> converters(ExchangeRateProviderFactory factory)
+    /** converters into any currency, each recording what it converted */
+    private static Function<String, CurrencyConverter> converters(ExchangeRateProviderFactory factory,
+                    ConversionRecorder conversions)
     {
-        return currency -> new CurrencyConverterImpl(factory, currency);
+        return currency -> conversions.wrap(new CurrencyConverterImpl(factory, currency));
     }
 
     private static LazySecurityPerformanceSnapshot snapshot(Client client,
