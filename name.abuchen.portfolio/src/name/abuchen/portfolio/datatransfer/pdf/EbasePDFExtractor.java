@@ -1005,17 +1005,20 @@ public class EbasePDFExtractor extends AbstractPDFExtractor
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                         })
 
+                        // The exchange rate is taken from the security line, but the
+                        // gross value is the fee amount and not the amount of the
+                        // (partial) sale in that line.
                         // @formatter:off
                         // IE00B4L5Y983 -0,167976 71,243400 USD 1,227400 9,75 EUR
                         // IE00BJZ2DC62 12,729132 26,002300 USD 1,105500 299,40 EUR
                         // @formatter:on
-                        .section("termCurrency", "baseCurrency", "exchangeRate", "gross").optional() //
-                        .match("^[A-Z]{2}[A-Z0-9]{9}[0-9] (\\-)?[\\.,\\d]+ [\\.,\\d]+ (?<termCurrency>[A-Z]{3}) (?<exchangeRate>[\\.,\\d]+) (?<gross>[\\.,\\d]+) (?<baseCurrency>[A-Z]{3})$") //
+                        .section("termCurrency", "baseCurrency", "exchangeRate").optional() //
+                        .match("^[A-Z]{2}[A-Z0-9]{9}[0-9] (\\-)?[\\.,\\d]+ [\\.,\\d]+ (?<termCurrency>[A-Z]{3}) (?<exchangeRate>[\\.,\\d]+) [\\.,\\d]+ (?<baseCurrency>[A-Z]{3})$") //
                         .assign((t, v) -> {
                             var rate = asExchangeRate(v);
                             type.getCurrentContext().putType(rate);
 
-                            var gross = Money.of(rate.getBaseCurrency(), asAmount(v.get("gross")));
+                            var gross = t.getMonetaryAmount();
                             var fxGross = rate.convert(rate.getTermCurrency(), gross);
 
                             checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
