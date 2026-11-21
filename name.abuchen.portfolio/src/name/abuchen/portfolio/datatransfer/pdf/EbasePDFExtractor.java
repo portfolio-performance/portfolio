@@ -464,13 +464,14 @@ public class EbasePDFExtractor extends AbstractPDFExtractor
 
                             if (type.getCurrentContext().containsKey(SKIP_TRANSACTION))
                             {
-                                // @formatter:off
+                                var skipped = new SkippedItem(item, type.getCurrentContext().get(SKIP_TRANSACTION));
+
                                 // If we have multiple entries in the document,
-                                // then the "skipTransaction" flag must be removed.
-                                // @formatter:on
+                                // then the SKIP_TRANSACTION flag must be
+                                // removed.
                                 type.getCurrentContext().remove(SKIP_TRANSACTION);
 
-                                return new SkippedItem(item, type.getCurrentContext().get(SKIP_TRANSACTION));
+                                return skipped;
                             }
 
                             return item;
