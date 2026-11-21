@@ -73,6 +73,15 @@ public class BoursoBankPDFExtractor extends AbstractPDFExtractor
                                                         .match("^Code ISIN : (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) .*$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
                                         // @formatter:off
+                                        // 10/05/2021 200,00 BRGF WLD TECHNO.A2 USD C.2DEC Référence : 042136509589
+                                        // Code ISIN : LU0056508442 Valeur liquidative : 74,5100 USD
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("name", "isin", "currency") //
+                                                        .match("^[\\d]{2}\\/[\\d]{2}\\/[\\d]{4} [\\,\\d\\s]+ (?<name>.*) R.f.rence : .*$") //
+                                                        .match("^Code ISIN : (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) Valeur liquidative : [\\,\\d\\s]+ (?<currency>[A-Z]{3})$") //
+                                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
+                                        // @formatter:off
                                         // 27/02/2024 1,02 AXA COURT TERME A CAP.SI.2DEC
                                         // Code ISIN : FR0000288946 Valeur liquidative : 2 464,6553 EUR
                                         // @formatter:on
@@ -177,6 +186,29 @@ public class BoursoBankPDFExtractor extends AbstractPDFExtractor
                                                         .find("Montant transaction brut.*") //
                                                         .match("^(?<fxGross>[\\d\\s]+,[\\d]{2}) (?<termCurrency>[A-Z]{3}) .*$") //
                                                         .match("^Contrevalorisation en [\\w]+ (?<exchangeRate>[\\.,\\d]+) [\\d\\s]+,[\\d]{2} (?<baseCurrency>[A-Z]{3})$") //
+                                                        .assign((t, v) -> {
+                                                            var rate = asExchangeRate(v);
+                                                            type.getCurrentContext().putType(rate);
+
+                                                            var fxGross = Money.of(rate.getTermCurrency(), asAmount(v.get("fxGross")));
+                                                            var gross = rate.convert(rate.getBaseCurrency(), fxGross);
+
+                                                            checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
+                                                        }),
+                                        // @formatter:off
+                                        // Montant brut Droits d'entrée Montant net en devises Montant net au débit de votre compte
+                                        // 14 902,00 USD 0,00 USD 14 902,00 USD 12 306,33 EUR
+                                        // ACHAT DEVISES AU COMPTANT. COURS DE CHANGE DU 14/05/2021 : 1 EUR = 1,210922000 USD
+                                        //
+                                        // Montant brut Droits de sortie Montant net en devises Montant net au crédit de votre compte
+                                        // 17 967,60 USD 0,00 USD 17 967,60 USD 16 570,69 EUR
+                                        // VENTE DEVISES AU COMPTANT. COURS DE CHANGE DU 12/03/2025 : 1 EUR = 1,084300000 USD
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("fxGross", "baseCurrency", "exchangeRate", "termCurrency") //
+                                                        .find("Montant brut Droits (d.entr.e|de sortie) Montant net en devises.*") //
+                                                        .match("^(?<fxGross>[\\d\\s]+,[\\d]{2}) [A-Z]{3} [\\d\\s]+,[\\d]{2} [A-Z]{3} [\\d\\s]+,[\\d]{2} [A-Z]{3} [\\d\\s]+,[\\d]{2} [A-Z]{3}$") //
+                                                        .match("^(ACHAT|VENTE) DEVISES AU COMPTANT\\. COURS DE CHANGE DU [\\d]{2}\\/[\\d]{2}\\/[\\d]{4} : 1 (?<baseCurrency>[A-Z]{3}) = (?<exchangeRate>[\\.,\\d]+) (?<termCurrency>[A-Z]{3})$") //
                                                         .assign((t, v) -> {
                                                             var rate = asExchangeRate(v);
                                                             type.getCurrentContext().putType(rate);
@@ -292,7 +324,7 @@ public class BoursoBankPDFExtractor extends AbstractPDFExtractor
                         // 10,99 EUR 2,02 EUR 3,03 EUR 16,04 EUR
                         // @formatter:on
                         .section("currency", "tax").optional() //
-                        .find("Montant.*") //
+                        .find("Montant brut Commission Frais.*") //
                         .match("^[\\d\\s]+,[\\d]{2} [A-Z]{3} [\\d\\s]+,[\\d]{2} [A-Z]{3} (?<tax>[\\d\\s]+,[\\d]{2}) (?<currency>[A-Z]{3}) [\\d\\s]+,[\\d]{2} [A-Z]{3}$") //
                         .assign((t, v) -> processTaxEntries(t, v, type))
 
