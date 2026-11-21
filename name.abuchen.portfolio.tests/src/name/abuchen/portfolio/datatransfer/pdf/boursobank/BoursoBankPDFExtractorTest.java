@@ -430,7 +430,7 @@ public class BoursoBankPDFExtractorTest
         assertThat(results, hasItem(sale( //
                         hasDate("2023-09-29T12:36:04"), hasShares(42.00), //
                         hasSource("Vente01.txt"), //
-                        hasNote("à cours limiteCours demandé : 20,5500 EUR | Référence : 493029272303"), //
+                        hasNote("à cours limite | Référence : 493029272303"), //
                         hasAmount("EUR", 858.78), hasGrossValue("EUR", 863.10), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 4.32))));
     }

@@ -200,7 +200,7 @@ public class BoursoBankPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("note") //
-                                                        .match("^.*Type d.ordre : (?<note>.* [\\,\\d\\s]+ [A-Z]{3})$")
+                                                        .match("^.*Type d.ordre : (?<note>.*)Cours demand. : [\\,\\d\\s]+ [A-Z]{3}$") //
                                                         .assign((t, v) -> t.setNote(trim(v.get("note")))))
 
                         // @formatter:off
