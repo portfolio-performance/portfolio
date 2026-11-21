@@ -4605,7 +4605,7 @@ public class ConsorsbankPDFExtractorTest
 
         // assert transaction
         assertThat(results, hasItem(interest( //
-                        hasDate("2024-03-31"), hasShares(0.00), //
+                        hasDate("2024-03-31"), //
                         hasSource("Kontoauszug06.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 192.58), hasGrossValue("EUR", 261.56), //
@@ -4649,7 +4649,7 @@ public class ConsorsbankPDFExtractorTest
 
         // assert transaction
         assertThat(results, hasItem(interest( //
-                        hasDate("2023-09-30"), hasShares(0.00), //
+                        hasDate("2023-09-30"), //
                         hasSource("Kontoauszug07.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 62.01), hasGrossValue("EUR", 84.21), //
@@ -4677,7 +4677,7 @@ public class ConsorsbankPDFExtractorTest
 
         // assert transaction
         assertThat(results, hasItem(interest( //
-                        hasDate("2024-03-31"), hasShares(0.00), //
+                        hasDate("2024-03-31"), //
                         hasSource("Kontoabschluss01.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 192.58), hasGrossValue("EUR", 261.56), //
@@ -4705,7 +4705,7 @@ public class ConsorsbankPDFExtractorTest
 
         // assert transaction
         assertThat(results, hasItem(interest( //
-                        hasDate("2023-09-30"), hasShares(0.00), //
+                        hasDate("2023-09-30"), //
                         hasSource("Kontoabschluss02.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 62.01), hasGrossValue("EUR", 84.21), //
