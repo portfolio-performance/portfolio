@@ -18,6 +18,7 @@ import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 
+import name.abuchen.portfolio.datatransfer.DuplicatesWithinImport;
 import name.abuchen.portfolio.datatransfer.Extractor;
 import name.abuchen.portfolio.datatransfer.Extractor.Item;
 import name.abuchen.portfolio.datatransfer.ImportAction;
@@ -173,30 +174,41 @@ public final class ImportExtractedItemsWizard extends Wizard
 
         result.entrySet().stream() //
                         .sorted((r, l) -> r.getKey().getLabel().compareTo(l.getKey().getLabel())) //
-                        .map(entry -> new Extractor()
-                        {
-                            @Override
-                            public String getLabel()
+                        .forEach(entry -> {
+                            var extractor = new Extractor()
                             {
-                                return entry.getKey().getLabel();
-                            }
+                                @Override
+                                public String getLabel()
+                                {
+                                    return entry.getKey().getLabel();
+                                }
 
-                            @Override
-                            public List<Item> extract(SecurityCache securityCache, InputFile file,
-                                            List<Exception> errors)
-                            {
-                                return entry.getValue();
-                            }
+                                @Override
+                                public List<Item> extract(SecurityCache securityCache, InputFile file,
+                                                List<Exception> errors)
+                                {
+                                    return entry.getValue();
+                                }
 
-                            @Override
-                            public List<Item> extract(List<InputFile> file, List<Exception> errors)
-                            {
-                                return entry.getValue();
-                            }
-                        }) //
-                        .forEach(extractor -> {
+                                @Override
+                                public List<Item> extract(List<InputFile> file, List<Exception> errors)
+                                {
+                                    return entry.getValue();
+                                }
+                            };
+
                             ReviewExtractedItemsPage page = new ReviewExtractedItemsPage(client, extractor, preferences,
                                             Collections.emptyList());
+
+                            // the same PDF document may be imported twice
+                            // (e.g. with different file names), therefore check
+                            // PDF imports for duplicates between the files. The
+                            // PDF import marks each item with the input file it
+                            // stems from (the extractor itself might be wrapped,
+                            // e.g. when grouping documents by broker)
+                            page.setDetectDuplicatesWithinImport(entry.getValue().stream()
+                                            .anyMatch(item -> item.getData(DuplicatesWithinImport.SOURCE_KEY) != null));
+
                             if (account != null)
                                 page.setAccount(account);
                             if (portfolio != null)
