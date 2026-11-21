@@ -1,10 +1,13 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
+import static name.abuchen.portfolio.util.TextUtil.trim;
+
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 import java.util.Map;
 
+import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.datatransfer.ExtractorUtils;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
@@ -51,14 +54,14 @@ public class KFintechPDFExtractor extends AbstractPDFExtractor
                                         .optional() //
                                         .attributes("isin1", "isin2") //
                                         .match("^.* ISIN: (?<isin1>[A-Z0-9]+).*$") //
-                                        .match("(?<isin2>[A-Z0-9]*).*"));
+                                        .match("^(?<isin2>[A-Z0-9]*).*$"));
 
         var nameRange = new Block("^Folio No: .*") //
                         .asRange(section -> section //
                                         .attributes("name") //
                                         .match("^[A-Z0-9]*-(?<name>.*)$"));
 
-        final DocumentType type = new DocumentType("Consolidated Account Statement", isinRange, nameRange);
+        final var type = new DocumentType("Consolidated Account Statement", isinRange, nameRange);
 
         this.addDocumentTyp(type);
 
@@ -71,7 +74,7 @@ public class KFintechPDFExtractor extends AbstractPDFExtractor
 
     private void addPurchase(final DocumentType type)
     {
-        Block purchase = new Block(
+        var purchase = new Block(
                         "^..-...-.... .*(Purchase|S T P In|SIP Insure|Systematic Investment|Sys. Investment).*");
         type.addBlock(purchase);
         purchase.setMaxSize(10);
@@ -95,6 +98,32 @@ public class KFintechPDFExtractor extends AbstractPDFExtractor
                             t.setCurrencyCode(asCurrencyCode(INR));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setShares(asShares(v.get("units")));
+                        })
+
+                        // @formatter:off
+                        // 01-Mar-2021 SIP Purchase   (Reversal - Code I - Cheque Dishonoured) - Instalment No (1,999.90) (9.908) 201.855 2,277.593
+                        // 16-Apr-2025 SIP Purchase (Reversal) - Instalment No 43 (1,999.90) (5.823) 343.470 2,608.098
+                        // @formatter:on
+                        .section("date", "note", "amount", "units") //
+                        .optional() //
+                        .documentRange("isin1", "isin2", "name") //
+                        .match("^(?<date>[\\d]{2}-[\\w]{3}-[\\d]{4}) " //
+                                        + "(?<note>.*Purchase.*\\(Reversal.*) " //
+                                        + "\\((?<amount>[.,\\d]+)\\) " //
+                                        + "\\((?<units>[.,\\d]+)\\) " //
+                                        + "[.,\\d]+ [.,\\d]+$")
+                        .assign((t, v) -> {
+
+                            t.setSecurity(getOrCreateSecurity(v));
+
+                            t.setDate(LocalDate.parse(v.get("date"), DATE_FORMAT).atStartOfDay());
+                            t.setCurrencyCode(asCurrencyCode(INR));
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setShares(asShares(v.get("units")));
+
+                            t.setNote(trim(v.get("note")));
+
+                            v.markAsFailure(Messages.MsgErrorTransactionOrderCancellationUnsupported);
                         })
 
                         .section("date", "tax") //
@@ -125,7 +154,7 @@ public class KFintechPDFExtractor extends AbstractPDFExtractor
         // to start the opening balance. It does not contain a valuation, only
         // the number units. We create it with 1 INR.
 
-        Block creation = new Block("^..-...-.... .*Creation of units.*");
+        var creation = new Block("^..-...-.... .*Creation of units.*");
         type.addBlock(creation);
         creation.setMaxSize(10);
         creation.set(new Transaction<BuySellEntry>()
@@ -156,7 +185,7 @@ public class KFintechPDFExtractor extends AbstractPDFExtractor
 
     private void addSale(final DocumentType type)
     {
-        Block sale = new Block("^..-...-.... .*(Redemption|Payment - Units Extinguished|S T P Out).*");
+        var sale = new Block("^..-...-.... .*(Redemption|Payment - Units Extinguished|S T P Out).*");
         type.addBlock(sale);
         sale.setMaxSize(10);
         sale.set(new Transaction<BuySellEntry>()
@@ -183,12 +212,30 @@ public class KFintechPDFExtractor extends AbstractPDFExtractor
                             t.setNote(v.get("note"));
                         })
 
+                        // The amount in the transaction line is already net of
+                        // the Securities Transaction Tax (STT)
+                        .section("date", "tax") //
+                        .optional() //
+                        .match("^(?<date>[\\d]{2}-[\\w]{3}-[\\d]{4}) " //
+                                        + ".*STT Paid.* " //
+                                        + "(?<tax>[.,\\d]+)$")
+                        .assign((t, v) -> {
+
+                            var date = LocalDate.parse(v.get("date"), DATE_FORMAT).atStartOfDay();
+                            var tax = asAmount(v.get("tax"));
+
+                            var tx = t.getPortfolioTransaction();
+
+                            if (date.equals(tx.getDateTime()) && tax > 0)
+                                tx.addUnit(new Unit(Unit.Type.TAX, Money.of(INR, tax)));
+                        })
+
                         .wrap(e -> e.getPortfolioTransaction().getSecurity() == null ? null : new BuySellEntryItem(e)));
     }
 
     private void addSwitchInAndOut(DocumentType type)
     {
-        Block switchOut = new Block("^..-...-.... .*(Switch.Out).*");
+        var switchOut = new Block("^..-...-.... .*(Switch.Out).*");
         type.addBlock(switchOut);
         switchOut.setMaxSize(10);
         switchOut.set(new Transaction<BuySellEntry>()
@@ -215,28 +262,27 @@ public class KFintechPDFExtractor extends AbstractPDFExtractor
                             t.setNote(v.get("note"));
                         })
 
-                        .section("date", "fee") //
+                        // The amount in the transaction line is already net of
+                        // the Securities Transaction Tax (STT)
+                        .section("date", "tax") //
                         .optional() //
                         .match("^(?<date>[\\d]{2}-[\\w]{3}-[\\d]{4}) " //
                                         + ".*STT Paid.* " //
-                                        + "(?<fee>[.,\\d]+)$")
+                                        + "(?<tax>[.,\\d]+)$")
                         .assign((t, v) -> {
 
                             var date = LocalDate.parse(v.get("date"), DATE_FORMAT).atStartOfDay();
-                            var tax = asAmount(v.get("fee"));
+                            var tax = asAmount(v.get("tax"));
 
                             var tx = t.getPortfolioTransaction();
 
-                            if (date.equals(tx.getDateTime()) && tax > 0 && tx.getAmount() > tax)
-                            {
-                                tx.addUnit(new Unit(Unit.Type.FEE, Money.of(INR, tax)));
-                                t.setAmount(tx.getAmount() - tax);
-                            }
+                            if (date.equals(tx.getDateTime()) && tax > 0)
+                                tx.addUnit(new Unit(Unit.Type.TAX, Money.of(INR, tax)));
                         })
 
                         .wrap(e -> e.getPortfolioTransaction().getSecurity() == null ? null : new BuySellEntryItem(e)));
 
-        Block switchIn = new Block("^..-...-.... .*Switch.In.*");
+        var switchIn = new Block("^..-...-.... .*Switch.In.*");
         type.addBlock(switchIn);
         switchIn.setMaxSize(10);
         switchIn.set(new Transaction<BuySellEntry>()
@@ -288,7 +334,7 @@ public class KFintechPDFExtractor extends AbstractPDFExtractor
 
     private void addDividendPayment(final DocumentType type)
     {
-        Block dividend = new Block("^..-...-.... .*Payout.*");
+        var dividend = new Block("^..-...-.... .*Payout.*");
         type.addBlock(dividend);
         dividend.setMaxSize(10);
         dividend.set(new Transaction<AccountTransaction>()
@@ -310,6 +356,8 @@ public class KFintechPDFExtractor extends AbstractPDFExtractor
                             t.setAmount(asAmount(v.get("amount")));
                         })
 
+                        // The payout amount is already net of the Tax Deducted at
+                        // Source (TDS)
                         .section("date", "tax") //
                         .optional() //
                         .match("^(?<date>[\\d]{2}-[\\w]{3}-[\\d]{4}) " //
@@ -320,12 +368,8 @@ public class KFintechPDFExtractor extends AbstractPDFExtractor
                             var date = LocalDate.parse(v.get("date"), DATE_FORMAT).atStartOfDay();
                             var tax = asAmount(v.get("tax"));
 
-                            if (date.equals(t.getDateTime()) && tax > 0 && t.getAmount() > tax)
-                            {
+                            if (date.equals(t.getDateTime()) && tax > 0)
                                 t.addUnit(new Unit(Unit.Type.TAX, Money.of(INR, tax)));
-                                t.setAmount(t.getAmount() - tax);
-                            }
-
                         })
 
                         .wrap(t -> t.getSecurity() == null ? null : new TransactionItem(t)));
