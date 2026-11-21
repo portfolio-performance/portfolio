@@ -27,10 +27,8 @@ public record McpTool(String name, String operationId, String method, String pat
      *            the argument name as the model sees it
      * @param wire
      *            the path placeholder, query parameter or body property
-     * @param explode
-     *            false for an array query parameter, joined with commas
      */
-    public record Binding(String arg, Where where, String wire, boolean explode)
+    public record Binding(String arg, Where where, String wire)
     {
     }
 

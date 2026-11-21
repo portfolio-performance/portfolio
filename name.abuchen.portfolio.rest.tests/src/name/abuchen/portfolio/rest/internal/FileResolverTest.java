@@ -78,6 +78,31 @@ public class FileResolverTest
         assertThat(resolver.resolve(uuid).file().getPath(), is("/tmp/a.portfolio"));
     }
 
+    /**
+     * `use` names the value a caller must send as the {file} segment: always the
+     * uuid, even when the user assigned an alias - an alias can be renamed between
+     * listing and the next call. A label is a display name and never an address,
+     * so the payload states which value to send instead of leaving a client to
+     * guess.
+     */
+    @Test
+    public void testFilePayloadNamesTheAddressToSend()
+    {
+        registry.setEnabled("/tmp/a.portfolio", true);
+        registry.setAlias("/tmp/a.portfolio", "main");
+        var file = new FakeHost.FakeOpenFile("/tmp/a.portfolio", "a display label", new Client());
+
+        var withAlias = EntityJson.toJson(registry.byPath("/tmp/a.portfolio").orElseThrow(), file);
+        assertThat(withAlias.get("alias").getAsString(), is("main"));
+        assertThat(withAlias.get("use").getAsString(), is(withAlias.get("id").getAsString()));
+        assertThat(withAlias.get("label").getAsString(), is("a display label"));
+
+        registry.setAlias("/tmp/a.portfolio", null);
+        var withoutAlias = EntityJson.toJson(registry.byPath("/tmp/a.portfolio").orElseThrow(), file);
+        assertThat(withoutAlias.has("alias"), is(false));
+        assertThat(withoutAlias.get("use").getAsString(), is(withoutAlias.get("id").getAsString()));
+    }
+
     private static int statusOf(FileResolver resolver, String id)
     {
         try
