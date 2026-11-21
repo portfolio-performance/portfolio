@@ -23,7 +23,6 @@ import name.abuchen.portfolio.money.Values;
 @SuppressWarnings("nls")
 public class DeutscheBankPDFExtractor extends AbstractPDFExtractor
 {
-    private static final String SKIP_TRANSACTION = "skipTransaction";
 
     public DeutscheBankPDFExtractor(Client client)
     {
@@ -144,7 +143,7 @@ public class DeutscheBankPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("time").optional() //
                         .match("^(?<time>[\\d]{2}:[\\d]{2}) MEZ [\\d]+ [\\d]{3} [\\.,\\d]+ [\\.,\\d]+ [\\.,\\d]+$") //
-                        .assign((t, v) -> type.getCurrentContext().put("time", v.get("time")))
+                        .assign((t, v) -> v.getTransactionContext().putString("time", v.get("time")))
 
                         .oneOf(
                                         // @formatter:off
@@ -154,8 +153,10 @@ public class DeutscheBankPDFExtractor extends AbstractPDFExtractor
                                                         .attributes("date") //
                                                         .match("^Schlusstag (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) .*$") //
                                                         .assign((t, v) -> {
-                                                            if (type.getCurrentContext().get("time") != null)
-                                                                t.setDate(asDate(v.get("date"), type.getCurrentContext().get("time")));
+                                                            var time = v.getTransactionContext().getString("time");
+
+                                                            if (time != null)
+                                                                t.setDate(asDate(v.get("date"), time));
                                                             else
                                                                 t.setDate(asDate(v.get("date")));
                                                         }),
@@ -234,14 +235,7 @@ public class DeutscheBankPDFExtractor extends AbstractPDFExtractor
                                                             t.setNote(concatenate(t.getNote(), v.get("note3"), " "));
                                                         }))
 
-                        .wrap(t -> {
-                            // If we have multiple entries in the document, with
-                            // fee and fee refunds, then the "noProvision" flag
-                            // must be removed.
-                            type.getCurrentContext().remove("noProvision");
-
-                            return new BuySellEntryItem(t);
-                        });
+                        .wrap(BuySellEntryItem::new);
 
         addTaxesSectionsTransaction(pdfTransaction, type);
         addFeesSectionsTransaction(pdfTransaction, type);
@@ -273,7 +267,7 @@ public class DeutscheBankPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("name", "wkn", "currency") //
                                                         .match("^(?<name>.*), WKN (?<wkn>[A-Z0-9]{6}).*$")//
-                                                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\.,\\d]+ [\\.,\\d]+ (?<currency>[A-Z]{3}) [\\.,\\d]+ [A-Z]{3}") //
+                                                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\.,\\d]+ [\\.,\\d]+ (?<currency>[A-Z]{3}) [\\.,\\d]+ [A-Z]{3}$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
 
                                         // @formatter:off
@@ -285,7 +279,7 @@ public class DeutscheBankPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("name", "wkn", "currency") //
                                                         .match("^(?<name>.*), WKN (?<wkn>[A-Z0-9]{6}).*$")//
-                                                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\.,\\d]+ [\\.,\\d]+ [\\.,\\d]+ (?<currency>[A-Z]{3})") //
+                                                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\.,\\d]+ [\\.,\\d]+ [\\.,\\d]+ (?<currency>[A-Z]{3})$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
                         )
                         // @formatter:off
@@ -315,14 +309,7 @@ public class DeutscheBankPDFExtractor extends AbstractPDFExtractor
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                         })
 
-                        .wrap(t -> {
-                            // If we have multiple entries in the document, with
-                            // fee and fee refunds, then the "noProvision" flag
-                            // must be removed.
-                            type.getCurrentContext().remove("noProvision");
-
-                            return new BuySellEntryItem(t);
-                        });
+                        .wrap(BuySellEntryItem::new);
 
         addTaxesSectionsTransaction(pdfTransaction, type);
         addFeesSectionsTransaction(pdfTransaction, type);
@@ -444,29 +431,26 @@ public class DeutscheBankPDFExtractor extends AbstractPDFExtractor
                                                         .match("^Bruttoertrag (?<fxGross>[\\.,\\d]+) [A-Z]{3}[\\s]*$") //
                                                         .match("^Umrechnungskurs (?<termCurrency>[A-Z]{3}) zu (?<baseCurrency>[A-Z]{3}) (?<exchangeRate>[\\.,\\d]+)$") //
                                                         .assign((t, v) -> {
-                                                            if (!type.getCurrentContext().getBoolean("negative"))
-                                                            {
-                                                                var rate = asExchangeRate(v);
-                                                                type.getCurrentContext().putType(rate);
+                                                            var rate = asExchangeRate(v);
+                                                            type.getCurrentContext().putType(rate);
 
-                                                                var fxGross = Money.of(rate.getTermCurrency(),
-                                                                                asAmount(v.get("fxGross")));
-                                                                var gross = rate.convert(rate.getBaseCurrency(),
-                                                                                fxGross);
+                                                            var fxGross = Money.of(rate.getTermCurrency(),
+                                                                            asAmount(v.get("fxGross")));
+                                                            var gross = rate.convert(rate.getBaseCurrency(),
+                                                                            fxGross);
 
-                                                                // @formatter:off
-                                                                // Even though this is a forex transaction, the security may be
-                                                                // held in the native currency. In that case, the GROSS_VALUE
-                                                                // unit needs to be set. In the foreign currency that is.
-                                                                // @formatter:on
-                                                                if (t.getSecurity().getCurrencyCode()
-                                                                                .equals(t.getCurrencyCode()))
-                                                                    checkAndSetGrossUnit(gross, fxGross, t,
-                                                                                    type.getCurrentContext());
-                                                                else
-                                                                    checkAndSetGrossUnit(fxGross, gross, t,
-                                                                                    type.getCurrentContext());
-                                                            }
+                                                            // @formatter:off
+                                                            // Even though this is a forex transaction, the security may be
+                                                            // held in the native currency. In that case, the GROSS_VALUE
+                                                            // unit needs to be set. In the foreign currency that is.
+                                                            // @formatter:on
+                                                            if (t.getSecurity().getCurrencyCode()
+                                                                            .equals(t.getCurrencyCode()))
+                                                                checkAndSetGrossUnit(gross, fxGross, t,
+                                                                                type.getCurrentContext());
+                                                            else
+                                                                checkAndSetGrossUnit(fxGross, gross, t,
+                                                                                type.getCurrentContext());
                                                         }))
 
                         .conclude(ExtractorUtils.fixGrossValueA())
@@ -501,7 +485,7 @@ public class DeutscheBankPDFExtractor extends AbstractPDFExtractor
                         .section("wkn", "isin", "name", "currency") //
                         .find("St.ck WKN ISIN")
                         .match("^[\\.,\\d]+ (?<wkn>[A-Z0-9]{6}) (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
-                        .match("(?<name>.*)") //
+                        .match("^(?<name>.*)$") //
                         .match("^Vorabpauschale Jahreswert .* [\\.,\\d]+ (?<currency>[A-Z]{3}).*$") //
                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
@@ -557,7 +541,7 @@ public class DeutscheBankPDFExtractor extends AbstractPDFExtractor
                         )
 
                         .wrap(t -> {
-                            if (t.getCurrencyCode() == null || t.getAmount() == 0)
+                            if (t.getCurrencyCode() != null && t.getAmount() == 0)
                                 return new SkippedItem(new TransactionItem(t), Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
 
                             return new TransactionItem(t);
@@ -654,8 +638,7 @@ public class DeutscheBankPDFExtractor extends AbstractPDFExtractor
                                                             // Saldo der Abschlussposten
                                                             // @formatter:on
                                                             if ("Saldo der Abschlussposten".equals(v.get("note1")))
-                                                                type.getCurrentContext().put(SKIP_TRANSACTION,
-                                                                                Messages.MsgErrorTransactionSkipIfDetailsMissing);
+                                                                v.skipTransaction(Messages.MsgErrorTransactionSkipIfDetailsMissing);
 
                                                             // @formatter:off
                                                             // If we have security transaction, then we skip the transaction
@@ -667,8 +650,7 @@ public class DeutscheBankPDFExtractor extends AbstractPDFExtractor
                                                             // 2023 2023 ZINSEN/DIVIDENDEN/ERTRAEGE FIL/DEPOT-NR:
                                                             // @formatter:on
                                                             if (v.get("note1").contains("WERTPAPIER") || v.get("note1").contains("DEPOT-NR:") || v.get("note1").contains("STK/NOM"))
-                                                                type.getCurrentContext().put(SKIP_TRANSACTION,
-                                                                                Messages.MsgErrorTransactionSkipIfDetailsMissing);
+                                                                v.skipTransaction(Messages.MsgErrorTransactionSkipIfDetailsMissing);
                                                         }),
                                         // @formatter:off
                                         // 01.12. 01.12. SEPA Dauerauftrag an - 40,00
@@ -735,8 +717,7 @@ public class DeutscheBankPDFExtractor extends AbstractPDFExtractor
                                                             // Saldo der Abschlussposten
                                                             // @formatter:on
                                                                 if ("Saldo der Abschlussposten".equals(v.get("note1")))
-                                                                type.getCurrentContext().put(SKIP_TRANSACTION,
-                                                                                Messages.MsgErrorTransactionSkipIfDetailsMissing);
+                                                                v.skipTransaction(Messages.MsgErrorTransactionSkipIfDetailsMissing);
 
                                                             // @formatter:off
                                                             // If we have security transaction, then we skip the transaction
@@ -748,28 +729,14 @@ public class DeutscheBankPDFExtractor extends AbstractPDFExtractor
                                                             // 2023 2023 ZINSEN/DIVIDENDEN/ERTRAEGE FIL/DEPOT-NR:
                                                             // @formatter:on
                                                             if (v.get("note1").contains("WERTPAPIER") || v.get("note1").contains("DEPOT-NR:") || v.get("note1").contains("STK/NOM"))
-                                                                type.getCurrentContext().put(SKIP_TRANSACTION,
-                                                                                Messages.MsgErrorTransactionSkipIfDetailsMissing);
+                                                                v.skipTransaction(Messages.MsgErrorTransactionSkipIfDetailsMissing);
                                                         }))
 
                     .wrap((t, ctx) -> {
-                        var item = new TransactionItem(t);
-
                         if (t.getCurrencyCode() != null && t.getAmount() == 0)
                             ctx.markAsFailure(Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
 
-                        if (type.getCurrentContext().containsKey(SKIP_TRANSACTION))
-                        {
-                            var skipped = new SkippedItem(item, type.getCurrentContext().get(SKIP_TRANSACTION));
-                            // If we have multiple entries in the document,
-                            // then the SKIP_TRANSACTION flag must be
-                            // removed.
-                            type.getCurrentContext().remove(SKIP_TRANSACTION);
-
-                            return skipped;
-                        }
-
-                        return item;
+                        return new TransactionItem(t);
                     }));
 
         // @formatter:off
@@ -919,7 +886,7 @@ public class DeutscheBankPDFExtractor extends AbstractPDFExtractor
                                 checkAndSetFee(fee, t, type.getCurrentContext());
                             }
 
-                            type.getCurrentContext().putBoolean("noProvision", true);
+                            v.getTransactionContext().putBoolean("noProvision", true);
                         })
 
                         // @formatter:off
@@ -933,7 +900,7 @@ public class DeutscheBankPDFExtractor extends AbstractPDFExtractor
                             var fee = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("fee")));
                             var discount = Money.of(asCurrencyCode(v.get("discountCurrency")),asAmount(v.get("discount")));
 
-                            if (!type.getCurrentContext().getBoolean("noProvision"))
+                            if (!v.getTransactionContext().getBoolean("noProvision"))
                             {
                                 if (fee.subtract(discount).isPositive())
                                 {
@@ -941,7 +908,7 @@ public class DeutscheBankPDFExtractor extends AbstractPDFExtractor
                                     checkAndSetFee(fee, t, type.getCurrentContext());
                                 }
 
-                                type.getCurrentContext().putBoolean("noProvision", true);
+                                v.getTransactionContext().putBoolean("noProvision", true);
                             }
                         })
 
@@ -956,7 +923,7 @@ public class DeutscheBankPDFExtractor extends AbstractPDFExtractor
                             var fee = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("fee")));
                             var discount = Money.of(asCurrencyCode(v.get("discountCurrency")), asAmount(v.get("discount")));
 
-                            if (!type.getCurrentContext().getBoolean("noProvision"))
+                            if (!v.getTransactionContext().getBoolean("noProvision"))
                             {
                                 if (fee.subtract(discount).isPositive())
                                 {
@@ -964,7 +931,7 @@ public class DeutscheBankPDFExtractor extends AbstractPDFExtractor
                                     checkAndSetFee(fee, t, type.getCurrentContext());
                                 }
 
-                                type.getCurrentContext().putBoolean("noProvision", true);
+                                v.getTransactionContext().putBoolean("noProvision", true);
                             }
                         })
 
@@ -1038,7 +1005,7 @@ public class DeutscheBankPDFExtractor extends AbstractPDFExtractor
                         .section("currency", "fee").optional() //
                         .match("^Provision (?<currency>[A-Z]{3}) (\\-)?(?<fee>[\\.,\\d]+)[\\s]*$") //
                         .assign((t, v) -> {
-                            if (!type.getCurrentContext().getBoolean("noProvision"))
+                            if (!v.getTransactionContext().getBoolean("noProvision"))
                                 processFeeEntries(t, v, type);
                         })
 
