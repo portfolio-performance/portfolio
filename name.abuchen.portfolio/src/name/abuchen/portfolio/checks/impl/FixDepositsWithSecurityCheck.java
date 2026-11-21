@@ -26,11 +26,16 @@ public class FixDepositsWithSecurityCheck implements Check
                         AccountTransaction.Type.TRANSFER_OUT, //
                         AccountTransaction.Type.INTEREST_CHARGE);
 
-        client.getAccounts().stream() //
+        var transactions = client.getAccounts().stream() //
                         .flatMap(a -> a.getTransactions().stream()) //
                         .filter(t -> t.getSecurity() != null) //
                         .filter(t -> set.contains(t.getType())) //
-                        .forEach(t -> t.setSecurity(null));
+                        .toList();
+
+        transactions.forEach(t -> t.setSecurity(null));
+
+        if (!transactions.isEmpty())
+            client.markDirty();
 
         return Collections.emptyList();
     }

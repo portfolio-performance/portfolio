@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Consumer;
 
 import jakarta.inject.Inject;
@@ -84,6 +85,13 @@ public class ClientInput
     private boolean pendingDirty;
     private boolean pendingRecalculate;
 
+    /**
+     * Counts the modifications of the client. The auto save is skipped if
+     * nothing changed since the last save or auto save.
+     */
+    private final AtomicLong modificationCount = new AtomicLong();
+    private volatile long persistedModificationCount = 0;
+
     @Inject
     private IEventBroker broker;
 
@@ -138,6 +146,7 @@ public class ClientInput
      */
     public void markDirty()
     {
+        modificationCount.incrementAndGet();
         setDirty(true, true);
     }
 
@@ -146,6 +155,7 @@ public class ClientInput
      */
     public void touch()
     {
+        modificationCount.incrementAndGet();
         setDirty(true, false);
     }
 
@@ -258,7 +268,9 @@ public class ClientInput
                 if (preferences.getBoolean(UIConstants.Preferences.CREATE_BACKUP_BEFORE_SAVING, true))
                     createBackup(clientFile, "backup"); //$NON-NLS-1$
 
+                long savedModificationCount = modificationCount.get();
                 ClientFactory.save(client, clientFile);
+                persistedModificationCount = savedModificationCount;
                 storePreferences(false);
 
                 broker.post(UIConstants.Event.File.SAVED, clientFile.getAbsolutePath());
@@ -311,7 +323,9 @@ public class ClientInput
         BusyIndicator.showWhile(shell.getDisplay(), () -> {
             try
             {
+                long savedModificationCount = modificationCount.get();
                 ClientFactory.saveAs(client, clientFile, pwd, flags);
+                persistedModificationCount = savedModificationCount;
                 storePreferences(true);
 
                 broker.post(UIConstants.Event.File.SAVED, clientFile.getAbsolutePath());
@@ -414,12 +428,19 @@ public class ClientInput
 
     /**
      * autoSave is called from AutoSaveJob and uses the file generated during
-     * startup, if set in preferences
+     * startup, if set in preferences. The file is only written if the client
+     * was modified since the last save or auto save.
      */
     public void autoSave()
     {
         if (clientFile != null)
         {
+            long savedModificationCount = modificationCount.get();
+            if (savedModificationCount == persistedModificationCount)
+                return;
+
+            PortfolioPlugin.info("Auto-saving " + getLabel()); //$NON-NLS-1$
+
             // generate the same name used when creating the initial autosave
             // file
             // see @scheduleAutoSaveJob
@@ -430,6 +451,7 @@ public class ClientInput
             try
             {
                 ClientFactory.save(client, autosaveFile);
+                persistedModificationCount = savedModificationCount;
             }
             catch (IOException e)
             {
@@ -710,6 +732,8 @@ public class ClientInput
         this.navigation = ContextInjectionFactory.make(Navigation.class, this.context, c2);
 
         PropertyChangeListener listener = event -> {
+            modificationCount.incrementAndGet();
+
             boolean recalculate = !"touch".equals(event.getPropertyName()); //$NON-NLS-1$
 
             // convenience: Client#markDirty can be called on any thread, but

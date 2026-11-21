@@ -29,11 +29,12 @@ public class DanglingAccountsCheck implements Check
     public List<Issue> execute(Client client)
     {
         Set<Account> accounts = new HashSet<Account>(client.getAccounts());
+        boolean isDirty = false;
 
         for (Portfolio portfolio : client.getPortfolios())
         {
             Account referenceAccount = portfolio.getReferenceAccount();
-            check(client, accounts, referenceAccount);
+            isDirty |= check(client, accounts, referenceAccount);
 
             for (PortfolioTransaction transaction : portfolio.getTransactions())
             {
@@ -42,21 +43,28 @@ public class DanglingAccountsCheck implements Check
                     continue;
 
                 Account account = (Account) entry.getCrossOwner(transaction);
-                check(client, accounts, account);
+                isDirty |= check(client, accounts, account);
             }
         }
+
+        // adding an account does not notify the client
+        if (isDirty)
+            client.markDirty();
 
         return Collections.emptyList();
     }
 
-    private void check(Client client, Set<Account> accounts, Account account)
+    private boolean check(Client client, Set<Account> accounts, Account account)
     {
         if (!accounts.contains(account))
         {
             account.setName(MessageFormat.format(Messages.LabelNameReferenceAccountRecovered, account.getName()));
             accounts.add(account);
             client.addAccount(account);
+            return true;
         }
+
+        return false;
     }
 
 }

@@ -5,7 +5,6 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 
 import name.abuchen.portfolio.ui.Messages;
-import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.editor.ClientInput;
 
 public final class AutoSaveJob extends AbstractClientJob
@@ -28,7 +27,7 @@ public final class AutoSaveJob extends AbstractClientJob
         {
             try
             {
-                PortfolioPlugin.info("Auto-saving " + clientInput.getLabel()); //$NON-NLS-1$
+                // skips writing the file if nothing has changed
                 this.clientInput.autoSave();
             }
             finally

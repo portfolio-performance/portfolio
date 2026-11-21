@@ -42,6 +42,33 @@ public class ClientTestUtilities
         }
     }
 
+    /**
+     * Sets the file version as if the client was read from an older file.
+     */
+    public static void setFileVersionAfterRead(Client client, int version)
+    {
+        client.setFileVersionAfterRead(version);
+    }
+
+    /**
+     * Creates a security without UUID (as found in very old files).
+     */
+    public static Security createSecurityWithoutUUID()
+    {
+        return new Security((String) null);
+    }
+
+    /**
+     * Adds a null value to the historical prices (as created by older
+     * versions).
+     */
+    public static void addNullPrice(Security security)
+    {
+        var prices = new ArrayList<SecurityPrice>(security.getPrices());
+        prices.add(null);
+        security.protobufSetPrices(prices);
+    }
+
     public static int indexOfDifference(String left, String right)
     {
         int ii;
