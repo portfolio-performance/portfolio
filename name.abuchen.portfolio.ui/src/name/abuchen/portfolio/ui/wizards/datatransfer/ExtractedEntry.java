@@ -112,4 +112,29 @@ public class ExtractedEntry
     {
         this.securityOverride = securityOverride;
     }
+
+    /**
+     * Applies the given import action to the extracted item. If the user has
+     * chosen an existing security instead of creating a new one (security
+     * override), the action is applied against the existing security, e.g. to
+     * detect duplicates. The override is only applied permanently upon import,
+     * therefore the original security is restored afterwards.
+     */
+    public Status apply(ImportAction action, ImportAction.Context context)
+    {
+        if (securityOverride == null)
+            return item.apply(action, context);
+
+        var originalSecurity = item.getSecurity();
+        item.setSecurity(securityOverride);
+
+        try
+        {
+            return item.apply(action, context);
+        }
+        finally
+        {
+            item.setSecurity(originalSecurity);
+        }
+    }
 }
