@@ -225,7 +225,7 @@ public class BoursoBankPDFExtractor extends AbstractPDFExtractor
                         // coupon Quantité Nom de la valeur (code) EUR EUR EUR EUR EUR EUR
                         // @formatter:on
                         .section("currency")
-                                        .match("coupon Quantit. Nom de la valeur \\(code\\) .* (?<currency>[A-Z]{3})$")
+                                        .match("^coupon Quantit. Nom de la valeur \\(code\\) .* (?<currency>[A-Z]{3})$")
                         .assign((ctx, v) -> ctx.put("currency", asCurrencyCode(v.get("currency")))));
 
         this.addDocumentTyp(type);
@@ -274,7 +274,7 @@ public class BoursoBankPDFExtractor extends AbstractPDFExtractor
                         .match("^[\\d]{2}\\/[\\d]{2}\\/[\\d]{4} [\\,\\d\\s]+ .* (?<amount>(\\d+,\\d+))$") //
                         .documentContext("currency") //
                         .assign((t, v) -> {
-                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                            t.setCurrencyCode(v.get("currency"));
                             t.setAmount(asAmount(v.get("amount")));
                         })
 
