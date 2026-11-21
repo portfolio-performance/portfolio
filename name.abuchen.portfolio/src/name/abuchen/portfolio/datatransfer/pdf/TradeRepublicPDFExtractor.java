@@ -1419,6 +1419,19 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                                         .match("^(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
                                         // @formatter:off
+                                        // POSITION ANZAHL ERTRAG BETRAG
+                                        // MSCI World USD (Dist) 3783.000000 514.49 USD
+                                        // 0.136 USD
+                                        // IE00B4X9L533 Stücke
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("name", "currency", "isin") //
+                                                        .find("POSITION ANZAHL (Ertrag|ERTRAG|ERTR.GNIS) BETRAG") //
+                                                        .match("^(?<name>.*) [\\.,\\d]+ [\\.,\\d]+ (?<currency>[A-Z]{3})$") //
+                                                        .match("^[\\.,\\d]+ [A-Z]{3}$") //
+                                                        .match("^(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) St.cke$") //
+                                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
+                                        // @formatter:off
                                         // POSITION QUANTITY YIELD AMOUNT
                                         // Mondelez
                                         // US6092071058 2.000000 Pcs. 0.425 USD
@@ -1514,6 +1527,14 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("shares") //
                                                         .match("^(?<shares>[\\.,\\d]+) St.cke [\\.,\\d]+ [A-Z]{3}$") //
+                                                        .assign((t, v) -> t.setShares(asShares(v.get("shares"), "en", "US"))),
+                                        // @formatter:off
+                                        // MSCI World USD (Dist) 3783.000000 514.49 USD
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("shares") //
+                                                        .find("POSITION ANZAHL (Ertrag|ERTRAG|ERTR.GNIS) BETRAG") //
+                                                        .match("^(?<name>.*) (?<shares>[\\.,\\d]+) [\\.,\\d]+ [A-Z]{3}$") //
                                                         .assign((t, v) -> t.setShares(asShares(v.get("shares"), "en", "US"))),
                                         // @formatter:off
                                         // 1 Reinvestierung Vodafone Group PLC 699 Stk.
@@ -4798,6 +4819,19 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                                         .match("^(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
                                         // @formatter:off
+                                        // POSITION ANZAHL ERTRAG BETRAG
+                                        // MSCI World USD (Dist) 3783.000000 514.49 USD
+                                        // 0.136 USD
+                                        // IE00B4X9L533 Stücke
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("name", "currency", "isin") //
+                                                        .find("POSITION ANZAHL (Ertrag|ERTRAG|ERTR.GNIS) BETRAG") //
+                                                        .match("^(?<name>.*) [\\.,\\d]+ [\\.,\\d]+ (?<currency>[A-Z]{3})$") //
+                                                        .match("^[\\.,\\d]+ [A-Z]{3}$") //
+                                                        .match("^(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) St.cke$") //
+                                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
+                                        // @formatter:off
                                         // POSITION QUANTITY YIELD AMOUNT
                                         // NVIDIA 0.04 USD
                                         // 4.171585 unit. 0.01 USD
@@ -4879,6 +4913,14 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("shares") //
                                                         .match("^(?<shares>[\\.,\\d]+) St.cke [\\.,\\d]+ [A-Z]{3}$") //
+                                                        .assign((t, v) -> t.setShares(asShares(v.get("shares"), "en", "US"))),
+                                        // @formatter:off
+                                        // MSCI World USD (Dist) 3783.000000 514.49 USD
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("shares") //
+                                                        .find("POSITION ANZAHL (Ertrag|ERTRAG|ERTR.GNIS) BETRAG") //
+                                                        .match("^(?<name>.*) (?<shares>[\\.,\\d]+) [\\.,\\d]+ [A-Z]{3}$") //
                                                         .assign((t, v) -> t.setShares(asShares(v.get("shares"), "en", "US"))),
                                         // @formatter:off
                                         // 1 Reinvestierung Vodafone Group PLC 699 Stk.
