@@ -17,8 +17,6 @@ import name.abuchen.portfolio.money.Money;
 @SuppressWarnings("nls")
 public class EbasePDFExtractor extends AbstractPDFExtractor
 {
-    private static final String SKIP_TRANSACTION = "skipTransaction";
-
     public EbasePDFExtractor(Client client)
     {
         super(client);
@@ -179,7 +177,7 @@ public class EbasePDFExtractor extends AbstractPDFExtractor
                                             || "Entgelt Verkauf".equals(v.get("type")) //
                                             || "Entgeltbelastung Verkauf".equals(v.get("type")) //
                                             || "Entnahmeplan".equals(v.get("type")) //
-                                            || "Fondsumschichtung (Abgang)".equals(v.get("type"))
+                                            || "Fondsumschichtung (Abgang)".equals(v.get("type")) //
                                             || "Ausgang externer Übertrag".equals(v.get("type")))
                             {
                                 t.setType(PortfolioTransaction.Type.SELL);
@@ -193,10 +191,7 @@ public class EbasePDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("type").optional() //
                         .match("^(?<type>Fondsertrag) .*$") //
-                        .assign((t, v) -> {
-                            if ("Fondsertrag".equals(v.get("type")))
-                                type.getCurrentContext().put(SKIP_TRANSACTION, Messages.MsgErrorTransactionSkipIfDetailsMissing);
-                        })
+                        .assign((t, v) -> v.skipTransaction(Messages.MsgErrorTransactionSkipIfDetailsMissing))
 
                         .oneOf( //
                                         // @formatter:off
@@ -262,7 +257,7 @@ public class EbasePDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("shares") //
-                                                        .match("^Wiederanlage Ertragsaussch.ttung .* [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\.,\\d]+ (?<shares>[\\.,\\d]+) [\\.,\\d]+ [A-Z]{3}") //
+                                                        .match("^Wiederanlage Ertragsaussch.ttung .* [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\.,\\d]+ (?<shares>[\\.,\\d]+) [\\.,\\d]+ [A-Z]{3}$") //
                                                         .assign((t, v) -> t.setShares(asShares(v.get("shares")))))
 
                         .oneOf( //
@@ -318,7 +313,7 @@ public class EbasePDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("amount", "currency") //
-                                                        .match("^Wiederanlage Ertragsaussch.ttung .* [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\.,\\d]+ [\\.,\\d]+ (?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3})") //
+                                                        .match("^Wiederanlage Ertragsaussch.ttung .* [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\.,\\d]+ [\\.,\\d]+ (?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
                                                         .assign((t, v) -> {
                                                             t.setAmount(asAmount(v.get("amount")));
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
@@ -461,23 +456,7 @@ public class EbasePDFExtractor extends AbstractPDFExtractor
                                                         .match("^(?<note>Wiederanlage Ertragsaussch.ttung) .*$") //
                                                         .assign((t, v) -> t.setNote(concatenate(t.getNote(), v.get("note"), " | "))))
 
-                        .wrap(t -> {
-                            var item = new BuySellEntryItem(t);
-
-                            if (type.getCurrentContext().containsKey(SKIP_TRANSACTION))
-                            {
-                                var skipped = new SkippedItem(item, type.getCurrentContext().get(SKIP_TRANSACTION));
-
-                                // If we have multiple entries in the document,
-                                // then the SKIP_TRANSACTION flag must be
-                                // removed.
-                                type.getCurrentContext().remove(SKIP_TRANSACTION);
-
-                                return skipped;
-                            }
-
-                            return item;
-                        });
+                        .wrap(BuySellEntryItem::new);
 
         addTaxesSectionsTransaction(pdfTransaction, type);
         addFeesSectionsTransaction(pdfTransaction, type);
@@ -719,18 +698,19 @@ public class EbasePDFExtractor extends AbstractPDFExtractor
                                                         .assign((t, v) -> {
                                                             t.setAmount(asAmount(v.get("amount")));
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                                        }),
+                                                        }),
+                                        // @formatter:off
                                         // Abwicklung über IBAN Institut Zahlungsbetrag
                                         // DE54700130001234567890 FNZ Bank 1,18 EUR
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("amount", "currency") //
-                                                        .find("^Abwicklung über IBAN Institut Zahlungsbetrag") //
+                                                        .find("Abwicklung .ber IBAN Institut Zahlungsbetrag") //
                                                         .match("^.* (?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
                                                         .assign((t, v) -> {
                                                             t.setAmount(asAmount(v.get("amount")));
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                                        }))
+                                                        }))
 
                         // @formatter:off
                         // Ref. Nr. XXXXXXXX/XXXXXXXX, Buchungsdatum 21.11.2019

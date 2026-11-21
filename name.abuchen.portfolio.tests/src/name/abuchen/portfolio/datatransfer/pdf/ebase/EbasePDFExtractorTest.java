@@ -88,7 +88,7 @@ public class EbasePDFExtractorTest
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
                         hasDate("2021-07-26T00:00"), hasExDate("2021-06-24T00:00"), //
-                        hasShares(180), //
+                        hasShares(180.00), //
                         hasSource("Dividende01.txt"), //
                         hasNote("Abrechnungsnr. 70418365490"), //
                         hasAmount("EUR", 84.05), hasGrossValue("EUR", 102.47), //
@@ -125,7 +125,7 @@ public class EbasePDFExtractorTest
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
                         hasDate("2021-07-26T00:00"), hasExDate("2021-06-24T00:00"), //
-                        hasShares(180), //
+                        hasShares(180.00), //
                         hasSource("Dividende01.txt"), //
                         hasNote("Abrechnungsnr. 70418365490"), //
                         hasAmount("EUR", 84.05), hasGrossValue("EUR", 102.47), //
@@ -178,7 +178,7 @@ public class EbasePDFExtractorTest
 
         // check 1st buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2019-11-21"), hasShares(12.729132), //
+                        hasDate("2019-11-21T00:00"), hasShares(12.729132), //
                         hasSource("Umsatzabrechnung01.txt"), //
                         hasNote("Ref.-Nr.: XXXXXXXX/XXXXXXXX"), //
                         hasAmount("EUR", 300.00), hasGrossValue("EUR", 299.40), //
@@ -187,7 +187,7 @@ public class EbasePDFExtractorTest
 
         // check 2nd buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2020-01-13"), hasShares(199.500000), //
+                        hasDate("2020-01-13T00:00"), hasShares(199.500000), //
                         hasSource("Umsatzabrechnung01.txt"), //
                         hasNote("Ref.-Nr.: XXXXXXXX/XXXXXXXX"), //
                         hasAmount("EUR", 211.05), hasGrossValue("EUR", 210.63), //
@@ -195,7 +195,7 @@ public class EbasePDFExtractorTest
 
         // check delivery inbound (Einlieferung) transaction
         assertThat(results, hasItem(inboundDelivery( //
-                        hasDate("2019-09-30"), hasShares(10), //
+                        hasDate("2019-09-30T00:00"), hasShares(10.00), //
                         hasSource("Umsatzabrechnung01.txt"), //
                         hasNote("Ref.-Nr.: XXXXXXXX/XXXXXXXX"), //
                         hasAmount("EUR", 202.64), hasGrossValue("EUR", 202.64), //
@@ -241,22 +241,25 @@ public class EbasePDFExtractorTest
 
         // check 1st buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2019-11-21"), hasShares(12.729132), //
-                        hasSource("Umsatzabrechnung01.txt"), hasNote("Ref.-Nr.: XXXXXXXX/XXXXXXXX"), //
+                        hasDate("2019-11-21T00:00"), hasShares(12.729132), //
+                        hasSource("Umsatzabrechnung01.txt"), //
+                        hasNote("Ref.-Nr.: XXXXXXXX/XXXXXXXX"), //
                         hasAmount("EUR", 300.00), hasGrossValue("EUR", 299.40), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.60))));
 
         // check 2nd buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2020-01-13"), hasShares(199.500000), //
-                        hasSource("Umsatzabrechnung01.txt"), hasNote("Ref.-Nr.: XXXXXXXX/XXXXXXXX"), //
+                        hasDate("2020-01-13T00:00"), hasShares(199.500000), //
+                        hasSource("Umsatzabrechnung01.txt"), //
+                        hasNote("Ref.-Nr.: XXXXXXXX/XXXXXXXX"), //
                         hasAmount("EUR", 211.05), hasGrossValue("EUR", 210.63), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.42))));
 
         // check delivery inbound (Einlieferung) transaction
         assertThat(results, hasItem(inboundDelivery( //
-                        hasDate("2019-09-30"), hasShares(10), //
-                        hasSource("Umsatzabrechnung01.txt"), hasNote("Ref.-Nr.: XXXXXXXX/XXXXXXXX"), //
+                        hasDate("2019-09-30T00:00"), hasShares(10.00), //
+                        hasSource("Umsatzabrechnung01.txt"), //
+                        hasNote("Ref.-Nr.: XXXXXXXX/XXXXXXXX"), //
                         hasAmount("EUR", 202.64), hasGrossValue("EUR", 202.64), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
@@ -300,7 +303,7 @@ public class EbasePDFExtractorTest
 
         // check 1st buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2020-01-02"), hasShares(1.705860), //
+                        hasDate("2020-01-02T00:00"), hasShares(1.705860), //
                         hasSource("Umsatzabrechnung02.txt"), //
                         hasNote("Ref.-Nr.: XXXXXXXX/XXXXXXXX"), //
                         hasAmount("EUR", 50.00), hasGrossValue("EUR", 49.90), //
@@ -308,7 +311,7 @@ public class EbasePDFExtractorTest
 
         // check 2nd buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2020-01-20"), hasShares(0.005395), //
+                        hasDate("2020-01-20T00:00"), hasShares(0.005395), //
                         hasSource("Umsatzabrechnung02.txt"), //
                         hasNote("Ref.-Nr.: XXXXXXXX/XXXXXXXX | Wiederanlage Fondsertrag"), //
                         hasAmount("EUR", 0.37), hasGrossValue("EUR", 0.37), //
@@ -317,7 +320,7 @@ public class EbasePDFExtractorTest
         // check taxes transaction
         assertThat(results, hasItem(taxes( //
                         hasDate("2020-01-24"), //
-                        hasShares(0), //
+                        hasShares(0.00), //
                         hasSource("Umsatzabrechnung02.txt"), //
                         hasNote("Ref.-Nr.: XXXXXXXXXX/XXXXXXXXXX | Vorabpauschale zum Stichtag 31.12.2019"), //
                         hasAmount("EUR", 0.14), hasGrossValue("EUR", 0.14), //
@@ -363,7 +366,7 @@ public class EbasePDFExtractorTest
 
         // check 1st buy sell transaction
         assertThat(results, hasItem(sale( //
-                        hasDate("2020-01-27"), hasShares(0.001162), //
+                        hasDate("2020-01-27T00:00"), hasShares(0.001162), //
                         hasSource("Umsatzabrechnung03.txt"), //
                         hasNote("Ref.-Nr.: XXXXXXXX/XXXXXXXX | Verkauf wegen Vorabpauschale"), //
                         hasAmount("EUR", 0.13), hasGrossValue("EUR", 0.13), //
@@ -371,7 +374,7 @@ public class EbasePDFExtractorTest
 
         // check 2nd buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2019-10-22"), hasShares(1.705860), //
+                        hasDate("2019-10-22T00:00"), hasShares(1.705860), //
                         hasSource("Umsatzabrechnung03.txt"), //
                         hasNote("Ref.-Nr.: XXXXXXXXX/XXXXXXXX | vermögenswirksame Leistungen"), //
                         hasAmount("EUR", 50.00), hasGrossValue("EUR", 50.00), //
@@ -380,7 +383,7 @@ public class EbasePDFExtractorTest
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
                         hasDate("2019-10-16"), hasExDate(null), //
-                        hasShares(1), //
+                        hasShares(1.00), //
                         hasSource("Umsatzabrechnung03.txt"), //
                         hasNote("Ref.-Nr.: XXXXXXXXX/XXXXXXXXX"), //
                         hasAmount("EUR", 0.29), hasGrossValue("EUR", 0.35), //
@@ -391,7 +394,7 @@ public class EbasePDFExtractorTest
         assertThat(results, hasItem(skippedItem( //
                         Messages.MsgErrorTransactionSkipIfDetailsMissing, //
                         purchase( //
-                                        hasDate("2019-10-16"), hasShares(1), //
+                                        hasDate("2019-10-16T00:00"), hasShares(1.00), //
                                         hasSource("Umsatzabrechnung03.txt"), //
                                         hasNote("Ref.-Nr.: XXXXXXXXX/XXXXXXXXX"), //
                                         hasAmount("EUR", 0.29), hasGrossValue("EUR", 0.23), //
@@ -437,7 +440,7 @@ public class EbasePDFExtractorTest
 
         // check 1st buy sell transaction
         assertThat(results, hasItem(sale( //
-                        hasDate("2020-01-27"), hasShares(0.001162), //
+                        hasDate("2020-01-27T00:00"), hasShares(0.001162), //
                         hasSource("Umsatzabrechnung03.txt"), //
                         hasNote("Ref.-Nr.: XXXXXXXX/XXXXXXXX | Verkauf wegen Vorabpauschale"), //
                         hasAmount("EUR", 0.13), hasGrossValue("EUR", 0.13), //
@@ -445,7 +448,7 @@ public class EbasePDFExtractorTest
 
         // check 2nd buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2019-10-22"), hasShares(1.705860), //
+                        hasDate("2019-10-22T00:00"), hasShares(1.705860), //
                         hasSource("Umsatzabrechnung03.txt"), //
                         hasNote("Ref.-Nr.: XXXXXXXXX/XXXXXXXX | vermögenswirksame Leistungen"), //
                         hasAmount("EUR", 50.00), hasGrossValue("EUR", 50.00), //
@@ -454,7 +457,7 @@ public class EbasePDFExtractorTest
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
                         hasDate("2019-10-16"), hasExDate(null), //
-                        hasShares(1), //
+                        hasShares(1.00), //
                         hasSource("Umsatzabrechnung03.txt"), //
                         hasNote("Ref.-Nr.: XXXXXXXXX/XXXXXXXXX"), //
                         hasAmount("EUR", 0.29), hasGrossValue("EUR", 0.35), //
@@ -464,7 +467,7 @@ public class EbasePDFExtractorTest
         assertThat(results, hasItem(skippedItem( //
                         Messages.MsgErrorTransactionSkipIfDetailsMissing, //
                         purchase( //
-                                        hasDate("2019-10-16"), hasShares(1), //
+                                        hasDate("2019-10-16T00:00"), hasShares(1.00), //
                                         hasSource("Umsatzabrechnung03.txt"), //
                                         hasNote("Ref.-Nr.: XXXXXXXXX/XXXXXXXXX"), //
                                         hasAmount("EUR", 0.29), hasGrossValue("EUR", 0.23), //
@@ -515,7 +518,7 @@ public class EbasePDFExtractorTest
         assertThat(results, hasItem(skippedItem( //
                         Messages.MsgErrorTransactionSkipIfDetailsMissing, //
                         purchase( //
-                                        hasDate("2020-01-02"), hasShares(7.332986), //
+                                        hasDate("2020-01-02T00:00"), hasShares(7.332986), //
                                         hasSource("Umsatzabrechnung04.txt"), //
                                         hasNote("Ref.-Nr.: XXXXXXXX/XXXXXXXX"), //
                                         hasAmount("USD", 1.79), hasGrossValue("USD", 1.48), //
@@ -549,7 +552,7 @@ public class EbasePDFExtractorTest
 
         // check 1st buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2017-05-03"), hasShares(0.122649), //
+                        hasDate("2017-05-03T00:00"), hasShares(0.122649), //
                         hasSource("Umsatzabrechnung05.txt"), //
                         hasNote("Ref.-Nr.: 111111111/11111111 | vermögenswirksame Leistungen"), //
                         hasAmount("EUR", 15.00), hasGrossValue("EUR", 14.97), //
@@ -557,7 +560,7 @@ public class EbasePDFExtractorTest
 
         // check 2nd buy sell transaction
         assertThat(results, hasItem(sale( //
-                        hasDate("2017-12-22"), hasShares(0.100548), //
+                        hasDate("2017-12-22T00:00"), hasShares(0.100548), //
                         hasSource("Umsatzabrechnung05.txt"), //
                         hasNote("Ref.-Nr.: 111111111/11111111 | Entgelt Verkauf"), //
                         hasAmount("EUR", 12.00), hasGrossValue("EUR", 12.79), //
@@ -600,7 +603,7 @@ public class EbasePDFExtractorTest
 
         // check buy sell transaction
         assertThat(results, hasItem(sale( //
-                        hasDate("2016-06-04"), hasShares(60), //
+                        hasDate("2016-06-04T00:00"), hasShares(60.00), //
                         hasSource("Umsatzabrechnung06.txt"), //
                         hasNote("Ref.-Nr.: XXXXXXXXX/XXXXXXXX"), //
                         hasAmount("EUR", 6193.80), hasGrossValue("EUR", 6193.80), //
@@ -649,7 +652,7 @@ public class EbasePDFExtractorTest
 
         // check buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2020-08-03"), hasShares(0.278245), //
+                        hasDate("2020-08-03T00:00"), hasShares(0.278245), //
                         hasSource("Umsatzabrechnung07.txt"), //
                         hasNote("Ref.-Nr.: XXXXXXXXXX/XXXXXXXXXX | Wiederanlage Fondsertrag"), //
                         hasAmount("USD", 10.25), hasGrossValue("USD", 10.25), //
@@ -659,7 +662,7 @@ public class EbasePDFExtractorTest
         assertThat(results, hasItem(skippedItem( //
                         Messages.MsgErrorTransactionSkipIfDetailsMissing, //
                         purchase( //
-                                        hasDate("2020-07-30"), hasShares(37.327232), //
+                                        hasDate("2020-07-30T00:00"), hasShares(37.327232), //
                                         hasSource("Umsatzabrechnung07.txt"), //
                                         hasNote("Ref.-Nr.: XXXXXXXXXX/XXXXXXXXXX"), //
                                         hasAmount("USD", 10.25), hasGrossValue("USD", 7.59), //
@@ -693,7 +696,7 @@ public class EbasePDFExtractorTest
 
         // check 1st buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2020-10-29"), hasShares(1.551798), //
+                        hasDate("2020-10-29T00:00"), hasShares(1.551798), //
                         hasSource("Umsatzabrechnung08.txt"), //
                         hasNote("Ref.-Nr.: 400011237/29102020 | vermögenswirksame Leistungen"), //
                         hasAmount("EUR", 40.00), hasGrossValue("EUR", 39.92), //
@@ -701,7 +704,7 @@ public class EbasePDFExtractorTest
 
         // check 2nd buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2020-11-27"), hasShares(1.409391), //
+                        hasDate("2020-11-27T00:00"), hasShares(1.409391), //
                         hasSource("Umsatzabrechnung08.txt"), //
                         hasNote("Ref.-Nr.: 400011151/27112020"), //
                         hasAmount("EUR", 40.00), hasGrossValue("EUR", 39.92), //
@@ -709,7 +712,7 @@ public class EbasePDFExtractorTest
 
         // check 3rd buy sell transaction
         assertThat(results, hasItem(sale( //
-                        hasDate("2020-12-23"), hasShares(0.414447), //
+                        hasDate("2020-12-23T00:00"), hasShares(0.414447), //
                         hasSource("Umsatzabrechnung08.txt"), //
                         hasNote("Ref.-Nr.: 450088642/11122020 | Entgelt Verkauf"), //
                         hasAmount("EUR", 11.70), hasGrossValue("EUR", 11.73), //
@@ -717,7 +720,7 @@ public class EbasePDFExtractorTest
 
         // check 4th buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2020-12-23"), hasShares(1.382295), //
+                        hasDate("2020-12-23T00:00"), hasShares(1.382295), //
                         hasSource("Umsatzabrechnung08.txt"), //
                         hasNote("Ref.-Nr.: 400006407/23122020 | vermögenswirksame Leistungen"), //
                         hasAmount("EUR", 40.00), hasGrossValue("EUR", 39.92), //
@@ -767,7 +770,7 @@ public class EbasePDFExtractorTest
         // Zahlungsbetrag 6,16 USD
         assertThat(results, hasItem(dividend( //
                         hasDate("2019-11-28"), hasExDate(null), //
-                        hasShares(12), //
+                        hasShares(12.00), //
                         hasSource("Umsatzabrechnung09.txt"), //
                         hasNote("Ref.-Nr.: XXXXXXXXXX/XXXXXXXXXX"), //
                         hasAmount("USD", 6.16), hasGrossValue("USD", 7.94), //
@@ -775,7 +778,7 @@ public class EbasePDFExtractorTest
 
         // check buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2019-12-02"), hasShares(0.200653), //
+                        hasDate("2019-12-02T00:00"), hasShares(0.200653), //
                         hasSource("Umsatzabrechnung09.txt"), //
                         hasNote("Ref.-Nr.: XXXXXXXXXX/XXXXXXXXXX | Wiederanlage Fondsertrag"), //
                         hasAmount("USD", 6.16), hasGrossValue("USD", 6.16), //
@@ -785,7 +788,7 @@ public class EbasePDFExtractorTest
         assertThat(results, hasItem(skippedItem( //
                         Messages.MsgErrorTransactionSkipIfDetailsMissing, //
                         purchase( //
-                                        hasDate("2019-11-28"), hasShares(12), //
+                                        hasDate("2019-11-28T00:00"), hasShares(12.00), //
                                         hasSource("Umsatzabrechnung09.txt"), //
                                         hasNote("Ref.-Nr.: XXXXXXXXXX/XXXXXXXXXX"), //
                                         hasAmount("USD", 6.16), hasGrossValue("USD", 4.70), //
@@ -819,7 +822,7 @@ public class EbasePDFExtractorTest
 
         // check 1st buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2020-10-19"), hasShares(0.703198), //
+                        hasDate("2020-10-19T00:00"), hasShares(0.703198), //
                         hasSource("Umsatzabrechnung10.txt"), //
                         hasNote("Ref.-Nr.: xxx/16102020 | vermögenswirksame Leistungen"), //
                         hasAmount("EUR", 40.00), hasGrossValue("EUR", 39.92), //
@@ -828,7 +831,7 @@ public class EbasePDFExtractorTest
 
         // check 2nd buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2020-11-17"), hasShares(0.678808), //
+                        hasDate("2020-11-17T00:00"), hasShares(0.678808), //
                         hasSource("Umsatzabrechnung10.txt"), //
                         hasNote("Ref.-Nr.: xxx/16112020"), //
                         hasAmount("EUR", 40.00), hasGrossValue("EUR", 39.92), //
@@ -837,7 +840,7 @@ public class EbasePDFExtractorTest
 
         // check 3rd buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2020-12-17"), hasShares(0.674710), //
+                        hasDate("2020-12-17T00:00"), hasShares(0.674710), //
                         hasSource("Umsatzabrechnung10.txt"), //
                         hasNote("Ref.-Nr.: xxx/16122020"), //
                         hasAmount("EUR", 40.00), hasGrossValue("EUR", 39.92), //
@@ -846,7 +849,7 @@ public class EbasePDFExtractorTest
 
         // check 4th buy sell transaction
         assertThat(results, hasItem(sale( //
-                        hasDate("2020-12-23"), hasShares(0.167976), //
+                        hasDate("2020-12-23T00:00"), hasShares(0.167976), //
                         hasSource("Umsatzabrechnung10.txt"), //
                         hasNote("Ref.-Nr.: xxx/11122020 | Entgelt Verkauf"), //
                         hasAmount("EUR", 9.75), hasGrossValue("EUR", 9.75), //
@@ -891,7 +894,7 @@ public class EbasePDFExtractorTest
 
         // check 1st buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2020-10-19"), hasShares(0.703198), //
+                        hasDate("2020-10-19T00:00"), hasShares(0.703198), //
                         hasSource("Umsatzabrechnung10.txt"), //
                         hasNote("Ref.-Nr.: xxx/16102020 | vermögenswirksame Leistungen"), //
                         hasAmount("EUR", 40.00), hasGrossValue("EUR", 39.92), //
@@ -899,22 +902,25 @@ public class EbasePDFExtractorTest
 
         // check 2nd buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2020-11-17"), hasShares(0.678808), //
-                        hasSource("Umsatzabrechnung10.txt"), hasNote("Ref.-Nr.: xxx/16112020"), //
+                        hasDate("2020-11-17T00:00"), hasShares(0.678808), //
+                        hasSource("Umsatzabrechnung10.txt"), //
+                        hasNote("Ref.-Nr.: xxx/16112020"), //
                         hasAmount("EUR", 40.00), hasGrossValue("EUR", 39.92), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.08))));
 
         // check 3rd buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2020-12-17"), hasShares(0.674710), //
-                        hasSource("Umsatzabrechnung10.txt"), hasNote("Ref.-Nr.: xxx/16122020"), //
+                        hasDate("2020-12-17T00:00"), hasShares(0.674710), //
+                        hasSource("Umsatzabrechnung10.txt"), //
+                        hasNote("Ref.-Nr.: xxx/16122020"), //
                         hasAmount("EUR", 40.00), hasGrossValue("EUR", 39.92), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.08))));
 
         // check 4th buy sell transaction
         assertThat(results, hasItem(sale( //
-                        hasDate("2020-12-23"), hasShares(0.167976), //
-                        hasSource("Umsatzabrechnung10.txt"), hasNote("Ref.-Nr.: xxx/11122020 | Entgelt Verkauf"), //
+                        hasDate("2020-12-23T00:00"), hasShares(0.167976), //
+                        hasSource("Umsatzabrechnung10.txt"), //
+                        hasNote("Ref.-Nr.: xxx/11122020 | Entgelt Verkauf"), //
                         hasAmount("EUR", 9.75), hasGrossValue("EUR", 9.75), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
@@ -955,7 +961,7 @@ public class EbasePDFExtractorTest
 
         // check buy sell transaction
         assertThat(results, hasItem(sale( //
-                        hasDate("2021-04-06"), hasShares(9.999999), //
+                        hasDate("2021-04-06T00:00"), hasShares(9.999999), //
                         hasSource("Umsatzabrechnung11.txt"), //
                         hasNote("Ref.-Nr.: 000000000/000000000 | Entgeltbelastung Verkauf"), //
                         hasAmount("EUR", 3.00), hasGrossValue("EUR", 3.00), //
@@ -998,7 +1004,7 @@ public class EbasePDFExtractorTest
 
         // check 1st buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2022-01-03"), hasShares(0.047085), //
+                        hasDate("2022-01-03T00:00"), hasShares(0.047085), //
                         hasSource("Umsatzabrechnung12.txt"), //
                         hasNote("Ref.-Nr.: 987654321/03012022 | vermögenswirksame Leistungen"), //
                         hasAmount("EUR", 6.65), hasGrossValue("EUR", 6.64), //
@@ -1006,7 +1012,7 @@ public class EbasePDFExtractorTest
 
         // check 2nd buy sell transaction
         assertThat(results, hasItem(sale( //
-                        hasDate("2022-01-07"), hasShares(0.022249), //
+                        hasDate("2022-01-07T00:00"), hasShares(0.022249), //
                         hasSource("Umsatzabrechnung12.txt"), //
                         hasNote("Ref.-Nr.: 987654323/06012022 | Entgeltbelastung Verkauf"), //
                         hasAmount("EUR", 3.00), hasGrossValue("EUR", 3.00), //
@@ -1049,7 +1055,7 @@ public class EbasePDFExtractorTest
 
         // check buy sell transaction
         assertThat(results, hasItem(sale( //
-                        hasDate("2021-07-05"), hasShares(0.024859), //
+                        hasDate("2021-07-05T00:00"), hasShares(0.024859), //
                         hasSource("Umsatzabrechnung13.txt"), //
                         hasNote("Ref.-Nr.: 123456789/123456789 | Entgeltbelastung Verkauf"), //
                         hasAmount("EUR", 3.00), hasGrossValue("EUR", 3.00), //
@@ -1092,7 +1098,7 @@ public class EbasePDFExtractorTest
 
         // check buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2021-07-02"), hasShares(1234.1234), //
+                        hasDate("2021-07-02T00:00"), hasShares(1234.1234), //
                         hasSource("Umsatzabrechnung14.txt"), //
                         hasNote("Ref.-Nr.: 123456789/123456789 | vermögenswirksame Leistungen"), //
                         hasAmount("EUR", 1234.12), hasGrossValue("EUR", 1234.07), //
@@ -1168,7 +1174,7 @@ public class EbasePDFExtractorTest
 
         // check 1st buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2021-04-06"), hasShares(0.138927), //
+                        hasDate("2021-04-06T00:00"), hasShares(0.138927), //
                         hasSource("Umsatzabrechnung15.txt"), //
                         hasNote("Ref.-Nr.: 000/31032021"), //
                         hasAmount("EUR", 100.00), hasGrossValue("EUR", 100.00), //
@@ -1176,7 +1182,7 @@ public class EbasePDFExtractorTest
 
         // check 2nd buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2021-04-06"), hasShares(0.879612), //
+                        hasDate("2021-04-06T00:00"), hasShares(0.879612), //
                         hasSource("Umsatzabrechnung15.txt"), //
                         hasNote("Ref.-Nr.: 000/31032021"), //
                         hasAmount("EUR", 100.00), hasGrossValue("EUR", 100.00), //
@@ -1185,7 +1191,7 @@ public class EbasePDFExtractorTest
 
         // check 3rd buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2021-04-06"), hasShares(1.510346), //
+                        hasDate("2021-04-06T00:00"), hasShares(1.510346), //
                         hasSource("Umsatzabrechnung15.txt"), //
                         hasNote("Ref.-Nr.: 000/31032021"), //
                         hasAmount("EUR", 100.00), hasGrossValue("EUR", 100.00), //
@@ -1193,7 +1199,7 @@ public class EbasePDFExtractorTest
 
         // check 4th buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2021-04-06"), hasShares(0.221967), //
+                        hasDate("2021-04-06T00:00"), hasShares(0.221967), //
                         hasSource("Umsatzabrechnung15.txt"), //
                         hasNote("Ref.-Nr.: 000/31032021"), //
                         hasAmount("EUR", 50.00), hasGrossValue("EUR", 50.00), //
@@ -1202,7 +1208,7 @@ public class EbasePDFExtractorTest
 
         // check 5th buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2021-05-03"), hasShares(0.048774), //
+                        hasDate("2021-05-03T00:00"), hasShares(0.048774), //
                         hasSource("Umsatzabrechnung15.txt"), //
                         hasNote("Ref.-Nr.: 000/30042021"), //
                         hasAmount("EUR", 25.00), hasGrossValue("EUR", 25.00), //
@@ -1210,7 +1216,7 @@ public class EbasePDFExtractorTest
 
         // check 6th buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2021-05-03"), hasShares(0.483285), //
+                        hasDate("2021-05-03T00:00"), hasShares(0.483285), //
                         hasSource("Umsatzabrechnung15.txt"), //
                         hasNote("Ref.-Nr.: 000/30042021"), //
                         hasAmount("EUR", 25.00), hasGrossValue("EUR", 24.95), //
@@ -1218,7 +1224,7 @@ public class EbasePDFExtractorTest
 
         // check 7th buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2021-05-04"), hasShares(2.869440), //
+                        hasDate("2021-05-04T00:00"), hasShares(2.869440), //
                         hasSource("Umsatzabrechnung15.txt"), //
                         hasNote("Ref.-Nr.: 000/03052021 | vermögenswirksame Leistungen"), //
                         hasAmount("EUR", 40.00), hasGrossValue("EUR", 40.00), //
@@ -1226,7 +1232,7 @@ public class EbasePDFExtractorTest
 
         // check 8th buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2021-05-04"), hasShares(0.142698), //
+                        hasDate("2021-05-04T00:00"), hasShares(0.142698), //
                         hasSource("Umsatzabrechnung15.txt"), //
                         hasNote("Ref.-Nr.: 000/30042021"), //
                         hasAmount("EUR", 100.00), hasGrossValue("EUR", 100.00), //
@@ -1234,7 +1240,7 @@ public class EbasePDFExtractorTest
 
         // check 9th buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2021-05-04"), hasShares(0.865179), //
+                        hasDate("2021-05-04T00:00"), hasShares(0.865179), //
                         hasSource("Umsatzabrechnung15.txt"), //
                         hasNote("Ref.-Nr.: 000/30042021"), //
                         hasAmount("EUR", 100.00), hasGrossValue("EUR", 100.00), //
@@ -1243,7 +1249,7 @@ public class EbasePDFExtractorTest
 
         // check 10th buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2021-05-04"), hasShares(1.529988), //
+                        hasDate("2021-05-04T00:00"), hasShares(1.529988), //
                         hasSource("Umsatzabrechnung15.txt"), //
                         hasNote("Ref.-Nr.: 000/30042021"), //
                         hasAmount("EUR", 100.00), hasGrossValue("EUR", 100.00), //
@@ -1251,7 +1257,7 @@ public class EbasePDFExtractorTest
 
         // check 11th buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2021-05-04"), hasShares(0.223201), //
+                        hasDate("2021-05-04T00:00"), hasShares(0.223201), //
                         hasSource("Umsatzabrechnung15.txt"), //
                         hasNote("Ref.-Nr.: 000/30042021"), //
                         hasAmount("EUR", 50.00), hasGrossValue("EUR", 50.00), //
@@ -1260,7 +1266,7 @@ public class EbasePDFExtractorTest
 
         // check 12th buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2021-06-01"), hasShares(0.047562), //
+                        hasDate("2021-06-01T00:00"), hasShares(0.047562), //
                         hasSource("Umsatzabrechnung15.txt"), //
                         hasNote("Ref.-Nr.: 000/31052021"), //
                         hasAmount("EUR", 25.00), hasGrossValue("EUR", 25.00), //
@@ -1268,7 +1274,7 @@ public class EbasePDFExtractorTest
 
         // check 13th buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2021-06-01"), hasShares(0.475691), //
+                        hasDate("2021-06-01T00:00"), hasShares(0.475691), //
                         hasSource("Umsatzabrechnung15.txt"), //
                         hasNote("Ref.-Nr.: 000/31052021"), //
                         hasAmount("EUR", 25.00), hasGrossValue("EUR", 24.95), //
@@ -1276,7 +1282,7 @@ public class EbasePDFExtractorTest
 
         // check 14th buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2021-06-01"), hasShares(1.576541), //
+                        hasDate("2021-06-01T00:00"), hasShares(1.576541), //
                         hasSource("Umsatzabrechnung15.txt"), //
                         hasNote("Ref.-Nr.: 000/31052021"), //
                         hasAmount("EUR", 100.00), hasGrossValue("EUR", 100.00), //
@@ -1284,7 +1290,7 @@ public class EbasePDFExtractorTest
 
         // check 15th buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2021-06-02"), hasShares(2.939015), //
+                        hasDate("2021-06-02T00:00"), hasShares(2.939015), //
                         hasSource("Umsatzabrechnung15.txt"), //
                         hasNote("Ref.-Nr.: 000/31052021 | vermögenswirksame Leistungen"), //
                         hasAmount("EUR", 40.00), hasGrossValue("EUR", 40.00), //
@@ -1292,7 +1298,7 @@ public class EbasePDFExtractorTest
 
         // check 16th buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2021-06-02"), hasShares(0.146836), //
+                        hasDate("2021-06-02T00:00"), hasShares(0.146836), //
                         hasSource("Umsatzabrechnung15.txt"), //
                         hasNote("Ref.-Nr.: 000/28052021"), //
                         hasAmount("EUR", 100.00), hasGrossValue("EUR", 100.00), //
@@ -1300,7 +1306,7 @@ public class EbasePDFExtractorTest
 
         // check 17th buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2021-06-02"), hasShares(0.881525), //
+                        hasDate("2021-06-02T00:00"), hasShares(0.881525), //
                         hasSource("Umsatzabrechnung15.txt"), //
                         hasNote("Ref.-Nr.: 000/31052021"), //
                         hasAmount("EUR", 100.00), hasGrossValue("EUR", 100.00), //
@@ -1309,7 +1315,7 @@ public class EbasePDFExtractorTest
 
         // check 18th buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2021-06-02"), hasShares(0.229964), //
+                        hasDate("2021-06-02T00:00"), hasShares(0.229964), //
                         hasSource("Umsatzabrechnung15.txt"), //
                         hasNote("Ref.-Nr.: 000/31052021"), //
                         hasAmount("EUR", 50.00), hasGrossValue("EUR", 50.00), //
@@ -1329,7 +1335,7 @@ public class EbasePDFExtractorTest
         assertThat(results, hasItem(skippedItem( //
                         Messages.MsgErrorTransactionSkipIfDetailsMissing, //
                         purchase( //
-                                        hasDate("2021-06-14"), hasShares(0.049184), //
+                                        hasDate("2021-06-14T00:00"), hasShares(0.049184), //
                                         hasSource("Umsatzabrechnung15.txt"), //
                                         hasNote("Ref.-Nr.: 000/14062021 | vermögenswirksame Leistungen"), //
                                         hasAmount("EUR", 0.03), hasGrossValue("EUR", 0.03), //
@@ -1403,7 +1409,7 @@ public class EbasePDFExtractorTest
 
         // check 1st buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2021-04-06"), hasShares(0.138927), //
+                        hasDate("2021-04-06T00:00"), hasShares(0.138927), //
                         hasSource("Umsatzabrechnung15.txt"), //
                         hasNote("Ref.-Nr.: 000/31032021"), //
                         hasAmount("EUR", 100.00), hasGrossValue("EUR", 100.00), //
@@ -1411,7 +1417,7 @@ public class EbasePDFExtractorTest
 
         // check 2nd buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2021-04-06"), hasShares(0.879612), //
+                        hasDate("2021-04-06T00:00"), hasShares(0.879612), //
                         hasSource("Umsatzabrechnung15.txt"), //
                         hasNote("Ref.-Nr.: 000/31032021"), //
                         hasAmount("EUR", 100.00), hasGrossValue("EUR", 100.00), //
@@ -1419,7 +1425,7 @@ public class EbasePDFExtractorTest
 
         // check 3rd buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2021-04-06"), hasShares(1.510346), //
+                        hasDate("2021-04-06T00:00"), hasShares(1.510346), //
                         hasSource("Umsatzabrechnung15.txt"), //
                         hasNote("Ref.-Nr.: 000/31032021"), //
                         hasAmount("EUR", 100.00), hasGrossValue("EUR", 100.00), //
@@ -1427,7 +1433,7 @@ public class EbasePDFExtractorTest
 
         // check 4th buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2021-04-06"), hasShares(0.221967), //
+                        hasDate("2021-04-06T00:00"), hasShares(0.221967), //
                         hasSource("Umsatzabrechnung15.txt"), //
                         hasNote("Ref.-Nr.: 000/31032021"), //
                         hasAmount("EUR", 50.00), hasGrossValue("EUR", 50.00), //
@@ -1435,7 +1441,7 @@ public class EbasePDFExtractorTest
 
         // check 5th buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2021-05-03"), hasShares(0.048774), //
+                        hasDate("2021-05-03T00:00"), hasShares(0.048774), //
                         hasSource("Umsatzabrechnung15.txt"), //
                         hasNote("Ref.-Nr.: 000/30042021"), //
                         hasAmount("EUR", 25.00), hasGrossValue("EUR", 25.00), //
@@ -1443,7 +1449,7 @@ public class EbasePDFExtractorTest
 
         // check 6th buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2021-05-03"), hasShares(0.483285), //
+                        hasDate("2021-05-03T00:00"), hasShares(0.483285), //
                         hasSource("Umsatzabrechnung15.txt"), //
                         hasNote("Ref.-Nr.: 000/30042021"), //
                         hasAmount("EUR", 25.00), hasGrossValue("EUR", 24.95), //
@@ -1451,7 +1457,7 @@ public class EbasePDFExtractorTest
 
         // check 7th buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2021-05-04"), hasShares(2.869440), //
+                        hasDate("2021-05-04T00:00"), hasShares(2.869440), //
                         hasSource("Umsatzabrechnung15.txt"), //
                         hasNote("Ref.-Nr.: 000/03052021 | vermögenswirksame Leistungen"), //
                         hasAmount("EUR", 40.00), hasGrossValue("EUR", 40.00), //
@@ -1459,7 +1465,7 @@ public class EbasePDFExtractorTest
 
         // check 8th buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2021-05-04"), hasShares(0.142698), //
+                        hasDate("2021-05-04T00:00"), hasShares(0.142698), //
                         hasSource("Umsatzabrechnung15.txt"), //
                         hasNote("Ref.-Nr.: 000/30042021"), //
                         hasAmount("EUR", 100.00), hasGrossValue("EUR", 100.00), //
@@ -1467,7 +1473,7 @@ public class EbasePDFExtractorTest
 
         // check 9th buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2021-05-04"), hasShares(0.865179), //
+                        hasDate("2021-05-04T00:00"), hasShares(0.865179), //
                         hasSource("Umsatzabrechnung15.txt"), //
                         hasNote("Ref.-Nr.: 000/30042021"), //
                         hasAmount("EUR", 100.00), hasGrossValue("EUR", 100.00), //
@@ -1475,7 +1481,7 @@ public class EbasePDFExtractorTest
 
         // check 10th buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2021-05-04"), hasShares(1.529988), //
+                        hasDate("2021-05-04T00:00"), hasShares(1.529988), //
                         hasSource("Umsatzabrechnung15.txt"), //
                         hasNote("Ref.-Nr.: 000/30042021"), //
                         hasAmount("EUR", 100.00), hasGrossValue("EUR", 100.00), //
@@ -1483,7 +1489,7 @@ public class EbasePDFExtractorTest
 
         // check 11th buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2021-05-04"), hasShares(0.223201), //
+                        hasDate("2021-05-04T00:00"), hasShares(0.223201), //
                         hasSource("Umsatzabrechnung15.txt"), //
                         hasNote("Ref.-Nr.: 000/30042021"), //
                         hasAmount("EUR", 50.00), hasGrossValue("EUR", 50.00), //
@@ -1491,7 +1497,7 @@ public class EbasePDFExtractorTest
 
         // check 12th buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2021-06-01"), hasShares(0.047562), //
+                        hasDate("2021-06-01T00:00"), hasShares(0.047562), //
                         hasSource("Umsatzabrechnung15.txt"), //
                         hasNote("Ref.-Nr.: 000/31052021"), //
                         hasAmount("EUR", 25.00), hasGrossValue("EUR", 25.00), //
@@ -1499,7 +1505,7 @@ public class EbasePDFExtractorTest
 
         // check 13th buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2021-06-01"), hasShares(0.475691), //
+                        hasDate("2021-06-01T00:00"), hasShares(0.475691), //
                         hasSource("Umsatzabrechnung15.txt"), //
                         hasNote("Ref.-Nr.: 000/31052021"), //
                         hasAmount("EUR", 25.00), hasGrossValue("EUR", 24.95), //
@@ -1507,7 +1513,7 @@ public class EbasePDFExtractorTest
 
         // check 14th buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2021-06-01"), hasShares(1.576541), //
+                        hasDate("2021-06-01T00:00"), hasShares(1.576541), //
                         hasSource("Umsatzabrechnung15.txt"), //
                         hasNote("Ref.-Nr.: 000/31052021"), //
                         hasAmount("EUR", 100.00), hasGrossValue("EUR", 100.00), //
@@ -1515,7 +1521,7 @@ public class EbasePDFExtractorTest
 
         // check 15th buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2021-06-02"), hasShares(2.939015), //
+                        hasDate("2021-06-02T00:00"), hasShares(2.939015), //
                         hasSource("Umsatzabrechnung15.txt"), //
                         hasNote("Ref.-Nr.: 000/31052021 | vermögenswirksame Leistungen"), //
                         hasAmount("EUR", 40.00), hasGrossValue("EUR", 40.00), //
@@ -1523,7 +1529,7 @@ public class EbasePDFExtractorTest
 
         // check 16th buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2021-06-02"), hasShares(0.146836), //
+                        hasDate("2021-06-02T00:00"), hasShares(0.146836), //
                         hasSource("Umsatzabrechnung15.txt"), //
                         hasNote("Ref.-Nr.: 000/28052021"), //
                         hasAmount("EUR", 100.00), hasGrossValue("EUR", 100.00), //
@@ -1531,7 +1537,7 @@ public class EbasePDFExtractorTest
 
         // check 17th buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2021-06-02"), hasShares(0.881525), //
+                        hasDate("2021-06-02T00:00"), hasShares(0.881525), //
                         hasSource("Umsatzabrechnung15.txt"), //
                         hasNote("Ref.-Nr.: 000/31052021"), //
                         hasAmount("EUR", 100.00), hasGrossValue("EUR", 100.00), //
@@ -1539,7 +1545,7 @@ public class EbasePDFExtractorTest
 
         // check 18th buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2021-06-02"), hasShares(0.229964), //
+                        hasDate("2021-06-02T00:00"), hasShares(0.229964), //
                         hasSource("Umsatzabrechnung15.txt"), //
                         hasNote("Ref.-Nr.: 000/31052021"), //
                         hasAmount("EUR", 50.00), hasGrossValue("EUR", 50.00), //
@@ -1558,7 +1564,7 @@ public class EbasePDFExtractorTest
         assertThat(results, hasItem(skippedItem( //
                         Messages.MsgErrorTransactionSkipIfDetailsMissing, //
                         purchase( //
-                                        hasDate("2021-06-14"), hasShares(0.049184), //
+                                        hasDate("2021-06-14T00:00"), hasShares(0.049184), //
                                         hasSource("Umsatzabrechnung15.txt"), //
                                         hasNote("Ref.-Nr.: 000/14062021 | vermögenswirksame Leistungen"), //
                                         hasAmount("EUR", 0.03), hasGrossValue("EUR", 0.03), //
@@ -1627,7 +1633,7 @@ public class EbasePDFExtractorTest
 
         // check 1st buy sell transaction
         assertThat(results, hasItem(sale( //
-                        hasDate("2021-01-25"), hasShares(0.002155), //
+                        hasDate("2021-01-25T00:00"), hasShares(0.002155), //
                         hasSource("Umsatzabrechnung16.txt"), //
                         hasNote("Ref.-Nr.: 000/22012021 | Verkauf wegen Vorabpauschale"), //
                         hasAmount("EUR", 0.94), hasGrossValue("EUR", 1.00), //
@@ -1635,7 +1641,7 @@ public class EbasePDFExtractorTest
 
         // check 2nd buy sell transaction
         assertThat(results, hasItem(sale( //
-                        hasDate("2021-01-26"), hasShares(0.002987), //
+                        hasDate("2021-01-26T00:00"), hasShares(0.002987), //
                         hasSource("Umsatzabrechnung16.txt"), //
                         hasNote("Ref.-Nr.: 000/22012021 | Verkauf wegen Vorabpauschale"), //
                         hasAmount("EUR", 0.04), hasGrossValue("EUR", 0.04), //
@@ -1643,7 +1649,7 @@ public class EbasePDFExtractorTest
 
         // check 3rd buy sell transaction
         assertThat(results, hasItem(sale( //
-                        hasDate("2021-01-26"), hasShares(0.000110), //
+                        hasDate("2021-01-26T00:00"), hasShares(0.000110), //
                         hasSource("Umsatzabrechnung16.txt"), //
                         hasNote("Ref.-Nr.: 000/22012021 | Verkauf wegen Vorabpauschale"), //
                         hasAmount("EUR", 0.07), hasGrossValue("EUR", 0.08), //
@@ -1651,7 +1657,7 @@ public class EbasePDFExtractorTest
 
         // check 4th buy sell transaction
         assertThat(results, hasItem(sale( //
-                        hasDate("2021-01-26"), hasShares(0.000268), //
+                        hasDate("2021-01-26T00:00"), hasShares(0.000268), //
                         hasSource("Umsatzabrechnung16.txt"), //
                         hasNote("Ref.-Nr.: 000/22012021 | Verkauf wegen Vorabpauschale"), //
                         hasAmount("EUR", 0.03), hasGrossValue("EUR", 0.03), //
@@ -1660,7 +1666,7 @@ public class EbasePDFExtractorTest
 
         // check 5th buy sell transaction
         assertThat(results, hasItem(sale( //
-                        hasDate("2021-01-25"), hasShares(0.000143), //
+                        hasDate("2021-01-25T00:00"), hasShares(0.000143), //
                         hasSource("Umsatzabrechnung16.txt"), //
                         hasNote("Ref.-Nr.: 000/22012021 | Verkauf wegen Vorabpauschale"), //
                         hasAmount("EUR", 0.01), hasGrossValue("EUR", 0.01), //
@@ -1668,7 +1674,7 @@ public class EbasePDFExtractorTest
 
         // check 6th buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2021-02-01"), hasShares(0.525761), //
+                        hasDate("2021-02-01T00:00"), hasShares(0.525761), //
                         hasSource("Umsatzabrechnung16.txt"), //
                         hasNote("Ref.-Nr.: 450159982/29012021"), //
                         hasAmount("EUR", 25.00), hasGrossValue("EUR", 24.95), //
@@ -1676,7 +1682,7 @@ public class EbasePDFExtractorTest
 
         // check 7th buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2021-02-01"), hasShares(3.084040), //
+                        hasDate("2021-02-01T00:00"), hasShares(3.084040), //
                         hasSource("Umsatzabrechnung16.txt"), //
                         hasNote("Ref.-Nr.: 000/29012021 | vermögenswirksame Leistungen"), //
                         hasAmount("EUR", 40.00), hasGrossValue("EUR", 40.00), //
@@ -1684,7 +1690,7 @@ public class EbasePDFExtractorTest
 
         // check 8th buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2021-02-02"), hasShares(0.054216), //
+                        hasDate("2021-02-02T00:00"), hasShares(0.054216), //
                         hasSource("Umsatzabrechnung16.txt"), //
                         hasNote("Ref.-Nr.: 450083460/29012021"), //
                         hasAmount("EUR", 25.00), hasGrossValue("EUR", 25.00), //
@@ -1692,7 +1698,7 @@ public class EbasePDFExtractorTest
 
         // check 9th buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2021-02-02"), hasShares(0.142943), //
+                        hasDate("2021-02-02T00:00"), hasShares(0.142943), //
                         hasSource("Umsatzabrechnung16.txt"), //
                         hasNote("Ref.-Nr.: 450246382/29012021"), //
                         hasAmount("EUR", 100.00), hasGrossValue("EUR", 100.00), //
@@ -1700,7 +1706,7 @@ public class EbasePDFExtractorTest
 
         // check 10th buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2021-02-02"), hasShares(1.494992), //
+                        hasDate("2021-02-02T00:00"), hasShares(1.494992), //
                         hasSource("Umsatzabrechnung16.txt"), //
                         hasNote("Ref.-Nr.: 450089736/29012021"), //
                         hasAmount("EUR", 100.00), hasGrossValue("EUR", 100.00), //
@@ -1708,7 +1714,7 @@ public class EbasePDFExtractorTest
 
         // check 11th buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2021-02-02"), hasShares(0.224522), //
+                        hasDate("2021-02-02T00:00"), hasShares(0.224522), //
                         hasSource("Umsatzabrechnung16.txt"), //
                         hasNote("Ref.-Nr.: 450061638/29012021"), //
                         hasAmount("EUR", 50.00), hasGrossValue("EUR", 50.00), //
@@ -1717,7 +1723,7 @@ public class EbasePDFExtractorTest
 
         // check 12th buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2021-02-02"), hasShares(1.175007), //
+                        hasDate("2021-02-02T00:00"), hasShares(1.175007), //
                         hasSource("Umsatzabrechnung16.txt"), //
                         hasNote("Ref.-Nr.: 450263877/29012021"), //
                         hasAmount("EUR", 100.00), hasGrossValue("EUR", 100.00), //
@@ -1726,7 +1732,7 @@ public class EbasePDFExtractorTest
 
         // check 13th buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2021-03-01"), hasShares(0.053239), //
+                        hasDate("2021-03-01T00:00"), hasShares(0.053239), //
                         hasSource("Umsatzabrechnung16.txt"), //
                         hasNote("Ref.-Nr.: 450083904/26022021"), //
                         hasAmount("EUR", 25.00), hasGrossValue("EUR", 25.00), //
@@ -1734,7 +1740,7 @@ public class EbasePDFExtractorTest
 
         // check 14th buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2021-03-01"), hasShares(0.520901), //
+                        hasDate("2021-03-01T00:00"), hasShares(0.520901), //
                         hasSource("Umsatzabrechnung16.txt"), //
                         hasNote("Ref.-Nr.: 450161611/26022021"), //
                         hasAmount("EUR", 25.00), hasGrossValue("EUR", 24.95), //
@@ -1742,7 +1748,7 @@ public class EbasePDFExtractorTest
 
         // check 15th buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2021-03-01"), hasShares(3.037206), //
+                        hasDate("2021-03-01T00:00"), hasShares(3.037206), //
                         hasSource("Umsatzabrechnung16.txt"), //
                         hasNote("Ref.-Nr.: 000/26022021 | vermögenswirksame Leistungen"), //
                         hasAmount("EUR", 40.00), hasGrossValue("EUR", 40.00), //
@@ -1750,7 +1756,7 @@ public class EbasePDFExtractorTest
 
         // check 16th buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2021-03-01"), hasShares(1.473622), //
+                        hasDate("2021-03-01T00:00"), hasShares(1.473622), //
                         hasSource("Umsatzabrechnung16.txt"), //
                         hasNote("Ref.-Nr.: 450089969/26022021"), //
                         hasAmount("EUR", 100.00), hasGrossValue("EUR", 100.00), //
@@ -1758,7 +1764,7 @@ public class EbasePDFExtractorTest
 
         // check 17th buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2021-03-02"), hasShares(0.137031), //
+                        hasDate("2021-03-02T00:00"), hasShares(0.137031), //
                         hasSource("Umsatzabrechnung16.txt"), //
                         hasNote("Ref.-Nr.: 450249782/26022021"), //
                         hasAmount("EUR", 100.00), hasGrossValue("EUR", 100.00), //
@@ -1766,7 +1772,7 @@ public class EbasePDFExtractorTest
 
         // check 18th buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2021-03-02"), hasShares(0.211233), //
+                        hasDate("2021-03-02T00:00"), hasShares(0.211233), //
                         hasSource("Umsatzabrechnung16.txt"), //
                         hasNote("Ref.-Nr.: 450061809/26022021"), //
                         hasAmount("EUR", 50.00), hasGrossValue("EUR", 50.00), //
@@ -1775,7 +1781,7 @@ public class EbasePDFExtractorTest
 
         // check 19th buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2021-03-02"), hasShares(1.117828), //
+                        hasDate("2021-03-02T00:00"), hasShares(1.117828), //
                         hasSource("Umsatzabrechnung16.txt"), //
                         hasNote("Ref.-Nr.: 450267643/26022021"), //
                         hasAmount("EUR", 100.00), hasGrossValue("EUR", 100.00), //
@@ -1784,7 +1790,7 @@ public class EbasePDFExtractorTest
 
         // check 20th buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2021-04-01"), hasShares(0.049875), //
+                        hasDate("2021-04-01T00:00"), hasShares(0.049875), //
                         hasSource("Umsatzabrechnung16.txt"), //
                         hasNote("Ref.-Nr.: 450085597/31032021"), //
                         hasAmount("EUR", 25.00), hasGrossValue("EUR", 25.00), //
@@ -1792,7 +1798,7 @@ public class EbasePDFExtractorTest
 
         // check 21th buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2021-04-01"), hasShares(0.488794), //
+                        hasDate("2021-04-01T00:00"), hasShares(0.488794), //
                         hasSource("Umsatzabrechnung16.txt"), //
                         hasNote("Ref.-Nr.: 450165636/31032021"), //
                         hasAmount("EUR", 25.00), hasGrossValue("EUR", 24.95), //
@@ -1800,7 +1806,7 @@ public class EbasePDFExtractorTest
 
         // check 22th buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2021-04-01"), hasShares(2.947679), //
+                        hasDate("2021-04-01T00:00"), hasShares(2.947679), //
                         hasSource("Umsatzabrechnung16.txt"), //
                         hasNote("Ref.-Nr.: 000/31032021 | vermögenswirksame Leistungen"), //
                         hasAmount("EUR", 40.00), hasGrossValue("EUR", 40.00), //
@@ -1809,7 +1815,7 @@ public class EbasePDFExtractorTest
         // check 1st taxes transaction
         assertThat(results, hasItem(taxes( //
                         hasDate("2021-01-22"), //
-                        hasShares(0), //
+                        hasShares(0.00), //
                         hasSource("Umsatzabrechnung16.txt"), //
                         hasNote("Ref.-Nr.: 000/22012021 | Vorabpauschale zum Stichtag 31.12.2020"), //
                         hasAmount("EUR", 0.94), hasGrossValue("EUR", 0.94), //
@@ -1818,7 +1824,7 @@ public class EbasePDFExtractorTest
         // check 2nd taxes transaction
         assertThat(results, hasItem(taxes( //
                         hasDate("2021-01-22"), //
-                        hasShares(0), //
+                        hasShares(0.00), //
                         hasSource("Umsatzabrechnung16.txt"), //
                         hasNote("Ref.-Nr.: 000/22012021 | Vorabpauschale zum Stichtag 31.12.2020"), //
                         hasAmount("EUR", 0.04), hasGrossValue("EUR", 0.04), //
@@ -1827,7 +1833,7 @@ public class EbasePDFExtractorTest
         // check 3rd taxes transaction
         assertThat(results, hasItem(taxes( //
                         hasDate("2021-01-22"), //
-                        hasShares(0), //
+                        hasShares(0.00), //
                         hasSource("Umsatzabrechnung16.txt"), //
                         hasNote("Ref.-Nr.: 000/22012021 | Vorabpauschale zum Stichtag 31.12.2020"), //
                         hasAmount("EUR", 0.07), hasGrossValue("EUR", 0.07), //
@@ -1836,7 +1842,7 @@ public class EbasePDFExtractorTest
         // check 4th taxes transaction
         assertThat(results, hasItem(taxes( //
                         hasDate("2021-01-22"), //
-                        hasShares(0), //
+                        hasShares(0.00), //
                         hasSource("Umsatzabrechnung16.txt"), //
                         hasNote("Ref.-Nr.: 000/22012021 | Vorabpauschale zum Stichtag 31.12.2020"), //
                         hasAmount("EUR", 0.03), hasGrossValue("EUR", 0.03), //
@@ -1845,7 +1851,7 @@ public class EbasePDFExtractorTest
         // check 5th taxes transaction
         assertThat(results, hasItem(taxes( //
                         hasDate("2021-01-22"), //
-                        hasShares(0), //
+                        hasShares(0.00), //
                         hasSource("Umsatzabrechnung16.txt"), //
                         hasNote("Ref.-Nr.: 000/22012021 | Vorabpauschale zum Stichtag 31.12.2020"), //
                         hasAmount("EUR", 0.01), hasGrossValue("EUR", 0.01), //
@@ -1951,7 +1957,7 @@ public class EbasePDFExtractorTest
 
         // check 1st buy sell transaction
         assertThat(results, hasItem(sale( //
-                        hasDate("2020-11-27"), hasShares(0.793716), //
+                        hasDate("2020-11-27T00:00"), hasShares(0.793716), //
                         hasSource("Umsatzabrechnung17.txt"), //
                         hasNote("Ref.-Nr.: 000/26112020"), //
                         hasAmount("EUR", 270.80), hasGrossValue("EUR", 272.72), //
@@ -1959,7 +1965,7 @@ public class EbasePDFExtractorTest
 
         // check 2nd buy sell transaction
         assertThat(results, hasItem(sale( //
-                        hasDate("2020-11-27"), hasShares(9.887676), //
+                        hasDate("2020-11-27T00:00"), hasShares(9.887676), //
                         hasSource("Umsatzabrechnung17.txt"), //
                         hasNote("Ref.-Nr.: 000/26112020"), //
                         hasAmount("EUR", 93.60), hasGrossValue("EUR", 93.63), //
@@ -1967,7 +1973,7 @@ public class EbasePDFExtractorTest
 
         // check 3rd buy sell transaction
         assertThat(results, hasItem(sale( //
-                        hasDate("2020-11-27"), hasShares(4.954360), //
+                        hasDate("2020-11-27T00:00"), hasShares(4.954360), //
                         hasSource("Umsatzabrechnung17.txt"), //
                         hasNote("Ref.-Nr.: 000/25112020"), //
                         hasAmount("EUR", 733.87), hasGrossValue("EUR", 754.74), //
@@ -1976,7 +1982,7 @@ public class EbasePDFExtractorTest
 
         // check 4th buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2020-12-01"), hasShares(0.033610), //
+                        hasDate("2020-12-01T00:00"), hasShares(0.033610), //
                         hasSource("Umsatzabrechnung17.txt"), //
                         hasNote("Ref.-Nr.: 000/30112020"), //
                         hasAmount("EUR", 15.00), hasGrossValue("EUR", 15.00), //
@@ -1984,7 +1990,7 @@ public class EbasePDFExtractorTest
 
         // check 5th buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2020-12-01"), hasShares(0.325715), //
+                        hasDate("2020-12-01T00:00"), hasShares(0.325715), //
                         hasSource("Umsatzabrechnung17.txt"), //
                         hasNote("Ref.-Nr.: 000/30112020"), //
                         hasAmount("EUR", 15.00), hasGrossValue("EUR", 14.97), //
@@ -1992,7 +1998,7 @@ public class EbasePDFExtractorTest
 
         // check 6th buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2020-12-01"), hasShares(3.202562), //
+                        hasDate("2020-12-01T00:00"), hasShares(3.202562), //
                         hasSource("Umsatzabrechnung17.txt"), //
                         hasNote("Ref.-Nr.: 000/30112020"), //
                         hasAmount("EUR", 40.00), hasGrossValue("EUR", 40.00), //
@@ -2000,7 +2006,7 @@ public class EbasePDFExtractorTest
 
         // check 7th buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2020-12-03"), hasShares(1.384890), //
+                        hasDate("2020-12-03T00:00"), hasShares(1.384890), //
                         hasSource("Umsatzabrechnung17.txt"), //
                         hasNote("Ref.-Nr.: 000/01122020 | Wiederanlage Fondsertrag"), //
                         hasAmount("GBP", 3.03), hasGrossValue("GBP", 3.03), //
@@ -2008,7 +2014,7 @@ public class EbasePDFExtractorTest
 
         // check 8th buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2020-12-01"), hasShares(0.414731), //
+                        hasDate("2020-12-01T00:00"), hasShares(0.414731), //
                         hasSource("Umsatzabrechnung17.txt"), //
                         hasNote("Ref.-Nr.: 000/30112020"), //
                         hasAmount("EUR", 25.00), hasGrossValue("EUR", 25.00), //
@@ -2016,7 +2022,7 @@ public class EbasePDFExtractorTest
 
         // check 9th buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2020-12-02"), hasShares(0.038637), //
+                        hasDate("2020-12-02T00:00"), hasShares(0.038637), //
                         hasSource("Umsatzabrechnung17.txt"), //
                         hasNote("Ref.-Nr.: 000/30112020"), //
                         hasAmount("EUR", 25.00), hasGrossValue("EUR", 25.00), //
@@ -2024,7 +2030,7 @@ public class EbasePDFExtractorTest
 
         // check 10th buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2020-12-02"), hasShares(0.373877), //
+                        hasDate("2020-12-02T00:00"), hasShares(0.373877), //
                         hasSource("Umsatzabrechnung17.txt"), //
                         hasNote("Ref.-Nr.: 000/30112020"), //
                         hasAmount("EUR", 40.00), hasGrossValue("EUR", 40.00), //
@@ -2033,7 +2039,7 @@ public class EbasePDFExtractorTest
 
         // check 11th buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2020-12-02"), hasShares(0.137606), //
+                        hasDate("2020-12-02T00:00"), hasShares(0.137606), //
                         hasSource("Umsatzabrechnung17.txt"), //
                         hasNote("Ref.-Nr.: 000/30112020 | vermögenswirksame Leistungen"), //
                         hasAmount("EUR", 15.00), hasGrossValue("EUR", 14.97), //
@@ -2058,7 +2064,7 @@ public class EbasePDFExtractorTest
         assertThat(results, hasItem(skippedItem( //
                         Messages.MsgErrorTransactionSkipIfDetailsMissing, //
                         purchase( //
-                                        hasDate("2020-12-01"), hasShares(300.991871), //
+                                        hasDate("2020-12-01T00:00"), hasShares(300.991871), //
                                         hasSource("Umsatzabrechnung17.txt"), //
                                         hasNote("Ref.-Nr.: 000/01122020"), //
                                         hasAmount("GBP", 3.03), hasGrossValue("GBP", 2.18), //
@@ -2150,7 +2156,7 @@ public class EbasePDFExtractorTest
 
         // check 1st buy sell transaction
         assertThat(results, hasItem(sale( //
-                        hasDate("2020-11-27"), hasShares(0.793716), //
+                        hasDate("2020-11-27T00:00"), hasShares(0.793716), //
                         hasSource("Umsatzabrechnung17.txt"), //
                         hasNote("Ref.-Nr.: 000/26112020"), //
                         hasAmount("EUR", 270.80), hasGrossValue("EUR", 272.72), //
@@ -2158,7 +2164,7 @@ public class EbasePDFExtractorTest
 
         // check 2nd buy sell transaction
         assertThat(results, hasItem(sale( //
-                        hasDate("2020-11-27"), hasShares(9.887676), //
+                        hasDate("2020-11-27T00:00"), hasShares(9.887676), //
                         hasSource("Umsatzabrechnung17.txt"), //
                         hasNote("Ref.-Nr.: 000/26112020"), //
                         hasAmount("EUR", 93.60), hasGrossValue("EUR", 93.63), //
@@ -2166,7 +2172,7 @@ public class EbasePDFExtractorTest
 
         // check 3rd buy sell transaction
         assertThat(results, hasItem(sale( //
-                        hasDate("2020-11-27"), hasShares(4.954360), //
+                        hasDate("2020-11-27T00:00"), hasShares(4.954360), //
                         hasSource("Umsatzabrechnung17.txt"), //
                         hasNote("Ref.-Nr.: 000/25112020"), //
                         hasAmount("EUR", 733.87), hasGrossValue("EUR", 754.74), //
@@ -2174,7 +2180,7 @@ public class EbasePDFExtractorTest
 
         // check 4th buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2020-12-01"), hasShares(0.033610), //
+                        hasDate("2020-12-01T00:00"), hasShares(0.033610), //
                         hasSource("Umsatzabrechnung17.txt"), //
                         hasNote("Ref.-Nr.: 000/30112020"), //
                         hasAmount("EUR", 15.00), hasGrossValue("EUR", 15.00), //
@@ -2182,7 +2188,7 @@ public class EbasePDFExtractorTest
 
         // check 5th buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2020-12-01"), hasShares(0.325715), //
+                        hasDate("2020-12-01T00:00"), hasShares(0.325715), //
                         hasSource("Umsatzabrechnung17.txt"), //
                         hasNote("Ref.-Nr.: 000/30112020"), //
                         hasAmount("EUR", 15.00), hasGrossValue("EUR", 14.97), //
@@ -2190,7 +2196,7 @@ public class EbasePDFExtractorTest
 
         // check 6th buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2020-12-01"), hasShares(3.202562), //
+                        hasDate("2020-12-01T00:00"), hasShares(3.202562), //
                         hasSource("Umsatzabrechnung17.txt"), //
                         hasNote("Ref.-Nr.: 000/30112020"), //
                         hasAmount("EUR", 40.00), hasGrossValue("EUR", 40.00), //
@@ -2198,7 +2204,7 @@ public class EbasePDFExtractorTest
 
         // check 7th buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2020-12-03"), hasShares(1.384890), //
+                        hasDate("2020-12-03T00:00"), hasShares(1.384890), //
                         hasSource("Umsatzabrechnung17.txt"), //
                         hasNote("Ref.-Nr.: 000/01122020 | Wiederanlage Fondsertrag"), //
                         hasAmount("GBP", 3.03), hasGrossValue("GBP", 3.03), //
@@ -2206,7 +2212,7 @@ public class EbasePDFExtractorTest
 
         // check 8th buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2020-12-01"), hasShares(0.414731), //
+                        hasDate("2020-12-01T00:00"), hasShares(0.414731), //
                         hasSource("Umsatzabrechnung17.txt"), //
                         hasNote("Ref.-Nr.: 000/30112020"), //
                         hasAmount("EUR", 25.00), hasGrossValue("EUR", 25.00), //
@@ -2214,7 +2220,7 @@ public class EbasePDFExtractorTest
 
         // check 9th buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2020-12-02"), hasShares(0.038637), //
+                        hasDate("2020-12-02T00:00"), hasShares(0.038637), //
                         hasSource("Umsatzabrechnung17.txt"), //
                         hasNote("Ref.-Nr.: 000/30112020"), //
                         hasAmount("EUR", 25.00), hasGrossValue("EUR", 25.00), //
@@ -2222,7 +2228,7 @@ public class EbasePDFExtractorTest
 
         // check 10th buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2020-12-02"), hasShares(0.373877), //
+                        hasDate("2020-12-02T00:00"), hasShares(0.373877), //
                         hasSource("Umsatzabrechnung17.txt"), //
                         hasNote("Ref.-Nr.: 000/30112020"), //
                         hasAmount("EUR", 40.00), hasGrossValue("EUR", 40.00), //
@@ -2230,7 +2236,7 @@ public class EbasePDFExtractorTest
 
         // check 11th buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2020-12-02"), hasShares(0.137606), //
+                        hasDate("2020-12-02T00:00"), hasShares(0.137606), //
                         hasSource("Umsatzabrechnung17.txt"), //
                         hasNote("Ref.-Nr.: 000/30112020 | vermögenswirksame Leistungen"), //
                         hasAmount("EUR", 15.00), hasGrossValue("EUR", 14.97), //
@@ -2255,7 +2261,7 @@ public class EbasePDFExtractorTest
         assertThat(results, hasItem(skippedItem( //
                         Messages.MsgErrorTransactionSkipIfDetailsMissing, //
                         purchase( //
-                                        hasDate("2020-12-01"), hasShares(300.991871), //
+                                        hasDate("2020-12-01T00:00"), hasShares(300.991871), //
                                         hasSource("Umsatzabrechnung17.txt"), //
                                         hasNote("Ref.-Nr.: 000/01122020"), //
                                         hasAmount("GBP", 3.03), hasGrossValue("GBP", 2.18), //
@@ -2289,7 +2295,7 @@ public class EbasePDFExtractorTest
 
         // check 1st buy sell transaction
         assertThat(results, hasItem(sale( //
-                        hasDate("2021-10-15"), hasShares(20.422296), //
+                        hasDate("2021-10-15T00:00"), hasShares(20.422296), //
                         hasSource("Umsatzabrechnung18.txt"), //
                         hasNote("Ref.-Nr.: 400065846/13102021"), //
                         hasAmount("EUR", 5000.00), hasGrossValue("EUR", 5178.07), //
@@ -2329,7 +2335,7 @@ public class EbasePDFExtractorTest
 
         // check 1st buy sell transaction
         assertThat(results, hasItem(sale( //
-                        hasDate("2020-12-28"), hasShares(7.101511), //
+                        hasDate("2020-12-28T00:00"), hasShares(7.101511), //
                         hasSource("Umsatzabrechnung19.txt"), //
                         hasNote("Ref.-Nr.: 000/21122020"), //
                         hasAmount("EUR", 1191.18), hasGrossValue("EUR", 1272.87), //
@@ -2337,7 +2343,7 @@ public class EbasePDFExtractorTest
 
         // check 2nd buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2020-12-28"), hasShares(18.568667), //
+                        hasDate("2020-12-28T00:00"), hasShares(18.568667), //
                         hasSource("Umsatzabrechnung19.txt"), //
                         hasNote("Ref.-Nr.: 000/21122020"), //
                         hasAmount("EUR", 1191.18), hasGrossValue("EUR", 1191.18), //
@@ -2371,7 +2377,7 @@ public class EbasePDFExtractorTest
 
         // check 1st buy sell transaction
         assertThat(results, hasItem(sale( //
-                        hasDate("2021-07-05"), hasShares(0.095371), //
+                        hasDate("2021-07-05T00:00"), hasShares(0.095371), //
                         hasSource("Umsatzabrechnung20.txt"), //
                         hasNote("Ref.-Nr.: 400357714/02072021 | Entgeltbelastung Verkauf"), //
                         hasAmount("EUR", 3.00), hasGrossValue("EUR", 3.07), //
@@ -2414,7 +2420,7 @@ public class EbasePDFExtractorTest
 
         // check 1st buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2016-01-18"), hasShares(0.082378), //
+                        hasDate("2016-01-18T00:00"), hasShares(0.082378), //
                         hasSource("Umsatzabrechnung21.txt"), //
                         hasNote("Wiederanlage Ertragsausschüttung"), //
                         hasAmount("EUR", 1.94), hasGrossValue("EUR", 1.94), //
@@ -2472,7 +2478,7 @@ public class EbasePDFExtractorTest
 
         // check 1st buy sell transaction
         assertThat(results, hasItem(sale( //
-                        hasDate("2018-10-30"), hasShares(1.502194), //
+                        hasDate("2018-10-30T00:00"), hasShares(1.502194), //
                         hasSource("Umsatzabrechnung22.txt"), //
                         hasNote("Ref.-Nr.: 400006077/25102018"), //
                         hasAmount("EUR", 140.07), hasGrossValue("EUR", 141.19), //
@@ -2481,7 +2487,7 @@ public class EbasePDFExtractorTest
 
         // check 2nd buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2018-10-30"), hasShares(3.760425), //
+                        hasDate("2018-10-30T00:00"), hasShares(3.760425), //
                         hasSource("Umsatzabrechnung22.txt"), //
                         hasNote("Ref.-Nr.: 400006077/25102018"), //
                         hasAmount("EUR", 140.07), hasGrossValue("EUR", 139.60), //
@@ -2490,7 +2496,7 @@ public class EbasePDFExtractorTest
 
         // check 3rd buy sell transaction
         assertThat(results, hasItem(sale( //
-                        hasDate("2018-10-30"), hasShares(0.428056), //
+                        hasDate("2018-10-30T00:00"), hasShares(0.428056), //
                         hasSource("Umsatzabrechnung22.txt"), //
                         hasNote("Ref.-Nr.: 400006079/25102018"), //
                         hasAmount("EUR", 85.61), hasGrossValue("EUR", 85.83), //
@@ -2498,7 +2504,7 @@ public class EbasePDFExtractorTest
 
         // check 4th buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2018-10-30"), hasShares(2.298277), //
+                        hasDate("2018-10-30T00:00"), hasShares(2.298277), //
                         hasSource("Umsatzabrechnung22.txt"), //
                         hasNote("Ref.-Nr.: 400006079/25102018"), //
                         hasAmount("EUR", 85.61), hasGrossValue("EUR", 85.32), //
@@ -2507,7 +2513,7 @@ public class EbasePDFExtractorTest
 
         // check 5th buy sell transaction
         assertThat(results, hasItem(sale( //
-                        hasDate("2018-10-30"), hasShares(5.883736), //
+                        hasDate("2018-10-30T00:00"), hasShares(5.883736), //
                         hasSource("Umsatzabrechnung22.txt"), //
                         hasNote("Ref.-Nr.: 400006076/25102018"), //
                         hasAmount("EUR", 135.44), hasGrossValue("EUR", 136.40), //
@@ -2516,7 +2522,7 @@ public class EbasePDFExtractorTest
 
         // check 6th buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2018-10-30"), hasShares(3.635976), //
+                        hasDate("2018-10-30T00:00"), hasShares(3.635976), //
                         hasSource("Umsatzabrechnung22.txt"), //
                         hasNote("Ref.-Nr.: 400006076/25102018"), //
                         hasAmount("EUR", 135.44), hasGrossValue("EUR", 134.98), //
@@ -2525,7 +2531,7 @@ public class EbasePDFExtractorTest
 
         // check 7th buy sell transaction
         assertThat(results, hasItem(sale( //
-                        hasDate("2018-10-30"), hasShares(0.579236), //
+                        hasDate("2018-10-30T00:00"), hasShares(0.579236), //
                         hasSource("Umsatzabrechnung22.txt"), //
                         hasNote("Ref.-Nr.: 400006080/25102018"), //
                         hasAmount("EUR", 55.58), hasGrossValue("EUR", 55.73), //
@@ -2533,7 +2539,7 @@ public class EbasePDFExtractorTest
 
         // check 8th buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2018-10-30"), hasShares(1.492048), //
+                        hasDate("2018-10-30T00:00"), hasShares(1.492048), //
                         hasSource("Umsatzabrechnung22.txt"), //
                         hasNote("Ref.-Nr.: 400006080/25102018"), //
                         hasAmount("EUR", 55.58), hasGrossValue("EUR", 55.39), //
@@ -2588,57 +2594,65 @@ public class EbasePDFExtractorTest
 
         // check 1st buy sell transaction
         assertThat(results, hasItem(sale( //
-                        hasDate("2018-10-30"), hasShares(1.502194), //
-                        hasSource("Umsatzabrechnung22.txt"), hasNote("Ref.-Nr.: 400006077/25102018"), //
+                        hasDate("2018-10-30T00:00"), hasShares(1.502194), //
+                        hasSource("Umsatzabrechnung22.txt"), //
+                        hasNote("Ref.-Nr.: 400006077/25102018"), //
                         hasAmount("EUR", 140.07), hasGrossValue("EUR", 141.19), //
                         hasTaxes("EUR", 0.63 + 0.03 + 0.05), hasFees("EUR", 0.13 + 0.28))));
 
         // check 2nd buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2018-10-30"), hasShares(3.760425), //
-                        hasSource("Umsatzabrechnung22.txt"), hasNote("Ref.-Nr.: 400006077/25102018"), //
+                        hasDate("2018-10-30T00:00"), hasShares(3.760425), //
+                        hasSource("Umsatzabrechnung22.txt"), //
+                        hasNote("Ref.-Nr.: 400006077/25102018"), //
                         hasAmount("EUR", 140.07), hasGrossValue("EUR", 139.60), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.20 + 0.27))));
 
         // check 3rd buy sell transaction
         assertThat(results, hasItem(sale( //
-                        hasDate("2018-10-30"), hasShares(0.428056), //
-                        hasSource("Umsatzabrechnung22.txt"), hasNote("Ref.-Nr.: 400006079/25102018"), //
+                        hasDate("2018-10-30T00:00"), hasShares(0.428056), //
+                        hasSource("Umsatzabrechnung22.txt"), //
+                        hasNote("Ref.-Nr.: 400006079/25102018"), //
                         hasAmount("EUR", 85.61), hasGrossValue("EUR", 85.83), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.05 + 0.17))));
 
         // check 4th buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2018-10-30"), hasShares(2.298277), //
-                        hasSource("Umsatzabrechnung22.txt"), hasNote("Ref.-Nr.: 400006079/25102018"), //
+                        hasDate("2018-10-30T00:00"), hasShares(2.298277), //
+                        hasSource("Umsatzabrechnung22.txt"), //
+                        hasNote("Ref.-Nr.: 400006079/25102018"), //
                         hasAmount("EUR", 85.61), hasGrossValue("EUR", 85.32), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.12 + 0.17))));
 
         // check 5th buy sell transaction
         assertThat(results, hasItem(sale( //
-                        hasDate("2018-10-30"), hasShares(5.883736), //
-                        hasSource("Umsatzabrechnung22.txt"), hasNote("Ref.-Nr.: 400006076/25102018"), //
+                        hasDate("2018-10-30T00:00"), hasShares(5.883736), //
+                        hasSource("Umsatzabrechnung22.txt"), //
+                        hasNote("Ref.-Nr.: 400006076/25102018"), //
                         hasAmount("EUR", 135.44), hasGrossValue("EUR", 136.40), //
                         hasTaxes("EUR", 0.51 + 0.03 + 0.04), hasFees("EUR", 0.11 + 0.27))));
 
         // check 6th buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2018-10-30"), hasShares(3.635976), //
-                        hasSource("Umsatzabrechnung22.txt"), hasNote("Ref.-Nr.: 400006076/25102018"), //
+                        hasDate("2018-10-30T00:00"), hasShares(3.635976), //
+                        hasSource("Umsatzabrechnung22.txt"), //
+                        hasNote("Ref.-Nr.: 400006076/25102018"), //
                         hasAmount("EUR", 135.44), hasGrossValue("EUR", 134.98), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.19 + 0.27))));
 
         // check 7th buy sell transaction
         assertThat(results, hasItem(sale( //
-                        hasDate("2018-10-30"), hasShares(0.579236), //
-                        hasSource("Umsatzabrechnung22.txt"), hasNote("Ref.-Nr.: 400006080/25102018"), //
+                        hasDate("2018-10-30T00:00"), hasShares(0.579236), //
+                        hasSource("Umsatzabrechnung22.txt"), //
+                        hasNote("Ref.-Nr.: 400006080/25102018"), //
                         hasAmount("EUR", 55.58), hasGrossValue("EUR", 55.73), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.04 + 0.11))));
 
         // check 8th buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2018-10-30"), hasShares(1.492048), //
-                        hasSource("Umsatzabrechnung22.txt"), hasNote("Ref.-Nr.: 400006080/25102018"), //
+                        hasDate("2018-10-30T00:00"), hasShares(1.492048), //
+                        hasSource("Umsatzabrechnung22.txt"), //
+                        hasNote("Ref.-Nr.: 400006080/25102018"), //
                         hasAmount("EUR", 55.58), hasGrossValue("EUR", 55.39), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.08 + 0.11))));
     }
@@ -2670,7 +2684,7 @@ public class EbasePDFExtractorTest
 
         // check 1st buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2021-08-03"), hasShares(2.276295), //
+                        hasDate("2021-08-03T00:00"), hasShares(2.276295), //
                         hasSource("Umsatzabrechnung23.txt"), //
                         hasNote("Ref.-Nr.: XXX/XXX"), //
                         hasAmount("EUR", 219.00), hasGrossValue("EUR", 218.56), //
@@ -2679,7 +2693,7 @@ public class EbasePDFExtractorTest
 
         // check 2nd buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2021-08-09"), hasShares(1.025198), //
+                        hasDate("2021-08-09T00:00"), hasShares(1.025198), //
                         hasSource("Umsatzabrechnung23.txt"), //
                         hasNote("Ref.-Nr.: XXX/XXX"), //
                         hasAmount("EUR", 100.00), hasGrossValue("EUR", 99.80), //
@@ -2688,7 +2702,7 @@ public class EbasePDFExtractorTest
 
         // check 3rd buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2021-09-02"), hasShares(2.222628), //
+                        hasDate("2021-09-02T00:00"), hasShares(2.222628), //
                         hasSource("Umsatzabrechnung23.txt"), //
                         hasNote("Ref.-Nr.: XXXX/XXXX"), //
                         hasAmount("EUR", 219.00), hasGrossValue("EUR", 218.56), //
@@ -2723,22 +2737,25 @@ public class EbasePDFExtractorTest
 
         // check 1st buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2021-08-03"), hasShares(2.276295), //
-                        hasSource("Umsatzabrechnung23.txt"), hasNote("Ref.-Nr.: XXX/XXX"), //
+                        hasDate("2021-08-03T00:00"), hasShares(2.276295), //
+                        hasSource("Umsatzabrechnung23.txt"), //
+                        hasNote("Ref.-Nr.: XXX/XXX"), //
                         hasAmount("EUR", 219.00), hasGrossValue("EUR", 218.56), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.44))));
 
         // check 2nd buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2021-08-09"), hasShares(1.025198), //
-                        hasSource("Umsatzabrechnung23.txt"), hasNote("Ref.-Nr.: XXX/XXX"), //
+                        hasDate("2021-08-09T00:00"), hasShares(1.025198), //
+                        hasSource("Umsatzabrechnung23.txt"), //
+                        hasNote("Ref.-Nr.: XXX/XXX"), //
                         hasAmount("EUR", 100.00), hasGrossValue("EUR", 99.80), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.20))));
 
         // check 3rd buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2021-09-02"), hasShares(2.222628), //
-                        hasSource("Umsatzabrechnung23.txt"), hasNote("Ref.-Nr.: XXXX/XXXX"), //
+                        hasDate("2021-09-02T00:00"), hasShares(2.222628), //
+                        hasSource("Umsatzabrechnung23.txt"), //
+                        hasNote("Ref.-Nr.: XXXX/XXXX"), //
                         hasAmount("EUR", 219.00), hasGrossValue("EUR", 218.56), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.44))));
     }
@@ -2782,7 +2799,7 @@ public class EbasePDFExtractorTest
         assertThat(results, hasItem(skippedItem( //
                         Messages.MsgErrorTransactionSkipIfDetailsMissing, //
                         purchase( //
-                                        hasDate("2022-06-17"), hasShares(27.70736), //
+                                        hasDate("2022-06-17T00:00"), hasShares(27.70736), //
                                         hasSource("Umsatzabrechnung24.txt"), //
                                         hasNote("Ref.-Nr.: xxxx/xxxx"), //
                                         hasAmount("EUR", 4.37), hasGrossValue("EUR", 3.39), //
@@ -2827,7 +2844,7 @@ public class EbasePDFExtractorTest
         assertThat(results, hasItem(skippedItem( //
                         Messages.MsgErrorTransactionSkipIfDetailsMissing, //
                         purchase( //
-                                        hasDate("2022-06-17"), hasShares(27.70736), //
+                                        hasDate("2022-06-17T00:00"), hasShares(27.70736), //
                                         hasSource("Umsatzabrechnung24.txt"), //
                                         hasNote("Ref.-Nr.: xxxx/xxxx"), //
                                         hasAmount("EUR", 4.37), hasGrossValue("EUR", 3.39), //
@@ -2861,7 +2878,7 @@ public class EbasePDFExtractorTest
 
         // check buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2022-06-20"), hasShares(0.041696), //
+                        hasDate("2022-06-20T00:00"), hasShares(0.041696), //
                         hasSource("Umsatzabrechnung25.txt"), //
                         hasNote("Ref.-Nr.: xxxx/xxxx | Wiederanlage Fondsertrag"), //
                         hasAmount("EUR", 4.37), hasGrossValue("EUR", 4.37), //
@@ -3209,7 +3226,7 @@ public class EbasePDFExtractorTest
         assertThat(results, hasItem(skippedItem( //
                         Messages.MsgErrorTransactionSkipIfDetailsMissing, //
                         purchase( //
-                                        hasDate("2023-12-15"), hasShares(39.682032), //
+                                        hasDate("2023-12-15T00:00"), hasShares(39.682032), //
                                         hasSource("Umsatzabrechnung29.txt"), //
                                         hasNote("Ref.-Nr.: 0400059203/15122023"), //
                                         hasAmount("EUR", 48.77), hasGrossValue("EUR", 36.83), //
@@ -3284,7 +3301,7 @@ public class EbasePDFExtractorTest
         assertThat(results, hasItem(skippedItem( //
                         Messages.MsgErrorTransactionSkipIfDetailsMissing, //
                         purchase( //
-                                        hasDate("2023-09-22"), hasShares(54.479737), //
+                                        hasDate("2023-09-22T00:00"), hasShares(54.479737), //
                                         hasSource("Umsatzabrechnung30.txt"), //
                                         hasNote("Ref.-Nr.: 2210868091/45619741"), //
                                         hasAmount("USD", 17.05), hasGrossValue("USD", 13.67), //
@@ -3294,7 +3311,7 @@ public class EbasePDFExtractorTest
         assertThat(results, hasItem(skippedItem( //
                         Messages.MsgErrorTransactionSkipIfDetailsMissing, //
                         purchase( //
-                                        hasDate("2023-09-22"), hasShares(38.873327), //
+                                        hasDate("2023-09-22T00:00"), hasShares(38.873327), //
                                         hasSource("Umsatzabrechnung30.txt"), //
                                         hasNote("Ref.-Nr.: 0400008188/22092023"), //
                                         hasAmount("EUR", 4.96), hasGrossValue("EUR", 3.84), //
@@ -3402,7 +3419,7 @@ public class EbasePDFExtractorTest
 
         // check delivery outbound transaction
         assertThat(results, hasItem(outboundDelivery( //
-                        hasDate("2021-06-18T00:00"), hasShares(266), //
+                        hasDate("2021-06-18T00:00"), hasShares(266.00), //
                         hasSource("Umsatzabrechnung32.txt"), //
                         hasNote("Ref.-Nr.: 708/17062021"), //
                         hasAmount("EUR", 3736.08), hasGrossValue("EUR", 3736.08), //
@@ -3411,7 +3428,7 @@ public class EbasePDFExtractorTest
         // check delivery outbound transaction
         assertThat(results, hasItem(fee( //
                         hasDate("2021-06-16T00:00"), //
-                        hasShares(266), //
+                        hasShares(266.00), //
                         hasSource("Umsatzabrechnung32.txt"), //
                         hasNote("Ref.-Nr.: 708/17062021 | Depotführungsentgelt | VL-Vertragsentgelt"), //
                         hasAmount("EUR", 12.00 + 7.50), hasGrossValue("EUR", 12.00 + 7.50), //
@@ -3692,7 +3709,7 @@ public class EbasePDFExtractorTest
         // check transaction
         assertThat(results, hasItem(taxes( //
                         hasDate("2025-01-24"), //
-                        hasShares(0), //
+                        hasShares(0.00), //
                         hasSource("Umsatzabrechnung35.txt"), //
                         hasNote("Ref.-Nr.: 0400041153/24012025 | Vorabpauschale zum Stichtag 31.12.2024"), //
                         hasAmount("EUR", 1.18), hasGrossValue("EUR", 1.18), //
