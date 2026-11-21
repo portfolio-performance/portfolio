@@ -1,0 +1,24 @@
+PDFBox Version: 3.0.8
+Portfolio Performance Version: 0.89.0
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+OPERATION SUR OPC(*) ETRANGER
+(*) (Organisme de Placement Collectif)
+le 14/05/2021
+208152
+P1642
+MR nkTdifO MpLPag
+vqsRH 13
+52 eopKjL DE LA TpXZkZa
+56665 dPYDOUCVB
+Références de votre compte titres
+00787 54265 46749811310 Résident Français
+SOUSCRIPTION SICAV
+Date Quantité Informations sur la valeur Informations sur l'exécution
+10/05/2021 200,00 BRGF WLD TECHNO.A2 USD C.2DEC Référence : 042136509589
+Code ISIN : LU0056508442 Valeur liquidative : 74,5100 USD
+Montant brut Droits d'entrée Montant net en devises Montant net au débit de votre compte
+14 902,00 USD 0,00 USD 14 902,00 USD 12 306,33 EUR
+ACHAT DEVISES AU COMPTANT. COURS DE CHANGE DU 14/05/2021 : 1 EUR = 1,210922000 USD
+AA1
+208152 F1642 P1642 1/1
