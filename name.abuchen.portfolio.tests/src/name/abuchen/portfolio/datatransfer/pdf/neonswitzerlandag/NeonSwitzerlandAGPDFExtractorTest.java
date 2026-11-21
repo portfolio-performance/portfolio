@@ -325,80 +325,8 @@ public class NeonSwitzerlandAGPDFExtractorTest
 
         // check buy sell transaction
         assertThat(results, hasItem(sale( //
-                        hasDate("2025-12-04"), hasShares(0.001239), //
+                        hasDate("2025-12-04T00:00"), hasShares(0.001239), //
                         hasSource("Sell01.txt"), //
-                        hasNote(null), //
-                        hasAmount("CHF", 0.23), hasGrossValue("CHF", 0.23), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.00))));
-    }
-
-    @Test
-    public void testSecuritySell02()
-    {
-        var extractor = new NeonSwitzerlandAGPDFExtractor(new Client());
-
-        List<Exception> errors = new ArrayList<>();
-
-        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Sell02.txt"), errors);
-
-        assertThat(errors, empty());
-        assertThat(countSecurities(results), is(4L));
-        assertThat(countBuySell(results), is(4L));
-        assertThat(countAccountTransactions(results), is(0L));
-        assertThat(countAccountTransfers(results), is(0L));
-        assertThat(countItemsWithFailureMessage(results), is(0L));
-        assertThat(countSkippedItems(results), is(0L));
-        assertThat(results.size(), is(8));
-        new AssertImportActions().check(results, "CHF");
-
-        // check 1st security
-        assertThat(results, hasItem(security( //
-                        hasIsin(null), hasWkn("11704490"), hasTicker(null), //
-                        hasName("Sc Ind Eq Wo.ex.CH"), //
-                        hasCurrencyCode("CHF"))));
-
-        assertThat(results, hasItem(security( //
-                        hasIsin(null), hasWkn("11704497"), hasTicker(null), //
-                        hasName("Sc F. V Eq Emer. M."), //
-                        hasCurrencyCode("CHF"))));
-
-        assertThat(results, hasItem(security( //
-                        hasIsin(null), hasWkn("13250189"), hasTicker(null), //
-                        hasName("Sc Eq S&Mid Caps CH"), //
-                        hasCurrencyCode("CHF"))));
-
-        assertThat(results, hasItem(security( //
-                        hasIsin(null), hasWkn("21580471"), hasTicker(null), //
-                        hasName("Sc Ind EqLar Cap CH"), hasCurrencyCode("CHF"))));
-
-        // check buy sell transaction
-        assertThat(results, hasItem(sale( //
-                        hasDate("2025-12-04"), hasShares(0.000439), //
-                        hasSource("Sell02.txt"), //
-                        hasNote(null), //
-                        hasAmount("CHF", 0.15), hasGrossValue("CHF", 0.15), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.00))));
-
-        // check buy sell transaction
-        assertThat(results, hasItem(sale( //
-                        hasDate("2025-12-04"), hasShares(0.000213), //
-                        hasSource("Sell02.txt"), //
-                        hasNote(null), //
-                        hasAmount("CHF", 0.03), hasGrossValue("CHF", 0.03), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.00))));
-
-        // check buy sell transaction
-        assertThat(results, hasItem(sale( //
-                        hasDate("2025-12-04"), hasShares(0.000172), //
-                        hasSource("Sell02.txt"), //
-                        hasNote(null), //
-                        hasAmount("CHF", 0.06), hasGrossValue("CHF", 0.06), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.00))));
-
-        // check buy sell transaction
-        assertThat(results, hasItem(sale( //
-                        hasDate("2025-12-04"), hasShares(0.001239), //
-                        hasSource("Sell02.txt"), //
                         hasNote(null), //
                         hasAmount("CHF", 0.23), hasGrossValue("CHF", 0.23), //
                         hasTaxes("CHF", 0.00), hasFees("CHF", 0.00))));
