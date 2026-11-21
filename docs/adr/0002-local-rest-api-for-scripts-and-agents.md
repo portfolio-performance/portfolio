@@ -46,10 +46,12 @@ becomes a later thin adapter over the same service layer. The individual decisio
   edits: mutate the `Client`, mark it dirty, let the UI refresh live. Only the user saves. An agent's
   changes can be reviewed and discarded by closing without saving.
 - **Reads and writes that directly inspect or mutate model entities are marshalled to the UI thread**
-  (`Display.syncExec`): one mutator thread, the same guarantee UI code relies on, rather than
-  retrofitting locking onto the model. Calculation endpoints are the deliberate exception: they
-  resolve the open file and capture the per-file calculation context on the UI thread, then run the
-  expensive snapshot calculation on the HTTP worker thread. The calculation is read-only, and the
+  (`Display.asyncExec`, the caller waits on a future): one mutator thread, the same guarantee UI code
+  relies on, rather than retrofitting locking onto the model. Not `syncExec`: SWT waits there in
+  `synchronized`/`Object.wait()`, which on Java 21 pins a virtual thread and costs an OS thread for as
+  long as the wait lasts, also after the API gave up on it. Calculation endpoints are the deliberate
+  exception: they resolve the open file and capture the per-file calculation context on the UI
+  thread, then run the expensive snapshot calculation on a pool of platform threads of its own. The calculation is read-only, and the
   accepted tradeoff is that a concurrent UI edit can rarely produce a transiently inconsistent
   response or internal error; clients can retry, while the UI must not freeze behind a long-running
   valuation.
@@ -57,6 +59,35 @@ becomes a later thin adapter over the same service layer. The individual decisio
   dialogs such as `EditSecurityDialog` hold a stale copy of the entity that is written back wholesale
   on OK, and `syncExec` runnables *do* execute during a modal event loop — so an API write landing
   mid-dialog would be silently clobbered. Reads stay allowed.
+- **The wait for the UI thread is bounded, and the two outcomes are told apart** (503 `ui-busy` vs.
+  503 `ui-request-underway`). Parking the worker on a busy UI thread makes the API look dead, so the
+  wait has a deadline (10 s). Whether the request ran is decided on the UI thread itself by one
+  compare-and-set against the waiting caller: a request the UI thread had *not started* when the
+  deadline passed is refused, will never run, and is safe to retry (`Retry-After`); a request that
+  was *already running* will complete, so that one carries no `Retry-After` and must not be resent,
+  because a second write would apply the same change twice. A read is the exception: it changes
+  nothing, so even one that had started is refused as retryable.
+- **Calculations and the connection have deadlines of their own.** A calculation that does not
+  finish within 120 s is answered with 503 `calculation-timeout` instead of a dropped connection.
+  Receiving a request and sending its response are each bounded by a 30 s watchdog against clients
+  that stall; the request head, which the JDK reads before any of this code runs, by its own
+  `sun.net.httpserver.maxReqTime` of 60 s, set before the first server of the process starts. At most three requests per calculation slot plus six are served at
+  once (12 by default), and one over the bound is refused (503 `server-busy`) without its body being
+  kept, so no local process can make the application buffer an arbitrary number of request bodies;
+  at most 16 such refusals run at once, and a connection beyond them is closed unanswered.
+  Every body is read - or read past - before any answer goes out: the JDK drains an unread body only
+  after the response headers, where the watchdog can no longer close a connection that stalls. A
+  body that does not end within 1 MiB past the limit is not read further: that connection is closed
+  without an answer, as a 413 written over unread bytes may be lost to a TCP reset anyway.
+  The engines never check for an interrupt, so a calculation past its deadline runs on; it keeps its
+  calculation slot until it really ends. A calculation that finds every slot taken waits for one,
+  first come first served, rather than being refused at once — a model sends several tool calls in
+  one turn, and refusing one of them only makes it ask again — but the wait is bounded in time (30 s)
+  and in size (two per slot), so it cannot pile up; past either bound it is refused (503
+  `server-busy`). Two slots by default; the system property
+  `name.abuchen.portfolio.rest.calculationSlots` allows 1 to 8, at most the processors less one,
+  and never below 1.
+  Deliberately no preference: every slot is a whole file's daily valuation in memory.
 - **The API vocabulary is deliberately more general than the model** (`Security` → *instrument*,
   `Portfolio` → *investment account*), because the contract cannot be renamed once clients exist.
   Java class names keep the model's vocabulary; the mapping and its rationale are in the README.
@@ -89,8 +120,9 @@ becomes a later thin adapter over the same service layer. The individual decisio
   compatibility burden.
 - *OAuth device-code flow for pairing*: rejected as the wrong weight for a loopback-only,
   single-user application; a poll-based request/approve resource achieves the same UX.
-- *Long-polling the pairing status*: rejected; the server runs a deliberately tiny thread pool and
-  one parked pairing request would consume half of it. Short polling every 1–2 s is cheap locally.
+- *Long-polling the pairing status*: rejected; a parked pairing request would hold one of the few
+  requests the server serves at once (12 by default) for as long as it waits. Short polling every
+  1–2 s is cheap locally.
 - *Per-client file scoping in the pairing grant*: rejected for now. The grant is authentication
   only; which files are visible stays governed by the existing per-file opt-in, keeping one
   authorization concept instead of a client × file matrix.
