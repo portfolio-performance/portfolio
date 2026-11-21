@@ -2,6 +2,7 @@ package name.abuchen.portfolio.ui.editor;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 import jakarta.inject.Inject;
@@ -11,6 +12,7 @@ import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.EclipseContextFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.ui.di.UIEventTopic;
+import org.eclipse.e4.ui.services.IServiceConstants;
 import org.eclipse.e4.ui.services.IStylingEngine;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.MenuManager;
@@ -407,6 +409,25 @@ public abstract class AbstractFinanceView
         IEclipseContext c2 = EclipseContextFactory.create();
         for (Object param : parameters)
             c2.set(param.getClass().getName(), param);
+        return ContextInjectionFactory.make(type, this.context, c2);
+    }
+
+    /**
+     * Creates an object that injects the active shell (typically a dialog) and
+     * explicitly provides the given shell as the active shell. The context of a
+     * view does not define the active shell, therefore objects that require
+     * {@link IServiceConstants#ACTIVE_SHELL} must be created with a shell that
+     * is known to be alive.
+     */
+    public final <T> T make(Class<T> type, Shell activeShell, Object... parameters)
+    {
+        Objects.requireNonNull(activeShell);
+
+        IEclipseContext c2 = EclipseContextFactory.create();
+        c2.set(IServiceConstants.ACTIVE_SHELL, activeShell);
+        if (parameters != null)
+            for (Object param : parameters)
+                c2.set(param.getClass().getName(), param);
         return ContextInjectionFactory.make(type, this.context, c2);
     }
 
