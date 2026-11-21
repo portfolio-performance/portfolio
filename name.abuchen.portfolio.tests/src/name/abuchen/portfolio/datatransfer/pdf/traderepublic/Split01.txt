@@ -1,4 +1,3 @@
-```
 PDFBox Version: 1.8.17
 Portfolio Performance Version: 0.68.3.qualifier
 -----------------------------------------
@@ -20,5 +19,3 @@ Trade Republic Bank GmbH www.traderepublic.com Sitz der Gesellschaft: Düsseldor
 Kastanienallee 32 service@traderepublic.com AG Düsseldorf HRB 85864 Andreas Torner
 10435 Berlin USt-ID DE307510626 Gernot Mittendorfer
 DUAN / 20.05.2022 / 70966568 / 8e07-38a1
-
-```

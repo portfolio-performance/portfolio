@@ -1,4 +1,3 @@
-```
 PDFBox Version: 1.8.17
 Portfolio Performance Version: 0.69.0
 -----------------------------------------
@@ -50,5 +49,3 @@ Brunnenstraße 19-21 www.traderepublic.com AG Charlottenburg HRB 244347 B
 Seite 6 von 6
 Erstellt am 01 Juli 2024
 Trade Republic Bank GmbH
-
-```

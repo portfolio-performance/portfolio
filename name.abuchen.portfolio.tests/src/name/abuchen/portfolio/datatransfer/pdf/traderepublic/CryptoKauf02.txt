@@ -1,4 +1,3 @@
-```
 PDFBox Version: 1.8.17
 Portfolio Performance Version: 0.62.1
 -----------------------------------------
@@ -25,5 +24,3 @@ Die Cryptowerte werden in einer zentralen Wallet bei dem Cryptoverwahrer BitGo D
 Trade Republic Bank GmbH www.traderepublic.com Sitz der Gesellschaft: Berlin Geschäftsführer
 Köpenicker Straße 40c service@traderepublic.com AG Charlottenburg HRB 244347 B Andreas Torner
 10179 Berlin USt-ID DE307510626 Gernot Mittendorfer
-
-```

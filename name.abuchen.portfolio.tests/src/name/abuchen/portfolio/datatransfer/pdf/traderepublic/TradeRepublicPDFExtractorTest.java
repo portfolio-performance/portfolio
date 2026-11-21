@@ -7400,6 +7400,40 @@ public class TradeRepublicPDFExtractorTest
     }
 
     @Test
+    public void testWertpapierVerkauf17()
+    {
+        var extractor = new TradeRepublicPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf17.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("DE000A1EWWW0"), hasWkn(null), hasTicker(null), //
+                        hasName("Adidas"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2026-11-06T11:31"), hasShares(2.00), //
+                        hasSource("Verkauf17.txt"), //
+                        hasNote("Auftrag: 4318-1b82 | Ausführung: 22dd-ehm9"), //
+                        hasAmount("EUR", 340.72), hasGrossValue("EUR", 347.20), //
+                        hasTaxes("EUR", (5.20 + 0.28)), hasFees("EUR", 1.00))));
+    }
+
+    @Test
     public void testSecuritySell01()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
@@ -9849,7 +9883,7 @@ public class TradeRepublicPDFExtractorTest
 
         List<Exception> errors = new ArrayList<>();
 
-        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Barausschüttung01.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Barausschuettung01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -9871,7 +9905,7 @@ public class TradeRepublicPDFExtractorTest
         assertThat(results, hasItem(dividend( //
                         hasDate("2026-06-30"), hasExDate("2026-06-15"), //
                         hasShares(60), //
-                        hasSource("Barausschüttung01.txt"), //
+                        hasSource("Barausschuettung01.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 37.11), hasGrossValue("EUR", 50.41), //
                         hasForexGrossValue("USD", 57.50), //
@@ -9891,7 +9925,7 @@ public class TradeRepublicPDFExtractorTest
 
         List<Exception> errors = new ArrayList<>();
 
-        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Barausschüttung01.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Barausschuettung01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
@@ -9907,7 +9941,7 @@ public class TradeRepublicPDFExtractorTest
         assertThat(results, hasItem(dividend( //
                         hasDate("2026-06-30"), hasExDate("2026-06-15"), //
                         hasShares(60), //
-                        hasSource("Barausschüttung01.txt"), //
+                        hasSource("Barausschuettung01.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 37.11), hasGrossValue("EUR", 50.41), //
                         hasTaxes("EUR", 12.61 + 0.69), hasFees("EUR", 0.00))));
