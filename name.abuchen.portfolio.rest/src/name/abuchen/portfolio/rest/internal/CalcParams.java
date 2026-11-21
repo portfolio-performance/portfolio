@@ -59,6 +59,30 @@ public final class CalcParams
     }
 
     /**
+     * The last day the time-weighted figures of an interval are measured to. The
+     * engine behind them ({@code ClientIndex}) never runs past today, while the
+     * value breakdown and the IRR run to the closing date and include the
+     * transactions dated after today. A future closing date stays allowed - a
+     * planned transaction is how a user simulates - and this date is what lets
+     * a reader see that the two kinds of figure cover different periods.
+     */
+    public static LocalDate timeWeightedUntil(LocalDate closingDate)
+    {
+        var today = LocalDate.now();
+        return closingDate.isAfter(today) ? today : closingDate;
+    }
+
+    /**
+     * Whether an interval opening on this date has any past to measure. The
+     * time-weighted engine stops at today, and an interval that opens today or
+     * later has no price movement in it: its returns are undefined, not zero.
+     */
+    public static boolean hasAPast(LocalDate openingDate)
+    {
+        return openingDate.isBefore(LocalDate.now());
+    }
+
+    /**
      * The range constraint depends on the two dates having parsed and on nothing
      * else, so it accumulates with the other violations instead of hiding behind
      * them. Skipped when either date is absent or unparseable - the constraint

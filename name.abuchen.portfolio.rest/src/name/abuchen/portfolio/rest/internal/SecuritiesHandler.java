@@ -2,6 +2,7 @@ package name.abuchen.portfolio.rest.internal;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 
@@ -79,7 +80,80 @@ public final class SecuritiesHandler
 
     public static JsonElement list(Client client)
     {
-        return EntityJson.envelope(client.getSecurities(), s -> EntityJson.toJson(client, s));
+        return list(client, null);
+    }
+
+    /**
+     * The instruments, or with {@code query} only those it finds: a name that
+     * contains it, or an ISIN, WKN or ticker symbol equal to it - all ignoring
+     * case and surrounding whitespace. A file can hold more instruments than
+     * one answer carries, and this is how a client gets from what the user
+     * said to a uuid without paging through all of them.
+     */
+    public static JsonElement list(Client client, String query)
+    {
+        return list(client, query, null, null);
+    }
+
+    /**
+     * As above, one page of them with {@code cursor} and {@code limit}: paged,
+     * the instruments are in the order of their uuid, which nothing changes;
+     * the whole list stays in the order of the file.
+     */
+    public static JsonElement list(Client client, String query, String cursorParam, String limitParam)
+    {
+        return list(client, null, query, cursorParam, limitParam);
+    }
+
+    /**
+     * As above, for the file of this id: a cursor is good only for the file
+     * and the {@code query} it came with.
+     */
+    public static JsonElement list(Client client, String fileId, String query, String cursorParam,
+                    String limitParam)
+    {
+        var errors = new ArrayList<ApiException.FieldError>();
+
+        var wanted = query == null ? null : query.strip();
+        if (wanted != null && wanted.isEmpty())
+            errors.add(new ApiException.FieldError("query", "invalid-value", //$NON-NLS-1$ //$NON-NLS-2$
+                            "query must not be blank; omit it to list every instrument")); //$NON-NLS-1$
+
+        // the query matches ignoring case: queries that differ in case are one list
+        var scope = "file=" + (fileId == null ? "" : fileId) + "|query=" //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+                        + (wanted == null ? "" : wanted.toLowerCase(Locale.ROOT)); //$NON-NLS-1$
+        var paging = Paging.parse(Paging.Kind.INSTRUMENTS, scope, cursorParam, limitParam, errors);
+
+        if (!errors.isEmpty())
+            throw ApiException.badRequest(errors);
+
+        var securities = client.getSecurities();
+        if (wanted != null)
+        {
+            var lower = wanted.toLowerCase(Locale.ROOT);
+            securities = securities.stream() //
+                            .filter(security -> matches(security, wanted, lower)) //
+                            .toList();
+        }
+
+        // only the page is rendered; the rest of the list is counted, not built
+        var response = new JsonObject();
+        paging.apply(Paging.Kind.INSTRUMENTS, response, securities, Security::getUUID,
+                        security -> EntityJson.toJson(client, security));
+        return response;
+    }
+
+    private static boolean matches(Security security, String wanted, String lower)
+    {
+        var name = security.getName();
+        if (name != null && name.toLowerCase(Locale.ROOT).contains(lower))
+            return true;
+
+        for (var code : new String[] { security.getIsin(), security.getWkn(), security.getTickerSymbol() })
+            if (code != null && code.strip().equalsIgnoreCase(wanted))
+                return true;
+
+        return false;
     }
 
     public static JsonElement get(Client client, String uuid)
