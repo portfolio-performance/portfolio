@@ -489,10 +489,13 @@ public class DashboardView extends AbstractHistoricView
         scrolledComposite.setExpandVertical(true);
         scrolledComposite.setExpandHorizontal(true);
 
-        // resize listener
+        // resize listener: watch the scrolled composite itself and not the view
+        // around it. The view keeps its size when the sash to the information
+        // pane is moved, but the scrolled composite does change its size - and
+        // with it the space available for the widgets
         ControlListener listener = ControlListener.controlResizedAdapter(e -> updateScrolledCompositeMinSize());
-        parent.getParent().addControlListener(listener);
-        scrolledComposite.addDisposeListener(e -> parent.getParent().removeControlListener(listener));
+        scrolledComposite.addControlListener(listener);
+        scrolledComposite.addDisposeListener(e -> scrolledComposite.removeControlListener(listener));
 
         container.addDisposeListener(e -> persistedState.setValue(SELECTED_DASHBOARD_KEY,
                         getClient().getDashboards().toList().indexOf(dashboard)));
