@@ -93,8 +93,8 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
                                                         .match("^(?<name1>.*)$") //
                                                         .match("^Kurs: [\\.,\\d]+ (?<currency>[A-Z]{3})[\\s]*$") //
                                                         .assign((t, v) -> {
-                                                            if (!v.get("name1").startsWith("Kurs:")  //
-                                                                            || !v.get("name1").startsWith("Fondsgesellschaft:")) //
+                                                            if (!v.get("name1").startsWith("Kurs:") //
+                                                                            && !v.get("name1").startsWith("Fondsgesellschaft:")) //
                                                                 v.put("name", trim(v.get("name")) + " "+ trim(v.get("name1")));
 
                                                             t.setSecurity(getOrCreateSecurity(v));
@@ -110,7 +110,7 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
                                                         .match("^(?<name1>.*)$") //
                                                         .match("^Ausf.hrungskurs [\\.,\\d]+ (?<currency>[A-Z]{3}).*$") //
                                                         .assign((t, v) -> {
-                                                            if (!v.get("name1").startsWith("Handels-/Ausführungsplatz"))
+                                                            if (!v.get("name1").matches("^Handels\\-\\/Ausf.hrungsplatz.*$"))
                                                                 v.put("name", trim(v.get("name")) + " " + trim(v.get("name1")));
 
                                                             t.setSecurity(getOrCreateSecurity(v));
@@ -122,7 +122,7 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("name", "wkn", "isin", "currency") //
-                                                        .find("Wir haben für Sie .*") //
+                                                        .find("Wir haben f.r Sie .*") //
                                                         .match("^[\\.'\\d]+ (?<name>.*)$") //
                                                         .match("^Valoren\\-Nr\\.: (?<wkn>[A-Z0-9]{5,9}), ISIN\\-Nr\\.: (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])[\\s]*$") //
                                                         .match("^Kurs (?<currency>[A-Z]{3}) [\\.'\\d]+[\\s]*$") //
@@ -149,7 +149,7 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("shares") //
-                                                        .find("Wir haben für Sie .*") //
+                                                        .find("Wir haben f.r Sie .*") //
                                                         .match("^(?<shares>[\\.'\\d]+) .*$") //
                                                         .assign((t, v) -> t.setShares(asShares(v.get("shares"), "de", "CH"))))
 
@@ -160,7 +160,7 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("date", "time") //
-                                                        .match("^(Handelszeit:|Schlusstag\\/\\-Zeit) (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}:[\\d]{2}).*$") //
+                                                        .match("^(Handelszeit:|Schlusstag\\/\\-Zeit) (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<time>[\\d]{2}\\:[\\d]{2}\\:[\\d]{2}).*$") //
                                                         .assign((t, v) -> t.setDate(asDate(v.get("date"), v.get("time")))),
                                         // @formatter:off
                                         // Handelszeit: 27.03.2023
@@ -174,7 +174,7 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("date") //
-                                                        .match("^Wir haben für Sie am (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
+                                                        .match("^Wir haben f.r Sie am (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
                                                         .assign((t, v) -> t.setDate(asDate(v.get("date")))))
 
                         .oneOf( //
@@ -297,8 +297,8 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
                                                         .match("^(Dividende|Ertrag): [\\.,\\d]+ (?<currency>[A-Z]{3})[\\s]*$") //
                                                         .assign((t, v) -> {
                                                             if (!v.get("name1").startsWith("Dividende:") //
-                                                                            || !v.get("name1").startsWith("Ertrag:") //
-                                                                            || !v.get("name1").startsWith("Fondsgesellschaft:")) //
+                                                                            && !v.get("name1").startsWith("Ertrag:") //
+                                                                            && !v.get("name1").startsWith("Fondsgesellschaft:")) //
                                                                 v.put("name", trim(v.get("name")) + " " + trim(v.get("name1")));
 
                                                             t.setSecurity(getOrCreateSecurity(v));
@@ -315,8 +315,8 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
                                                         .match("^(Dividende|Ertrag): [\\.,\\d]+ (?<currency>[A-Z]{3})[\\s]*$") //
                                                         .assign((t, v) -> {
                                                             if (!v.get("name1").startsWith("Dividende:") //
-                                                                            || !v.get("name1").startsWith("Ertrag:") //
-                                                                            || !v.get("name1").startsWith("Fondsgesellschaft:")) //
+                                                                            && !v.get("name1").startsWith("Ertrag:") //
+                                                                            && !v.get("name1").startsWith("Fondsgesellschaft:")) //
                                                                 v.put("name", trim(v.get("name")) + " " + trim(v.get("name1")));
 
                                                             t.setSecurity(getOrCreateSecurity(v));
@@ -382,8 +382,8 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
 
                         .oneOf( //
                                         // @formatter:off
-                                    // Valuta 30.04.2021
-                                    // @formatter:on
+                                        // Valuta 30.04.2021
+                                        // @formatter:on
                                         section -> section //
                                                         .attributes("date") //
                                                         .match("^Valuta (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})[\\s]*$") //
@@ -420,7 +420,7 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
                                                         .assign((t, v) -> t.setExDate(asDate(v.get("exDate")))), //
                                         section -> section //
                                                         .attributes("exDate") //
-                                                        .match("^Ex-Datum (?<exDate>[\\d]{1,2}\\. .* [\\d]{4}).*$") //
+                                                        .match("^Ex\\-Datum (?<exDate>[\\d]{1,2}\\. .* [\\d]{4}).*$") //
                                                         .assign((t, v) -> t.setExDate(asDate(v.get("exDate")))))
 
                         .oneOf( //
@@ -493,7 +493,7 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("fxGross", "termCurrency", "exchangeRate", "baseCurrency") //
                                                         .match("^Brutto(betrag|ertrag): (?<fxGross>[\\.,\\d]+) (?<termCurrency>[A-Z]{3}).*$") //
-                                                        .match("^Devisenkurs: (?<exchangeRate>[\\.,\\d]+) \\(\\d{2}\\.\\d{2}\\.\\d{4}\\)\\s+[\\.,\\d]+ (?<baseCurrency>[A-Z]{3}).*$") //
+                                                        .match("^Devisenkurs: (?<exchangeRate>[\\.,\\d]+) \\([\\d]{2}\\.[\\d]{2}\\.[\\d]{4}\\)[\\s]+[\\.,\\d]+ (?<baseCurrency>[A-Z]{3}).*$") //
                                                         .assign((t, v) -> {
                                                             var rate = asExchangeRate(v);
                                                             type.getCurrentContext().putType(rate);
@@ -527,7 +527,7 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("note") //
-                                                        .match("^.*(?<note>Abrechnungsnr. .*)$") //
+                                                        .match("^.*(?<note>Abrechnungsnr\\. .*)$") //
                                                         .assign((t, v) -> t.setNote(trim(v.get("note")))),
                                         // @formatter:off
                                         // Unsere Referenz: 17518731738 Gebenstorf, 11. September 2024
@@ -593,7 +593,7 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
                         // Belastung Valuta 30.09.2024 CHF 100.04
                         // @formatter:on
                         .section("date", "amount", "currency") //
-                        .match("^Belastung Valuta (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<currency>[A-Z]{3}) (?<amount>[\\.'\\d]+).*$")
+                        .match("^Belastung Valuta (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<currency>[A-Z]{3}) (?<amount>[\\.'\\d]+).*$") //
                         .assign((t, v) -> {
                             t.setDateTime(asDate(v.get("date")));
                             t.setAmount(asAmount(v.get("amount")));
@@ -606,7 +606,7 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("note") //
-                                                        .match("^.*(?<note>Abrechnungsnr. .*)$") //
+                                                        .match("^.*(?<note>Abrechnungsnr\\. .*)$") //
                                                         .assign((t, v) -> t.setNote(trim(v.get("note")))),
                                         // @formatter:off
                                         // Unsere Referenz: 17495598455 Gebenstorf, 17. September 2024
@@ -691,8 +691,8 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
                         // @formatter:off
                         // Abrechnungsnummer/-datum: 45664992 - 16.03.2023
                         // @formatter:on
-                        .section("note1", "note2").optional()
-                        .match("^(?<note1>Abrechnungsnummer)\\/\\-datum: (?<note2>[\\d]+) \\- .*$")
+                        .section("note1", "note2").optional() //
+                        .match("^(?<note1>Abrechnungsnummer)\\/\\-datum: (?<note2>[\\d]+) \\- .*$") //
                         .assign((t, v) -> t.setNote(trim(v.get("note1")) + ": " + trim(v.get("note2"))))
 
                         // @formatter:off
@@ -718,7 +718,7 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
 
     private void addNonImportableTransaction()
     {
-        final var type = new DocumentType("Gesch.ftsart: Freier Erhalt"); //
+        final var type = new DocumentType("Gesch.ftsart: Freier Erhalt");
         this.addDocumentTyp(type);
 
         var pdfTransaction = new Transaction<PortfolioTransaction>();
@@ -861,9 +861,9 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
                                         + "|UEBERTRAG) " //
                                         + ".* " //
                                         + "(?<amount>[\\.,\\d]+) " //
-                                        + "(?<type>[S|H])$") //
-                        .match("^(?![\\s]+ [Dividende]).*$") //
-                        .match("^(?![\\s]+ [Dividende]).*$") //
+                                        + "(?<type>[SH])$") //
+                        .match("^(?![\\s]+ Dividende).*$") //
+                        .match("^(?![\\s]+ Dividende).*$") //
                         .assign((t, v) -> {
                             // @formatter:off
                             // Is type --> "H" change from DEPOSIT to REMOVAL
@@ -974,7 +974,7 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
 
                         .wrap(TransactionItem::new));
 
-        var interestBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\. [\\d]{2}\\.[\\d]{2}\\. Abschluss.* [S|H]$");
+        var interestBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\. [\\d]{2}\\.[\\d]{2}\\. Abschluss.* [SH]$");
         type.addBlock(interestBlock);
         interestBlock.set(new Transaction<AccountTransaction>()
 
@@ -1074,7 +1074,7 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
                             return null;
                         }));
 
-        var feesBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\. [\\d]{2}\\.[\\d]{2}\\. .* [S|H]$");
+        var feesBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\. [\\d]{2}\\.[\\d]{2}\\. .* [SH]$");
         type.addBlock(feesBlock);
         feesBlock.set(new Transaction<AccountTransaction>()
 
