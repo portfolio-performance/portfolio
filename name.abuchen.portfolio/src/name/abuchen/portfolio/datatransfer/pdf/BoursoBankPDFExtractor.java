@@ -107,24 +107,24 @@ public class BoursoBankPDFExtractor extends AbstractPDFExtractor
                         .match("^[\\d]{2}\\/[\\d]{2}\\/[\\d]{4} (?<shares>[\\,\\d\\s]+) .*$") //
                         .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
-                        // @formatter:off
-                        // 15:38:46
-                        // @formatter:on
-                        .section("time").optional() //
-                        .match("^(?<time>[\\d]{2}:[\\d]{2}:[\\d]{2}).*$") //
-                        .assign((t, v) -> type.getCurrentContext().put("time", v.get("time")))
-
-                        // @formatter:off
-                        // 29/05/2024 400 ISHS VI-ISMWSPE EOA
-                        // @formatter:on
-                        .section("date") //
-                        .match("^(?<date>[\\d]{2}\\/[\\d]{2}\\/[\\d]{4}) [\\,\\d\\s]+ .*$") //
-                        .assign((t, v) -> {
-                            if (type.getCurrentContext().get("time") != null)
-                                t.setDate(asDate(v.get("date"), type.getCurrentContext().get("time")));
-                            else
-                                t.setDate(asDate(v.get("date")));
-                        })
+                        .oneOf( //
+                                        // @formatter:off
+                                        // 29/05/2024 400 ISHS VI-ISMWSPE EOA
+                                        // Type d'ordre : à cours limite
+                                        // 15:38:46
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("date", "time") //
+                                                        .match("^(?<date>[\\d]{2}\\/[\\d]{2}\\/[\\d]{4}) [\\,\\d\\s]+ .*$") //
+                                                        .match("^(?<time>[\\d]{2}:[\\d]{2}:[\\d]{2}).*$") //
+                                                        .assign((t, v) -> t.setDate(asDate(v.get("date"), v.get("time")))),
+                                        // @formatter:off
+                                        // 27/02/2024 1,02 AXA COURT TERME A CAP.SI.2DEC
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("date") //
+                                                        .match("^(?<date>[\\d]{2}\\/[\\d]{2}\\/[\\d]{4}) [\\,\\d\\s]+ .*$") //
+                                                        .assign((t, v) -> t.setDate(asDate(v.get("date")))))
 
                         .oneOf( //
                                         // @formatter:off
