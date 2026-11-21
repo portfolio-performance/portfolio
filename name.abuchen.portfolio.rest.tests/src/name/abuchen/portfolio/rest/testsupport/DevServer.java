@@ -12,7 +12,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.concurrent.Callable;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
@@ -54,6 +57,14 @@ public class DevServer
      */
     private record DevHost(List<OpenFile> files) implements HostApplication
     {
+        /**
+         * Stands in for the UI thread: one thread that runs the callables one at
+         * a time, queued - so that the caller's deadline runs while it waits, as
+         * it does in the application.
+         */
+        private static final ExecutorService UI = Executors.newSingleThreadExecutor(
+                        Thread.ofPlatform().name("DevServer UI thread").daemon(true).factory()); //$NON-NLS-1$
+
         @Override
         public List<OpenFile> listOpenFiles()
         {
@@ -61,9 +72,21 @@ public class DevServer
         }
 
         @Override
-        public <T> T syncExec(Callable<T> callable) throws Exception
+        public <T> CompletableFuture<T> asyncExec(Callable<T> callable)
         {
-            return callable.call();
+            var future = new CompletableFuture<T>();
+            UI.execute(() -> {
+                try
+                {
+                    future.complete(callable.call());
+                }
+                catch (Throwable t)
+                {
+                    // an Error too, or the caller waits out its deadline
+                    future.completeExceptionally(t);
+                }
+            });
+            return future;
         }
 
         @Override
