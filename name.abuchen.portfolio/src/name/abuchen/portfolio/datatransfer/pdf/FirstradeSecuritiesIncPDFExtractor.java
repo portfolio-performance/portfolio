@@ -39,12 +39,12 @@ public class FirstradeSecuritiesIncPDFExtractor extends AbstractPDFExtractor
 
     private void addBuySellTransaction()
     {
-        DocumentType type = new DocumentType("TRADE SETTLEMENT ACCT");
+        final var type = new DocumentType("TRADE SETTLEMENT ACCT");
         this.addDocumentTyp(type);
 
-        Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
+        var pdfTransaction = new Transaction<BuySellEntry>();
 
-        Block firstRelevantLine = new Block("^YOU (BOUGHT|SOLD) .*$");
+        var firstRelevantLine = new Block("^YOU (BOUGHT|SOLD) .*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -60,14 +60,14 @@ public class FirstradeSecuritiesIncPDFExtractor extends AbstractPDFExtractor
                                 t.setType(PortfolioTransaction.Type.SELL);
                         })
 
-                        .oneOf(
+                        .oneOf( //
                                         // @formatter:off
                                         // YOU SOLD TSLA 88160R101 11/22/21 11/24/21 SHORT 1 $1,156.03000
                                         // TESLA INC COMMON STOCK PRINCIPAL $1,156.03
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("tickerSymbol", "wkn", "name", "currency") //
-                                                        .match("^YOU (BOUGHT|SOLD) (?<tickerSymbol>[A-Z0-9]{1,6}(?:\\.[A-Z]{1,4})?) (?<wkn>[A-Z0-9]{9}) [\\d]{2}\\/[\\d]{2}\\/[\\d]{2} [\\d]{2}\\/[\\d]{2}\\/[\\d]{2} .* [\\.,\\d] (?<currency>\\p{Sc})[\\.,\\d]+$") //
+                                                        .match("^YOU (BOUGHT|SOLD) (?<tickerSymbol>[A-Z0-9]{1,6}(?:\\.[A-Z]{1,4})?) (?<wkn>[A-Z0-9]{9}) [\\d]{2}\\/[\\d]{2}\\/[\\d]{2} [\\d]{2}\\/[\\d]{2}\\/[\\d]{2} .* [\\.,\\d]+ (?<currency>\\p{Sc})[\\.,\\d]+$") //
                                                         .match("^(?<name>.*) PRINCIPAL \\p{Sc}[\\.,\\d]+$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
                                         // @formatter:off
@@ -75,9 +75,9 @@ public class FirstradeSecuritiesIncPDFExtractor extends AbstractPDFExtractor
                                         // PUT PYPL 11/26/21 190 PAYPAL HOLDINGS INC PRINCIPAL $440.00
                                         // @formatter:on
                                         section -> section //
-                                                        .attributes("wkn", "tickerSymbol", "name", "currency") //
+                                                        .attributes("wkn", "name", "currency") //
                                                         .match("^YOU (BOUGHT|SOLD) (?<wkn>[A-Z0-9]{7}) [\\d]{2}\\/[\\d]{2}\\/[\\d]{2} [\\d]{2}\\/[\\d]{2}\\/[\\d]{2} .* (?<currency>\\p{Sc})[\\.,\\d]+$") //
-                                                        .match("^.* (?<tickerSymbol>[A-Z0-9]{1,6}(?:\\.[A-Z]{1,4})?) [\\d]{2}\\/[\\d]{2}\\/[\\d]{2} [\\d]{1,} (?<name>.*) PRINCIPAL \\p{Sc}[\\.,\\d]+$") //
+                                                        .match("^(?<name>(PUT|CALL) [A-Z0-9]{1,6}(?:\\.[A-Z]{1,4})? [\\d]{2}\\/[\\d]{2}\\/[\\d]{2} [\\.,\\d]+ .*) PRINCIPAL \\p{Sc}[\\.,\\d]+$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))))
 
                         // @formatter:off
@@ -85,7 +85,7 @@ public class FirstradeSecuritiesIncPDFExtractor extends AbstractPDFExtractor
                         // YOU SOLD 8SFXJX7 11/23/21 11/24/21 MARGIN 1 $4.40000
                         // @formatter:on
                         .section("shares") //
-                        .match("^YOU (BOUGHT|SOLD) .* (?<shares>[\\.,\\d]) \\p{Sc}[\\.,\\d]+$") //
+                        .match("^YOU (BOUGHT|SOLD) .* (?<shares>[\\.,\\d]+) \\p{Sc}[\\.,\\d]+$") //
                         .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
                         // @formatter:off
@@ -93,7 +93,7 @@ public class FirstradeSecuritiesIncPDFExtractor extends AbstractPDFExtractor
                         // YOU SOLD 8SFXJX7 11/23/21 11/24/21 MARGIN 1 $4.40000
                         // @formatter:on
                         .section("date") //
-                        .match("^YOU (BOUGHT|SOLD) .* (?<date>[\\d]{2}\\/[\\d]{2}\\/[\\d]{2}) .* [\\.,\\d] \\p{Sc}[\\.,\\d]+$") //
+                        .match("^YOU (BOUGHT|SOLD) .* (?<date>[\\d]{2}\\/[\\d]{2}\\/[\\d]{2}) [\\d]{2}\\/[\\d]{2}\\/[\\d]{2} .* [\\.,\\d]+ \\p{Sc}[\\.,\\d]+$") //
                         .assign((t, v) -> t.setDate(asDate(v.get("date"))))
 
                         // @formatter:off
