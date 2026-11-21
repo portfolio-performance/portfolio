@@ -684,6 +684,16 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                                                         .match("^STK [\\.,\\d]+ (?<exDate>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [A-Z]{3} [\\.,\\d]+$") //
                                                         .assign((t, v) -> t.setExDate(asDate(v.get("exDate")))))
 
+                        // The "Ex-Tag" of a cash payment on dividend rights is a
+                        // technical date of the rights, not the ex-date of the share.
+                        // Therefore no ex-date is imported.
+                        // @formatter:off
+                        // Im Zuge der Geldzahlung erfolgt die Ausbuchung der Rechte. Ein separater Beleg wird nicht erstellt.
+                        // @formatter:on
+                        .section("rights").optional() //
+                        .match("^.*(?<rights>Ausbuchung der Rechte).*$") //
+                        .assign((t, v) -> t.setExDate(null))
+
                         .oneOf( //
                                         // @formatter:off
                                         // This is for the reinvestment of dividends
