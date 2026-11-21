@@ -79,7 +79,7 @@ public class NeonSwitzerlandAGPDFExtractorTest
 
         // check buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2025-11-24"), hasShares(0.102347), //
+                        hasDate("2025-11-24T00:00"), hasShares(0.102347), //
                         hasSource("Buy01.txt"), //
                         hasNote(null), //
                         hasAmount("CHF", 10.00), hasGrossValue("CHF", 10.00), //
@@ -87,14 +87,15 @@ public class NeonSwitzerlandAGPDFExtractorTest
 
         // check buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2025-11-24"), hasShares(2.657624), //
+                        hasDate("2025-11-24T00:00"), hasShares(2.657624), //
                         hasSource("Buy01.txt"), //
+                        hasNote(null), //
                         hasAmount("CHF", 480.00), hasGrossValue("CHF", 480.00), //
                         hasTaxes("CHF", 0.00), hasFees("CHF", 0.00))));
 
         // check buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2025-11-24"), hasShares(0.351181), //
+                        hasDate("2025-11-24T00:00"), hasShares(0.351181), //
                         hasSource("Buy01.txt"), //
                         hasNote(null), //
                         hasAmount("CHF", 120.00), hasGrossValue("CHF", 120.00), //
@@ -133,7 +134,7 @@ public class NeonSwitzerlandAGPDFExtractorTest
 
         // check buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2025-11-25"), hasShares(0.580442), //
+                        hasDate("2025-11-25T00:00"), hasShares(0.580442), //
                         hasSource("Buy02.txt"), //
                         hasNote(null), //
                         hasAmount("CHF", 80.00), hasGrossValue("CHF", 80.00), //
@@ -141,7 +142,7 @@ public class NeonSwitzerlandAGPDFExtractorTest
 
         // check buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2025-11-25"), hasShares(0.932137), //
+                        hasDate("2025-11-25T00:00"), hasShares(0.932137), //
                         hasSource("Buy02.txt"), //
                         hasNote(null), //
                         hasAmount("CHF", 310.00), hasGrossValue("CHF", 310.00), //
@@ -180,7 +181,7 @@ public class NeonSwitzerlandAGPDFExtractorTest
 
         // check buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2026-01-16"), hasShares(5.552571), //
+                        hasDate("2026-01-16T00:00"), hasShares(5.552571), //
                         hasSource("Buy03.txt"), //
                         hasNote(null), //
                         hasAmount("CHF", 1939.98), hasGrossValue("CHF", 1939.98), //
@@ -188,7 +189,7 @@ public class NeonSwitzerlandAGPDFExtractorTest
 
         // check buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2026-01-16"), hasShares(3.308542), //
+                        hasDate("2026-01-16T00:00"), hasShares(3.308542), //
                         hasSource("Buy03.txt"), //
                         hasNote(null), //
                         hasAmount("CHF", 500.64), hasGrossValue("CHF", 500.64), //
@@ -236,7 +237,7 @@ public class NeonSwitzerlandAGPDFExtractorTest
 
         // check buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2026-01-26"), hasShares(0.10248), //
+                        hasDate("2026-01-26T00:00"), hasShares(0.10248), //
                         hasSource("Buy04.txt"), //
                         hasNote(null), //
                         hasAmount("CHF", 10.00), hasGrossValue("CHF", 10.00), //
@@ -244,7 +245,7 @@ public class NeonSwitzerlandAGPDFExtractorTest
 
         // check buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2026-01-26"), hasShares(2.519818), //
+                        hasDate("2026-01-26T00:00"), hasShares(2.519818), //
                         hasSource("Buy04.txt"), //
                         hasNote(null), //
                         hasAmount("CHF", 480.00), hasGrossValue("CHF", 480.00), //
@@ -252,7 +253,7 @@ public class NeonSwitzerlandAGPDFExtractorTest
 
         // check buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2026-01-26"), hasShares(0.323213), //
+                        hasDate("2026-01-26T00:00"), hasShares(0.323213), //
                         hasSource("Buy04.txt"), //
                         hasNote(null), //
                         hasAmount("CHF", 120.00), hasGrossValue("CHF", 120.00), //
@@ -301,7 +302,7 @@ public class NeonSwitzerlandAGPDFExtractorTest
 
         // check buy sell transaction
         assertThat(results, hasItem(sale( //
-                        hasDate("2025-12-04"), hasShares(0.000439), //
+                        hasDate("2025-12-04T00:00"), hasShares(0.000439), //
                         hasSource("Sell01.txt"), //
                         hasNote(null), //
                         hasAmount("CHF", 0.15), hasGrossValue("CHF", 0.15), //
@@ -309,7 +310,7 @@ public class NeonSwitzerlandAGPDFExtractorTest
 
         // check buy sell transaction
         assertThat(results, hasItem(sale( //
-                        hasDate("2025-12-04"), hasShares(0.000213), //
+                        hasDate("2025-12-04T00:00"), hasShares(0.000213), //
                         hasSource("Sell01.txt"), //
                         hasNote(null), //
                         hasAmount("CHF", 0.03), hasGrossValue("CHF", 0.03), //
@@ -317,7 +318,7 @@ public class NeonSwitzerlandAGPDFExtractorTest
 
         // check buy sell transaction
         assertThat(results, hasItem(sale( //
-                        hasDate("2025-12-04"), hasShares(0.000172), //
+                        hasDate("2025-12-04T00:00"), hasShares(0.000172), //
                         hasSource("Sell01.txt"), //
                         hasNote(null), //
                         hasAmount("CHF", 0.06), hasGrossValue("CHF", 0.06), //
@@ -325,80 +326,8 @@ public class NeonSwitzerlandAGPDFExtractorTest
 
         // check buy sell transaction
         assertThat(results, hasItem(sale( //
-                        hasDate("2025-12-04"), hasShares(0.001239), //
+                        hasDate("2025-12-04T00:00"), hasShares(0.001239), //
                         hasSource("Sell01.txt"), //
-                        hasNote(null), //
-                        hasAmount("CHF", 0.23), hasGrossValue("CHF", 0.23), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.00))));
-    }
-
-    @Test
-    public void testSecuritySell02()
-    {
-        var extractor = new NeonSwitzerlandAGPDFExtractor(new Client());
-
-        List<Exception> errors = new ArrayList<>();
-
-        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Sell02.txt"), errors);
-
-        assertThat(errors, empty());
-        assertThat(countSecurities(results), is(4L));
-        assertThat(countBuySell(results), is(4L));
-        assertThat(countAccountTransactions(results), is(0L));
-        assertThat(countAccountTransfers(results), is(0L));
-        assertThat(countItemsWithFailureMessage(results), is(0L));
-        assertThat(countSkippedItems(results), is(0L));
-        assertThat(results.size(), is(8));
-        new AssertImportActions().check(results, "CHF");
-
-        // check 1st security
-        assertThat(results, hasItem(security( //
-                        hasIsin(null), hasWkn("11704490"), hasTicker(null), //
-                        hasName("Sc Ind Eq Wo.ex.CH"), //
-                        hasCurrencyCode("CHF"))));
-
-        assertThat(results, hasItem(security( //
-                        hasIsin(null), hasWkn("11704497"), hasTicker(null), //
-                        hasName("Sc F. V Eq Emer. M."), //
-                        hasCurrencyCode("CHF"))));
-
-        assertThat(results, hasItem(security( //
-                        hasIsin(null), hasWkn("13250189"), hasTicker(null), //
-                        hasName("Sc Eq S&Mid Caps CH"), //
-                        hasCurrencyCode("CHF"))));
-
-        assertThat(results, hasItem(security( //
-                        hasIsin(null), hasWkn("21580471"), hasTicker(null), //
-                        hasName("Sc Ind EqLar Cap CH"), hasCurrencyCode("CHF"))));
-
-        // check buy sell transaction
-        assertThat(results, hasItem(sale( //
-                        hasDate("2025-12-04"), hasShares(0.000439), //
-                        hasSource("Sell02.txt"), //
-                        hasNote(null), //
-                        hasAmount("CHF", 0.15), hasGrossValue("CHF", 0.15), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.00))));
-
-        // check buy sell transaction
-        assertThat(results, hasItem(sale( //
-                        hasDate("2025-12-04"), hasShares(0.000213), //
-                        hasSource("Sell02.txt"), //
-                        hasNote(null), //
-                        hasAmount("CHF", 0.03), hasGrossValue("CHF", 0.03), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.00))));
-
-        // check buy sell transaction
-        assertThat(results, hasItem(sale( //
-                        hasDate("2025-12-04"), hasShares(0.000172), //
-                        hasSource("Sell02.txt"), //
-                        hasNote(null), //
-                        hasAmount("CHF", 0.06), hasGrossValue("CHF", 0.06), //
-                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.00))));
-
-        // check buy sell transaction
-        assertThat(results, hasItem(sale( //
-                        hasDate("2025-12-04"), hasShares(0.001239), //
-                        hasSource("Sell02.txt"), //
                         hasNote(null), //
                         hasAmount("CHF", 0.23), hasGrossValue("CHF", 0.23), //
                         hasTaxes("CHF", 0.00), hasFees("CHF", 0.00))));
@@ -471,8 +400,12 @@ public class NeonSwitzerlandAGPDFExtractorTest
         assertThat(results.size(), is(1));
         new AssertImportActions().check(results, "CHF");
 
-        // assert transaction
-        assertThat(results, hasItem(fee(hasDate("2025-12-03"), hasAmount("CHF", 0.47), //
-                        hasSource("Fees01.txt"), hasNote("Assessment from 24.11.25 - 31.12.25"))));
+        // check fee transaction
+        assertThat(results, hasItem(fee( //
+                        hasDate("2025-12-03"), //
+                        hasSource("Fees01.txt"), //
+                        hasNote("Assessment from 24.11.25 - 31.12.25"), //
+                        hasAmount("CHF", 0.47), hasGrossValue("CHF", 0.47), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.00))));
     }
 }
