@@ -378,7 +378,9 @@ public final class UpdateHelper
         if (operation == null)
             checkForUpdates(monitor);
 
-        checkWritePermissions();
+        File installDir = getInstallDir();
+
+        checkWritePermissions(installDir);
 
         ProvisioningJob job = operation.getProvisioningJob(null);
         IStatus status = job.runModal(monitor);
@@ -387,6 +389,46 @@ public final class UpdateHelper
             throw new OperationCanceledException();
         if (status.getSeverity() != IStatus.OK)
             throw new CoreException(status);
+
+        // only the installer tells Windows which version is installed, and a
+        // self-update does not run it: correct the number of the program list
+
+        WindowsUninstallRegistry.updateInstalledVersion(installedVersion(), installDir);
+    }
+
+    /**
+     * The version of the update that has just been installed. The operation
+     * installs the selected updates - unless chosen otherwise the latest one of
+     * every installed unit - while the possible updates can also hold older
+     * versions, in no particular order. A new release updates many units at
+     * once, among them units with a numbering of their own such as the bundled
+     * Java runtime: the number of the installation is that of a unit of the
+     * application.
+     */
+    private String installedVersion()
+    {
+        Update[] updates = operation.getSelectedUpdates();
+
+        for (Update update : updates)
+        {
+            if (WindowsUninstallRegistry.belongsToApplication(update.replacement.getId()))
+                return update.replacement.getVersion().toString();
+        }
+
+        return null;
+    }
+
+    private File getInstallDir()
+    {
+        Location installLocation = Platform.getInstallLocation();
+        if (installLocation == null)
+            return null;
+
+        URL url = installLocation.getURL();
+        if (url == null)
+            return null;
+
+        return URLUtil.toFile(url);
     }
 
     /**
@@ -394,17 +436,10 @@ public final class UpdateHelper
      * installation. Particularly on Windows, we might have to prompt users to
      * run PP as administrator.
      */
-    private void checkWritePermissions() throws CoreException
+    private void checkWritePermissions(File installDir) throws CoreException
     {
-        Location installLocation = Platform.getInstallLocation();
-        if (installLocation == null)
+        if (installDir == null)
             return;
-
-        URL url = installLocation.getURL();
-        if (url == null)
-            return;
-
-        File installDir = URLUtil.toFile(url);
 
         boolean canWrite = canWrite(installDir);
 
