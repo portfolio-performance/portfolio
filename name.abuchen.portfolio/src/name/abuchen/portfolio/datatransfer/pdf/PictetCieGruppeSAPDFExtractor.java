@@ -83,28 +83,40 @@ public class PictetCieGruppeSAPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("shares") //
-                                                        .match("^(Purchase|Sale) (\\-)?(?<shares>[\\.'\\d]+) .* at [\\w]{3} [\\.'\\d]+$") //
+                                                        .match("^(Purchase|Sale) (\\-)?(?<shares>[\\.'\\d]+) .* at [A-Z]{3} [\\.'\\d]+$") //
                                                         .assign((t, v) -> t.setShares(asShares(v.get("shares")))),
                                         // @formatter:off
                                         // Purchase GBP 180'000 6.516% MS (SX5E/SPX) 22/23 at 100.00%
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("shares") //
-                                                        .match("^(Purchase|Sale) [\\w]{3} (\\-)?(?<shares>[\\.'\\d]+) (?<name>.*) at [\\.'\\d]+%$") //
+                                                        .match("^(Purchase|Sale) [A-Z]{3} (\\-)?(?<shares>[\\.'\\d]+) .* at [\\.'\\d]+%$") //
                                                         .assign((t, v) -> {
                                                             // @formatter:off
                                                             // Percentage quotation, workaround for bonds
                                                             // @formatter:on
-                                                            BigDecimal shares = asExchangeRate(v.get("shares"));
+                                                            var shares = asExchangeRate(v.get("shares"));
                                                             t.setShares(Values.Share.factorize(shares.doubleValue() / 100));
                                                         }))
 
-                        // @formatter:off
-                        // Order date 20.05.2022 at 05:06:32 pm
-                        // @formatter:on
-                        .section("date", "time") //
-                        .match("^Order date (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) at (?<time>[\\d]{2}:[\\d]{2}:[\\d]{2} (am|pm))$") //
-                        .assign((t, v) -> t.setDate(asDate(v.get("date"), v.get("time"))))
+                        .oneOf( //
+                                        // @formatter:off
+                                        // Swiss stamp duty USD -443.99 Execution date 24.05.2022 at 09:51:27 amExecuted quantity 24'728.000
+                                        // Swiss stamp duty GBP -204.97 (XLON)Execution date 02.03.2022 at 02:41:02 pm
+                                        // Interest GBP 0.00 Execution date 23.03.2022 at 08:26:01 amExecuted nominal GBP 180'000
+                                        // Brokerage GBP -127.25 Execution date 14.07.2022 at 07:37:30 pmExecuted quantity -74.620
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("date", "time") //
+                                                        .match("^.*Execution date (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) at (?<time>[\\d]{2}\\:[\\d]{2}\\:[\\d]{2} (am|pm)).*$") //
+                                                        .assign((t, v) -> t.setDate(asDate(v.get("date"), v.get("time")))),
+                                        // @formatter:off
+                                        // Order date 20.05.2022 at 05:06:32 pm
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("date", "time") //
+                                                        .match("^Order date (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) at (?<time>[\\d]{2}\\:[\\d]{2}\\:[\\d]{2} (am|pm))$") //
+                                                        .assign((t, v) -> t.setDate(asDate(v.get("date"), v.get("time")))))
 
                         .oneOf( //
                                         // @formatter:off
