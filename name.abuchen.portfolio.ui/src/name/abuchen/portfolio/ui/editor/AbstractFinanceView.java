@@ -76,7 +76,12 @@ public abstract class AbstractFinanceView
      */
     private ToolBarManager actionToolBar;
 
-    private LocalResourceManager resourceManager = new LocalResourceManager(JFaceResources.getResources());
+    /**
+     * Created together with the view control: the jface resources belong to a UI
+     * thread, and a view can exist before its UI has been created (or in a unit
+     * test running without a display).
+     */
+    private LocalResourceManager resourceManager;
     private List<Menu> contextMenus = new ArrayList<>();
 
     protected abstract String getDefaultTitle();
@@ -176,6 +181,8 @@ public abstract class AbstractFinanceView
 
     public final void createViewControl(Composite parent, boolean hideInformationPane)
     {
+        resourceManager = new LocalResourceManager(JFaceResources.getResources());
+
         top = new Composite(parent, SWT.NONE);
         // on windows, add a spacing line as tables
         // have white top and need a border
@@ -361,7 +368,8 @@ public abstract class AbstractFinanceView
             if (!contextMenu.isDisposed())
                 contextMenu.dispose();
 
-        resourceManager.dispose();
+        if (resourceManager != null)
+            resourceManager.dispose();
 
         context.dispose();
     }
