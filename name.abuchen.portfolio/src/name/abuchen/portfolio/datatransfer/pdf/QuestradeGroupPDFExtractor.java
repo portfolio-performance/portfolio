@@ -128,7 +128,7 @@ public class QuestradeGroupPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("amount") //
                                                         .documentRange("currency") //
-                                                        .match(".*WE ACTED AS AGENT [\\.,\\d]+ [\\.,\\d]+ \\([\\.,\\d]+\\) \\([\\.,\\d]+\\) \\((?<amount>[\\.,\\d]+)\\).*$") //
+                                                        .match("^.*WE ACTED AS AGENT [\\.,\\d]+ [\\.,\\d]+ \\([\\.,\\d]+\\) \\([\\.,\\d]+\\) \\((?<amount>[\\.,\\d]+)\\).*$") //
                                                         .assign((t, v) -> {
                                                             t.setCurrencyCode(v.get("currency"));
                                                             t.setAmount(asAmount(v.get("amount")));
@@ -250,6 +250,7 @@ public class QuestradeGroupPDFExtractor extends AbstractPDFExtractor
         firstRelevantLine.set(pdfTransaction);
 
         pdfTransaction //
+
                         .subject(() -> new AccountTransaction(AccountTransaction.Type.DIVIDENDS))
 
                         // @formatter:off
@@ -268,7 +269,7 @@ public class QuestradeGroupPDFExtractor extends AbstractPDFExtractor
                         // 03-31-2023 03-31-2023    .XEQT UNITS|DIST      ON     19 SHS|REC 03/23/23 - - - - 1.67 - - - -
                         // @formatter:on
                         .section("date") //
-                        .match("^(?<date>[\\d]{2}\\-[\\d]{2}\\-[\\d]{4}) [\\d]{2}\\-[\\d]{2}\\-[\\d]{4}[\\s]*\\.(?<tickerSymbol>[A-Z0-9]{1,6}(?:\\.[A-Z]{1,4})?) UNITS?([\\s]|\\|)DIST.*$") //
+                        .match("^(?<date>[\\d]{2}\\-[\\d]{2}\\-[\\d]{4}) [\\d]{2}\\-[\\d]{2}\\-[\\d]{4}[\\s]*\\.[A-Z0-9]{1,6}(?:\\.[A-Z]{1,4})? UNITS?([\\s]|\\|)DIST.*$") //
                         .assign((t, v) -> t.setDateTime(asDate(v.get("date"), Locale.US)))
 
                         // @formatter:off
