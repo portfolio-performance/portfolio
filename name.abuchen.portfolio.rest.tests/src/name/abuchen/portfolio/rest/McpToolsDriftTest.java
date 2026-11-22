@@ -142,6 +142,12 @@ public class McpToolsDriftTest
             {
                 if (binding.where() == McpTool.Where.QUERY && !accepted.contains(binding.wire()))
                     rejected.add(tool.name() + " -> ?" + binding.wire());
+
+                // a prefixed family is permitted by one declaration: the prefix,
+                // and the star that says any name may stand behind it
+                if (binding.where() == McpTool.Where.QUERY_PREFIX
+                                && !accepted.contains(binding.wire() + Router.DYNAMIC_PARAMETER))
+                    rejected.add(tool.name() + " -> ?" + binding.wire() + Router.DYNAMIC_PARAMETER);
             }
         }
 

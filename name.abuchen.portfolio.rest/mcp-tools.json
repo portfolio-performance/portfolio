@@ -33,7 +33,7 @@
       "operationId": "listInstruments",
       "method": "GET",
       "pathTemplate": "/v1/files/{file}/instruments",
-      "description": "List every instrument in a file — what the application itself labels a *security*: stocks, funds, bonds, crypto, and currency-less series such as an index. Each entry is the complete record, identical to what pp_get_instrument returns, including any custom attributes that are set.\n\nThis is how a name, ISIN, WKN or ticker becomes the `uuid` that every other instrument tool requires - pass it as `query` to get just the matching instruments rather than the whole list, which in a large file is more than one answer can carry: it comes back one page at a time, and `page.nextOffset` says where the next one starts.",
+      "description": "List every instrument in a file — what the application itself labels a *security*: stocks, funds, bonds, crypto, and currency-less series such as an index. Each entry is the complete record, identical to what pp_get_instrument returns, including any custom attributes that are set.\n\nThis is how a name, ISIN, WKN or ticker becomes the `uuid` that every other instrument tool requires - pass `query` for the ones whose name, ISIN, WKN or ticker symbol it matches, `watchlist` for the members of one list, `classification` for those assigned to one class, and `attributes` for those carrying one value for a custom attribute; every narrowing that is given has to hold. A large file holds more instruments than one answer can carry: the list comes back one page at a time, and `page.nextCursor` says where the next one starts.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -45,6 +45,28 @@
             "type": "string",
             "minLength": 1,
             "description": "Only the instruments this finds: one whose name contains it, or whose ISIN, WKN or ticker symbol equals it - ignoring case and surrounding whitespace. Omit it to list every instrument. Use it whenever the user names an instrument: a large file has more instruments than fit in one answer, and a query returns just the ones meant, each with its `uuid`."
+          },
+          "watchlist": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Only the instruments one watchlist holds, spelled exactly as pp_list_watchlists names it - a list has no uuid. A name the file does not have is refused, naming the lists it does: an empty answer about a list that does not exist would read as none of my instruments are in it and send the tool looking elsewhere. Combine with `query`, `classification` or `attributes` - every narrowing given has to hold."
+          },
+          "classification": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Only the instruments assigned to one class, by its `class` id from the `classes` of pp_list_taxonomies - the same id pp_assign_vehicle takes. An id no class of the file has is refused. Where several taxonomies define one id, an instrument counts if any of them assigns it there."
+          },
+          "attributes": {
+            "type": "object",
+            "description": "Only the instruments carrying one value for one custom attribute, keyed by attribute id as pp_list_attribute_types gives it, as in {\"4f2a…\": \"3\"}. The comparison runs against what this API reports for the instrument, in that same form - a number as a number, a boolean as true or false, a date as yyyy-MM-dd, a limit price as <=62.5, text exactly and case-sensitively. The empty string asks for the instruments holding no value for that attribute. An id the file does not declare, or one whose value this API never hands out (an image), is refused.",
+            "additionalProperties": {
+              "type": [
+                "string",
+                "number",
+                "boolean",
+                "null"
+              ]
+            }
           },
           "cursor": {
             "type": "string",
@@ -77,6 +99,21 @@
           "arg": "query",
           "where": "query",
           "wire": "query"
+        },
+        {
+          "arg": "watchlist",
+          "where": "query",
+          "wire": "watchlist"
+        },
+        {
+          "arg": "classification",
+          "where": "query",
+          "wire": "classification"
+        },
+        {
+          "arg": "attributes",
+          "where": "query_prefix",
+          "wire": "attribute:"
         },
         {
           "arg": "cursor",

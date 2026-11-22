@@ -75,6 +75,18 @@ public final class McpDispatch
                     if (wireValue != null)
                         query.put(binding.wire(), wireValue);
                     break;
+                case QUERY_PREFIX:
+                    // one parameter per key, because the names are the file's: a
+                    // custom attribute is addressed by its id, which no catalog
+                    // can list in advance. A null and an empty string both say
+                    // "no value for this attribute", which is what the endpoint
+                    // reads an empty parameter as.
+                    if (value.isJsonObject())
+                        for (var entry : value.getAsJsonObject().entrySet())
+                            query.put(binding.wire() + entry.getKey(),
+                                            entry.getValue().isJsonNull() ? "" //$NON-NLS-1$
+                                                            : asText(entry.getValue()));
+                    break;
                 case BODY:
                     body.add(binding.wire(), value);
                     break;
