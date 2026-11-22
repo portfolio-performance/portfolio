@@ -731,6 +731,28 @@ public class TradeRepublicCSVExtractorTest
     }
 
     @Test
+    public void testBonusWithTax() throws IOException
+    {
+        var client = new Client();
+        var extractor = new TradeRepublicCSVExtractor(client);
+        var errors = new ArrayList<Exception>();
+        var filename = "TransactionExportBonusTax.csv";
+        var results = TestExtractorHelper.runExtractor(extractor, client, getClass(), filename, errors);
+
+        assertThat(errors, empty());
+        assertThat(countAccountTransactions(results), is(3L));
+        assertThat(results.size(), is(3));
+        new AssertImportActions().check(results, "EUR");
+
+        assertThat(results, hasItem(deposit(hasDate("2025-10-24T10:00"), hasSource(filename), //
+                        hasNote("Fixed income bonus"), hasAmount("EUR", 10.00))));
+        assertThat(results, hasItem(taxes(hasDate("2025-10-24T10:00"), hasSource(filename), //
+                        hasNote("Fixed income bonus"), hasAmount("EUR", 2.00))));
+        assertThat(results, hasItem(deposit(hasDate("2025-10-25T10:00"), hasSource(filename), //
+                        hasNote("Untaxed bonus"), hasAmount("EUR", 2.00))));
+    }
+
+    @Test
     public void testTransactionReport06() throws IOException
     {
         var client = new Client();

@@ -1,0 +1,3 @@
+datetime,date,account_type,category,type,asset_class,name,symbol,shares,price,amount,fee,tax,currency,original_amount,original_currency,fx_rate,description,transaction_id,counterparty_name,counterparty_iban,payment_reference,mcc_code
+2025-10-24T10:00:00Z,2025-10-24,DEFAULT,CASH,BONUS,,,,,,10.00,,-2.00,EUR,,,,Fixed income bonus,example-1,,,,
+2025-10-25T10:00:00Z,2025-10-25,DEFAULT,CASH,BONUS,,,,,,2.00,,,EUR,,,,Untaxed bonus,example-2,,,,

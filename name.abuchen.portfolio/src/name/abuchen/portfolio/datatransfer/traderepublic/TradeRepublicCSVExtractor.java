@@ -301,6 +301,10 @@ public class TradeRepublicCSVExtractor implements Extractor
             case "GIFT":
                 processCashGift(csvRecord, source, items);
                 break;
+            case "BONUS":
+                processCashBySign(csvRecord, source, items);
+                processCashTaxOptimization(csvRecord, source, items);
+                break;
             case "PRIVATE_MARKET_BUY":
                 processTradingBuySell(csvRecord, PortfolioTransaction.Type.BUY, securityCache, source, items);
                 break;
@@ -314,7 +318,6 @@ public class TradeRepublicCSVExtractor implements Extractor
             case "ADDITIONAL_INCOME":
             case "BENEFITS_SAVEBACK":
             case "BOND_ACCRUED_INTEREST":
-            case "BONUS":
             case "CAPITAL_INC_CASH":
             case "CARD_ORDERING_FEE":
             case "CARD_TRANSACTION":
