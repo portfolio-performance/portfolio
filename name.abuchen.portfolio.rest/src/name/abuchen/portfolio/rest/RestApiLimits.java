@@ -16,9 +16,10 @@ import name.abuchen.portfolio.PortfolioLog;
  * memory.
  * <p/>
  * Likewise {@value #MCP_MAX_RESULT_CHARS_PROPERTY}: how many characters one MCP
- * tool result may hold. The default suits Claude Desktop; a client that keeps
- * less - Claude Code, or another agent - would otherwise cut a result blindly
- * where the server would have sent a page and said where the next one starts.
+ * tool result may hold. The default is the floor, so the narrowest client works
+ * without configuration: one that keeps less than the result sends would cut it
+ * blindly, where the server would have sent a page and said where the next one
+ * starts. A client measured roomier raises the property.
  */
 public final class RestApiLimits
 {
@@ -27,10 +28,13 @@ public final class RestApiLimits
     public static final String MCP_MAX_RESULT_CHARS_PROPERTY = "name.abuchen.portfolio.rest.mcpMaxResultChars"; //$NON-NLS-1$
 
     /**
-     * Under Claude Desktop's measured 150,000 truncation point, roughly 25,000
-     * tokens, and enough for a personal portfolio on every collection.
+     * The floor, on purpose: roughly 2,500 tokens, which every measured client
+     * carries whole. Anything larger comes back as a page with a cursor instead
+     * of as a cut. Claude Desktop cuts at 150,000 and can be configured up to
+     * {@value #MAX_MCP_MAX_RESULT_CHARS}; an agent client that cannot be
+     * configured has to be met where it is.
      */
-    public static final int DEFAULT_MCP_MAX_RESULT_CHARS = 100_000;
+    public static final int DEFAULT_MCP_MAX_RESULT_CHARS = 10_000;
     /** below this, guidance and one page of a list no longer fit together */
     public static final int MIN_MCP_MAX_RESULT_CHARS = 10_000;
     /** Claude Desktop cuts what is larger, and so does every client measured so far */

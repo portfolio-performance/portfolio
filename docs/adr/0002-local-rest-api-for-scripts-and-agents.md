@@ -107,9 +107,10 @@ becomes a later thin adapter over the same service layer. The individual decisio
   before. A page continues after the key of its cursor, not at a count, so an edit between two pages
   neither skips nor repeats an item. Over MCP, a list larger than one result is sent as many whole
   items as fit, with `page` and a line naming the next `cursor`, instead of being cut - a client that cuts a result itself
-  loses what it cut, and a cut answer cannot say where the rest is. The result size is 100,000
-  characters by default (Claude Desktop cuts at 150,000) and can be lowered with the system property
-  `name.abuchen.portfolio.rest.mcpMaxResultChars` for a client that keeps less; like the slots, it is
+  loses what it cut, and a cut answer cannot say where the rest is. The result size is 10,000
+  characters by default, the floor and small enough for any measured client; it is raised, not lowered,
+  with the system property `name.abuchen.portfolio.rest.mcpMaxResultChars` (up to 150,000) for a client
+  measured roomier such as Claude Desktop; like the slots, it is
   no preference, because only someone who knows their client's limit can set it sensibly.
 - **The API vocabulary is deliberately more general than the model** (`Security` → *instrument*,
   `Portfolio` → *investment account*), because the contract cannot be renamed once clients exist.

@@ -111,10 +111,10 @@ exists. Same switch, same port, same tokens; there is nothing extra to install.
   as do, a `page` (`limit`, `total`, `nextCursor`) and a line before the items naming the `cursor`
   to ask for next. Over MCP the lists are always in the order paging uses — instruments by `uuid` —
   so that any page can be continued. Any other result cut to fit ends after a whole row, and says so.
-- **One result holds at most 100,000 characters** — under Claude Desktop's measured 150,000. A
-  client that keeps less, such as Claude Code (25,000 tokens), cuts a larger result blindly; set the
-  limit below what it keeps, and the server sends a page or a marked cut instead:
-  `-Dname.abuchen.portfolio.rest.mcpMaxResultChars=45000` in `PortfolioPerformance.ini` after
+- **One result holds at most 10,000 characters** — the floor, and what every measured client carries
+  whole. A larger result is never cut: it comes back as a page with a cursor. A client measured
+  roomier, such as Claude Desktop (cuts at 150,000), can raise the limit so fewer collections need
+  paging: `-Dname.abuchen.portfolio.rest.mcpMaxResultChars=100000` in `PortfolioPerformance.ini` after
   `-vmargs`, from 10,000 to 150,000, read when the server starts.
 - **Deliberately outside `/v1`,** because MCP negotiates its own version, and therefore outside the
   additive-only promise.

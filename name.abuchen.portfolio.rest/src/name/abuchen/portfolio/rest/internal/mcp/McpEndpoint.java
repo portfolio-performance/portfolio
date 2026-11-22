@@ -69,11 +69,14 @@ import name.abuchen.portfolio.rest.internal.VersionHandler;
 public final class McpEndpoint
 {
     /**
-     * The default cap on what one tool call may return. Sits under Claude
-     * Desktop's measured 150,000 truncation point, is roughly 25,000 tokens, and
-     * clears a personal portfolio on every collection. Revise on measured
-     * evidence. The cap in force is {@link RestApiLimits#mcpMaxResultChars()},
-     * which a client that keeps less can lower.
+     * The default cap on what one tool call may return. Set at the floor of
+     * {@link RestApiLimits#MCP_MAX_RESULT_CHARS_PROPERTY} - roughly 2,500 tokens
+     * - so that a client which cannot be configured still gets whole results:
+     * anything larger arrives as a page whose `page.nextCursor` says where the
+     * rest starts. Clients measured roomier, Claude Desktop among them, raise
+     * the property. Revise on measured evidence. The cap in force is
+     * {@link RestApiLimits#mcpMaxResultChars()}; this constant is only its
+     * default.
      */
     public static final int MAX_RESULT_CHARS = RestApiLimits.DEFAULT_MCP_MAX_RESULT_CHARS;
 

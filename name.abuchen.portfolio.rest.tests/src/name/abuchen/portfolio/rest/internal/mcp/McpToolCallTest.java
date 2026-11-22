@@ -353,7 +353,9 @@ public class McpToolCallTest
         var calls = 0;
         do
         {
-            assertThat("the pages must end", ++calls, is(lessThan(10)));
+            // a walk that needs more calls than there are items is looping: one
+            // page always holds at least one row, whatever the cap in force
+            assertThat("the pages must end", ++calls, is(lessThan(client.getSecurities().size() + 2)));
             var arguments = next == null ? "{\"file\":\"sample\"}"
                             : "{\"file\":\"sample\",\"cursor\":\"" + next + "\"}";
             var body = body(text(call("pp_list_instruments", arguments)));
@@ -569,8 +571,11 @@ public class McpToolCallTest
     {
         var account = new AccountBuilder().addTo(client);
         // in a table the names dominate, and narrowing cannot shorten them: many
-        // instruments with short names are what makes the groups count
-        for (int ii = 0; ii < 1000; ii++)
+        // instruments with short names are what makes the groups count. The count
+        // is calibrated against the cap in force - 1,000 of them rendered narrowed
+        // run to 76,549 characters, far past 10,000 - so that the full report no
+        // longer fits while the narrowed one still does.
+        for (int ii = 0; ii < 90; ii++)
         {
             var traded = new SecurityBuilder().addPrice("2024-06-01", Values.Quote.factorize(1000)).addTo(client);
             traded.setName("ACME " + ii);

@@ -69,8 +69,12 @@ public class RestApiLimitsTest
     @Test
     public void testTheMcpResultSizeIsTheDefaultOrTheValueWithinItsBounds()
     {
-        assertThat(RestApiLimits.resolveMaxResultChars(null, false), is(100_000));
-        assertThat(RestApiLimits.resolveMaxResultChars(" ", false), is(100_000));
+        // the default is the floor, on purpose: an agent client that cannot be
+        // configured has to be met where it is, and a page always travels
+        assertThat(RestApiLimits.DEFAULT_MCP_MAX_RESULT_CHARS, is(RestApiLimits.MIN_MCP_MAX_RESULT_CHARS));
+
+        assertThat(RestApiLimits.resolveMaxResultChars(null, false), is(10_000));
+        assertThat(RestApiLimits.resolveMaxResultChars(" ", false), is(10_000));
         assertThat(RestApiLimits.resolveMaxResultChars("45000", false), is(45_000));
         assertThat(RestApiLimits.resolveMaxResultChars(" 45_000 ", false), is(45_000));
     }
@@ -81,7 +85,7 @@ public class RestApiLimitsTest
     {
         assertThat(RestApiLimits.resolveMaxResultChars("500", false), is(10_000));
         assertThat(RestApiLimits.resolveMaxResultChars("1000000", false), is(150_000));
-        assertThat(RestApiLimits.resolveMaxResultChars("big", false), is(100_000));
-        assertThat(RestApiLimits.resolveMaxResultChars("45000.5", false), is(100_000));
+        assertThat(RestApiLimits.resolveMaxResultChars("big", false), is(10_000));
+        assertThat(RestApiLimits.resolveMaxResultChars("45000.5", false), is(10_000));
     }
 }
