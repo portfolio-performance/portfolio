@@ -770,6 +770,55 @@ public class TradeRepublicCSVExtractorTest
     }
 
     @Test
+    public void testTransactionReport07() throws IOException
+    {
+        var client = new Client();
+        var extractor = new TradeRepublicCSVExtractor(client);
+        var errors = new ArrayList<Exception>();
+        var filename = "TransactionExport07.csv";
+
+        var results = TestExtractorHelper.runExtractor(extractor, client, getClass(), filename, errors);
+
+        assertThat(errors, empty());
+
+        // BONUS rows: PP cannot carry a tax as a unit of a deposit, therefore
+        // the withheld tax becomes a TAXES transaction of its own (issue #6405)
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(3L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(3));
+
+        new AssertImportActions().check(results, "EUR");
+
+        // BONUS 2025-10-24: amount=10.00, tax=-2.00 -> gross deposit of 10.00,
+        // the tax of 2.00 leaves 8.00 on the account
+        assertThat(results, hasItem(deposit( //
+                        hasDate("2025-10-24T10:00:00"), hasShares(0.00), //
+                        hasSource(filename), //
+                        hasNote("Cash bonus"), //
+                        hasAmount("EUR", 10.00), hasGrossValue("EUR", 10.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        assertThat(results, hasItem(taxes( //
+                        hasDate("2025-10-24T10:00:00"), hasShares(0.00), //
+                        hasSource(filename), //
+                        hasNote("Cash bonus"), //
+                        hasAmount("EUR", 2.00), hasGrossValue("EUR", 2.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // BONUS 2025-11-12: no tax -> stays a single deposit
+        assertThat(results, hasItem(deposit( //
+                        hasDate("2025-11-12T09:30:00"), hasShares(0.00), //
+                        hasSource(filename), //
+                        hasNote("Cash bonus"), //
+                        hasAmount("EUR", 25.00), hasGrossValue("EUR", 25.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+    }
+
+    @Test
     public void testTransactionReport06WithByteOrderMark() throws IOException
     {
         var client = new Client();
