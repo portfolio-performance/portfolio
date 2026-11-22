@@ -1134,7 +1134,7 @@ paths:
                     description: Always `true`; a start that did not happen is an error, not this answer.
                   savedToDisk:
                     type: boolean
-                    description: Always `false` - the file holds unsaved changes, and saving stays the user's.
+                    description: Always `false` - this call never saves. Whatever the feeds bring, the file is left holding it, and saving stays the user's.
         "400":
           $ref: "#/components/responses/BadRequest"
         "401":
@@ -1616,7 +1616,10 @@ paths:
                           type: string
                           description: |
                             The only thing a watchlist is known by - it has no
-                            uuid, and names need not be unique.
+                            uuid. A file the user edited can hold two lists
+                            under one name; this API refuses to create the
+                            second one (`name-taken`), so a name it wrote is
+                            unique.
                         instrumentCount:
                           type: integer
                         instruments:
@@ -1732,9 +1735,11 @@ paths:
       tags: [Watchlists]
       summary: Put instruments into a watchlist and take others out
       description: |
-        Both directions in one request, so that moving a name from one list to
-        another costs one call instead of two - and so that the surface does not
-        grow an operation per direction.
+        Both directions in one request, so that putting an instrument into a
+        list and taking another out of it costs one call instead of two - and
+        so that the surface does not grow an operation per direction. One call
+        changes one list: moving an instrument between two lists is two calls,
+        one to each.
 
         The list is named in the body, not addressed by uuid, because it has no
         uuid; a name the file does not have is refused as `409` with the reason
@@ -1927,8 +1932,11 @@ paths:
         What a class holds is the application's own reckoning and not merely the
         vehicles tagged to it: a cash account assigned to the class counts as
         money, and the settlement cash of a securities account is shared out
-        between the classes its holdings belong to. The classes of one tree
-        therefore add back up to the whole file. It follows that an instrument's
+        between the classes its holdings belong to. What a class reports is
+        therefore part of the file, and the classes of one tree come to the
+        whole of it only over what is assigned somewhere in that tree: a vehicle
+        belonging to no class of it appears in none of their reports. It follows
+        that an instrument's
         own row in `/performance/instruments` need not match its share of a
         class: the cash belongs to the class, not to the instrument.
 
@@ -2214,9 +2222,21 @@ paths:
         '400':
           description: A named account or instrument is not of this file.
           content:
-            application/json:
+            application/problem+json:
               schema:
                 $ref: "#/components/schemas/Problem"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "500":
+          $ref: "#/components/responses/InternalError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
 
   /v1/files/{file}/holdings:
     parameters:
@@ -2603,6 +2623,12 @@ paths:
                                   `0.6` at 60 %. Not a target - and not the slice
                                   the class's pie chart draws, which follows from
                                   the value times this factor.
+                              cursor:
+                                type: string
+                                description: |
+                                  Present when one class's vehicles are paged: send
+                                  it, or `page.nextCursor`, as `cursor` to continue
+                                  after this vehicle.
                         cursor:
                           type: string
                           description: |
@@ -3671,9 +3697,21 @@ paths:
             names no booking, or the two dates ask for a period the other way
             round.
           content:
-            application/json:
+            application/problem+json:
               schema:
                 $ref: "#/components/schemas/Problem"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "500":
+          $ref: "#/components/responses/InternalError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
 
   /v1/files/{file}/trades:
     parameters:
