@@ -31,16 +31,22 @@ import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countIt
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countSecurities;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countSkippedItems;
 import static org.hamcrest.CoreMatchers.hasItem;
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.collection.IsEmptyCollection.empty;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.function.UnaryOperator;
 
 import org.junit.Test;
 
 import name.abuchen.portfolio.Messages;
+import name.abuchen.portfolio.datatransfer.Extractor.InputFile;
 import name.abuchen.portfolio.datatransfer.TestExtractorHelper;
 import name.abuchen.portfolio.datatransfer.actions.AssertImportActions;
 import name.abuchen.portfolio.model.Client;
@@ -761,5 +767,115 @@ public class TradeRepublicCSVExtractorTest
                         hasNote("Tax Optimisation"), //
                         hasAmount("EUR", 4.21), hasGrossValue("EUR", 4.21), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testTransactionReport07() throws IOException
+    {
+        var client = new Client();
+        var extractor = new TradeRepublicCSVExtractor(client);
+        var errors = new ArrayList<Exception>();
+        var filename = "TransactionExport07.csv";
+
+        var results = TestExtractorHelper.runExtractor(extractor, client, getClass(), filename, errors);
+
+        assertThat(errors, empty());
+
+        // BONUS rows: PP cannot carry a tax as a unit of a deposit, therefore
+        // the withheld tax becomes a TAXES transaction of its own (issue #6405)
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(3L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(3));
+
+        new AssertImportActions().check(results, "EUR");
+
+        // BONUS 2025-10-24: amount=10.00, tax=-2.00 -> gross deposit of 10.00,
+        // the tax of 2.00 leaves 8.00 on the account
+        assertThat(results, hasItem(deposit( //
+                        hasDate("2025-10-24T10:00:00"), hasShares(0.00), //
+                        hasSource(filename), //
+                        hasNote("Cash bonus"), //
+                        hasAmount("EUR", 10.00), hasGrossValue("EUR", 10.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        assertThat(results, hasItem(taxes( //
+                        hasDate("2025-10-24T10:00:00"), hasShares(0.00), //
+                        hasSource(filename), //
+                        hasNote("Cash bonus"), //
+                        hasAmount("EUR", 2.00), hasGrossValue("EUR", 2.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // BONUS 2025-11-12: no tax -> stays a single deposit
+        assertThat(results, hasItem(deposit( //
+                        hasDate("2025-11-12T09:30:00"), hasShares(0.00), //
+                        hasSource(filename), //
+                        hasNote("Cash bonus"), //
+                        hasAmount("EUR", 25.00), hasGrossValue("EUR", 25.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testTransactionReport06WithByteOrderMark() throws IOException
+    {
+        var client = new Client();
+        var extractor = new TradeRepublicCSVExtractor(client);
+        var errors = new ArrayList<Exception>();
+        var filename = "TransactionExport06.csv";
+
+        // same file as saved by an editor that writes a byte order mark
+        var inputFile = modifiedCopy(filename, content -> "\uFEFF" + content);
+        var results = TestExtractorHelper.runExtractor(extractor, client, List.of(inputFile), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, "EUR");
+
+        assertThat(results, hasItem(taxes( //
+                        hasDate("2026-02-15"), hasShares(0.00), //
+                        hasSource(filename), //
+                        hasNote("Tax Optimisation"), //
+                        hasAmount("EUR", 4.21), hasGrossValue("EUR", 4.21), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testMalformedFileIsReportedAsError() throws IOException
+    {
+        var client = new Client();
+        var extractor = new TradeRepublicCSVExtractor(client);
+        var errors = new ArrayList<Exception>();
+        var filename = "TransactionExport06.csv";
+
+        // an unclosed quote makes the CSV parser fail while reading the
+        // records
+        var inputFile = modifiedCopy(filename, content -> content.replace("Tax Optimisation", "\"Tax Optimisation"));
+        var results = TestExtractorHelper.runExtractor(extractor, client, List.of(inputFile), errors);
+
+        assertThat(errors.size(), is(1));
+        assertThat(errors.get(0), instanceOf(IOException.class));
+        assertThat(results, empty());
+    }
+
+    private InputFile modifiedCopy(String filename, UnaryOperator<String> modification) throws IOException
+    {
+        var resource = TestExtractorHelper.loadResourceAsInputFile(getClass(), filename);
+        var content = Files.readString(resource.getFile().toPath(), StandardCharsets.UTF_8);
+
+        var file = Files.createTempFile("pp-test-", "-" + filename).toFile();
+        file.deleteOnExit();
+        Files.writeString(file.toPath(), modification.apply(content), StandardCharsets.UTF_8);
+
+        return new InputFile(file)
+        {
+            @Override
+            public String getName()
+            {
+                return filename;
+            }
+        };
     }
 }
