@@ -499,18 +499,65 @@ paths:
       tags: [Instruments]
       summary: List the instruments in a file
       description: |
-        Every instrument in the file, or with `query` only the ones it finds.
-        A large file can hold hundreds of instruments; `query` is how a client
-        gets from a name, ISIN, WKN or ticker symbol to the `uuid` without
-        reading them all.
+        Every instrument in the file, or only the ones a narrowing finds: `query`
+        by name, ISIN, WKN or ticker symbol, `watchlist` by membership of one
+        list, `classification` by assignment to one class, and one parameter per
+        custom attribute. A large file can hold hundreds of instruments; these are
+        how a client reaches the handful it means without reading them all.
 
-        With `cursor` or `limit` the response is one page of that list, in
+        Every narrowing that is given has to hold - they are asked one after the
+        other, never instead of each other. `query` and an attribute can be sent
+        together; a watchlist narrows to one list and a classification to one class.
+
+        With `cursor` or `limit` the response is one page of that narrowed list, in
         the order of the instruments' `uuid`, and says in `page` how to go on.
-        Without either, the whole list in the file's order.
+        Without either, the whole list in the file's order. A cursor belongs to its
+        narrowing: the next page of a differently narrowed list is refused rather
+        than quietly skipping instruments.
       parameters:
         - $ref: "#/components/parameters/InstrumentQuery"
+        - name: watchlist
+          in: query
+          required: false
+          description: |
+            Only the instruments one watchlist holds, spelled exactly as
+            `/watchlists` names it - a list has no uuid. A name the file does not
+            have is refused as `invalid-value`, naming the lists it does have: an
+            empty answer about a list that does not exist would read as "none of
+            my instruments are in it" and send the caller looking elsewhere.
+          schema:
+            type: string
+        - name: classification
+          in: query
+          required: false
+          description: |
+            Only the instruments assigned to one class, by its `id` from the
+            `classes` of `/taxonomies`. The id is unique within its own tree, so
+            where several taxonomies define the same id an instrument counts if
+            any of them assigns it there. An id no class of the file has is
+            refused as `invalid-value` for the same reason as a watchlist name.
+          schema:
+            type: string
         - $ref: "#/components/parameters/Cursor"
         - $ref: "#/components/parameters/Limit"
+      # one parameter per custom attribute, named by its id - the ids belong to
+      # the file, so they cannot be declared as fixed parameters of an operation
+      x-dynamic-query-parameters:
+        - name: attribute:*
+          in: query
+          description: |
+            Only the instruments carrying one value for one custom attribute, as
+            `attribute:<id>` where the id is what `/instruments/attribute-types`
+            gives. The value is compared to what this API reports for the
+            instrument, in the form it reports it in: a number as a number
+            (`amount=1234.50` finds what reads back as `1234.5`), a boolean as
+            `true` or `false`, a date as ISO-8601, a limit price as `<=62.5`,
+            text exactly and case-sensitively. An empty parameter asks for the
+            instruments that hold no value for it at all.
+            An id the file does not declare, an attribute of no instrument, and an
+            attribute whose value this API never hands out are all refused.
+          schema:
+            type: string
       responses:
         "200":
           description: The instruments in the file

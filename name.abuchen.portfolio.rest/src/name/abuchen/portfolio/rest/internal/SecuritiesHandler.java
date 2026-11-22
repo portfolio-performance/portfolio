@@ -1,15 +1,22 @@
 package name.abuchen.portfolio.rest.internal;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.EnumSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
+import java.util.function.Predicate;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 
+import name.abuchen.portfolio.model.AttributeFieldType;
 import name.abuchen.portfolio.model.AttributeType;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Security;
@@ -47,6 +54,47 @@ public final class SecuritiesHandler
     {}
 
     public record PatchResult(JsonElement entity, String instrumentName, List<InstrumentChangeLog.Change> changes)
+    {}
+
+    /** the parameter behind which one custom attribute is named: {@code attribute:<id>} */
+    public static final String ATTRIBUTE_PARAMETER = "attribute:"; //$NON-NLS-1$
+
+    /**
+     * How a caller narrows an instrument list beyond the free-text {@code query}:
+     * to the vehicles one watchlist holds, to those assigned to one class, or to
+     * those carrying one value for a custom attribute. Keys of {@code attributes}
+     * are attribute ids as {@code pp_list_attribute_types} gives them, values the
+     * raw text of the parameter - a query string carries text and nothing else.
+     */
+    public record Filters(String watchlist, String classification, Map<String, String> attributes)
+    {
+        /** nothing narrowed at all */
+        public static final Filters NONE = new Filters(null, null, Map.of());
+    }
+
+    /** the narrowing a request names, read out of its query parameters */
+    public static Filters filtersOf(Request request)
+    {
+        Map<String, String> attributes = Map.of();
+
+        for (var entry : request.queryParams().entrySet())
+        {
+            if (!entry.getKey().startsWith(ATTRIBUTE_PARAMETER))
+                continue;
+
+            if (attributes.isEmpty())
+                attributes = new LinkedHashMap<>();
+            attributes.put(entry.getKey().substring(ATTRIBUTE_PARAMETER.length()), entry.getValue());
+        }
+
+        return new Filters(request.queryParam("watchlist"), request.queryParam("classification"), attributes); //$NON-NLS-1$ //$NON-NLS-2$
+    }
+
+    /**
+     * One narrowing that resolved: what it contributes to a cursor's scope, and
+     * how an instrument is weighed against it.
+     */
+    private record Criterion(String scope, Predicate<Security> test)
     {}
 
     /**
@@ -123,6 +171,23 @@ public final class SecuritiesHandler
     public static JsonElement list(Client client, String fileId, String query, String cursorParam,
                     String limitParam)
     {
+        return list(client, fileId, query, Filters.NONE, cursorParam, limitParam);
+    }
+
+    /**
+     * As above, narrowed by {@code filters} first and paged after: a page is a
+     * page of the narrowed list, so an instrument that does not pass a criterion
+     * is not counted in {@code total} either.
+     * <p/>
+     * Every criterion is validated against the file before anything is answered -
+     * a watchlist the file does not hold, a class id it does not define and an
+     * attribute id it does not declare are refusals, not empty results, because
+     * an empty answer to a question about something that does not exist reads as
+     * "none of your instruments match" and sends the caller off looking elsewhere.
+     */
+    public static JsonElement list(Client client, String fileId, String query, Filters filters, String cursorParam,
+                    String limitParam)
+    {
         var errors = new ArrayList<ApiException.FieldError>();
 
         var wanted = query == null ? null : query.strip();
@@ -130,10 +195,15 @@ public final class SecuritiesHandler
             errors.add(new ApiException.FieldError("query", "invalid-value", //$NON-NLS-1$ //$NON-NLS-2$
                             "query must not be blank; omit it to list every instrument")); //$NON-NLS-1$
 
+        var criteria = resolve(client, filters == null ? Filters.NONE : filters, errors);
+
         // the query matches ignoring case: queries that differ in case are one list
-        var scope = "file=" + (fileId == null ? "" : fileId) + "|query=" //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-                        + (wanted == null ? "" : wanted.toLowerCase(Locale.ROOT)); //$NON-NLS-1$
-        var paging = Paging.parse(Paging.Kind.INSTRUMENTS, scope, cursorParam, limitParam, errors);
+        var scope = new StringBuilder("file=").append(fileId == null ? "" : fileId) //$NON-NLS-1$ //$NON-NLS-2$
+                        .append("|query=").append(wanted == null ? "" : wanted.toLowerCase(Locale.ROOT)); //$NON-NLS-1$ //$NON-NLS-2$
+        for (var criterion : criteria)
+            scope.append('|').append(criterion.scope());
+
+        var paging = Paging.parse(Paging.Kind.INSTRUMENTS, scope.toString(), cursorParam, limitParam, errors);
 
         if (!errors.isEmpty())
             throw ApiException.badRequest(errors);
@@ -146,12 +216,196 @@ public final class SecuritiesHandler
                             .filter(security -> matches(security, wanted, lower)) //
                             .toList();
         }
+        for (var criterion : criteria)
+            securities = securities.stream().filter(criterion.test()).toList();
 
         // only the page is rendered; the rest of the list is counted, not built
         var response = new JsonObject();
         paging.apply(Paging.Kind.INSTRUMENTS, response, "items", securities, Security::getUUID, //$NON-NLS-1$
                         security -> EntityJson.toJson(client, security));
         return response;
+    }
+
+    /**
+     * The narrowing turned into tests, collecting what cannot resolve on the way.
+     * A criterion that resolves contributes the canonical text it was given, so
+     * that a cursor is bound to the narrowing it was produced under: the same
+     * page of a differently narrowed list is refused rather than silently skipped.
+     */
+    private static List<Criterion> resolve(Client client, Filters filters, List<ApiException.FieldError> errors)
+    {
+        var criteria = new ArrayList<Criterion>();
+
+        if (filters.watchlist() != null)
+        {
+            var named = filters.watchlist().strip();
+            var lists = client.getWatchlists().stream() //
+                            .filter(list -> named.equals(list.getName())) //
+                            .toList();
+            if (named.isEmpty() || lists.isEmpty())
+            {
+                errors.add(new ApiException.FieldError("watchlist", "invalid-value", //$NON-NLS-1$ //$NON-NLS-2$
+                                "no watchlist of this file is named \"" + named + "\"" + namesOfWatchlists(client))); //$NON-NLS-1$
+            }
+            else
+            {
+                // more than one under the name is possible in a file the
+                // application wrote: an instrument counts if any of them holds it
+                criteria.add(new Criterion("watchlist=" + named, //$NON-NLS-1$
+                                security -> lists.stream().anyMatch(list -> list.getSecurities().contains(security))));
+            }
+        }
+
+        if (filters.classification() != null)
+        {
+            var id = filters.classification().strip();
+            var classes = client.getTaxonomies().stream() //
+                            .flatMap(taxonomy -> taxonomy.getAllClassifications().stream()) //
+                            .filter(classification -> id.equals(classification.getId())) //
+                            .toList();
+            if (id.isEmpty() || classes.isEmpty())
+            {
+                errors.add(new ApiException.FieldError("classification", "invalid-value", //$NON-NLS-1$ //$NON-NLS-2$
+                                "no class of this file has the id \"" + id //$NON-NLS-1$
+                                                + "\"; pp_list_taxonomies gives the classes and their ids"));
+            }
+            else
+            {
+                criteria.add(new Criterion("classification=" + id, security -> classes.stream() //
+                                .anyMatch(classification -> classification.getAssignments().stream().anyMatch(
+                                                assignment -> security.getUUID()
+                                                                .equals(assignment.getInvestmentVehicle().getUUID())))));
+            }
+        }
+
+        for (var entry : filters.attributes().entrySet())
+            resolveAttribute(client, entry.getKey(), entry.getValue(), errors, criteria);
+
+        return criteria;
+    }
+
+    /**
+     * One {@code attribute:<id>} parameter. The comparison runs on the wire form
+     * the API reports the value as, in both directions, so that an instrument is
+     * found by exactly the text a caller could read back out of it - which is why
+     * an attribute whose value never travels out cannot be filtered on either.
+     */
+    private static void resolveAttribute(Client client, String id, String text,
+                    List<ApiException.FieldError> errors, List<Criterion> criteria)
+    {
+        var field = ATTRIBUTE_PARAMETER + id;
+
+        var type = client.getSettings().getAttributeTypes().filter(candidate -> id.equals(candidate.getId()))
+                        .findAny().orElse(null);
+        if (type == null)
+        {
+            errors.add(new ApiException.FieldError(field, "unknown-attribute", //$NON-NLS-1$
+                            "no instrument attribute of this file has that id; pp_list_attribute_types lists them"));
+            return;
+        }
+        if (!type.supports(Security.class))
+        {
+            errors.add(new ApiException.FieldError(field, "attribute-not-applicable", //$NON-NLS-1$
+                            "attribute does not apply to instruments")); //$NON-NLS-1$
+            return;
+        }
+
+        var fieldType = AttributeCodec.fieldType(type);
+        if (fieldType == null || !AttributeCodec.isReadable(fieldType))
+        {
+            errors.add(new ApiException.FieldError(field, "unsupported-attribute-type", //$NON-NLS-1$
+                            "the value of this attribute type is not part of the API, so it cannot be filtered on"));
+            return;
+        }
+
+        if (text == null || text.isEmpty())
+        {
+            // the empty parameter asks for what holds no value: a text attribute
+            // can hold anything, so no other spelling of "unset" would be reachable
+            criteria.add(new Criterion(field + "=", security -> valueOf(security, id) == null)); //$NON-NLS-1$
+            return;
+        }
+
+        final JsonElement expected;
+        try
+        {
+            expected = AttributeCodec.encode(fieldType, AttributeCodec.decode(fieldType, wireOf(fieldType, text)));
+        }
+        catch (AttributeCodec.InvalidValueException e)
+        {
+            errors.add(new ApiException.FieldError(field, "invalid-value", e.getMessage())); //$NON-NLS-1$
+            return;
+        }
+
+        criteria.add(new Criterion(field + "=" + expected, security -> {
+            var stored = valueOf(security, id);
+            if (stored == null)
+                return false;
+
+            try
+            {
+                return expected.equals(AttributeCodec.encode(fieldType, stored));
+            }
+            catch (RuntimeException e)
+            {
+                // a stored value inconsistent with its declared type cannot be
+                // compared, and is left out of the answer like it is left out of
+                // an instrument's own attributes
+                return false;
+            }
+        }));
+    }
+
+    /** the stored value of one attribute, as the API reads it: keyed by attribute id, absent when unset */
+    private static Object valueOf(Security security, String attributeId)
+    {
+        return security.getAttributes().getMap().get(attributeId);
+    }
+
+    private static final Set<AttributeFieldType> NUMERIC = EnumSet.of(AttributeFieldType.AMOUNT,
+                    AttributeFieldType.AMOUNTPLAIN, AttributeFieldType.QUOTE, AttributeFieldType.SHARE,
+                    AttributeFieldType.PERCENT, AttributeFieldType.PERCENTPLAIN);
+
+    /**
+     * A query parameter is text; the codec takes JSON. So a number is handed over
+     * as a number and a boolean as one of the two words - the only readings a
+     * caller typing a query string can mean. Dates, limit prices and text go
+     * across as they stand and are validated by the codec itself.
+     */
+    private static JsonElement wireOf(AttributeFieldType fieldType, String text)
+    {
+        if (fieldType == AttributeFieldType.BOOLEAN)
+        {
+            if ("true".equalsIgnoreCase(text.strip())) //$NON-NLS-1$
+                return new JsonPrimitive(true);
+            if ("false".equalsIgnoreCase(text.strip())) //$NON-NLS-1$
+                return new JsonPrimitive(false);
+            throw new AttributeCodec.InvalidValueException("expected true or false"); //$NON-NLS-1$
+        }
+
+        if (NUMERIC.contains(fieldType))
+        {
+            try
+            {
+                return new JsonPrimitive(new BigDecimal(text.strip()));
+            }
+            catch (NumberFormatException e)
+            {
+                throw new AttributeCodec.InvalidValueException("expected a number"); //$NON-NLS-1$
+            }
+        }
+
+        return new JsonPrimitive(text);
+    }
+
+    private static String namesOfWatchlists(Client client)
+    {
+        var lists = client.getWatchlists();
+        if (lists.isEmpty())
+            return " - this file has no watchlists at all"; //$NON-NLS-1$
+
+        return " - it has: " + lists.stream().map(list -> "\"" + list.getName() + "\"") //$NON-NLS-1$ //$NON-NLS-2$
+                        .collect(java.util.stream.Collectors.joining(", ")); //$NON-NLS-1$
     }
 
     private static boolean matches(Security security, String wanted, String lower)

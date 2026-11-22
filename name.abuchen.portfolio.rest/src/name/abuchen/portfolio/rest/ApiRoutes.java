@@ -405,8 +405,9 @@ public final class ApiRoutes
         router.add("GET", "/v1/files/{file}/instruments", readFile(resolver, ui, //$NON-NLS-1$ //$NON-NLS-2$
                         (resolved, req) -> SecuritiesHandler.list(resolved.file().getClient(),
                                         resolved.access().uuid(), req.queryParam("query"), //$NON-NLS-1$
-                                        req.queryParam("cursor"), req.queryParam("limit"))), //$NON-NLS-1$ //$NON-NLS-2$
-                        "query", "cursor", "limit"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+                                        SecuritiesHandler.filtersOf(req), req.queryParam("cursor"), req.queryParam("limit"))), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+                        "query", "watchlist", "classification", "cursor", "limit", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
+                        SecuritiesHandler.ATTRIBUTE_PARAMETER + Router.DYNAMIC_PARAMETER);
         // literal sub-collection: the Router prefers it over the {uuid} route
         // because it has fewer placeholders, whatever the registration order
         router.add("GET", "/v1/files/{file}/instruments/attribute-types", read(resolver, ui, //$NON-NLS-1$ //$NON-NLS-2$

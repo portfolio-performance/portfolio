@@ -20,11 +20,20 @@ public class Router
     {
     }
 
-    private record Route(String method, String[] segments, Set<String> queryParams, Handler handler)
+    private record Route(String method, String[] segments, Set<String> queryParams, List<String> queryPrefixes,
+                    Handler handler)
     {
     }
 
     private final List<Route> routes = new ArrayList<>();
+
+    /**
+     * A declared parameter name ending in a star permits any name behind that
+     * prefix. One route needs it: the instrument list takes one parameter per
+     * custom attribute, and an attribute id belongs to the file - the routing
+     * table is built once, when the server starts, and cannot know them.
+     */
+    public static final String DYNAMIC_PARAMETER = "*"; //$NON-NLS-1$
 
     /**
      * Registers a route and rejects query parameters not declared for it before
@@ -35,9 +44,13 @@ public class Router
         // declaration order is the specification's order, which reads better in
         // the error message than an alphabetical list would
         var permitted = new LinkedHashSet<>(List.of(queryParams));
+        var prefixes = permitted.stream() //
+                        .filter(name -> name.endsWith(DYNAMIC_PARAMETER)) //
+                        .map(name -> name.substring(0, name.length() - DYNAMIC_PARAMETER.length())) //
+                        .toList();
 
-        routes.add(new Route(method, split(pattern), permitted, request -> {
-            rejectUnknownQueryParams(request, permitted);
+        routes.add(new Route(method, split(pattern), permitted, prefixes, request -> {
+            rejectUnknownQueryParams(request, permitted, prefixes);
             return handler.handle(request);
         }));
     }
@@ -120,10 +133,10 @@ public class Router
     }
 
     /** Reports all unknown parameters and includes the permitted names. */
-    private static void rejectUnknownQueryParams(Request request, Set<String> permitted)
+    private static void rejectUnknownQueryParams(Request request, Set<String> permitted, List<String> prefixes)
     {
         var unknown = request.queryParams().keySet().stream() //
-                        .filter(name -> !permitted.contains(name)) //
+                        .filter(name -> !isPermitted(name, permitted, prefixes)) //
                         .sorted() // parseQuery does not preserve order; the response should be stable
                         .toList();
 
@@ -136,11 +149,21 @@ public class Router
                         .toList());
     }
 
+    private static boolean isPermitted(String name, Set<String> permitted, List<String> prefixes)
+    {
+        if (permitted.contains(name))
+            return true;
+
+        return prefixes.stream().anyMatch(name::startsWith);
+    }
+
     /** Builds the client-facing message for an unknown parameter. */
     private static String explain(String name, Set<String> permitted)
     {
         var accepted = permitted.isEmpty() ? "this endpoint accepts no query parameters" //$NON-NLS-1$
-                        : "this endpoint accepts: " + String.join(", ", permitted); //$NON-NLS-1$ //$NON-NLS-2$
+                        : "this endpoint accepts: " + String.join(", ", permitted.stream() // a trailing star is a prefix, so spell out what stands behind it
+                                        .map(entry -> entry.endsWith(DYNAMIC_PARAMETER) ? entry + "<id>" : entry) //
+                                        .toList()); //$NON-NLS-1$ //$NON-NLS-2$
 
         var casing = permitted.stream().filter(name::equalsIgnoreCase).findFirst()
                         .map(match -> "parameter names are case-sensitive, did you mean '" + match + "'? ") //$NON-NLS-1$ //$NON-NLS-2$

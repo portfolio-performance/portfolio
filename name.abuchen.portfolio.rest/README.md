@@ -147,20 +147,24 @@ named by the `referenceCashAccount` field.
 
 All list responses are an envelope — `{"items": [...]}`, never a bare array — so that fields beside
 `items` can be added later without breaking clients. A list response is complete unless the caller
-asks for a page: `cursor` and `limit` on the instruments and the trades are opt-in, and only a
-response to them carries `page` — `limit` (or `null`), `total` and `nextCursor` (`null` on the last
-page) — and a `cursor` on every item. An empty `cursor` asks for the first page; a page continues
-after the key of the cursor it was given. Paged, a list is in an order of keys that an edit
-elsewhere does not change — instruments by `uuid`; trades by instrument, start, investment account,
-closing transaction and the shares, amount and id of the opening transaction — so an item added or
-removed between two pages does not shift the others: every item that stays in the list for the
-whole walk comes exactly once. An item added before the cursor comes only with a new walk from the
-first page, and a trade whose start, investment account or closing transaction changes gets a new
-key. Trades opened by transactions of the file are told apart by the id of that transaction, so
-removing one of several alike lots cannot hide the others from a cursor that has passed them. A
-cursor is good only for its own list — the same file, for one instrument's trades that
-instrument, and the same filters (`query`; `status`, `grouping`, `from`, `to`) — and is refused as
-`invalid-value` otherwise. REST never truncates.
+asks for a page: `cursor` and `limit` are opt-in on the instruments, the stored prices, the
+taxonomies, the transactions and the trades, and only a response to them carries `page` — `limit`
+(or `null`), `total` and `nextCursor` (`null` on the last page) — and a `cursor` on every item. An
+empty `cursor` asks for the first page; a page continues after the key of the cursor it was given.
+Paged, a list is in an order of keys that an edit elsewhere does not change — instruments by `uuid`;
+prices by the date of the price; the classes of a taxonomy by their place in its tree, and the
+vehicles of one class by their rank within it; transactions by the day and time they were recorded;
+trades by instrument, start, investment account, closing transaction and the shares, amount and id of
+the opening transaction — so an item added or removed between two pages does not shift the others:
+every item that stays in the list for the whole walk comes exactly once. An item added before the
+cursor comes only with a new walk from the first page, and a trade whose start, investment account or
+closing transaction changes gets a new key. Trades opened by transactions of the file are told apart
+by the id of that transaction, so removing one of several alike lots cannot hide the others from a
+cursor that has passed them. A
+cursor is good only for its own list — the same file, for one instrument's prices or trades that
+instrument, and the same narrowing: `query`, `watchlist`, `classification` and every
+`attribute:<id>` for the instruments, `status`, `grouping`, `from` and `to` for the trades — and is
+refused as `invalid-value` otherwise. REST never truncates.
 
 ### `GET /v1/files` — the files you may address
 
@@ -189,8 +193,20 @@ set — for `note` on cash and investment accounts too. A value that is set is r
 `?query=` narrows the list to the instruments it finds: a name that contains it, or an ISIN, WKN or
 ticker symbol equal to it — ignoring case and surrounding whitespace. A large file holds more
 instruments than one MCP answer carries, so this is how a client gets from a name to a `uuid`. A
-blank `query` is a `400`. `?cursor=` and `?limit=` return one page of the list, in the order of the
-`uuid`; without them the list is in the file's order.
+blank `query` is a `400`. `?cursor=` and `?limit=` return one page of the list — of the narrowed
+list, when a narrowing was given — in the order of the `uuid`; without them the list is in the file's
+order.
+
+Three more narrowings, and every one given has to hold. `?watchlist=` to the members of one
+watchlist, named as `/watchlists` names it (a list has no uuid). `?classification=` to what one class
+of a taxonomy is assigned, by the class `id` `/taxonomies` reports. And one parameter per custom
+attribute, `?attribute:<id>=<value>` with the id from `/instruments/attribute-types`: the value is
+compared with what this API reports for the instrument, in the same form it reports it in — a number
+as a number, a boolean as `true` or `false`, a date as ISO-8601, a limit price as `<=62.5`, text
+exactly and case-sensitively — so an instrument is found by the text a caller could read back out of
+it; an empty value asks for the instruments holding no value for that attribute. A watchlist name, a
+class id or an attribute id the file does not have is a `400` naming what the file does have, not an
+empty list, and an attribute whose value this API never hands out (an image) cannot be asked about.
 
 The trades (`GET .../trades`, `GET .../instruments/{uuid}/trades`) take the same `cursor` and
 `limit`; their `fxWarnings` and `warnings` describe the whole list, whichever page is asked for —

@@ -301,6 +301,15 @@ public class OpenApiSpecDriftTest
                 blockIndent = 6;
                 target = operations.get(currentOperation);
             }
+            else if (indent == 6 && currentOperation != null && "x-dynamic-query-parameters:".equals(content))
+            {
+                // a parameter whose name is only known per file - one per custom
+                // attribute - cannot be an OpenAPI parameter, so it is declared in
+                // an extension beside them. Read here so that the routing table and
+                // the document still have to agree about it.
+                blockIndent = 6;
+                target = operations.get(currentOperation);
+            }
         }
 
         if (operations.isEmpty())
