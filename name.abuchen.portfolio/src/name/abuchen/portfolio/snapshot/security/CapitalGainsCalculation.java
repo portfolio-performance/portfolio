@@ -166,6 +166,10 @@ import name.abuchen.portfolio.snapshot.trail.TrailRecord;
 
                 long sold = t.getShares();
 
+                // the proceeds already assigned to lots: the last lot gets the
+                // remainder so that the rounded parts add up to the proceeds
+                long assignedValue = 0;
+
                 for (LineItem item : fifo) // NOSONAR
                 {
                     if (item.shares == 0)
@@ -180,7 +184,9 @@ import name.abuchen.portfolio.snapshot.trail.TrailRecord;
                     long soldShares = Math.min(sold, item.shares);
                     long start = Math.round((double) soldShares / item.shares * item.value);
                     long startForex = Math.round((double) soldShares / item.shares * item.valueForex);
-                    long end = Math.round((double) soldShares / t.getShares() * value);
+                    long end = soldShares == sold ? value - assignedValue
+                                    : Math.round((double) soldShares / t.getShares() * value);
+                    assignedValue += end;
 
                     TrailRecord startTrail = item.trail.fraction(Money.of(termCurrency, start), soldShares,
                                     item.originalShares);
