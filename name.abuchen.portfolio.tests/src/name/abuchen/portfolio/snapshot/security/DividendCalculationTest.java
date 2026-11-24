@@ -357,6 +357,31 @@ public class DividendCalculationTest
         assertEquals(single.getRateOfReturnPerYear(), split.getRateOfReturnPerYear(), 0.000001);
     }
 
+    /**
+     * Two independent distributions (e.g. a regular and a special dividend) for
+     * the same shares on the same date into the same account must add up: the
+     * market value of the shares must not be counted twice.
+     */
+    @Test
+    public void rateOfReturnBasedOnQuoteWithTwoDistributionsOnSameDate()
+    {
+        security.addPrice(new SecurityPrice(LocalDate.parse("2020-02-03"), Values.Quote.factorize(100)));
+
+        List<CalculationLineItem> transactions = createSoldPositionWithPayments(security);
+        Account account = new Account();
+        transactions.add(CalculationLineItem.of(account,
+                        dividend(security, LocalDateTime.of(2020, 2, 3, 0, 0), Values.Amount.factorize(50))));
+        transactions.add(CalculationLineItem.of(account,
+                        dividend(security, LocalDateTime.of(2020, 2, 3, 0, 0), Values.Amount.factorize(10))));
+        Calculation.perform(CostCalculation.class, converter, security, transactions);
+
+        DividendCalculation dividends = Calculation.perform(DividendCalculation.class, converter, security,
+                        transactions);
+
+        // (50 + 10) / (10 * 100)
+        assertEquals(0.06, dividends.getRateOfReturnPerYear(), 0.000001);
+    }
+
     private List<CalculationLineItem> createSoldPositionWithPayments(Security security, int... shares)
     {
         List<CalculationLineItem> transactions = new ArrayList<>();

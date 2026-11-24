@@ -52,6 +52,10 @@ import name.abuchen.portfolio.util.Dates;
          * term currency) if the rate of return is based on the quote, else 0.
          */
         public final long marketValue;
+        /**
+         * Account (owner) of the payment.
+         */
+        public final Object owner;
 
         /**
          * Constructs an instance.
@@ -69,6 +73,7 @@ import name.abuchen.portfolio.util.Dates;
             LocalDateTime time = t.getDateTime();
             this.year = time.getYear();
             this.date = time.toLocalDate();
+            this.owner = t.getOwner();
 
             // try to set rate of return, default is NaN
             double rr = Double.NaN;
@@ -161,8 +166,12 @@ import name.abuchen.portfolio.util.Dates;
 
         // payments based on the quote are grouped by payment date: a payment
         // split across several accounts must give the same rate of return as
-        // a single payment (amount and market value of the same day)
-        Map<LocalDate, long[]> basedOnQuote = new HashMap<>();
+        // a single payment. The market value is counted once per account
+        // (the largest of the day), because several distributions on the
+        // same day into the same account (e.g. a regular and a special
+        // dividend) relate to the same shares.
+        Map<LocalDate, Long> amountBasedOnQuote = new HashMap<>();
+        Map<LocalDate, Map<Object, Long>> valueBasedOnQuote = new HashMap<>();
 
         // first calc total sum of all payments
         for (Payment p : payments)
@@ -172,9 +181,9 @@ import name.abuchen.portfolio.util.Dates;
 
             if (p.marketValue != 0)
             {
-                var amountAndValue = basedOnQuote.computeIfAbsent(p.date, d -> new long[2]);
-                amountAndValue[0] += p.amount.getAmount();
-                amountAndValue[1] += p.marketValue;
+                amountBasedOnQuote.merge(p.date, p.amount.getAmount(), Long::sum);
+                valueBasedOnQuote.computeIfAbsent(p.date, d -> new HashMap<>()).merge(p.owner, p.marketValue,
+                                Math::max);
             }
             // a payment without cost and without quote has no rate of
             // return and must not turn the result into NaN
@@ -184,8 +193,11 @@ import name.abuchen.portfolio.util.Dates;
             }
         }
 
-        for (long[] amountAndValue : basedOnQuote.values())
-            sumRateOfReturn += amountAndValue[0] / (double) amountAndValue[1];
+        for (var entry : amountBasedOnQuote.entrySet())
+        {
+            long value = valueBasedOnQuote.get(entry.getKey()).values().stream().mapToLong(Long::longValue).sum();
+            sumRateOfReturn += entry.getValue() / (double) value;
+        }
 
         int years = 0;
 
