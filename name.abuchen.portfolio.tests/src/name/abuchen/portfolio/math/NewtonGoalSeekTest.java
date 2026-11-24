@@ -2,6 +2,7 @@ package name.abuchen.portfolio.math;
 
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.number.IsCloseTo.closeTo;
 
 import org.junit.Test;
 
@@ -25,11 +26,11 @@ public class NewtonGoalSeekTest
             @Override
             public double compute(double x)
             {
-                return 3 * x;
+                return 3 * x * x;
             }
         };
 
-        assertThat(NewtonGoalSeek.seek(function, derivative, 0.5d), is(1d));
+        assertThat(NewtonGoalSeek.seek(function, derivative, 0.5d), closeTo(1d, 1e-9));
     }
 
     @Test
