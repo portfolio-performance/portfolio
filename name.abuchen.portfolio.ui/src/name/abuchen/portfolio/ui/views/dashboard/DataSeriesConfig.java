@@ -48,6 +48,8 @@ public class DataSeriesConfig implements WidgetConfig
         String uuid = delegate.getWidget().getConfiguration().get(configurationKey.name());
         if (uuid != null && !uuid.isEmpty())
             dataSeries = delegate.getDashboardData().getDataSeriesSet().lookup(uuid);
+        if (dataSeries != null && dataSeries.isBenchmark() && !supportsBenchmarks)
+            dataSeries = null;
         if (dataSeries == null && !supportsEmptyDataSeries)
             dataSeries = delegate.getDashboardData().getDataSeriesSet().getAvailableSeries().stream()
                             .filter(ds -> ds.getType().equals(DataSeries.Type.CLIENT)).findAny()

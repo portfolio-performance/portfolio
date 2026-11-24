@@ -41,8 +41,9 @@ jobs:
           maven-version: 3.9.16
 
       - name: Build
+        # SWT widget tests need a graphical display on Linux.
         run: |
-          mvn verify \
+          xvfb-run --auto-servernum mvn verify \
             --batch-mode \
             -Popenapi-lint,openapi-compat \
             --file portfolio-app/pom.xml
@@ -82,8 +83,9 @@ jobs:
 
       - name: Build and analyze
         # sonar.login is deprecated since SonarQube 10.0 / SonarCloud — use sonar.token
+        # SWT widget tests need a graphical display on Linux.
         run: |
-          mvn verify sonar:sonar \
+          xvfb-run --auto-servernum mvn verify sonar:sonar \
             --batch-mode \
             -Popenapi-lint,openapi-compat \
             -Dsonar.token=${{ secrets.SONAR_TOKEN }} \

@@ -1593,6 +1593,10 @@ public class StatementOfAssetsViewer
             {
                 return isAccount() ? type.cast(getAccount()) : null;
             }
+            else if (type == Classification.class)
+            {
+                return isCategory() ? type.cast(getCategory().getClassification()) : null;
+            }
             else
             {
                 return null;
