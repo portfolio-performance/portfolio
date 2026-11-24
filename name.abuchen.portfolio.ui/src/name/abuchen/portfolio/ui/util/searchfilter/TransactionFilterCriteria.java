@@ -3,6 +3,7 @@ package name.abuchen.portfolio.ui.util.searchfilter;
 import java.util.function.Predicate;
 
 import name.abuchen.portfolio.model.AccountTransaction;
+import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.ui.Messages;
@@ -78,13 +79,13 @@ public enum TransactionFilterCriteria
         if (tx instanceof AccountTransaction atx && (atx.getType() == AccountTransaction.Type.TAXES
                         || atx.getType() == AccountTransaction.Type.TAX_REFUND))
             return true;
-        return tx.getUnitSum(Transaction.Unit.Type.TAX).isPositive();
+        return BuySellEntry.portfolioTransactionOrSelf(tx).getUnitSum(Transaction.Unit.Type.TAX).isPositive();
     }), //
     WITH_FEES(Messages.TransactionFilterFees, 0, tx -> {
         if (tx instanceof AccountTransaction atx && (atx.getType() == AccountTransaction.Type.FEES
                         || atx.getType() == AccountTransaction.Type.FEES_REFUND))
             return true;
-        return tx.getUnitSum(Transaction.Unit.Type.FEE).isPositive();
+        return BuySellEntry.portfolioTransactionOrSelf(tx).getUnitSum(Transaction.Unit.Type.FEE).isPositive();
     }), //
     TRANSFERS(Messages.TransactionFilterTransfers, 0, tx -> {
         if (tx instanceof PortfolioTransaction ptx)
