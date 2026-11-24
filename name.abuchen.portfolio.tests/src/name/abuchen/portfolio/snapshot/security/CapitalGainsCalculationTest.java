@@ -73,6 +73,36 @@ public class CapitalGainsCalculationTest
 
     }
 
+    /**
+     * If a sale covers several FIFO lots, the proceeds are split by shares.
+     * The rounded parts must add up to the proceeds (3 x 33.33 = 99.99).
+     */
+    @Test
+    public void testFifoSaleOverSeveralLotsDoesNotLoseRoundingDifference()
+    {
+        Client client = new Client();
+
+        Security security = new SecurityBuilder().addPrice("2021-01-10", Values.Quote.factorize(100)) //
+                        .addTo(client);
+
+        new PortfolioBuilder() //
+                        .buy(security, "2021-01-01", Values.Share.factorize(1), Values.Amount.factorize(10)) //
+                        .buy(security, "2021-01-02", Values.Share.factorize(1), Values.Amount.factorize(10)) //
+                        .buy(security, "2021-01-03", Values.Share.factorize(1), Values.Amount.factorize(10)) //
+                        .sell(security, "2021-01-10", Values.Share.factorize(3), Values.Amount.factorize(100)) //
+                        .addTo(client);
+
+        var interval = Interval.of(LocalDate.parse("2020-12-31"), LocalDate.parse("2021-01-31"));
+        LazySecurityPerformanceRecord record = LazySecurityPerformanceSnapshot
+                        .create(client, new TestCurrencyConverter(), interval).getRecord(security)
+                        .orElseThrow(IllegalArgumentException::new);
+
+        Money expected = Money.of(CurrencyUnit.EUR, Values.Amount.factorize(70));
+        assertThat(record.getRealizedCapitalGains(CostMethod.FIFO).getCapitalGains(), is(expected));
+        assertThat(record.getRealizedCapitalGains(CostMethod.FIFO).getCapitalGainsTrail().getValue(), is(expected));
+        assertThat(record.getRealizedCapitalGains(CostMethod.MOVING_AVERAGE).getCapitalGains(), is(expected));
+    }
+
     @Test
     public void testFifoBuySellTransactions()
     {

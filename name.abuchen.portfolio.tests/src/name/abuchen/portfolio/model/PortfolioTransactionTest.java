@@ -62,4 +62,29 @@ public class PortfolioTransactionTest
         assertThat(transaction.getGrossPricePerShare(converter.with(CurrencyUnit.EUR)),
                         is(Quote.of(CurrencyUnit.EUR, Values.Quote.factorize(900.0 / 9))));
     }
+
+    /**
+     * Without a gross value unit, the amount is converted with the daily rate.
+     * The rate of the converter already maps the transaction currency to the
+     * term currency and must not be inverted.
+     */
+    @Test
+    public void testMonetaryAmountWithoutGrossValueUsesDailyRate()
+    {
+        Security security = new Security();
+        security.setCurrencyCode(CurrencyUnit.USD);
+
+        PortfolioTransaction t = new PortfolioTransaction();
+        t.setDateTime(LocalDateTime.parse("2015-01-02T00:00")); //$NON-NLS-1$
+        t.setSecurity(security);
+        t.setMonetaryAmount(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1000)));
+        t.setShares(Values.Share.factorize(10));
+        t.setType(PortfolioTransaction.Type.BUY);
+
+        CurrencyConverter converter = new TestCurrencyConverter().with(CurrencyUnit.USD);
+
+        Money expected = converter.convert(t.getDateTime(), t.getMonetaryAmount());
+        assertThat(expected, is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(1204.30))));
+        assertThat(t.getMonetaryAmount(converter), is(expected));
+    }
 }

@@ -127,16 +127,19 @@ public class PortfolioTransaction extends Transaction
 
             // use exchange rate used within the transaction,
             // not the historical exchange rate
-            BigDecimal exchangeRate = grossValue.isPresent() ? grossValue.get().getExchangeRate()
-                            : converter.getRate(getDateTime(), getCurrencyCode()).getValue();
+            if (grossValue.isPresent())
+            {
+                BigDecimal exchangeRate = grossValue.get().getExchangeRate();
+                return Money.of(converter.getTermCurrency(),
+                                BigDecimal.ONE.divide(exchangeRate, 10, RoundingMode.HALF_DOWN)
+                                                .multiply(BigDecimal.valueOf(getAmount()))
+                                                .setScale(0, RoundingMode.HALF_DOWN).longValue());
+            }
+        }
 
-            return Money.of(converter.getTermCurrency(), BigDecimal.ONE.divide(exchangeRate, 10, RoundingMode.HALF_DOWN)
-                            .multiply(BigDecimal.valueOf(getAmount())).setScale(0, RoundingMode.HALF_DOWN).longValue());
-        }
-        else
-        {
-            return converter.convert(getDateTime(), getMonetaryAmount());
-        }
+        // the rate of the converter maps the transaction currency to the term
+        // currency (it must not be inverted)
+        return converter.convert(getDateTime(), getMonetaryAmount());
     }
 
     /**

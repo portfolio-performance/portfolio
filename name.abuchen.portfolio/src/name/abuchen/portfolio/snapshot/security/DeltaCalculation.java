@@ -68,13 +68,15 @@ import name.abuchen.portfolio.money.MutableMoney;
         {
             case BUY:
             case DELIVERY_INBOUND:
-                Money amount = t.getMonetaryAmount().with(converter.at(t.getDateTime()));
+                // use the exchange rate of the transaction (if available)
+                // like the cost and capital gains calculation
+                Money amount = t.getMonetaryAmount(converter);
                 delta.subtract(amount);
                 cost.add(amount);
                 break;
             case SELL:
             case DELIVERY_OUTBOUND:
-                delta.add(t.getMonetaryAmount().with(converter.at(t.getDateTime())));
+                delta.add(t.getMonetaryAmount(converter));
                 break;
             case TRANSFER_IN:
             case TRANSFER_OUT:
