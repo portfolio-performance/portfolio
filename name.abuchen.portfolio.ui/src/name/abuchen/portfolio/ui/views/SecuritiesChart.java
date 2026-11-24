@@ -991,6 +991,7 @@ public class SecuritiesChart
         customPaintListeners.clear();
         customTooltipEvents.clear();
         chart.resetAxes();
+        chart.setFirstQuote(null);
         messagePainter.setMessage(null);
     }
 
@@ -1104,9 +1105,18 @@ public class SecuritiesChart
                 {
                     Optional<Double> purchasePrice = getLatestPurchasePrice(security, costMethod);
                     if (purchasePrice.isPresent())
+                    {
                         firstQuote = purchasePrice.get();
+                    }
                     else
+                    {
+                        // without a purchase price, relate the percentage
+                        // axis to the first quote of the interval (as for
+                        // the market development) instead of keeping the
+                        // reference of the previously shown security
+                        firstQuote = referenceQuote;
                         showAreaRelativeToFirstQuote = false;
+                    }
                 }
                 else
                 {
