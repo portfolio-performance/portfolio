@@ -203,8 +203,9 @@ public class TroubleshootBalanceDiscrepancyDialog extends Dialog
         TableColumnLayout layout = new SafeTableColumnLayout();
         tableArea.setLayout(layout);
 
-        Table table = new Table(tableArea, SWT.BORDER | SWT.SINGLE);
+        Table table = new Table(tableArea, SWT.BORDER | SWT.SINGLE | SWT.FULL_SELECTION);
         balanceViewer = new TableViewer(table);
+        ColumnEditingSupport.prepare(balanceViewer);
         table.setHeaderVisible(true);
         table.setLinesVisible(true);
 
