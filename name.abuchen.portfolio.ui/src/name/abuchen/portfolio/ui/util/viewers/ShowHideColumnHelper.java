@@ -171,6 +171,15 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
         }
 
         @Override
+        void setRedraw(boolean redraw)
+        {
+            super.setRedraw(redraw);
+
+            if (redraw)
+                SortColumnHighlightFix.clear(table.getTable());
+        }
+
+        @Override
         public ColumnViewer getViewer()
         {
             return table;
@@ -880,6 +889,9 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
                             .forEach(c -> policy.create(c, null, c.getDefaultSortDirection(), c.getDefaultWidth()));
         }
 
+        if (policy.getViewer() instanceof TableViewer tableViewer)
+            SortColumnHighlightFix.clear(tableViewer.getTable());
+
         if (isEditable)
         {
             var headerMenu = new ContextMenu(policy.getViewer().getControl(), manager -> {
@@ -1040,6 +1052,9 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
         listeners.stream().forEach(Listener::onConfigurationPicked);
 
         policy.getViewer().refresh();
+
+        if (policy.getViewer() instanceof TableViewer tableViewer)
+            SortColumnHighlightFix.clear(tableViewer.getTable());
     }
 
     private void headerMenuAboutToShow(IMenuManager manager)
