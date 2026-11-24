@@ -90,9 +90,17 @@ public class ClientIRRYield
                                 {
                                     case DEPOSIT:
                                     case REMOVAL:
+                                        transactions.add(t);
+                                        break;
                                     case TRANSFER_IN:
                                     case TRANSFER_OUT:
-                                        transactions.add(t);
+                                        // both accounts belong to the client
+                                        // (client filters turn transfers to
+                                        // other accounts into deposits and
+                                        // removals). If currencies are
+                                        // exchanged, the difference to the
+                                        // daily rate is a currency gain, not
+                                        // a cash flow.
                                         break;
                                     case BUY:
                                     case SELL:

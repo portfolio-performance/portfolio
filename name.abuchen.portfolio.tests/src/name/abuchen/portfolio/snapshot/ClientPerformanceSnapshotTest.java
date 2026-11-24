@@ -388,6 +388,40 @@ public class ClientPerformanceSnapshotTest
         assertThat(snapshot.getCategoryByType(CategoryType.CURRENCY_GAINS).getValuation(), is(currencyGains.toMoney()));
     }
 
+    /**
+     * A transfer between two accounts of the client is not a cash flow into
+     * or out of the client. If the transfer exchanges currencies at a rate
+     * different from the daily rate, the difference is a currency gain and
+     * must be part of the IRR (like for the TTWROR) instead of a cash flow.
+     */
+    @Test
+    public void testIRRWithTransferBetweenAccountsInOtherCurrency()
+    {
+        Client client = new Client();
+
+        Account eur = new AccountBuilder() //
+                        .deposit_("2015-01-01", Values.Amount.factorize(1000)) //
+                        .addTo(client);
+        Account usd = new AccountBuilder("USD").addTo(client);
+
+        // exchange 1,000 EUR into 1,300 USD (daily rate is 1.2043)
+        AccountTransferEntry entry = new AccountTransferEntry(eur, usd);
+        entry.setDate(LocalDateTime.parse("2015-01-02T00:00"));
+        entry.getSourceTransaction().setMonetaryAmount(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1000)));
+        entry.getTargetTransaction().setMonetaryAmount(Money.of("USD", Values.Amount.factorize(1300)));
+        entry.insert();
+
+        CurrencyConverter converter = new TestCurrencyConverter();
+        ClientPerformanceSnapshot snapshot = new ClientPerformanceSnapshot(client, converter, //
+                        LocalDate.parse("2015-01-01"), LocalDate.parse("2015-01-16"));
+
+        double initial = snapshot.getValue(CategoryType.INITIAL_VALUE).getAmount();
+        double fin = snapshot.getValue(CategoryType.FINAL_VALUE).getAmount();
+
+        assertThat(snapshot.getValue(CategoryType.TRANSFERS), is(Money.of(CurrencyUnit.EUR, 0)));
+        assertEquals(Math.pow(fin / initial, 365d / 15) - 1, snapshot.getPerformanceIRR(), 0.0001);
+    }
+
     @Test
     public void testDividendTransactionWithTaxes()
     {
