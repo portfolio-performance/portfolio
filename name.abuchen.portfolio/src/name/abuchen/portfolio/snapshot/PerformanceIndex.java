@@ -201,6 +201,11 @@ public class PerformanceIndex
     {
         double accumulatedPercentage = getFinalAccumulatedPercentage();
         long days = getActualInterval().getDays();
+
+        // without any day there is nothing to annualize
+        if (days == 0)
+            return accumulatedPercentage;
+
         return Math.pow(1 + accumulatedPercentage, 365d / ((double) days)) - 1;
     }
 

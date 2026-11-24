@@ -6,9 +6,11 @@ import static org.hamcrest.number.IsCloseTo.closeTo;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 
 import org.junit.Test;
 
+import name.abuchen.portfolio.junit.AccountBuilder;
 import name.abuchen.portfolio.junit.TestCurrencyConverter;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
@@ -18,6 +20,7 @@ import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Values;
+import name.abuchen.portfolio.util.Interval;
 
 @SuppressWarnings("nls")
 public class PerformanceIndexTest
@@ -41,6 +44,24 @@ public class PerformanceIndexTest
     /**
      * Companion test for basic volatility RiskTest#testVolatility
      */
+    /**
+     * An interval without any day (start equals end) has no performance; the
+     * annualized performance must be 0 and not NaN (1 ^ infinity).
+     */
+    @Test
+    public void testAnnualizedPerformanceForIntervalWithoutDays()
+    {
+        Client client = new Client();
+        new AccountBuilder().deposit_("2015-01-02", Values.Amount.factorize(1000)).addTo(client);
+
+        var day = LocalDate.parse("2015-01-05");
+        var index = PerformanceIndex.forClient(client, new TestCurrencyConverter(), Interval.of(day, day),
+                        new ArrayList<>());
+
+        assertThat(index.getFinalAccumulatedPercentage(), is(0d));
+        assertThat(index.getFinalAccumulatedAnnualizedPercentage(), is(0d));
+    }
+
     @Test
     public void testVolatilityFromPerformanceIndex()
     {
