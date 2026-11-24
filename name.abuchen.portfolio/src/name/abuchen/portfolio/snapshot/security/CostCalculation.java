@@ -252,6 +252,7 @@ import name.abuchen.portfolio.snapshot.trail.TrailRecord;
         fees += tx.getUnitSum(Unit.Type.FEE, converter).getAmount();
         taxes += tx.getUnitSum(Unit.Type.TAX, converter).getAmount();
 
+        t.setGrossValueInTermCurrency(t.getGrossValue().with(converter.at(t.getDateTime())));
         t.setFifoCost(getCost(CostMethod.FIFO, TaxesAndFees.INCLUDED));
         t.setMovingAverageCost(getCost(CostMethod.MOVING_AVERAGE, TaxesAndFees.INCLUDED));
         t.setTotalShares(getSharesHeld());

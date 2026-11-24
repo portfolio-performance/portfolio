@@ -1,13 +1,17 @@
 package name.abuchen.portfolio.snapshot.security;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import name.abuchen.portfolio.model.Security;
-import name.abuchen.portfolio.model.SecurityPrice;
+import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.MutableMoney;
@@ -40,9 +44,18 @@ import name.abuchen.portfolio.util.Dates;
          */
         public final int year;
         /**
-         * Rate of return for this payment.
+         * Rate of return for this payment based on the moving average cost.
          */
         public final double rateOfReturn;
+        /**
+         * Market value of the shares of this payment at the payment date (in
+         * term currency) if the rate of return is based on the quote, else 0.
+         */
+        public final long marketValue;
+        /**
+         * Account (owner) of the payment.
+         */
+        public final Object owner;
 
         /**
          * Constructs an instance.
@@ -60,9 +73,11 @@ import name.abuchen.portfolio.util.Dates;
             LocalDateTime time = t.getDateTime();
             this.year = time.getYear();
             this.date = time.toLocalDate();
+            this.owner = t.getOwner();
 
             // try to set rate of return, default is NaN
             double rr = Double.NaN;
+            long value = 0;
             if (security != null)
             {
                 // calculate the rate of return, but do NOT use the method on
@@ -80,23 +95,43 @@ import name.abuchen.portfolio.util.Dates;
                     rr = this.amount.getAmount() / (double) movingAverageCost.getAmount();
                 }
 
-                // check if it is valid (non 0)
-                if (rr == 0)
+                // check if it is valid (non 0). There is no moving average
+                // cost if the position was sold before the payment (for
+                // example between ex-date and payment date)
+                if (rr == 0 || Double.isNaN(rr))
                 {
-                    // else use the security price at that date
-                    SecurityPrice p = security.getSecurityPrice(date);
-                    // getSecurityPrice may return an empty price value, so
-                    // check that
-                    long pValue = p.getValue();
-                    if (pValue != 0)
-                    {
-                        double sharePriceAmount = ((double) pValue) / Values.Quote.factor()
-                                        * Values.AmountFraction.factor();
-                        rr = t.getDividendPerShare() / sharePriceAmount;
-                    }
+                    value = marketValueAtPayment(converter, t, security);
+                    rr = Double.NaN;
                 }
             }
             this.rateOfReturn = rr;
+            this.marketValue = value;
+        }
+
+        /**
+         * Calculates the market value of the shares of the payment at the date
+         * of the payment. It is converted into the term currency because the
+         * dividend might be booked in another currency than the currency of the
+         * security.
+         */
+        private long marketValueAtPayment(CurrencyConverter converter, CalculationLineItem.DividendPayment t,
+                        Security security)
+        {
+            // getSecurityPrice may return an empty price value, so check that
+            long price = security.getSecurityPrice(date).getValue();
+            long shares = t.getTransaction().map(Transaction::getShares).orElse(0L);
+            if (price == 0 || shares == 0)
+                return 0;
+
+            long marketValue = BigDecimal.valueOf(shares) //
+                            .movePointLeft(Values.Share.precision())
+                            .multiply(BigDecimal.valueOf(price), Values.MC)
+                            .movePointLeft(Values.Quote.precisionDeltaToMoney()) //
+                            .setScale(0, RoundingMode.HALF_UP).longValue();
+
+            var currencyCode = security.getCurrencyCode() != null ? security.getCurrencyCode()
+                            : amount.getCurrencyCode();
+            return Money.of(currencyCode, marketValue).with(converter.at(t.getDateTime())).getAmount();
         }
     }
 
@@ -129,12 +164,39 @@ import name.abuchen.portfolio.util.Dates;
         int insignificantYears = 0;
         double sumRateOfReturn = 0;
 
+        // payments based on the quote are grouped by payment date: a payment
+        // split across several accounts must give the same rate of return as
+        // a single payment. The market value is counted once per account
+        // (the largest of the day), because several distributions on the
+        // same day into the same account (e.g. a regular and a special
+        // dividend) relate to the same shares.
+        Map<LocalDate, Long> amountBasedOnQuote = new HashMap<>();
+        Map<LocalDate, Map<Object, Long>> valueBasedOnQuote = new HashMap<>();
+
         // first calc total sum of all payments
         for (Payment p : payments)
         {
             // add to total sum
             sum.add(p.amount);
-            sumRateOfReturn += p.rateOfReturn;
+
+            if (p.marketValue != 0)
+            {
+                amountBasedOnQuote.merge(p.date, p.amount.getAmount(), Long::sum);
+                valueBasedOnQuote.computeIfAbsent(p.date, d -> new HashMap<>()).merge(p.owner, p.marketValue,
+                                Math::max);
+            }
+            // a payment without cost and without quote has no rate of
+            // return and must not turn the result into NaN
+            else if (!Double.isNaN(p.rateOfReturn))
+            {
+                sumRateOfReturn += p.rateOfReturn;
+            }
+        }
+
+        for (var entry : amountBasedOnQuote.entrySet())
+        {
+            long value = valueBasedOnQuote.get(entry.getKey()).values().stream().mapToLong(Long::longValue).sum();
+            sumRateOfReturn += entry.getValue() / (double) value;
         }
 
         int years = 0;
