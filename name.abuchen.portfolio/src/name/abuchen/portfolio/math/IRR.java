@@ -34,6 +34,11 @@ public final class IRR
 
     public static double calculate(List<LocalDate> dates, List<Double> values)
     {
+        // without any inflow (nothing paid out and no valuation left at the
+        // end), everything is lost
+        if (values.stream().noneMatch(v -> v > 0) && values.stream().anyMatch(v -> v < 0))
+            return -1;
+
         Function npv = new NPVFunction(dates, values);
         Function derivative = new PseudoDerivativeFunction(npv);
 

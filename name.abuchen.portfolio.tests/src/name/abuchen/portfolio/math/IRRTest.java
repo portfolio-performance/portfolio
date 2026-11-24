@@ -62,4 +62,31 @@ public class IRRTest
 
         assertThat(result, IsCloseTo.closeTo(excel, 0.0001d));
     }
+
+    /**
+     * Without any inflow (for example a total loss with no valuation left at
+     * the end), the IRR is -100 %.
+     */
+    @Test
+    public void testTotalLoss()
+    {
+        assertThat(IRR.calculate(Arrays.asList(LocalDate.of(2020, Month.JANUARY, 1),
+                        LocalDate.of(2020, Month.DECEMBER, 31)), Arrays.asList(-1000d, 0d)), is(-1d));
+
+        assertThat(IRR.calculate(Arrays.asList(LocalDate.of(2020, Month.JANUARY, 1)), Arrays.asList(-1000d)),
+                        is(-1d));
+    }
+
+    /**
+     * A large loss within a few days results in an IRR close to -100 %. The
+     * Newton method must not step to a rate below 0 (NaN).
+     */
+    @Test
+    public void testLargeLossWithinOneDay()
+    {
+        double result = IRR.calculate(Arrays.asList(LocalDate.of(2020, Month.JANUARY, 1),
+                        LocalDate.of(2020, Month.JANUARY, 2)), Arrays.asList(-1000d, 500d));
+
+        assertThat(result, IsCloseTo.closeTo(Math.pow(0.5, 365) - 1, 0.0001d));
+    }
 }

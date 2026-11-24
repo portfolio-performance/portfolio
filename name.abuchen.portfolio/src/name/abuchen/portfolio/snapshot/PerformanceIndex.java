@@ -519,8 +519,22 @@ public class PerformanceIndex
         if (Math.abs(startIndex) > Math.abs(endIndex))
             return 0;
 
-        double startValue = this.getAccumulatedPercentage()[startIndex >= 0 ? startIndex : 0];
-        double endValue = this.getAccumulatedPercentage()[endIndex >= 0 ? endIndex : this.getDates().length - 1];
+        int start = startIndex >= 0 ? startIndex : 0;
+        int end = endIndex >= 0 ? endIndex : this.getDates().length - 1;
+
+        double startValue = this.getAccumulatedPercentage()[start];
+        double endValue = this.getAccumulatedPercentage()[end];
+
+        // after a total loss (-100 %), the accumulated performance stays at
+        // -100 %. Calculate the performance of later periods from the daily
+        // returns instead of dividing by zero
+        if (startValue + 1 == 0)
+        {
+            double performance = 1;
+            for (int ii = start + 1; ii <= end; ii++)
+                performance *= delta[ii] + 1;
+            return performance - 1;
+        }
 
         return ((endValue + 1) / (startValue + 1)) - 1;
     }

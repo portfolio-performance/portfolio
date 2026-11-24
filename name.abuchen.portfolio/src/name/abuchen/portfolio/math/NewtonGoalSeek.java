@@ -32,6 +32,12 @@ package name.abuchen.portfolio.math;
             double fdxi = fd.compute(xi);
 
             double xi1 = xi - (fxi / fdxi);
+
+            // the functions used here (NPV with rate = 1 + r) are only
+            // defined for x > 0. If the step overshoots, approach 0 instead
+            if (xi1 <= 0 && xi > 0)
+                xi1 = xi / 10;
+
             delta = Math.abs(xi1 - xi);
             xi = xi1;
         }
