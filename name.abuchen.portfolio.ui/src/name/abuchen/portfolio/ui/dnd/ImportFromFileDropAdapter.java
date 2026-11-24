@@ -23,6 +23,7 @@ import name.abuchen.portfolio.ui.wizards.datatransfer.CSVImportWizard;
 public class ImportFromFileDropAdapter extends AbstractDropAdapter
 {
     private static final Pattern PDF_FILE = Pattern.compile(".*\\.pdf$", Pattern.CASE_INSENSITIVE); //$NON-NLS-1$
+    private static final Pattern TXT_FILE = Pattern.compile(".*\\.txt$", Pattern.CASE_INSENSITIVE); //$NON-NLS-1$
     private static final Pattern CSV_FILE = Pattern.compile(".*\\.csv$", Pattern.CASE_INSENSITIVE); //$NON-NLS-1$
 
     private final PortfolioPart part;
@@ -48,7 +49,8 @@ public class ImportFromFileDropAdapter extends AbstractDropAdapter
             return;
         }
 
-        if (PDF_FILE.matcher(files[0]).matches())
+        if (PDF_FILE.matcher(files[0]).matches()
+                        || (TXT_FILE.matcher(files[0]).matches() && ImportPDFHandler.isTextFileImportEnabled()))
         {
             openPDFImport(event, files);
         }

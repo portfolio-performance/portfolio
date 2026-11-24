@@ -43,6 +43,7 @@ import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.editor.FilePathHelper;
 import name.abuchen.portfolio.ui.editor.PortfolioPart;
+import name.abuchen.portfolio.ui.preferences.Experiments;
 import name.abuchen.portfolio.ui.wizards.datatransfer.ImportExtractedItemsWizard;
 import name.abuchen.portfolio.ui.wizards.datatransfer.ImportWizardDialog;
 
@@ -91,26 +92,41 @@ public class ImportPDFHandler
         return extractedFiles;
     }
 
-    public static void runImport(PortfolioPart part, Shell shell, Client client, Account account, Portfolio portfolio)
+    /**
+     * Returns true if text files previously extracted from PDF documents (see
+     * "Create text from PDF") can be imported through the regular PDF import.
+     * Used to debug the PDF extractors without having the original document.
+     */
+    public static boolean isTextFileImportEnabled()
     {
-        runImport(part, shell, client, account, portfolio, UIConstants.Preferences.PDF_IMPORT_PATH,
-                        Messages.PDFImportFilterName, "*.pdf;*.PDF;*.zip;*.ZIP"); //$NON-NLS-1$
+        return new Experiments().isEnabled(Experiments.Feature.SEP26_IMPORT_PDF_TEXT_FILES);
     }
 
-    /* package */ static void runImport(PortfolioPart part, Shell shell, Client client, Account account,
-                    Portfolio portfolio, String pathPreference, String filterName, String filterExtensions)
+    /**
+     * Checks that the client has at least one account and one portfolio as the
+     * imported transactions must be booked into them.
+     */
+    private static boolean checkPrerequisites(Shell shell, Client client)
     {
         if (client.getAccounts().isEmpty())
         {
             MessageDialog.openError(shell, Messages.LabelError, Messages.MsgErrorAccountNotExist);
-            return;
+            return false;
         }
 
         if (client.getPortfolios().isEmpty())
         {
             MessageDialog.openError(shell, Messages.LabelError, Messages.MsgErrorPortfolioNotExist);
-            return;
+            return false;
         }
+
+        return true;
+    }
+
+    public static void runImport(PortfolioPart part, Shell shell, Client client, Account account, Portfolio portfolio)
+    {
+        if (!checkPrerequisites(shell, client))
+            return;
 
         // remember the path for the depot the import was triggered for
         // (portfolio > account)
@@ -120,7 +136,15 @@ public class ImportPDFHandler
         else if (account != null)
             qualifier = account.getUUID();
 
-        FilePathHelper helper = new FilePathHelper(part, pathPreference, qualifier);
+        FilePathHelper helper = new FilePathHelper(part, UIConstants.Preferences.PDF_IMPORT_PATH, qualifier);
+
+        String filterName = Messages.PDFImportFilterName;
+        String filterExtensions = "*.pdf;*.PDF;*.zip;*.ZIP"; //$NON-NLS-1$
+        if (isTextFileImportEnabled())
+        {
+            filterName = Messages.PDFImportFilterNameWithText;
+            filterExtensions += ";*.txt;*.TXT"; //$NON-NLS-1$
+        }
 
         FileDialog fileDialog = new FileDialog(shell, SWT.OPEN | SWT.MULTI);
         fileDialog.setText(Messages.PDFImportWizardAssistant);
@@ -175,6 +199,9 @@ public class ImportPDFHandler
     public static void runImportWithFiles(PortfolioPart part, Shell shell, Client client, Account account,
                     Portfolio portfolio, List<File> files)
     {
+        if (!checkPrerequisites(shell, client))
+            return;
+
         runImportWithFiles(part, shell, client, account, portfolio, files, () -> {
         });
     }
