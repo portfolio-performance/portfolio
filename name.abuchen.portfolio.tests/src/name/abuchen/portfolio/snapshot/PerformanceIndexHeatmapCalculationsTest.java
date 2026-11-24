@@ -17,6 +17,7 @@ import name.abuchen.portfolio.junit.TestCurrencyConverter;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.money.CurrencyConverter;
+import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.util.Interval;
 
 @SuppressWarnings("nls")
@@ -208,5 +209,35 @@ public class PerformanceIndexHeatmapCalculationsTest
         interval = Interval.of(endDate.plusDays(1), endDate.plusDays(5));
         assertThat(getClientIndex().getPerformance(interval), closeTo(0.0, 0.1e-10));
 
+    }
+
+    /**
+     * Issue #5248: after a day with -100 % (all assets gone without a removal,
+     * for example fees as high as the balance), the accumulated performance
+     * stays at -100 %. The performance of later periods must still be
+     * calculated from the daily returns instead of 0 / 0 = NaN.
+     */
+    @Test
+    public void testPerformanceOfPeriodsAfterTotalLoss()
+    {
+        var client = new Client();
+        new AccountBuilder() //
+                        .deposit_("2025-04-20", Values.Amount.factorize(100000)) //
+                        .fees____("2025-04-21", Values.Amount.factorize(100000)) //
+                        .deposit_("2025-05-10", Values.Amount.factorize(1000)) //
+                        .interest("2025-06-15", Values.Amount.factorize(10)) //
+                        .addTo(client);
+
+        var index = getClientIndex(client, Interval.of(LocalDate.parse("2024-12-31"), LocalDate.parse("2025-12-31")));
+
+        var april = Interval.of(LocalDate.parse("2025-03-31"), LocalDate.parse("2025-04-30"));
+        var may = Interval.of(LocalDate.parse("2025-04-30"), LocalDate.parse("2025-05-31"));
+        var june = Interval.of(LocalDate.parse("2025-05-31"), LocalDate.parse("2025-06-30"));
+        var aprilToJune = Interval.of(LocalDate.parse("2025-03-31"), LocalDate.parse("2025-06-30"));
+
+        assertThat(index.getPerformance(april), closeTo(-1.0, 0.1e-10));
+        assertThat(index.getPerformance(may), closeTo(0.0, 0.1e-10));
+        assertThat(index.getPerformance(june), closeTo(0.01, 0.1e-10));
+        assertThat(index.getPerformance(aprilToJune), closeTo(-1.0, 0.1e-10));
     }
 }
