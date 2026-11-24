@@ -337,6 +337,49 @@ public class DividendCalculationTest
                         0.000001);
     }
 
+    /**
+     * If the position was sold before the payment and the dividend is split
+     * across two accounts (security held in two portfolios), the rate of return
+     * must be the same as for a single payment.
+     */
+    @Test
+    public void rateOfReturnBasedOnQuoteWithPaymentSplitAcrossAccounts()
+    {
+        security.addPrice(new SecurityPrice(LocalDate.parse("2020-02-03"), Values.Quote.factorize(100)));
+
+        DividendCalculation single = Calculation.perform(DividendCalculation.class, converter, security,
+                        createSoldPositionWithPayments(security, 10));
+        DividendCalculation split = Calculation.perform(DividendCalculation.class, converter, security,
+                        createSoldPositionWithPayments(security, 5, 5));
+
+        // 62.50 / (10 * 100)
+        assertEquals(0.0625, single.getRateOfReturnPerYear(), 0.000001);
+        assertEquals(single.getRateOfReturnPerYear(), split.getRateOfReturnPerYear(), 0.000001);
+    }
+
+    private List<CalculationLineItem> createSoldPositionWithPayments(Security security, int... shares)
+    {
+        List<CalculationLineItem> transactions = new ArrayList<>();
+        transactions.add(CalculationLineItem.of(new Portfolio(),
+                        new PortfolioTransaction(LocalDateTime.of(2020, 1, 2, 0, 0), CurrencyUnit.EUR,
+                                        Values.Amount.factorize(1000), security, Values.Share.factorize(10),
+                                        Type.BUY, 0L, 0L)));
+        transactions.add(CalculationLineItem.of(new Portfolio(),
+                        new PortfolioTransaction(LocalDateTime.of(2020, 1, 10, 0, 0), CurrencyUnit.EUR,
+                                        Values.Amount.factorize(1100), security, Values.Share.factorize(10),
+                                        Type.SELL, 0L, 0L)));
+        for (int s : shares)
+        {
+            AccountTransaction t = dividend(security, LocalDateTime.of(2020, 2, 3, 0, 0),
+                            Values.Amount.factorize(6.25 * s));
+            t.setShares(Values.Share.factorize(s));
+            transactions.add(CalculationLineItem.of(new Account(), t));
+        }
+
+        Calculation.perform(CostCalculation.class, converter, security, transactions);
+        return transactions;
+    }
+
     private List<CalculationLineItem> createSaleBeforePayment(Security security)
     {
         List<CalculationLineItem> transactions = new ArrayList<>();
