@@ -35,11 +35,18 @@ public class ProtobufUtil
 
     public static Timestamp asUpdatedAtTimestamp(Instant instant)
     {
+        if (instant == null)
+            return Timestamp.getDefaultInstance();
+
         return Timestamp.newBuilder().setSeconds(instant.getEpochSecond()).setNanos(instant.getNano()).build();
     }
 
     public static Instant fromUpdatedAtTimestamp(Timestamp ts)
     {
+        // the empty timestamp stands for "unset", so the Unix epoch itself cannot be stored
+        if (ts == null || ts.equals(Timestamp.getDefaultInstance()))
+            return null;
+
         return Instant.ofEpochSecond(ts.getSeconds(), ts.getNanos());
     }
 
