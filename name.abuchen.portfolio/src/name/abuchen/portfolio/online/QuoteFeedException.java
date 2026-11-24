@@ -13,4 +13,9 @@ public abstract class QuoteFeedException extends Exception
     {
         super(message);
     }
+
+    protected QuoteFeedException(String message, Throwable cause)
+    {
+        super(message, cause);
+    }
 }
