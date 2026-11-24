@@ -123,7 +123,7 @@ public abstract class AbstractSecurityListWidget<T extends AbstractSecurityListW
     {
         title = new StyledLabel(container, SWT.NONE);
         title.setBackground(container.getBackground());
-        title.setText(TextUtil.tooltip(getWidget().getLabel()));
+        title.setText(TextUtil.escapeHtml(getWidget().getLabel()));
         title.setData(UIConstants.CSS.CLASS_NAME, UIConstants.CSS.TITLE);
 
         title.setOpenLinkHandler(d -> {
@@ -157,9 +157,10 @@ public abstract class AbstractSecurityListWidget<T extends AbstractSecurityListW
         });
 
         if (items.isEmpty())
-            this.title.setText(getWidget().getLabel() + " (0)"); //$NON-NLS-1$
+            this.title.setText(TextUtil.escapeHtml(getWidget().getLabel()) + " (0)"); //$NON-NLS-1$
         else
-            this.title.setText(String.format("%s (<a href=\"open\">%d</a>)", getWidget().getLabel(), items.size())); //$NON-NLS-1$
+            this.title.setText(String.format("%s (<a href=\"open\">%d</a>)", //$NON-NLS-1$
+                            TextUtil.escapeHtml(getWidget().getLabel()), items.size()));
 
         Control[] children = list.getChildren();
         for (Control child : children)

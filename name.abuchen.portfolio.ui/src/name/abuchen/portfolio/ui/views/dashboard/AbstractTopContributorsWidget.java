@@ -83,7 +83,7 @@ public abstract class AbstractTopContributorsWidget<D> extends WidgetDelegate<D>
     {
         title = new StyledLabel(container, SWT.NONE);
         title.setBackground(container.getBackground());
-        title.setText(TextUtil.tooltip(getWidget().getLabel()));
+        title.setText(TextUtil.escapeHtml(getWidget().getLabel()));
         title.setData(UIConstants.CSS.CLASS_NAME, UIConstants.CSS.TITLE);
 
         title.setOpenLinkHandler(d -> {
@@ -133,9 +133,10 @@ public abstract class AbstractTopContributorsWidget<D> extends WidgetDelegate<D>
         long securityCount = visibleRows.stream().map(DisplayRow::security).filter(Objects::nonNull).distinct().count();
 
         if (securityCount == 0)
-            title.setText(getWidget().getLabel() + " (0)"); //$NON-NLS-1$
+            title.setText(TextUtil.escapeHtml(getWidget().getLabel()) + " (0)"); //$NON-NLS-1$
         else
-            title.setText(String.format("%s (<a href=\"open\">%d</a>)", getWidget().getLabel(), securityCount)); //$NON-NLS-1$
+            title.setText(String.format("%s (<a href=\"open\">%d</a>)", //$NON-NLS-1$
+                            TextUtil.escapeHtml(getWidget().getLabel()), securityCount));
 
         Control[] children = list.getChildren();
         for (Control child : children)
