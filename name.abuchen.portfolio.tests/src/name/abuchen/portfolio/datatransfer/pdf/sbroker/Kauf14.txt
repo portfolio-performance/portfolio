@@ -1,49 +1,41 @@
 PDFBox Version: 1.8.17
 Portfolio Performance Version: 0.64.1
 -----------------------------------------
+~$~|WP|684844||||||||SBROKERL210803.WP||||20210803||8256|0000|||||~$~
 BELEGDRUCK=J
 ORIGINAL=1
 FAXVERSAND=N
-EMAILVERSAND=N
-Wertpapierabrechnung
-DEPOTNUMMER=685/8812/002
-DEPOTUNTERBEZEICHNUNG=
-Kauf
-VERSANDARTENSCHLUESSEL=0000
-Kommissionsgeschäft
+Wertpapierabrechnung EMAILVERSAND=N
+DEPOTNUMMER=749/8853/958
+Kauf Limitauftrag DEPOTUNTERBEZEICHNUNG=
+Kommissionsgesch ft VERSANDARTENSCHLUESSEL=0000ä
 ADRESSZEILE1=Herrn
-ADRESSZEILE2=coVBXG ZaFjQ
-ADRESSZEILE3=TSBWJGs. 95
-Depot-Nr. Abrechnungs-Nr.
-Herrn ADRESSZEILE4=50325 wqumjIndDz
-ADRESSZEILE5=
-dQjbUh eCuFM
-319/2718/002 21461152
-ADRESSZEILE6=
-sNumPJq. 58
-BELEGNUMMER=11714
-76753 HVFSbdxgYi
+ADRESSZEILE2=NNaEPw PpYpH
+ADRESSZEILE3=rFynmVS. 25
+Herrn        Depot-Nr. Abrechnungs-Nr. ADRESSZEILE4=05917 LQxKsYPStU OT uVdRjZIP
+RKpqUX hQfYl 719/1894/019 53941243 ADRESSZEILE5=
+ecNsyMS. 17 ADRESSZEILE6=
+47449 BegRcjzROT OT UucqkwsL BELEGNUMMER=5570
 SEITENNUMMER=1
-STEUERERSTATTUNG=N
-Depotinhaber
-PokLhK iJuix
-Wiesbaden, 08.04.2021
+Depotinhaber STEUERERSTATTUNG=N
+SrpNjb SOLCE
+Wiesbaden, 03.08.2021
 Wir haben für Sie gekauft
 Gattungsbezeichnung ISIN
-Johnson & Johnson Registered Shares DL 1 US4781601046
+Reckitt Benckiser Group Registered Shares LS -,10 GB00B24CGK77
 Nominal Kurs
-STK 8,000 EUR 136,9800
-Handelstag 08.04.2021 EUR 1.095,84-
-Kurswert
-EUR 10,47-
-Handelszeit 21:20
-Orderentgelt
-Handelsplatz Quotrix
-Verwahrart Girosammelverwahrung
+STK 15,000 EUR 66,5000
+Handelstag 03.08.2021 Kurswert EUR 997,50 -
+Handelszeit 09:04 Orderentgelt EUR 9,97 -
+Handelsplatz auûerbörslich
+Lang & Schwarz
+Verwahrart Wertpapierrechnung
+Lagerland Groûbritannien
 Wert Betrag zu Ihren Lasten
-12.04.2021 EUR 1.106,31
-Wir werden in Ihrem Depot wie angegeben buchen.
-Mit freundlichen Grüßen
+05.08.2021 EUR 1.007,47
+Mit freundlichen Grüûen
 S Broker AG & Co. KG
 Dieser Beleg wird maschinell erstellt und daher nicht unterschrieben.
-3.18/ABREABHNHANDKFDI/GAAASAFG/011714/090421/004445
+           
+3.18/ABREABHNHANDKFDI/POB1618/008125/040821/002412
+SBRO_WP_v1.7P.SBROKERL210803.WP_8256

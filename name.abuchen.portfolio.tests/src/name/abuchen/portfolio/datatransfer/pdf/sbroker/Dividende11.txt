@@ -1,50 +1,64 @@
 PDFBox Version: 1.8.17
-Portfolio Performance Version: 0.62.1
------------------------------------------
-~$~|ER01|746015||||||||ERTRAEGE.D230508.AFP||||20230508||33844|0000|||||~$~
-S Broker AG & Co. KG ´ Postfach 90 01 50 ´ 39133 Magdeburg Seite 1
-Depotnummer 12345678
-Sebastian Name
-Abrechnungsnr. 12345678
-Datum 08.05.2023
-Herrn
-Sebastian Name
-Stadtteil
-Strasse. 123
-12345 Stadt
-Dividendengutschrift
-Nominale Wertpapierbezeichnung ISIN (WKN)
-Stück 28 HUHTAMAEKI OYJ FI0009000459 (870740)
-REGISTERED SHARES O.N.
-Zahlbarkeitstag 09.05.2023 Dividende pro Stück 0,50 EUR
-Bestandsstichtag 27.04.2023 Herkunftsland Finnland
-Ex-Tag 28.04.2023 Art der Dividende Zwischendividende
-Geschäftsjahr 01.01.2022 - 31.12.2022
-Dividendengutschrift 14,00+ EUR
-Einbehaltene Quellensteuer 35 % auf 14,00 EUR 4,90- EUR
-Anrechenbare Quellensteuer 15 % auf 14,00 EUR 2,10 EUR
-Kapitalertragsteuerpflichtige Dividende 14,00 EUR
-Verrechneter Sparer-Pauschbetrag 14,00 - EUR
-Berechnungsgrundlage für die Kapitalertragsteuer 0,00 EUR
-Ausmachender Betrag 9,10+ EUR
-20 % rückforderbare Quellensteuer 2,80 EUR
-Lagerstelle Clearstream Banking FFM (849000 / 40030000)
-Jahressteuerbescheinigung folgt.
-Bitte ggf. Rückseite beachten.
-5500.05082144.0040698ER01
-SBRO_ER01_v10.8P.ERTRAEGE.D230508.AFP_33844
 
-Seite 2
-Depotnummer 12345678
-Abrechnungsnr. 12345678
-Datum 08.05.2023
-Nachrichtlich die Übersicht Ihrer Verrechnungs- und Steuertopfsalden zum Zeitpunkt der Erstellung der Abrechnung.
-Verrechnungstöpfe 2023 Berechnungsgrundlage
-der gezahlten Steuern
-Euro Aktien Sonstige Sparer- anrechenbare Aktien und Sonstige
-Pauschbetrag Quellensteuer
-Vorher 2.306,26 0,00 167,05 31,75 0,00
-Ertrag 0,00 0,00 14,00- 2,10 0,00
-Nachher 2.306,26 0,00 153,05 33,85 0,00
-Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
-5500.05082144.0040699ER01
+Portfolio Performance Version: 0.62.1
+
+-----------------------------------------
+
+BELEGDRUCK=J
+ORIGINAL=1
+FAXVERSAND=N
+EMAILVERSAND=N
+Erträgnisgutschrift aus Wertpapieren
+DEPOTNUMMER=711/7940/017
+DEPOTUNTERBEZEICHNUNG=
+VERSANDARTENSCHLUESSEL=0000
+ADRESSZEILE1=Herrn
+Ausschüttung für
+ADRESSZEILE2=Hans Peter
+01.03.2017 - 31.12.2017
+ADRESSZEILE3=Franka Futzi
+Depot-Nr. Ausführungs-Nr.
+Herrn ADRESSZEILE4=Musterweg 10
+ADRESSZEILE5=88888 München
+Hans Peter
+711/7940/017 68623829
+ADRESSZEILE6=
+Franka Futzi
+BELEGNUMMER=1775
+Musterweg 10
+SEITENNUMMER=1
+88888 München
+STEUERERSTATTUNG=N
+Depotinhaber
+Hans Peter oder Franka Futzi
+Ertragsthesaurierung
+Wiesbaden, 27.03.2018
+Gattungsbezeichnung ISIN
+iShs-Asia Pacific Div.U.ETF Registered Shares USD (Dist)oN IE00B14X4T88
+Nominal Ex-Tag Zahltag Ausschüttungsbetrag pro Stück
+STK 6,064 02.01.2018 31.12.2017 USD 0,103644
+Steuerpflichtiger Betrag gem.§ 2 Abs. 1 InvStG EUR 0,52
+Bei Teilthesaurierungen kann die Steuerpflicht durch die Barausschüttungskomponente abgegolten sein. In diesen Fällen
+wurde auch die ggf. ausgewiesene anrechenbare Quellensteuer bereits im Rahmen der Ausschüttung berücksichtigt.
+Hinweise zur steuerlichen Verrechnung: vorher aktuell
+Thesaurierung brutto EUR 0,52
+anrechenbare Quellensteuer Fondseingangsseite EUR 0,02
+Aktienverlusttopf EUR 0,00 0,00
+allgemeiner Verlusttopf EUR 0,00 0,00
+Freistellungsauftrag (eingereicht: EUR 501,00) EUR 0,00 0,00
+Quellensteuertopf EUR 0,00 0,00
+zu versteuern EUR 0,00
+im laufenden Jahr einbehaltene Kapitalertragsteuer EUR 33,02
+im laufenden Jahr einbehaltener Solidaritätszuschlag EUR 1,81
+im laufenden Jahr einbehaltene Kirchensteuer EUR 1,32
+im laufenden Jahr einbehaltene Kirchensteuer Ehegatte/Lebenspartner EUR 1,32
+Steuerlicher Stichtag 31.12.2017
+Jahressteuerbescheinigung folgt
+Der von der Kapitalverwaltungsgesellschaft (KVG) zum Geschäftsjahresende des Fonds gemeldete und in jenem
+Kalenderjahr als zugeflossen geltende ausschüttungsgleiche (thesaurierte) Ertrag ist gem. §2 Abs. 1 InvStG steuerpflichtig
+und in der Steuererklärung für 2017 (Anlage KAP) zu deklarieren.
+Verwahrart: Wertpapierrechnung Lagerland: Irland
+Mit freundlichen Grüßen
+S Broker AG & Co. KG
+Dieser Beleg wird maschinell erstellt und daher nicht unterschrieben.
+3.20/DUANDEREEREIERTR/GDBERTRG/001775/280318/002204
