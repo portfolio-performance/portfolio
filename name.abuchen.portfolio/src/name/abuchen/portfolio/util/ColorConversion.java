@@ -61,11 +61,36 @@ public class ColorConversion
         return toHex(new RGB(hue, saturation, brightness));
     }
 
+    /**
+     * Returns a color that stays visible against a light and dark background.
+     * Unsaturated bright colors (close to white) and colors close to black get
+     * a minimum saturation and a brightness in the middle range. Colors that
+     * are already visible keep their hue and saturation.
+     */
+    public static RGB ensureVisible(RGB rgb)
+    {
+        float[] hsb = rgb.getHSB();
+        float hue = hsb[0], saturation = hsb[1], brightness = hsb[2];
+
+        // close to white: invisible on light backgrounds (only for unsaturated
+        // colors, saturated bright colors remain visible)
+        if (brightness > 0.75f && saturation < 0.3f)
+            return new RGB(hue, 0.35f, 0.8f);
+
+        // close to black: invisible on dark backgrounds, regardless of the
+        // saturation of the color
+        if (brightness < 0.3f)
+            return new RGB(hue, Math.max(0.35f, saturation), 0.45f);
+
+        return rgb;
+    }
+
     public static RGB brighter(RGB rgb)
     {
         float[] hsb = rgb.getHSB();
-        float saturation = Math.max(0f, hsb[1] - 0.2f);
-        float brightness = Math.min(1f, hsb[2] + 0.2f);
+        // keep the result visible on light backgrounds (issue #2829)
+        float saturation = Math.max(0.2f, hsb[1] - 0.2f);
+        float brightness = Math.min(0.9f, hsb[2] + 0.2f);
         return new RGB(hsb[0], saturation, brightness);
     }
 
@@ -78,7 +103,7 @@ public class ColorConversion
     {
         float[] hsb = rgb.getHSB();
         float saturation = Math.min(1f, hsb[1] + 0.2f);
-        float brightness = Math.max(0f, hsb[2] - 0.2f);
+        float brightness = Math.max(0.25f, hsb[2] - 0.2f);
         return new RGB(hsb[0], saturation, brightness);
     }
 
