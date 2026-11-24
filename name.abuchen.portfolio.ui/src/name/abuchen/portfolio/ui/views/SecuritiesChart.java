@@ -35,7 +35,6 @@ import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Label;
 import org.eclipse.swtchart.IAxis;
 import org.eclipse.swtchart.IAxis.Position;
 import org.eclipse.swtchart.ILegend;
@@ -673,20 +672,23 @@ public class SecuritiesChart
         toolTip.overrideValueFormat(Messages.LabelChartDetailIndicatorMacd, calculatedFormat);
         toolTip.overrideValueFormat(Messages.LabelChartDetailIndicatorMacdSignal, calculatedFormat);
 
-        toolTip.addExtraInfo((composite, focus) -> {
-            if (focus instanceof LocalDate date)
-            {
-                Interval displayInterval = Interval.of(date.minusDays(5), date.plusDays(5));
+        toolTip.addExtraInfo(focus -> {
+            if (!(focus instanceof LocalDate date))
+                return List.of();
 
-                customTooltipEvents.stream() //
-                                .filter(t -> displayInterval.contains(t.getDateTime())) //
-                                .forEach(t -> {
-                                    if (t instanceof AccountTransaction at)
-                                        addDividendTooltip(composite, at);
-                                    else if (t instanceof PortfolioTransaction pt)
-                                        addInvestmentTooltip(composite, pt);
-                                });
-            }
+            Interval displayInterval = Interval.of(date.minusDays(5), date.plusDays(5));
+
+            List<String> lines = new ArrayList<>();
+            customTooltipEvents.stream() //
+                            .filter(t -> displayInterval.contains(t.getDateTime())) //
+                            .forEach(t -> {
+                                if (t instanceof AccountTransaction at)
+                                    lines.addAll(dividendTooltipLines(at));
+                                else if (t instanceof PortfolioTransaction pt)
+                                    lines.addAll(investmentTooltipLines(pt));
+                            });
+
+            return lines;
         });
     }
 
@@ -702,29 +704,28 @@ public class SecuritiesChart
         toolTip.overrideValueFormat(seriesLabel, calculatedFormat);
     }
 
-    private void addInvestmentTooltip(Composite composite, PortfolioTransaction t)
+    private List<String> investmentTooltipLines(PortfolioTransaction t)
     {
-        Label label = new Label(composite, SWT.NONE);
-        label.setText(MessageFormat.format(Messages.LabelToolTipTransactionSummary, t.getType().toString(),
-                        dateTimeFormatter.format(t.getDateTime().toLocalDate()), t.getMonetaryAmount().toString()));
-
-        label = new Label(composite, SWT.NONE);
-        label.setText(MessageFormat.format(Messages.LabelToolTipInvestmentDetails, Values.Share.format(t.getShares()),
-                        Values.CalculatedQuote.format(
-                                        t.getGrossPricePerShare(converter.with(t.getSecurity().getCurrencyCode())))));
+        return List.of( //
+                        MessageFormat.format(Messages.LabelToolTipTransactionSummary, t.getType().toString(),
+                                        dateTimeFormatter.format(t.getDateTime().toLocalDate()),
+                                        t.getMonetaryAmount().toString()), //
+                        MessageFormat.format(Messages.LabelToolTipInvestmentDetails, Values.Share.format(t.getShares()),
+                                        Values.CalculatedQuote.format(t.getGrossPricePerShare(
+                                                        converter.with(t.getSecurity().getCurrencyCode())))));
     }
 
-    private void addDividendTooltip(Composite composite, AccountTransaction t)
+    private List<String> dividendTooltipLines(AccountTransaction t)
     {
-        Label label = new Label(composite, SWT.NONE);
         String amount = t.getMonetaryAmount().toString();
-        label.setText(MessageFormat.format(Messages.LabelToolTipTransactionSummary, t.getType().toString(),
+
+        List<String> lines = new ArrayList<>();
+        lines.add(MessageFormat.format(Messages.LabelToolTipTransactionSummary, t.getType().toString(),
                         dateTimeFormatter.format(t.getDateTime().toLocalDate()), amount));
 
         if (t.getShares() == 0L)
         {
-            label = new Label(composite, SWT.NONE);
-            label.setText("\u2211 " + t.getGrossValue().toString()); //$NON-NLS-1$
+            lines.add("\u2211 " + t.getGrossValue().toString()); //$NON-NLS-1$
         }
         else
         {
@@ -742,25 +743,19 @@ public class SecuritiesChart
             // display gross value in transaction currency, different gross
             // value in security currency exists
             if (!grossValueAmount.equals(grossAmount))
-            {
-                label = new Label(composite, SWT.NONE);
-                label.setText(MessageFormat.format(Messages.LabelToolTipDividendDetailsGross, grossValueAmount));
-            }
+                lines.add(MessageFormat.format(Messages.LabelToolTipDividendDetailsGross, grossValueAmount));
 
             // display gross value, if different to net amount
             if (!grossAmount.equals(amount))
-            {
-                label = new Label(composite, SWT.NONE);
-                label.setText(MessageFormat.format(Messages.LabelToolTipDividendDetailsGross, grossAmount));
-            }
+                lines.add(MessageFormat.format(Messages.LabelToolTipDividendDetailsGross, grossAmount));
 
             // display dividend per share in security currency
-            label = new Label(composite, SWT.NONE);
-            label.setText(MessageFormat.format(Messages.LabelToolTipDividendDetails, Values.Share.format(t.getShares()),
+            lines.add(MessageFormat.format(Messages.LabelToolTipDividendDetails, Values.Share.format(t.getShares()),
                             currency, Values.Quote.format(Math.round(gross * Values.Share.divider()
                                             * Values.Quote.factorToMoney() / t.getShares()))));
-
         }
+
+        return lines;
     }
 
     private void configureSeriesPainter(ILineSeries<Integer> series, LocalDate[] dates, double[] values, Color color,
