@@ -1,5 +1,7 @@
 package name.abuchen.portfolio.snapshot.security;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -7,7 +9,7 @@ import java.util.Collections;
 import java.util.List;
 
 import name.abuchen.portfolio.model.Security;
-import name.abuchen.portfolio.model.SecurityPrice;
+import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.MutableMoney;
@@ -80,23 +82,41 @@ import name.abuchen.portfolio.util.Dates;
                     rr = this.amount.getAmount() / (double) movingAverageCost.getAmount();
                 }
 
-                // check if it is valid (non 0)
-                if (rr == 0)
-                {
-                    // else use the security price at that date
-                    SecurityPrice p = security.getSecurityPrice(date);
-                    // getSecurityPrice may return an empty price value, so
-                    // check that
-                    long pValue = p.getValue();
-                    if (pValue != 0)
-                    {
-                        double sharePriceAmount = ((double) pValue) / Values.Quote.factor()
-                                        * Values.AmountFraction.factor();
-                        rr = t.getDividendPerShare() / sharePriceAmount;
-                    }
-                }
+                // check if it is valid (non 0). There is no moving average
+                // cost if the position was sold before the payment (for
+                // example between ex-date and payment date)
+                if (rr == 0 || Double.isNaN(rr))
+                    rr = rateOfReturnBasedOnQuote(converter, t, security);
             }
             this.rateOfReturn = rr;
+        }
+
+        /**
+         * Calculates the rate of return based on the market value of the
+         * shares at the date of the payment. Both values are converted into
+         * the term currency because the dividend might be booked in another
+         * currency than the currency of the security.
+         */
+        private double rateOfReturnBasedOnQuote(CurrencyConverter converter, CalculationLineItem.DividendPayment t,
+                        Security security)
+        {
+            // getSecurityPrice may return an empty price value, so check that
+            long price = security.getSecurityPrice(date).getValue();
+            long shares = t.getTransaction().map(Transaction::getShares).orElse(0L);
+            if (price == 0 || shares == 0)
+                return Double.NaN;
+
+            long marketValue = BigDecimal.valueOf(shares) //
+                            .movePointLeft(Values.Share.precision())
+                            .multiply(BigDecimal.valueOf(price), Values.MC)
+                            .movePointLeft(Values.Quote.precisionDeltaToMoney()) //
+                            .setScale(0, RoundingMode.HALF_UP).longValue();
+
+            var currencyCode = security.getCurrencyCode() != null ? security.getCurrencyCode()
+                            : amount.getCurrencyCode();
+            var value = Money.of(currencyCode, marketValue).with(converter.at(t.getDateTime()));
+
+            return value.isZero() ? Double.NaN : amount.getAmount() / (double) value.getAmount();
         }
     }
 
@@ -134,7 +154,11 @@ import name.abuchen.portfolio.util.Dates;
         {
             // add to total sum
             sum.add(p.amount);
-            sumRateOfReturn += p.rateOfReturn;
+
+            // a payment without cost and without quote has no rate of
+            // return and must not turn the result into NaN
+            if (!Double.isNaN(p.rateOfReturn))
+                sumRateOfReturn += p.rateOfReturn;
         }
 
         int years = 0;

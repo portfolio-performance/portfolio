@@ -2,6 +2,7 @@ package name.abuchen.portfolio.snapshot.security;
 
 import static org.junit.Assert.assertEquals;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -18,6 +19,8 @@ import name.abuchen.portfolio.model.PortfolioTransaction.Type;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.money.CurrencyConverter;
+import name.abuchen.portfolio.money.CurrencyUnit;
+import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.snapshot.security.BaseSecurityPerformanceRecord.Periodicity;
 
@@ -254,5 +257,113 @@ public class DividendCalculationTest
         // This test will FAIL with the buggy code (~0.0588) and PASS with the fix (~0.05)
         // Tolerance is tight (0.005) to catch the bug: 0.0588 - 0.05 = 0.0088 > 0.005
         assertEquals(0.05, dividends.getRateOfReturnPerYear(), 0.005);
+    }
+
+    /**
+     * If the position is sold before the payment (for example between ex-date
+     * and payment date), there is no moving average cost. Then the rate of
+     * return is based on the market value of the shares at the payment date.
+     */
+    @Test
+    public void rateOfReturnIfPositionIsSoldBeforePayment()
+    {
+        security.addPrice(new SecurityPrice(LocalDate.parse("2020-02-03"), Values.Quote.factorize(110)));
+
+        List<CalculationLineItem> transactions = createSaleBeforePayment(security);
+
+        Calculation.perform(CostCalculation.class, converter, security, transactions);
+        DividendCalculation dividends = Calculation.perform(DividendCalculation.class, converter, security,
+                        transactions);
+
+        // 2019: 50 / 1000, 2020: 50 / (10 * 110)
+        assertEquals((0.05 + 50 / 1100d) / 2, dividends.getRateOfReturnPerYear(), 0.000001);
+    }
+
+    /**
+     * Without moving average cost and without a quote, the rate of return of
+     * a payment is unknown. It must not turn the rate of return per year into
+     * NaN.
+     */
+    @Test
+    public void rateOfReturnIgnoresPaymentWithoutCostAndQuote()
+    {
+        List<CalculationLineItem> transactions = createSaleBeforePayment(security);
+
+        Calculation.perform(CostCalculation.class, converter, security, transactions);
+        DividendCalculation dividends = Calculation.perform(DividendCalculation.class, converter, security,
+                        transactions);
+
+        assertEquals(0.05 / 2, dividends.getRateOfReturnPerYear(), 0.000001);
+    }
+
+    /**
+     * The rate of return based on the quote compares amounts in the same
+     * currency, also if the dividend is booked in another currency than the
+     * currency of the security.
+     */
+    @Test
+    public void rateOfReturnBasedOnQuoteWithDividendInOtherCurrency()
+    {
+        Security usd = new Security("Test Security", "USD");
+        usd.addPrice(new SecurityPrice(LocalDate.parse("2015-01-15"), Values.Quote.factorize(110)));
+
+        List<CalculationLineItem> transactions = new ArrayList<>();
+        transactions.add(CalculationLineItem.of(new Portfolio(),
+                        new PortfolioTransaction(LocalDateTime.of(2015, 1, 2, 0, 0), "USD",
+                                        Values.Amount.factorize(1000), usd, Values.Share.factorize(10), Type.BUY,
+                                        0L, 0L)));
+        transactions.add(CalculationLineItem.of(new Portfolio(),
+                        new PortfolioTransaction(LocalDateTime.of(2015, 1, 9, 0, 0), "USD",
+                                        Values.Amount.factorize(1100), usd, Values.Share.factorize(10), Type.SELL,
+                                        0L, 0L)));
+
+        // dividend of 40 EUR booked on an EUR account
+        AccountTransaction dividend = new AccountTransaction();
+        dividend.setType(AccountTransaction.Type.DIVIDENDS);
+        dividend.setSecurity(usd);
+        dividend.setDateTime(LocalDateTime.of(2015, 1, 15, 0, 0));
+        dividend.setAmount(Values.Amount.factorize(40));
+        dividend.setShares(Values.Share.factorize(10));
+        dividend.setCurrencyCode(CurrencyUnit.EUR);
+        transactions.add(CalculationLineItem.of(new Account(), dividend));
+
+        Calculation.perform(CostCalculation.class, converter, usd, transactions);
+        DividendCalculation dividends = Calculation.perform(DividendCalculation.class, converter, usd,
+                        transactions);
+
+        long marketValue = converter.convert(LocalDate.parse("2015-01-15"),
+                        Money.of("USD", Values.Amount.factorize(1100))).getAmount();
+        assertEquals(Values.Amount.factorize(40) / (double) marketValue, dividends.getRateOfReturnPerYear(),
+                        0.000001);
+    }
+
+    private List<CalculationLineItem> createSaleBeforePayment(Security security)
+    {
+        List<CalculationLineItem> transactions = new ArrayList<>();
+        transactions.add(CalculationLineItem.of(new Portfolio(),
+                        new PortfolioTransaction(LocalDateTime.of(2019, 1, 10, 0, 0), CurrencyUnit.EUR,
+                                        Values.Amount.factorize(1000), security, Values.Share.factorize(10),
+                                        Type.BUY, 0L, 0L)));
+        transactions.add(CalculationLineItem.of(account,
+                        dividend(security, LocalDateTime.of(2019, 6, 3, 0, 0), Values.Amount.factorize(50))));
+        transactions.add(CalculationLineItem.of(new Portfolio(),
+                        new PortfolioTransaction(LocalDateTime.of(2020, 1, 10, 0, 0), CurrencyUnit.EUR,
+                                        Values.Amount.factorize(1100), security, Values.Share.factorize(10),
+                                        Type.SELL, 0L, 0L)));
+        transactions.add(CalculationLineItem.of(account,
+                        dividend(security, LocalDateTime.of(2020, 2, 3, 0, 0), Values.Amount.factorize(50))));
+        return transactions;
+    }
+
+    private AccountTransaction dividend(Security security, LocalDateTime date, long amount)
+    {
+        AccountTransaction t = new AccountTransaction();
+        t.setType(AccountTransaction.Type.DIVIDENDS);
+        t.setSecurity(security);
+        t.setDateTime(date);
+        t.setAmount(amount);
+        t.setShares(Values.Share.factorize(10));
+        t.setCurrencyCode(security.getCurrencyCode());
+        return t;
     }
 }
