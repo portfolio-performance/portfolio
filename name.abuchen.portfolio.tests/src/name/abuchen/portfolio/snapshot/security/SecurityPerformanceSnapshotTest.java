@@ -4,17 +4,25 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import org.junit.Test;
 
 import name.abuchen.portfolio.junit.PortfolioBuilder;
 import name.abuchen.portfolio.junit.SecurityBuilder;
 import name.abuchen.portfolio.junit.TestCurrencyConverter;
+import name.abuchen.portfolio.model.Account;
+import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.CostMethod;
+import name.abuchen.portfolio.model.Portfolio;
+import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.TaxesAndFees;
+import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Quote;
@@ -97,6 +105,53 @@ public class SecurityPerformanceSnapshotTest
 
         assertThat(position.getShares(), is(record.getSharesHeld()));
         assertThat(position.calculateValue(), is(record.getMarketValue()));
+    }
+
+    /**
+     * If the reporting currency is the currency of the security, the delta
+     * must use the exchange rate of the purchase (like the cost, the capital
+     * gains and the IRR) and not the exchange rate of the day.
+     */
+    @Test
+    public void testDeltaUsesExchangeRateOfTransaction()
+    {
+        var client = new Client();
+
+        var security = new SecurityBuilder(CurrencyUnit.USD) //
+                        .addPrice("2015-01-02", Values.Quote.factorize(130)) //
+                        .addPrice("2015-01-16", Values.Quote.factorize(130)) //
+                        .addTo(client);
+
+        var account = new Account();
+        account.setCurrencyCode(CurrencyUnit.EUR);
+        client.addAccount(account);
+        var portfolio = new Portfolio();
+        portfolio.setReferenceAccount(account);
+        client.addPortfolio(portfolio);
+
+        // 10 shares at 130 USD paid with 1,000 EUR (1 EUR = 1.30 USD, daily
+        // rate 1.2043)
+        var entry = new BuySellEntry(portfolio, account);
+        entry.setType(PortfolioTransaction.Type.BUY);
+        entry.setDate(LocalDateTime.parse("2015-01-02T00:00"));
+        entry.setSecurity(security);
+        entry.setShares(Values.Share.factorize(10));
+        entry.setMonetaryAmount(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1000)));
+        entry.getPortfolioTransaction().addUnit(new Unit(Unit.Type.GROSS_VALUE,
+                        Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1000)),
+                        Money.of(CurrencyUnit.USD, Values.Amount.factorize(1300)),
+                        BigDecimal.ONE.divide(BigDecimal.valueOf(1.3), 10, RoundingMode.HALF_UP)));
+        entry.insert();
+
+        var interval = Interval.of(LocalDate.parse("2015-01-01"), LocalDate.parse("2015-01-16"));
+        var record = LazySecurityPerformanceSnapshot
+                        .create(client, new TestCurrencyConverter(CurrencyUnit.USD), interval).getRecord(security)
+                        .orElseThrow(IllegalArgumentException::new);
+
+        assertThat(record.getCost(CostMethod.FIFO, TaxesAndFees.INCLUDED),
+                        is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(1300))));
+        assertThat(record.getDelta(), is(Money.of(CurrencyUnit.USD, 0)));
+        assertThat(record.getDeltaPercent(), is(0d));
     }
 
     @Test
