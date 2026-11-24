@@ -303,6 +303,17 @@ public class KBCGroupNVPDFExtractor extends AbstractPDFExtractor
                                                         .attributes("name", "currency", "isin") //
                                                         .match("^.* van [\\.,\\d]+ (?<name>.*) aan [\\.,\\d]+ (?<currency>[A-Z]{3}) [\\.,\\d]+ [A-Z]{3}$") //
                                                         .match("^Cash Dividend (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]).*$") //
+                                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
+                                        // @formatter:off
+                                        // Uw Uitbetaling dividenden van 220 VANGUARD FD PLC FTSE EM.MKT.UC.ETFD aan 72,00 USD
+                                        // 0,327273 USD
+                                        // Cash Dividend IE00B3VVMM84ex 2025-12-18 pd 2025-12-31
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("name", "currency", "isin") //
+                                                        .match("^.* van [\\.,\\d]+ (?<name>.*) aan [\\.,\\d]+ [A-Z]{3}$") //
+                                                        .match("^[\\.,\\d]+ (?<currency>[A-Z]{3})$") //
+                                                        .match("^Cash Dividend (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]).*$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))))
 
                         // @formatter:off

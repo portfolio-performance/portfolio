@@ -699,6 +699,84 @@ public class KBCGroupNVPDFExtractorTest
     }
 
     @Test
+    public void testDividende06()
+    {
+        var extractor = new KBCGroupNVPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende06.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00B3VVMM84"), hasWkn(null), hasTicker(null), //
+                        hasName("VANGUARD FD PLC FTSE EM.MKT.UC.ETFD"), //
+                        hasCurrencyCode("USD"))));
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2025-12-31T02:35:11"), hasExDate("2025-12-18"), //
+                        hasShares(220.00), //
+                        hasSource("Dividende06.txt"), //
+                        hasNote("Borderel 492903377"), //
+                        hasAmount("EUR", 41.80), hasGrossValue("EUR", 60.92), //
+                        hasForexGrossValue("USD", 72.00), //
+                        hasTaxes("EUR", 0.00 + 18.28 + 0.14), hasFees("EUR", 0.70))));
+    }
+
+    @Test
+    public void testDividende06WithSecurityInEUR()
+    {
+        var security = new Security("VANGUARD FD PLC FTSE EM.MKT.UC.ETFD", "EUR");
+        security.setIsin("IE00B3VVMM84");
+
+        var client = new Client();
+        client.addSecurity(security);
+
+        var extractor = new KBCGroupNVPDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende06.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, "EUR");
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2025-12-31T02:35:11"), hasExDate("2025-12-18"), //
+                        hasShares(220.00), //
+                        hasSource("Dividende06.txt"), //
+                        hasNote("Borderel 492903377"), //
+                        hasAmount("EUR", 41.80), hasGrossValue("EUR", 60.92), //
+                        hasTaxes("EUR", 0.00 + 18.28 + 0.14), hasFees("EUR", 0.70), //
+                        check(tx -> {
+                            var c = new CheckCurrenciesAction();
+                            var account = new Account();
+                            account.setCurrencyCode("EUR");
+                            var s = c.process((AccountTransaction) tx, account);
+                            assertThat(s, is(Status.OK_STATUS));
+                        }))));
+    }
+
+    @Test
     public void testRekeninguittreksel01()
     {
         var extractor = new KBCGroupNVPDFExtractor(new Client());
