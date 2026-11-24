@@ -1,0 +1,136 @@
+PDFBox Version: 3.0.8
+Portfolio Performance Version: 0.90.0
+System: macosx | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+CH-00000000 - 00000000
+Bericht zu Trade-Details
+Berichtszeitraum: 11-Nov-2026 - 11-Nov-2026
+Generiert um: 13-Nov-2026 08:43:25 20:43:25 (W. Europe Standard Time)
+CH-00000000 Saxo Bank CH
+Switzerland The Circle 38
+8058 Zürich-Flughafen
+Switzerland
+Saxo Bank CH / The Circle 38 / 8058 Zürich-Flughafen / Switzerland CH-00000000 Berichtszeitraum
+Währung: CHF 11-Nov-2026 - 11-Nov-2026
+Seite 1 von 7 Konten: 00000/000000 Generiert um: 13-Nov-2026
+Trade details, CHF
+Berichtszeitraum
+11-Nov-2026 bis 11-Nov-2026
+ETF
+Instrument Vanguard FTSE Developed World UCITS ETF Ausführungszeit 11-Nov-2026 13:31:37
+ISIN IE00BKX55T58 Valuta 13-Nov-2026
+Symbol VEVE:xswx Order-ID 5461026260
+BLOOMBERG TRADING FACILITY B.V.
+Börsenbeschreibung Trade-ID 6937761981
+(BTFE)
+Hauptbörse SIX Swiss Exchange (ETFs) Gehandelter Wert 3.774,72 CHF
+Handelsplatz Exchange Preis 117,96 CHF
+Ordertyp Limit-Order Menge -32,00
+K/V Verkauf Spread-Kosten 0,00 CHF
+Eröffnung/Schluss To-Close Gesamte Trading-Kosten -8,68 CHF
+Saxo is counterparty No
+Buchungsbetrag- Amount Umrechnungskosten Gebuchter Betrag
+Trade-Datum Value Date Umrechnungskurs
+ID CHF CHF CHF
+Provision 61640042546 11-Nov-2026 13-Nov-2026 -3,02 1,000000 0,00 -3,02
+Aktienbetrag 61643676484 11-Nov-2026 13-Nov-2026 3.774,72 1,000000 0,00 3.774,72
+Saxo Bank CH / The Circle 38 / 8058 Zürich-Flughafen / Switzerland CH-00000000 Berichtszeitraum
+Währung: CHF 11-Nov-2026 - 11-Nov-2026
+Seite 2 von 7 Konten: 00000/000000 Generiert um: 13-Nov-2026
+Trade details, CHF
+Berichtszeitraum
+11-Nov-2026 bis 11-Nov-2026
+Kundenprovisionsgu
+61644031257 11-Nov-2026 13-Nov-2026 3,02 1,000000 0,00 3,02
+tschrift
+Schweizerische
+Stempelgebühr 61645828907 11-Nov-2026 13-Nov-2026 -5,66 1,000000 0,00 -5,66
+Ausland
+Nettobetrag - - - - - 0,00 3.769,06
+Saxo Bank CH / The Circle 38 / 8058 Zürich-Flughafen / Switzerland CH-00000000 Berichtszeitraum
+Währung: CHF 11-Nov-2026 - 11-Nov-2026
+Seite 3 von 7 Konten: 00000/000000 Generiert um: 13-Nov-2026
+Estimated cost at order placement
+Estimated costs and returns on investment for different holding periods at time of the order placement.
+Aktie: Vanguard FTSE Developed World UCITS ETF (VEVE:xswx)
+3M 1Y 3Y
+Geschätzte Kosten für eine Investition von 32 Vanguard FTSE Developed World UCITS ETF (VEVE:xswx)
+Kosten (CHF) % Kosten (CHF) % Kosten (CHF) %
+Investmentservicekosten
+Laufende Gebühren 0 0 0 0 0 0
+Transaktionskosten
+Spread-Kosten * 2,56 0,069 2,56 0,069 2,56 0,069
+Kommission (Öffnen) 2,974 0,08 2,974 0,08 2,974 0,08
+Kommission (Schließen) 2,974 0,08 2,974 0,08 2,974 0,08
+Steuer 11,15 0,3 11,15 0,3 11,15 0,3
+(Schweizerische Stempelgebühr Ausland)
+Zufällige Kosten 0 0 0 0 0 0
+Ancilliary Costs 0 0 0 0 0 0
+Einmalige Kosten 0 0 0 0 0 0
+Gesamtkosten für Investmentservice 19,66 0,529 19,66 0,529 19,66 0,529
+Finanzinstrumentkosten
+Laufende Gebühren
+Laufende Gebühren * 1,11 0,03 4,49 0,121 13,48 0,362
+Portfolio-Transaktionskosten * 0,1 0,003 0,4 0,011 1,2 0,032
+Transaktionskosten 0 0 0 0 0 0
+Zufällige Kosten 0 0 0 0 0 0
+Einmalige Kosten 0 0 0 0 0 0
+Gesamtkosten für Finanzinstrument 1,21 0,033 4,89 0,132 14,68 0,394
+Drittanbieterzahlungen 0 0 0 0 0 0
+Gesamt 20,87 0,562 24,55 0,661 34,34 0,923
+Saxo Bank CH / The Circle 38 / 8058 Zürich-Flughafen / Switzerland CH-00000000 Berichtszeitraum
+Währung: CHF 11-Nov-2026 - 11-Nov-2026
+Seite 4 von 7 Konten: 00000/000000 Generiert um: 13-Nov-2026
+Estimated cost at order placement
+Estimated costs and returns on investment for different holding periods at time of the order placement.
+Aktie: Vanguard FTSE Developed World UCITS ETF (VEVE:xswx)
+Kapitalrendite
+Geschätzte Kostenauswirkungen auf die Rendite für eine Investition von 32 Vanguard FTSE Developed World UCITS ETF (VEVE:xswx) für eine hypothetische Rendite von 8 % p.a.
+Ohne Kosten (CHF) 73,34 1,973 297,42 8 965,55 25,971
+Inklusive Kosten (CHF) 52,47 1,411 272,87 7,34 931,21 25,048
+Annahmen
+- Beinhaltet sowohl Eröffnungs- als auch Schließungskosten
+- Eröffnungs- und Schlusskurs sind identisch (G/V=0)
+- Basierend auf dem letzten Schlusskurs 116.18
+- * Implizite Kosten, die im Preis des Instruments enthalten sind und Ihrem Konto nicht belastet werden
+- Die geschätzte Rendite oder der Prozentsatz 8% dient nur zur Veranschaulichung der Kosten und darf nicht als erwartete Rendite in diesem Instrument verstanden werden.
+- Nicht angezeigte Kostenkategorien sind 0. Eine vollständige Kostenaufschlüsselung einschließlich der Kategoriekosten 0 ist auf Anfrage erhältlich
+Saxo Bank CH / The Circle 38 / 8058 Zürich-Flughafen / Switzerland CH-00000000 Berichtszeitraum
+Währung: CHF 11-Nov-2026 - 11-Nov-2026
+Seite 5 von 7 Konten: 00000/000000 Generiert um: 13-Nov-2026
+Erläuterung der Kosten
+Investmentservicekosten
+Laufende Kosten
+Laufende Servicekosten fallen über einen Zeitraum an und sind mit keiner bestimmten Transaktion verbunden. Laufende Kosten werden vom Anlageanbieter für seine Dienstleistungen für den Kunden erhoben.
+Transaktionskosten
+Transaktionskosten sind Kosten im Zusammenhang mit Kauf- oder Verkaufstransaktionen, die vom Anlageanbieter oder im Auftrag des Kunden durchgeführt werden. Beispiele: Provisionen, Stempelgebühren,
+Transaktionssteuern und Devisenkosten.
+Zufällige Kosten
+Zufällige Kosten sind Kosten, die nicht in den laufenden Kosten enthalten oder durch Transaktionskosten entstanden sind, aber als einmalige Ereignisse gebucht werden. Beispiel: Performancegebühren
+Zusätzliche Kosten
+Zusätzliche Kosten sind Kosten im Zusammenhang mit Zusatzleistungen, die in den genannten Kostenarten nicht enthalten sind. Beispiele: Recherchekosten
+Einmalige Kosten
+Einmalige Kosten sind Kosten, die der Investmentgesellschaft beim Ein- oder Ausstieg in die bereitgestellten Investmentservices gezahlt werden. Beispiele: Einmalige Beratungsgebühren, Überweisungsgebühren,
+Depotgebühren.
+Finanzinstrumentkosten
+Laufende Kosten
+Laufende Kosten für ein Finanzinstrument sind der Verwaltung des Finanzprodukts zuzuordnen. Diese werden während der Laufdauer der Anlage vom Wert des Finanzinstruments abgezogen. Dazu gehören
+Direktfinanzierungsgebühren, die sich auf das Barguthaben des Produktportfolios auswirken. Beispiele: Verwaltungsgebühren, Servicekosten, Swap-Gebühren, Kosten und Steuern für Wertpapierleihen und
+Finanzierungskosten.
+Transaktionskosten
+Transaktionskosten sind Kosten, die sich aus dem Erwerb und der Veräußerung von Anlagen ergeben. Beispiele: Maklerprovisionen, Ein- und Ausstiegsgebühren für einen Fonds, im Transaktionspreis enthaltene
+Aufschläge, Stempelgebühren, Transaktionssteuern und Devisenkosten.
+Zufällige Kosten
+Bei einigen Finanzinstrumenten können weitere zufällige Kosten in Verbindung mit der Anlage in das Finanzinstrument entstehen. Beispiel: Performancegebühren
+Einmalige Kosten
+Einmalige Kosten sind alle Kosten und Gebühren, die beim Ein- oder Ausstieg in eine Anlage in das Finanzinstrument im Preis des Finanzinstruments enthalten sind.
+Saxo Bank CH / The Circle 38 / 8058 Zürich-Flughafen / Switzerland CH-00000000 Berichtszeitraum
+Währung: CHF 11-Nov-2026 - 11-Nov-2026
+Seite 6 von 7 Konten: 00000/000000 Generiert um: 13-Nov-2026
+Erläuterung der Kosten
+Kosten für Drittanbieterzahlungen
+Drittanbieterzahlungen sind Zahlungen von einem Emittenten oder Unternehmen, der bzw. das mit dem Finanzprodukt über den Händler oder Vermittler der Transaktion verbunden ist. Drittanbieterzahlungen werden
+implizit durch andere Kosten wie „laufende Produktgebühren“ verbucht und dem Kunden nicht direkt in Rechnung gestellt. Beispiele: Retrozessionsgebühren bei Investmentfonds, Umsatzbeteiligung für Vermittler
+Saxo Bank CH / The Circle 38 / 8058 Zürich-Flughafen / Switzerland CH-00000000 Berichtszeitraum
+Währung: CHF 11-Nov-2026 - 11-Nov-2026
+Seite 7 von 7 Konten: 00000/000000 Generiert um: 13-Nov-2026

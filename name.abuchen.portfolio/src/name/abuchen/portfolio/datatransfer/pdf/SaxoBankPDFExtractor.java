@@ -18,6 +18,7 @@ import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
+import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
 
@@ -64,7 +65,7 @@ public class SaxoBankPDFExtractor extends AbstractPDFExtractor
                                         .section("name").optional() //
                                         .match("^ETF$") //
                                         .match("^(?<name>.*)$") //
-                                        .match("^Instrument (Handelszeit|Trade time) .*$") //
+                                        .match("^Instrument (Handelszeit|Ausführungszeit|Trade time) .*$") //
                                         .assign((ctx, v) -> ctx.put("name", trim(v.get("name")))));
 
         this.addDocumentTyp(type);
@@ -134,10 +135,15 @@ public class SaxoBankPDFExtractor extends AbstractPDFExtractor
                                         // ISIN IE00B4L5Y983 Valuta 07-Aug-2025
                                         // Symbol SWDA:xswx Order-ID 5311230162
                                         // Hauptbörse SIX Swiss Exchange (ETFs) Gehandelter Wert -2.394,19 USD
+                                        //
+                                        // Instrument Vanguard FTSE Developed World UCITS ETF Ausführungszeit 11-Nov-2026 13:31:37
+                                        // ISIN IE00BKX55T58 Valuta 13-Nov-2026
+                                        // Symbol VEVE:xswx Order-ID 5461026260
+                                        // Hauptbörse SIX Swiss Exchange (ETFs) Gehandelter Wert 3.774,72 CHF
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("name", "isin", "tickerSymbol", "currency") //
-                                                        .match("^Instrument (?<name>.*) Handelszeit.*$") //
+                                                        .match("^Instrument (?<name>.*) (Handelszeit|Ausführungszeit).*$") //
                                                         .match("^ISIN (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) Valuta.*$") //
                                                         .match("^Symbol (?<tickerSymbol>[A-Z0-9\\._-]{1,10}(?:\\.[A-Z]{1,4})?):.*$") //
                                                         .match("^.* Gehandelter Wert (\\-)?[\\.,'\\d]+ (?<currency>[A-Z]{3})$") //
@@ -154,7 +160,7 @@ public class SaxoBankPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("name1", "isin", "tickerSymbol", "currency") //
                                                         .documentContext("name") //
-                                                        .match("^Instrument (Handelszeit|Trade time) .*$") //
+                                                        .match("^Instrument (Handelszeit|Ausführungszeit|Trade time) .*$") //
                                                         .match("^(?<name1>.*)$") //
                                                         .match("^ISIN (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) (Valuta|Value).*$") //
                                                         .match("^Symbol (?<tickerSymbol>[A-Z0-9\\._-]{1,10}(?:\\.[A-Z]{1,4})?):.*$") //
@@ -253,11 +259,12 @@ public class SaxoBankPDFExtractor extends AbstractPDFExtractor
                         .oneOf( //
                                         // @formatter:off
                                         // Instrument iShares Core MSCI World UCITS ETF Handelszeit 05-Dez-2024 11:21:27
+                                        // Instrument Vanguard FTSE Developed World UCITS ETF Ausführungszeit 11-Nov-2026 13:31:37
                                         // Instrument Virtus Infracap US Preferred Stock ETF Trade time 09-Apr-2025 19:47:57
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("date", "time") //
-                                                        .match("^.*(Handelszeit|Trade time) (?<date>[\\d]{2}\\-[^\\-]+\\-[\\d]{4}) (?<time>[\\d]{2}\\:[\\d]{2}\\:[\\d]{2})$") //
+                                                        .match("^.*(Handelszeit|Ausführungszeit|Trade time) (?<date>[\\d]{2}\\-[^\\-]+\\-[\\d]{4}) (?<time>[\\d]{2}\\:[\\d]{2}\\:[\\d]{2})$") //
                                                         .assign((t, v) -> t.setDate(asDate(v.get("date"), v.get("time")))))
 
                         .oneOf( //
@@ -359,6 +366,80 @@ public class SaxoBankPDFExtractor extends AbstractPDFExtractor
                         .wrap(BuySellEntryItem::new);
 
         addTaxesSectionsTransaction(pdfTransaction, type);
+        addFeesSectionsTransaction(pdfTransaction, type);
+        addCommissionCreditSectionsTransaction(pdfTransaction);
+
+        addCommissionCreditExcessTransaction(type);
+    }
+
+    private void addCommissionCreditExcessTransaction(DocumentType type)
+    {
+        var pdfTransaction = new Transaction<AccountTransaction>();
+
+        var firstRelevantLine = new Block("^Instrument.*$");
+        type.addBlock(firstRelevantLine);
+        firstRelevantLine.set(pdfTransaction);
+
+        pdfTransaction //
+
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.FEES_REFUND))
+
+                        // @formatter:off
+                        // Instrument iShares Core MSCI World UCITS ETF Handelszeit 05-Dez-2024 11:21:27
+                        // Instrument Vanguard FTSE Developed World UCITS ETF Ausführungszeit 11-Nov-2026 13:31:37
+                        // Instrument Virtus Infracap US Preferred Stock ETF Trade time 09-Apr-2025 19:47:57
+                        // @formatter:on
+                        .section("date", "time").optional() //
+                        .documentContext("currency") //
+                        .match("^.*(Handelszeit|Ausführungszeit|Trade time) (?<date>[\\d]{2}\\-[^\\-]+\\-[\\d]{4}) (?<time>[\\d]{2}\\:[\\d]{2}\\:[\\d]{2})$") //
+                        .assign((t, v) -> {
+                            t.setDateTime(asDate(v.get("date"), v.get("time")));
+                            t.setCurrencyCode(v.get("currency"));
+                        })
+
+                        .optionalOneOf( //
+                                        // @formatter:off
+                                        // Symbol SWDA:xswx Order-ID 5236807355
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("note") //
+                                                        .match("^.*(?<note>Order\\-ID [\\d]+).*$") //
+                                                        .assign((t, v) -> t.setNote(trim(v.get("note")))),
+                                        // @formatter:off
+                                        // Symbol PFFA:arcx Order ID 5276831204
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("note") //
+                                                        .match("^.*(?<note>Order ID [\\d]+).*$") //
+                                                        .assign((t, v) -> t.setNote(trim(v.get("note")))))
+
+                        // @formatter:off
+                        // Kundenprovisionsgu
+                        // 49086666461 03-Nov-2025 05-Nov-2025 3,00 1,000000 0,00 3,00
+                        // tschrift
+                        // @formatter:on
+                        .section("commissionCredit").optional() //
+                        .match("^Kundenprovisionsgu$") //
+                        .match("^[\\d]+ [\\d]{2}\\-[^\\-]+\\-[\\d]{4} [\\d]{2}\\-[^\\-]+\\-[\\d]{4} [\\.,'\\d]+ [\\.,'\\d]+ (\\-)?[\\.,'\\d]+ (?<commissionCredit>[\\.,'\\d]+)$") //
+                        .assign((t, v) -> t.setAmount(asAmount(v.get("commissionCredit"))))
+
+                        .wrap(t -> {
+                            // Only the part of the commission credit exceeding
+                            // the fees of the trade is booked as fee refund.
+                            // Up to the fees, it is offset against the fees of
+                            // the purchase or sale.
+                            if (t.getCurrencyCode() == null || t.getAmount() == 0)
+                                return null;
+
+                            var excess = t.getMonetaryAmount().subtract(t.getUnitSum(Unit.Type.FEE));
+                            if (!excess.isPositive())
+                                return null;
+
+                            t.clearUnits();
+                            t.setMonetaryAmount(excess);
+                            return new TransactionItem(t);
+                        });
+
         addFeesSectionsTransaction(pdfTransaction, type);
     }
 
@@ -821,6 +902,45 @@ public class SaxoBankPDFExtractor extends AbstractPDFExtractor
                         .find(".*Stock.*") //
                         .match("^[\\d]+ [\\d]{2}\\-[^\\-]+\\-[\\d]{4} [\\d]{2}\\-[^\\-]+\\-[\\d]{4} \\-(?<fee>[\\.,'\\d]+) [\\.,'\\d]+ [\\.,'\\d]+ \\-[\\.,'\\d]+$") //
                         .assign((t, v) -> processFeeEntries(t, v, type));
+    }
+
+    private void addCommissionCreditSectionsTransaction(Transaction<BuySellEntry> transaction)
+    {
+        transaction //
+
+                        // @formatter:off
+                        // Kundenprovisionsgu
+                        // 49086666461 03-Nov-2025 05-Nov-2025 3,00 1,000000 0,00 3,00
+                        // tschrift
+                        // @formatter:on
+                        .section("commissionCredit").optional() //
+                        .match("^Kundenprovisionsgu$") //
+                        .match("^[\\d]+ [\\d]{2}\\-[^\\-]+\\-[\\d]{4} [\\d]{2}\\-[^\\-]+\\-[\\d]{4} [\\.,'\\d]+ [\\.,'\\d]+ (\\-)?[\\.,'\\d]+ (?<commissionCredit>[\\.,'\\d]+)$") //
+                        .assign((t, v) -> {
+                            var tx = t.getPortfolioTransaction();
+                            var commissionCredit = Money.of(tx.getCurrencyCode(), asAmount(v.get("commissionCredit")));
+                            var fees = tx.getUnitSum(Unit.Type.FEE);
+
+                            // The commission credit is offset against the
+                            // fees. A credit exceeding the fees is booked as a
+                            // separate fee refund and is therefore removed from
+                            // the amount (see addCommissionCreditExcessTransaction).
+                            tx.removeUnits(Unit.Type.FEE);
+
+                            if (fees.isGreaterThan(commissionCredit))
+                            {
+                                tx.addUnit(new Unit(Unit.Type.FEE, fees.subtract(commissionCredit)));
+                            }
+                            else
+                            {
+                                var excess = commissionCredit.subtract(fees);
+
+                                if (tx.getType().isPurchase())
+                                    t.setAmount(tx.getAmount() + excess.getAmount());
+                                else
+                                    t.setAmount(tx.getAmount() - excess.getAmount());
+                            }
+                        });
     }
 
     @Override
