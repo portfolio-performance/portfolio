@@ -269,7 +269,8 @@ public class TroubleshootBalanceDiscrepancyDialog extends Dialog
         });
         column.setEditingSupport(new ColumnEditingSupport()
         {
-            private final StringToCurrencyConverter stringToLong = new StringToCurrencyConverter(Values.Amount);
+            // an account can be overdrawn: accept negative balances
+            private final StringToCurrencyConverter stringToLong = new StringToCurrencyConverter(Values.Amount, true);
 
             @Override
             public void setValue(Object element, Object value) throws Exception
@@ -280,6 +281,7 @@ public class TroubleshootBalanceDiscrepancyDialog extends Dialog
                 if (stringValue == null || stringValue.length() == 0)
                 {
                     expectedBalances.remove(balance.getDate());
+                    recompute(false);
                     return;
                 }
 
