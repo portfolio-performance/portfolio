@@ -1,0 +1,46 @@
+PDFBox Version: 3.0.6
+Portfolio Performance Version: 0.81.5
+System: macosx | aarch64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+Wertpapier-Abrechnu n g                  Rücknahme Fonds
+888888 - 22.01.2021
+Depotnummer Betreuer
+Mustermann Max 111-1111.11 Z 3
+23
+Wertpapiernummer Bezeichnung Nominale/Stück
+AT0000A06NX7 Oberbank Vermögensmanagement (T) Abgang Stk.                6,60
+Miteigentumsanteile - Thesaurierend
+Kurs 139,96 EUR Kurswert EUR               923,74
+Kursgewinn-KESt EUR               -13,85
+Summe EUR               909,89
+Handelszeitpunkt: 22.01.2021 00:00:01
+Handelsplatz: AT/Fonds
+Gegenpartei Oberbank AG
+Auftrags-Nr. 999999-20.01.2021
+Schlusstag 22.01.2021
+Kassatag 26.01.2021
+Verrechnung
+Verwahrart, Positionsdaten EUR               909,89
+SVK Sammelverwahrung Wert 26.01.2021
+zu Gunsten Konto AT11 1111 1111 1111 1111
+Wien
+      Seite 1 von 2
+Oberbank AG, Rechtsform: Aktiengesellschaft, Sitz: Linz, Firmenbuch Nr. FN 79063w, Landesgericht Linz, DVR: 0019020, UID-Nr. ATU22852606
+Wertpapier-Abrechnung
+888888 - 22.01.2021
+Depotbezeichnung Depotnummer Betreuer
+Mustermann Max 111-1111.11 Z 3
+23
+KESt-Neubestand mit Anschaffungskosten nach dem gleitenden                           6,60 STK
+Durchschnittsverfahren § 27a Abs. 4 Zi 3 EStG
+  ausschüttungsgleicher Ertrag:                                                      2,67 EUR
+  Anschaffungswertreduzierender Betrag:                                              0,73 EUR
+  Nebenkosten:                                                                       2,20 EUR
+  steuerlicher Anschaffungswert:                                                   873,36 EUR
+  steuerlicher Veräußerungswert:                                                   923,74 EUR
+  steuerpflichtiger Kursgewinn:                                                     50,38 EUR
+---------------------------------------------------------------------------------------------
+Die KESt wird an das Finanzamt Linz abgeführt.
+Fondsgesellschaft: 3BANKEN GENERALI INVESTMENT-GES.M.B.H.
+Auftragszeitpunkt: 20.01.2021 um 10:28:53 Uhr
+Oberbank AG, Rechtsform: Aktiengesellschaft, Sitz: Linz, Firmenbuch Nr. FN 79063w, Landesgericht Linz, DVR: 0019020, UID-Nr. ATU22852606       Seite 2 von 2
