@@ -2,13 +2,19 @@ package name.abuchen.portfolio.snapshot.security;
 
 import static org.junit.Assert.assertEquals;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
 
+import name.abuchen.portfolio.junit.TestCurrencyConverter;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
+import name.abuchen.portfolio.model.Portfolio;
+import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.CurrencyUnit;
@@ -215,5 +221,44 @@ public class DividendTransactionTest
                                                                     // yield
 
         assertEquals(0.06666, result, 0.001d);
+    }
+
+    /**
+     * The costs are calculated in term currency. The personal dividend yield
+     * must compare the dividend in the same currency, not the amount in the
+     * currency of the transaction.
+     */
+    @Test
+    public void testPersonalDividendYieldWithCurrencyOfTransactionOtherThanTermCurrency()
+    {
+        var converter = new TestCurrencyConverter();
+        var usd = new Security("Test Security", "USD");
+
+        List<CalculationLineItem> transactions = new ArrayList<>();
+        transactions.add(CalculationLineItem.of(new Portfolio(),
+                        new PortfolioTransaction(LocalDateTime.of(2015, 1, 14, 12, 0), "USD",
+                                        Values.Amount.factorize(1000), usd, Values.Share.factorize(10),
+                                        PortfolioTransaction.Type.BUY, 0L, 0L)));
+
+        AccountTransaction t = new AccountTransaction();
+        t.setType(AccountTransaction.Type.DIVIDENDS);
+        t.setSecurity(usd);
+        t.setDateTime(LocalDateTime.of(2015, 1, 15, 12, 0));
+        t.setAmount(Values.Amount.factorize(50));
+        t.setShares(Values.Share.factorize(10));
+        t.setCurrencyCode("USD");
+        var dividend = (CalculationLineItem.DividendPayment) CalculationLineItem.of(account, t);
+        transactions.add(dividend);
+
+        Calculation.perform(CostCalculation.class, converter, usd, transactions);
+
+        long dividendInEUR = converter.convert(LocalDate.parse("2015-01-15"),
+                        Money.of("USD", Values.Amount.factorize(50))).getAmount();
+        long costInEUR = converter.convert(LocalDate.parse("2015-01-14"),
+                        Money.of("USD", Values.Amount.factorize(1000))).getAmount();
+
+        assertEquals(dividendInEUR / (double) costInEUR, dividend.getPersonalDividendYield(), 0.000001);
+        assertEquals(dividendInEUR / (double) costInEUR, dividend.getPersonalDividendYieldMovingAverage(),
+                        0.000001);
     }
 }

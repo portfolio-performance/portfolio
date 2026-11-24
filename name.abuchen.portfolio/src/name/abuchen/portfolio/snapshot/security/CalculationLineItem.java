@@ -84,6 +84,7 @@ public interface CalculationLineItem
         private long totalShares;
         private Money fifoCost;
         private Money movingAverageCost;
+        private Money grossValueInTermCurrency;
 
         private DividendPayment(TransactionPair<?> transaction)
         {
@@ -142,7 +143,7 @@ public interface CalculationLineItem
             if (tx().getShares() > 0)
                 cost = fifoCost.getAmount() * (tx().getShares() / (double) totalShares);
 
-            return getGrossValueAmount() / cost;
+            return grossValueAmountInCurrencyOf(fifoCost) / cost;
         }
 
         public double getPersonalDividendYieldMovingAverage()
@@ -155,7 +156,30 @@ public interface CalculationLineItem
             if (tx().getShares() > 0)
                 cost = movingAverageCost.getAmount() * (tx().getShares() / (double) totalShares);
 
-            return getGrossValueAmount() / cost;
+            return grossValueAmountInCurrencyOf(movingAverageCost) / cost;
+        }
+
+        /**
+         * Sets the gross value converted into the term currency of the cost
+         * calculation.
+         */
+        /* package */ void setGrossValueInTermCurrency(Money grossValueInTermCurrency)
+        {
+            this.grossValueInTermCurrency = grossValueInTermCurrency;
+        }
+
+        /**
+         * Returns the gross value in the currency of the given costs. The costs
+         * are calculated in term currency, the dividend might be booked in
+         * another currency.
+         */
+        private long grossValueAmountInCurrencyOf(Money cost)
+        {
+            if (grossValueInTermCurrency != null
+                            && grossValueInTermCurrency.getCurrencyCode().equals(cost.getCurrencyCode()))
+                return grossValueInTermCurrency.getAmount();
+
+            return getGrossValueAmount();
         }
 
         static long amountFractionPerShare(long amount, long shares)
