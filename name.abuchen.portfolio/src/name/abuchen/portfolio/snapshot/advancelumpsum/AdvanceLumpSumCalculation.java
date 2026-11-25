@@ -44,8 +44,9 @@ public class AdvanceLumpSumCalculation
 {
     public record Item(Portfolio portfolio, Security security, long shares, double partialExemption,
                     Quote priceStart, Quote priceEnd, Quote distributionsPerShare, Quote baseYieldPerShare,
-                    Quote advanceLumpSumPerShare, Money advanceLumpSum, Money taxableAmount, Money tax,
-                    boolean hasMissingPrices, boolean hasUnresolvedDistributions, boolean hasMissingExchangeRates)
+                    Quote advanceLumpSumPerShare, Money advanceLumpSum, Money taxableAmount, Money usedLoss,
+                    Money usedExemption, Money tax, boolean hasMissingPrices, boolean hasUnresolvedDistributions,
+                    boolean hasMissingExchangeRates)
     {
     }
 
@@ -67,6 +68,16 @@ public class AdvanceLumpSumCalculation
         public Money getTotalTaxableAmount()
         {
             return sum(items, Item::taxableAmount, currencyCode);
+        }
+
+        public Money getTotalUsedExemption()
+        {
+            return sum(items, Item::usedExemption, currencyCode);
+        }
+
+        public Money getTotalUsedLoss()
+        {
+            return sum(items, Item::usedLoss, currencyCode);
         }
 
         public Money getTotalTax()
@@ -111,7 +122,8 @@ public class AdvanceLumpSumCalculation
     }
 
     /**
-     * Calculates the Vorabpauschale for the given year.
+     * Calculates the Vorabpauschale for the given year and reduces the taxable
+     * amounts by the available general loss balances and exemption orders.
      *
      * @param baseInterestRate
      *            Basiszins of the year
@@ -120,8 +132,13 @@ public class AdvanceLumpSumCalculation
      * @param valuationDate
      *            cutoff for transactions and end prices. For the current year,
      *            today's date yields an estimate.
+     * @param lossBalances
+     *            eligible general loss balance per portfolio, may be empty
+     * @param exemptionOrders
+     *            exemption order per portfolio, may be empty
      */
-    public Result calculate(BaseInterestRate baseInterestRate, BigDecimal taxRate, LocalDate valuationDate)
+    public Result calculate(BaseInterestRate baseInterestRate, BigDecimal taxRate, LocalDate valuationDate,
+                    Map<Portfolio, Long> lossBalances, Map<Portfolio, Long> exemptionOrders)
     {
         var year = baseInterestRate.year();
         var currencyCode = converter.getTermCurrency();
@@ -148,6 +165,7 @@ public class AdvanceLumpSumCalculation
             if (lotsBySecurity == null)
                 continue;
 
+            var portfolioItems = new ArrayList<Item>();
             lotsBySecurity.entrySet().stream() //
                             .filter(e -> !e.getValue().isEmpty())
                             .sorted(Comparator.comparing(e -> e.getKey().getName(), String.CASE_INSENSITIVE_ORDER))
@@ -159,11 +177,49 @@ public class AdvanceLumpSumCalculation
                                 var item = calculate(portfolio, security, e.getValue(), attribute.get(),
                                                 baseInterestRate, taxRate, cutoff, distributions);
                                 if (item != null)
-                                    items.add(item);
+                                    portfolioItems.add(item);
                             });
+
+            applyDeductions(portfolioItems, lossBalances.getOrDefault(portfolio, 0L),
+                            exemptionOrders.getOrDefault(portfolio, 0L), taxRate);
+            items.addAll(portfolioItems);
         }
 
         return new Result(currencyCode, items);
+    }
+
+    /**
+     * Uses the exemption order only after the general loss balance has been
+     * exhausted across the portfolio.
+     */
+    private void applyDeductions(List<Item> items, long lossBalance, long exemptionOrder, BigDecimal taxRate)
+    {
+        var remainingLoss = Math.max(0, lossBalance);
+        var remainingExemption = Math.max(0, exemptionOrder);
+        for (var index = 0; index < items.size() && (remainingLoss > 0 || remainingExemption > 0); index++)
+        {
+            var item = items.get(index);
+            var taxable = item.taxableAmount().getAmount();
+            if (taxable <= 0)
+                continue;
+
+            var usedLoss = Math.min(remainingLoss, taxable);
+            remainingLoss -= usedLoss;
+            var usedExemption = Math.min(remainingExemption, taxable - usedLoss);
+            remainingExemption -= usedExemption;
+            var net = taxable - usedLoss - usedExemption;
+
+            var currencyCode = item.taxableAmount().getCurrencyCode();
+            var tax = BigDecimal.valueOf(net).multiply(taxRate, MC).setScale(0, RoundingMode.HALF_UP).longValue();
+
+            items.set(index, new Item(item.portfolio(), item.security(), item.shares(), item.partialExemption(),
+                            item.priceStart(), item.priceEnd(), item.distributionsPerShare(),
+                            item.baseYieldPerShare(), item.advanceLumpSumPerShare(), item.advanceLumpSum(),
+                            Money.of(currencyCode, net), Money.of(currencyCode, usedLoss),
+                            Money.of(currencyCode, usedExemption),
+                            Money.of(currencyCode, tax), item.hasMissingPrices(),
+                            item.hasUnresolvedDistributions(), item.hasMissingExchangeRates()));
+        }
     }
 
     private Map<Portfolio, Map<Security, Deque<Lot>>> collectLots(AttributeType attribute, LocalDate valuationDate,
@@ -340,8 +396,8 @@ public class AdvanceLumpSumCalculation
                         toQuote(currencyCode, distributions), toQuote(currencyCode, baseYield),
                         toQuote(currencyCode, advanceLumpSumPerShare), //
                         toMoney(currencyCode, advanceLumpSum), toMoney(currencyCode, taxable),
-                        toMoney(currencyCode, tax), hasMissingPrices, paidDistributions.unresolved(),
-                        missingRates);
+                        Money.of(currencyCode, 0), Money.of(currencyCode, 0), toMoney(currencyCode, tax), hasMissingPrices,
+                        paidDistributions.unresolved(), missingRates);
     }
 
     private Optional<BigDecimal> convertPrice(Security security, SecurityPrice price)

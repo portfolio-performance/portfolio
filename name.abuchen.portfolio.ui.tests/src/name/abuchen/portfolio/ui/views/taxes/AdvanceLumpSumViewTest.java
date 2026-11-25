@@ -4,6 +4,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.arrayContaining;
 import static org.hamcrest.Matchers.emptyArray;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.nullValue;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -21,10 +22,39 @@ import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.ExchangeRate;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
+import name.abuchen.portfolio.ui.Messages;
 
 @SuppressWarnings("nls")
 public class AdvanceLumpSumViewTest
 {
+    @Test
+    public void testSummaryShowsTaxableAmountBeforeListingUsedDeductions()
+    {
+        var zero = Money.of(CurrencyUnit.EUR, 0);
+        var taxable = Money.of(CurrencyUnit.EUR, 10000);
+        var loss = Money.of(CurrencyUnit.EUR, 3000);
+        var exemption = Money.of(CurrencyUnit.EUR, 2000);
+        var taxableLabel = " | " + Messages.ColumnTaxableAmount + ": <strong>" + Values.Money.format(taxable)
+                        + "</strong>";
+        var lossLabel = bold(Messages.MsgAdvanceLumpSumLossUsed, loss);
+        var exemptionLabel = bold(Messages.MsgAdvanceLumpSumExemptionOrderUsed, exemption);
+
+        assertThat(AdvanceLumpSumView.formatTaxableSummary(taxable, zero, zero), is(taxableLabel));
+        assertThat(AdvanceLumpSumView.formatTaxableSummary(Money.of(CurrencyUnit.EUR, 7000), loss, zero),
+                        is(taxableLabel + " | " + lossLabel));
+        assertThat(AdvanceLumpSumView.formatTaxableSummary(Money.of(CurrencyUnit.EUR, 8000), zero, exemption),
+                        is(taxableLabel + " | " + exemptionLabel));
+        assertThat(AdvanceLumpSumView.formatTaxableSummary(Money.of(CurrencyUnit.EUR, 5000), loss, exemption),
+                        is(taxableLabel + " | " + lossLabel + " | " + exemptionLabel));
+    }
+
+    private static String bold(String message, Money amount)
+    {
+        var placeholder = message.indexOf("{0}");
+        return message.substring(0, placeholder) + "<strong>" + Values.Money.format(amount) + "</strong>"
+                        + message.substring(placeholder + 3);
+    }
+
     private static Locale defaultLocale;
 
     @BeforeClass
@@ -84,6 +114,23 @@ public class AdvanceLumpSumViewTest
         assertThat(AdvanceLumpSumView.isRelevantFor(Locale.forLanguageTag("de-AT")), is(false));
         assertThat(AdvanceLumpSumView.isRelevantFor(Locale.US), is(false));
         assertThat(AdvanceLumpSumView.isRelevantFor(null), is(false));
+    }
+
+    @Test
+    public void testParseAmount()
+    {
+        assertThat(AdvanceLumpSumView.parseAmount("1.000,00"), is(Values.Amount.factorize(1000)));
+        assertThat(AdvanceLumpSumView.parseAmount(" 2.500,50 "), is(Values.Amount.factorize(2500.5)));
+        assertThat(AdvanceLumpSumView.parseAmount("0"), is(0L));
+    }
+
+    @Test
+    public void testParseAmountRejectsInvalidInput()
+    {
+        assertThat(AdvanceLumpSumView.parseAmount(""), is(nullValue()));
+        assertThat(AdvanceLumpSumView.parseAmount("  "), is(nullValue()));
+        assertThat(AdvanceLumpSumView.parseAmount("abc"), is(nullValue()));
+        assertThat(AdvanceLumpSumView.parseAmount("100x"), is(nullValue()));
     }
 
     @Test

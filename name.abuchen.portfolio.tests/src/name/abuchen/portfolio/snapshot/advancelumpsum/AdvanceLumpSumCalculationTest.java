@@ -9,6 +9,7 @@ import static org.hamcrest.Matchers.is;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -61,9 +62,20 @@ public class AdvanceLumpSumCalculationTest
 
     private Result calculate(int year, String rate, LocalDate valuationDate)
     {
+        return calculate(year, rate, valuationDate, Map.of());
+    }
+
+    private Result calculate(int year, String rate, LocalDate valuationDate, Map<Portfolio, Long> exemptionOrders)
+    {
+        return calculate(year, rate, valuationDate, Map.of(), exemptionOrders);
+    }
+
+    private Result calculate(int year, String rate, LocalDate valuationDate, Map<Portfolio, Long> lossBalances,
+                    Map<Portfolio, Long> exemptionOrders)
+    {
         var baseInterestRate = new BaseInterestRate(year, new BigDecimal(rate), Source.MANUAL);
         return new AdvanceLumpSumCalculation(client, new TestCurrencyConverter()).calculate(baseInterestRate,
-                        TAX_RATE, valuationDate);
+                        TAX_RATE, valuationDate, lossBalances, exemptionOrders);
     }
 
     private Result calculate2023()
@@ -319,6 +331,123 @@ public class AdvanceLumpSumCalculationTest
     }
 
     @Test
+    public void testExemptionOrderReducesTaxableAmount()
+    {
+        var fund = fund(0.3, 110);
+        var portfolio = new PortfolioBuilder(account).buy(fund, "2022-06-01", sharesOf(10), amountOf(1000))
+                        .addTo(client);
+
+        var item = calculate(2023, "2.55", END_OF_2023, Map.of(portfolio, exemptionOf(10))).items().get(0);
+
+        assertThat(item.taxableAmount(), is(euro(2.50)));
+        assertThat(item.usedExemption(), is(euro(10)));
+        assertThat(item.tax(), is(euro(0.66)));
+    }
+
+    @Test
+    public void testExemptionOrderLargerThanTaxableAmountIsPartlyUsed()
+    {
+        var fund = fund(0.3, 110);
+        var portfolio = new PortfolioBuilder(account).buy(fund, "2022-06-01", sharesOf(10), amountOf(1000))
+                        .addTo(client);
+
+        var item = calculate(2023, "2.55", END_OF_2023, Map.of(portfolio, exemptionOf(1000))).items().get(0);
+
+        assertThat(item.taxableAmount(), is(euro(0)));
+        assertThat(item.usedExemption(), is(euro(12.50)));
+        assertThat(item.tax(), is(euro(0)));
+    }
+
+    @Test
+    public void testExemptionOrderIsConsumedItemByItemPerPortfolio()
+    {
+        var first = fund(0.3, 110);
+        var second = fund(0.3, 110);
+        var portfolio = new PortfolioBuilder(account) //
+                        .buy(first, "2022-06-01", sharesOf(10), amountOf(1000)) //
+                        .buy(second, "2022-06-01", sharesOf(10), amountOf(1000)) //
+                        .addTo(client);
+
+        var result = calculate(2023, "2.55", END_OF_2023, Map.of(portfolio, exemptionOf(20)));
+
+        assertThat(result.items(), hasSize(2));
+        // taxable amount is 12.50 per fund, the order of 20.00 is used up
+        assertThat(result.getTotalUsedExemption(), is(euro(20)));
+        assertThat(result.getTotalTaxableAmount(), is(euro(5)));
+        assertThat(result.getTotalTax(), is(euro(1.32)));
+    }
+
+    @Test
+    public void testExemptionOrderAppliesToItsPortfolioOnly()
+    {
+        var fund = fund(0.3, 110);
+        var withoutOrder = new PortfolioBuilder(account).buy(fund, "2022-06-01", sharesOf(10), amountOf(1000))
+                        .addTo(client);
+        var withOrder = new PortfolioBuilder(account).buy(fund, "2022-06-01", sharesOf(10), amountOf(1000))
+                        .addTo(client);
+
+        var result = calculate(2023, "2.55", END_OF_2023, Map.of(withOrder, exemptionOf(10)));
+
+        assertThat(result.getItemsByPortfolio().get(withoutOrder).get(0).usedExemption(), is(euro(0)));
+        assertThat(result.getItemsByPortfolio().get(withOrder).get(0).usedExemption(), is(euro(10)));
+        assertThat(result.getTotalUsedExemption(), is(euro(10)));
+    }
+
+    @Test
+    public void testZeroExemptionOrderLeavesTaxableAmountUnchanged()
+    {
+        var fund = fund(0.3, 110);
+        var portfolio = new PortfolioBuilder(account).buy(fund, "2022-06-01", sharesOf(10), amountOf(1000))
+                        .addTo(client);
+
+        var item = calculate(2023, "2.55", END_OF_2023, Map.of(portfolio, 0L)).items().get(0);
+
+        assertThat(item.usedExemption(), is(euro(0)));
+        assertThat(item.taxableAmount(), is(euro(12.50)));
+    }
+
+    @Test
+    public void testGeneralLossBalanceIsExhaustedAcrossFundsBeforeExemptionOrder()
+    {
+        var first = fund(0.3, 110);
+        var second = fund(0.3, 110);
+        var portfolio = new PortfolioBuilder(account) //
+                        .buy(first, "2022-06-01", sharesOf(10), amountOf(1000)) //
+                        .buy(second, "2022-06-01", sharesOf(10), amountOf(1000)) //
+                        .addTo(client);
+
+        var result = calculate(2023, "2.55", END_OF_2023, Map.of(portfolio, amountOf(20)),
+                        Map.of(portfolio, amountOf(10)));
+
+        assertThat(result.getTotalUsedLoss(), is(euro(20)));
+        assertThat(result.items().getFirst().usedExemption(), is(euro(0)));
+        assertThat(result.getTotalUsedExemption(), is(euro(5)));
+        assertThat(result.getTotalTaxableAmount(), is(euro(0)));
+        assertThat(result.getTotalTax(), is(euro(0)));
+    }
+
+    @Test
+    public void testUnusedLossBalanceDoesNotSpillIntoAnotherPortfolio()
+    {
+        var fund = fund(0.3, 110);
+        var withLoss = new PortfolioBuilder(account).buy(fund, "2022-06-01", sharesOf(10), amountOf(1000)).addTo(client);
+        var withoutLoss = new PortfolioBuilder(account).buy(fund, "2022-06-01", sharesOf(10), amountOf(1000))
+                        .addTo(client);
+
+        var result = calculate(2023, "2.55", END_OF_2023, Map.of(withLoss, amountOf(20)),
+                        Map.of(withLoss, amountOf(10)));
+
+        assertThat(result.getTotalUsedLoss(), is(euro(12.50)));
+        assertThat(result.getTotalUsedExemption(), is(euro(0)));
+        assertThat(result.getItemsByPortfolio().get(withoutLoss).getFirst().taxableAmount(), is(euro(12.50)));
+    }
+
+    private static long exemptionOf(double amount)
+    {
+        return Values.Amount.factorize(amount);
+    }
+
+    @Test
     public void testSaleAtTransferTimestampInEitherPortfolioOrder()
     {
         for (boolean targetFirst : new boolean[] { false, true })
@@ -365,11 +494,11 @@ public class AdvanceLumpSumCalculationTest
         var rate = new BaseInterestRate(2015, BigDecimal.ONE, Source.MANUAL);
         var cutoff = LocalDate.parse("2015-01-16");
         var expected = new AdvanceLumpSumCalculation(client, new TestCurrencyConverter()).calculate(rate, TAX_RATE,
-                        cutoff);
+                        cutoff, Map.of(), Map.of());
 
         client.setBaseCurrency(CurrencyUnit.USD);
         var result = new AdvanceLumpSumCalculation(client, new TestCurrencyConverter(client.getBaseCurrency()))
-                        .calculate(rate, TAX_RATE, cutoff);
+                        .calculate(rate, TAX_RATE, cutoff, Map.of(), Map.of());
 
         assertThat(expected.getTotalTax(), is(euro(1.29)));
         assertThat(result, is(expected));
@@ -481,7 +610,8 @@ public class AdvanceLumpSumCalculationTest
         var converter = new CurrencyConverterImpl(new ExchangeRateProviderFactory(client), CurrencyUnit.EUR);
         var rate = new BaseInterestRate(2023, new BigDecimal("2.55"), Source.MANUAL);
 
-        var item = new AdvanceLumpSumCalculation(client, converter).calculate(rate, TAX_RATE, END_OF_2023)
+        var item = new AdvanceLumpSumCalculation(client, converter)
+                        .calculate(rate, TAX_RATE, END_OF_2023, Map.of(), Map.of())
                         .items().getFirst();
 
         assertThat(item.hasMissingExchangeRates(), is(true));

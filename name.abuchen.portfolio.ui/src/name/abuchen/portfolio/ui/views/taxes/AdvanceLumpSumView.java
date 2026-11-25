@@ -4,10 +4,13 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.MessageFormat;
 import java.text.NumberFormat;
+import java.text.ParsePosition;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Optional;
 import java.util.StringJoiner;
 import java.util.function.Function;
@@ -21,9 +24,11 @@ import org.eclipse.jface.action.ToolBarManager;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.layout.TreeColumnLayout;
+import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
 import org.eclipse.jface.viewers.ITreeContentProvider;
+import org.eclipse.jface.viewers.TextCellEditor;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.window.ToolTip;
@@ -32,6 +37,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Text;
 
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Client;
@@ -53,9 +59,11 @@ import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.editor.AbstractFinanceView;
 import name.abuchen.portfolio.ui.util.DropDown;
 import name.abuchen.portfolio.ui.util.LogoManager;
+import name.abuchen.portfolio.ui.util.NumberVerifyListener;
 import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.util.TreeViewerCSVExporter;
 import name.abuchen.portfolio.ui.util.swt.StyledLabel;
+import name.abuchen.portfolio.ui.util.text.DecimalKeypadSupport;
 import name.abuchen.portfolio.ui.util.viewers.Column;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
@@ -94,7 +102,7 @@ public class AdvanceLumpSumView extends AbstractFinanceView
     }
 
     private record PortfolioNode(Portfolio portfolio, List<Item> items, Money advanceLumpSum, Money taxableAmount,
-                    Money tax)
+                    Money usedLoss, Money usedExemption, Money tax)
     {
     }
 
@@ -116,6 +124,8 @@ public class AdvanceLumpSumView extends AbstractFinanceView
     private int year;
     private TaxRate taxRate;
     private ManualBaseInterestRates manualRates;
+    private final Map<Portfolio, Long> lossBalances = new HashMap<>();
+    private final Map<Portfolio, Long> exemptionOrders = new HashMap<>();
     private Result result;
 
     private StyledLabel summary;
@@ -209,6 +219,11 @@ public class AdvanceLumpSumView extends AbstractFinanceView
         {
             final int selected = y;
             var action = new SimpleAction(String.valueOf(y), IAction.AS_CHECK_BOX, a -> {
+                if (year != selected)
+                {
+                    lossBalances.clear();
+                    exemptionOrders.clear();
+                }
                 year = selected;
                 getPreferenceStore().setValue(PREF_YEAR, year);
                 yearDropDown.setLabel(String.valueOf(year));
@@ -365,6 +380,13 @@ public class AdvanceLumpSumView extends AbstractFinanceView
                         PortfolioNode::taxableAmount);
         addMoneyColumn("tax", Messages.ColumnEstimatedTax, 130, Item::tax, PortfolioNode::tax); //$NON-NLS-1$
 
+        addDeductionColumn("generalLossBalance", Messages.ColumnGeneralLossBalance, //$NON-NLS-1$
+                        Messages.ColumnGeneralLossBalance_Description, Messages.MsgAdvanceLumpSumLossUsed,
+                        lossBalances, PortfolioNode::usedLoss, 155);
+        addDeductionColumn("exemptionOrder", Messages.ColumnExemptionOrder, //$NON-NLS-1$
+                        Messages.ColumnExemptionOrder_Description, Messages.MsgAdvanceLumpSumExemptionOrderUsed,
+                        exemptionOrders, PortfolioNode::usedExemption, 140);
+
         column = new Column("balance", Messages.ColumnBalance, SWT.RIGHT, 110); //$NON-NLS-1$
         column.setDescription(Messages.ColumnAdvanceLumpSumBalance_Description);
         column.setLabelProvider(new ColumnLabelProvider()
@@ -468,6 +490,99 @@ public class AdvanceLumpSumView extends AbstractFinanceView
         columns.addColumn(column);
     }
 
+    private void addDeductionColumn(String id, String label, String description, String usedMessage,
+                    Map<Portfolio, Long> amounts, Function<PortfolioNode, Money> usedAmount, int width)
+    {
+        var column = new Column(id, label, SWT.RIGHT, width);
+        column.setDescription(description);
+        Function<PortfolioNode, Long> enteredAmount = node -> amounts.getOrDefault(node.portfolio(), 0L);
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object element)
+            {
+                return element instanceof PortfolioNode node ? Values.Amount.format(enteredAmount.apply(node)) : null;
+            }
+
+            @Override
+            public String getToolTipText(Object element)
+            {
+                if (!(element instanceof PortfolioNode node))
+                    return null;
+
+                return description + "\n" //$NON-NLS-1$
+                                + MessageFormat.format(usedMessage, Values.Money.format(usedAmount.apply(node)));
+            }
+        });
+        column.setSorter(ColumnViewerSorter.create(e -> e instanceof PortfolioNode node ? enteredAmount.apply(node) : null));
+        column.setEditingSupport(new ColumnEditingSupport()
+        {
+            @Override
+            public CellEditor createEditor(Composite composite)
+            {
+                var editor = new TextCellEditor(composite);
+                var text = (Text) editor.getControl();
+                text.addVerifyListener(new NumberVerifyListener(false));
+                DecimalKeypadSupport.configure(text);
+                return editor;
+            }
+
+            @Override
+            public boolean canEdit(Object element)
+            {
+                return element instanceof PortfolioNode;
+            }
+
+            @Override
+            public Object getValue(Object element)
+            {
+                return element instanceof PortfolioNode node ? Values.Amount.format(enteredAmount.apply(node)) : ""; //$NON-NLS-1$
+            }
+
+            @Override
+            public void setValue(Object element, Object value)
+            {
+                if (!(element instanceof PortfolioNode node))
+                    return;
+
+                var amount = parseAmount(String.valueOf(value));
+                if (amount == null)
+                    return;
+
+                if (amount <= 0)
+                    amounts.remove(node.portfolio());
+                else
+                    amounts.put(node.portfolio(), amount);
+
+                recalculate();
+            }
+        });
+        columns.addColumn(column);
+    }
+
+    /**
+     * Parses an amount typed by the user. Returns {@code null} for input that
+     * is not a plain amount.
+     */
+    /* package */ static Long parseAmount(String text)
+    {
+        if (text == null || text.isBlank())
+            return null;
+
+        try
+        {
+            var position = new ParsePosition(0);
+            var number = NumberFormat.getNumberInstance().parse(text.trim(), position);
+            if (number == null || position.getIndex() != text.trim().length())
+                return null;
+            return Values.Amount.factorize(number.doubleValue());
+        }
+        catch (NumberFormatException e)
+        {
+            return null;
+        }
+    }
+
     private void recalculate()
     {
         if (viewer == null || viewer.getTree().isDisposed())
@@ -494,7 +609,7 @@ public class AdvanceLumpSumView extends AbstractFinanceView
                 valuationDate = LocalDate.now();
 
             result = new AdvanceLumpSumCalculation(client, converter).calculate(baseInterestRate.get(), taxRate.rate,
-                            valuationDate);
+                            valuationDate, lossBalances, exemptionOrders);
         }
 
         viewer.setInput(buildNodes());
@@ -515,6 +630,8 @@ public class AdvanceLumpSumView extends AbstractFinanceView
         result.getItemsByPortfolio().forEach((portfolio, items) -> nodes.add(new PortfolioNode(portfolio, items,
                         Result.sum(items, Item::advanceLumpSum, currencyCode),
                         Result.sum(items, Item::taxableAmount, currencyCode),
+                        Result.sum(items, Item::usedLoss, currencyCode),
+                        Result.sum(items, Item::usedExemption, currencyCode),
                         Result.sum(items, Item::tax, currencyCode))));
         return nodes;
     }
@@ -545,12 +662,12 @@ public class AdvanceLumpSumView extends AbstractFinanceView
             if (result != null)
             {
                 text.append(" | ").append(TextUtil.escapeHtml(Messages.LabelAdvanceLumpSum)).append(": <strong>")
-                                .append(Values.Money.format(result.getTotalAdvanceLumpSum())).append("</strong>")
-                                .append(" | ").append(TextUtil.escapeHtml(Messages.ColumnTaxableAmount))
-                                .append(": <strong>").append(Values.Money.format(result.getTotalTaxableAmount()))
-                                .append("</strong>").append(" | ")
-                                .append(TextUtil.escapeHtml(Messages.ColumnEstimatedTax)).append(": <strong>")
-                                .append(Values.Money.format(result.getTotalTax())).append("</strong>");
+                                .append(Values.Money.format(result.getTotalAdvanceLumpSum())).append("</strong>");
+                text.append(formatTaxableSummary(result.getTotalTaxableAmount(), result.getTotalUsedLoss(),
+                                result.getTotalUsedExemption()));
+
+                text.append('\n').append("<strong>").append(TextUtil.escapeHtml(Messages.ColumnEstimatedTax))
+                                .append(": ").append(Values.Money.format(result.getTotalTax())).append("</strong>");
             }
             text.append('\n');
 
@@ -584,6 +701,30 @@ public class AdvanceLumpSumView extends AbstractFinanceView
         text.append("<em>").append(TextUtil.escapeHtml(Messages.MsgAdvanceLumpSumInfo)).append("</em>");
 
         return text.toString();
+    }
+
+    @SuppressWarnings("nls")
+    /* package */ static String formatTaxableSummary(Money taxableAfterDeductions, Money usedLoss, Money usedExemption)
+    {
+        var taxableBeforeDeductions = taxableAfterDeductions.add(usedLoss).add(usedExemption);
+        var text = new StringBuilder(" | ").append(TextUtil.escapeHtml(Messages.ColumnTaxableAmount))
+                        .append(": <strong>").append(Values.Money.format(taxableBeforeDeductions)).append("</strong>");
+        appendUsedDeduction(text, usedLoss, Messages.MsgAdvanceLumpSumLossUsed);
+        appendUsedDeduction(text, usedExemption, Messages.MsgAdvanceLumpSumExemptionOrderUsed);
+        return text.toString();
+    }
+
+    private static void appendUsedDeduction(StringBuilder text, Money amount, String message)
+    {
+        if (amount.getAmount() <= 0)
+            return;
+
+        var placeholder = message.indexOf("{0}"); //$NON-NLS-1$
+        var value = "<strong>" + TextUtil.escapeHtml(Values.Money.format(amount)) + "</strong>"; //$NON-NLS-1$ //$NON-NLS-2$
+        var html = placeholder < 0 ? TextUtil.escapeHtml(message)
+                        : TextUtil.escapeHtml(message.substring(0, placeholder)) + value
+                                        + TextUtil.escapeHtml(message.substring(placeholder + 3));
+        text.append(" | ").append(html); //$NON-NLS-1$
     }
 
     @SuppressWarnings("nls")

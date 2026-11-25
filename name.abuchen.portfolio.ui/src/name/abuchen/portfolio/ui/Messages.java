@@ -212,6 +212,10 @@ public class Messages extends NLS
     public static String ColumnEstimatedTax;
     public static String ColumnEventType;
     public static String ColumnExchangeRate;
+    public static String ColumnExemptionOrder;
+    public static String ColumnExemptionOrder_Description;
+    public static String ColumnGeneralLossBalance;
+    public static String ColumnGeneralLossBalance_Description;
     public static String ColumnExDate;
     public static String ColumnExitValue;
     public static String ColumnExpectedBalance;
@@ -1148,7 +1152,9 @@ public class Messages extends NLS
     public static String MsgAccountMustBeDifferent;
     public static String MsgAccountToMissing;
     public static String MsgAdvanceLumpSumCurrentYear;
+    public static String MsgAdvanceLumpSumExemptionOrderUsed;
     public static String MsgAdvanceLumpSumInfo;
+    public static String MsgAdvanceLumpSumLossUsed;
     public static String MsgAdvanceLumpSumMissingBaseInterestRate;
     public static String MsgAdvanceLumpSumMissingExchangeRates;
     public static String MsgAdvanceLumpSumMissingPrices;
