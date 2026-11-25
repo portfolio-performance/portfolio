@@ -574,7 +574,10 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
             double withdrawal = getEffectiveWithdrawal();
 
             Money yearlyWithdrawal = fireNumber != null ? fireNumber.multiplyAndRound(withdrawal) : null;
-            Money currentYearlyWithdrawal = currentValue != null ? currentValue.multiplyAndRound(withdrawal) : null;
+            // a negative net worth cannot fund a withdrawal, so show "-"
+            Money currentYearlyWithdrawal = currentValue != null && currentValue.getAmount() > 0
+                            ? currentValue.multiplyAndRound(withdrawal)
+                            : null;
 
             return new FIREData(fireNumber, currentValue, monthlySavings, twror, timeToFire, targetDate,
                             yearlyWithdrawal, currentYearlyWithdrawal);
@@ -755,16 +758,18 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
     private double getEffectiveWithdrawal()
     {
         Double saved = get(FIREWithdrawalConfig.class).getWithdrawal();
-        return saved != null ? saved : DEFAULT_WITHDRAWAL;
+        // clamp also values saved before the limits were introduced
+        return saved != null ? capWithdrawal(saved) : DEFAULT_WITHDRAWAL;
     }
 
     /**
-     * Caps a withdrawal rate at 100%. Shared by the inline editor and the
-     * configuration menu so both apply the same limit.
+     * Clamps a withdrawal rate to the range 0% to 100%, as a negative rate has
+     * no meaning here. Shared by the inline editor and the configuration menu
+     * so both apply the same limits.
      */
     private static double capWithdrawal(double withdrawal)
     {
-        return Double.min(withdrawal, 1);
+        return Math.max(0, Math.min(withdrawal, 1));
     }
 
     private void showWithdrawal(double withdrawal)
