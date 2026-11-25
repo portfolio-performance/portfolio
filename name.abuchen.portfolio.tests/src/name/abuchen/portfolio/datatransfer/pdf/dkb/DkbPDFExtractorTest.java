@@ -2337,6 +2337,48 @@ public class DkbPDFExtractorTest
     }
 
     @Test
+    public void testQuellensteuer01()
+    {
+        var extractor = new DkbPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Quellensteuer01.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(2L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(3));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("FR001400TL40"), hasWkn("A40V35"), hasTicker(null), //
+                        hasName("LOUIS HACHETTE GROUP ACTIONS PORT. EO -,20"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check taxes transaction
+        assertThat(results, hasItem(taxes( //
+                        hasDate("2024-12-27"), hasShares(350.00), //
+                        hasSource("Quellensteuer01.txt"), //
+                        hasNote("Einbehaltene Quellensteuer 25,00% auf 259,00 EUR"), //
+                        hasAmount("EUR", 64.75), hasGrossValue("EUR", 64.75), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check tax refund transaction
+        assertThat(results, hasItem(taxRefund( //
+                        hasDate("2025-01-14"), hasShares(350.00), //
+                        hasSource("Quellensteuer01.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 14.02), hasGrossValue("EUR", 14.02), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+    }
+
+    @Test
     public void testFondssparplan01()
     {
         var extractor = new DkbPDFExtractor(new Client());
