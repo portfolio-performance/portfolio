@@ -991,6 +991,7 @@ public class SecuritiesChart
         customPaintListeners.clear();
         customTooltipEvents.clear();
         chart.resetAxes();
+        chart.setFirstQuote(null);
         messagePainter.setMessage(null);
     }
 
@@ -1106,7 +1107,10 @@ public class SecuritiesChart
                     if (purchasePrice.isPresent())
                         firstQuote = purchasePrice.get();
                     else
+                    {
+                        firstQuote = referenceQuote;
                         showAreaRelativeToFirstQuote = false;
+                    }
                 }
                 else
                 {
@@ -1169,11 +1173,11 @@ public class SecuritiesChart
                 configureSeriesPainter(lineSeries, dates, values, color, ChartLineWidth.get(), LineStyle.SOLID,
                                 enableArea, !isSingleSecurityMode);
 
+                chart.setFirstQuote(firstQuote);
                 chart.adjustRange();
 
                 addChartMarkerForeground(chartInterval, security, chartConfigPainting);
 
-                chart.setFirstQuote(firstQuote);
                 chart.adjustRange();
 
                 IAxis yAxis1st = chart.getAxisSet().getYAxis(0);
