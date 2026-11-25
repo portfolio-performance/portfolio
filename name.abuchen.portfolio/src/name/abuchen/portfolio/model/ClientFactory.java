@@ -963,6 +963,8 @@ public class ClientFactory
                 // added exDate date field
             case 69: // NOSONAR
                 // add (optional) weight to client filter
+            case 70: // NOSONAR
+                addPartialExemptionAttribute(client);
 
                 client.setVersion(Client.CURRENT_VERSION);
                 break;
@@ -1775,6 +1777,12 @@ public class ClientFactory
         // the experimental sync feature used to store these two properties
         client.removeProperty("net.portfolio-report.portfolioId"); //$NON-NLS-1$
         client.removeProperty("net.portfolio-report.synchronizedAt"); //$NON-NLS-1$
+    }
+
+    private static void addPartialExemptionAttribute(Client client)
+    {
+        if (client.getSettings().getOptionalPartialExemptionAttributeType().isEmpty())
+            client.getSettings().addAttributeType(ClientSettings.createPartialExemptionAttributeType());
     }
 
     private static void fixLogoAttributeName(Client client)

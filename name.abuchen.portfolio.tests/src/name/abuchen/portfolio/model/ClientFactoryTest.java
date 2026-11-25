@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.EnumSet;
 
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -206,5 +207,50 @@ public class ClientFactoryTest
         var flags = ClientFactory.getFlags(file);
         assertTrue(flags.contains(SaveFlag.XML));
         assertTrue(flags.contains(SaveFlag.ID_REFERENCES));
+    }
+
+    @Test
+    public void testMigrationAddsPartialExemptionAttribute() throws IOException
+    {
+        var client = loadClientWithVersion(70, "<attributeTypes/>");
+
+        var attribute = client.getSettings().getOptionalPartialExemptionAttributeType();
+        assertTrue("partial exemption attribute must exist for files of version 70", attribute.isPresent());
+        assertTrue(attribute.get().supports(Security.class));
+        assertEquals("partialExemption", attribute.get().getId());
+        assertEquals(AttributeType.PercentConverter.class.getName(),
+                        attribute.get().getConverter().getClass().getName());
+    }
+
+    @Test
+    public void testMigrationDoesNotDuplicateExistingPartialExemptionAttribute() throws IOException
+    {
+        var client = loadClientWithVersion(70, "<attributeTypes><attribute-type>"
+                        + "<id>partialExemption</id><name>Partial Exemption</name>"
+                        + "<target>name.abuchen.portfolio.model.Security</target>"
+                        + "<type>java.lang.Double</type>"
+                        + "<converterClass>name.abuchen.portfolio.model.AttributeType$PercentConverter</converterClass>"
+                        + "</attribute-type></attributeTypes>");
+
+        assertEquals(1L, countAttributes(client, ClientSettings.PARTIAL_EXEMPTION_ATTRIBUTE_ID));
+    }
+
+    private Client loadClientWithVersion(int version, String settings) throws IOException
+    {
+        var xmlFile = tempFolder.newFile("old" + version + ".portfolio");
+
+        try (var out = new FileOutputStream(xmlFile))
+        {
+            out.write(("<client><version>" + version + "</version><baseCurrency>EUR</baseCurrency>"
+                            + "<settings><bookmarks/>" + settings + "</settings></client>")
+                                            .getBytes(StandardCharsets.UTF_8));
+        }
+
+        return ClientFactory.load(xmlFile, null, new NullProgressMonitor());
+    }
+
+    private long countAttributes(Client client, String id)
+    {
+        return client.getSettings().getAttributeTypes().filter(t -> id.equals(t.getId())).count();
     }
 }

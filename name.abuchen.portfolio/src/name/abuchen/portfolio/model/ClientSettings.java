@@ -18,6 +18,8 @@ import name.abuchen.portfolio.model.ConfigurationSet.WellKnownConfigurationSets;
 
 public class ClientSettings
 {
+    /* package */ static final String PARTIAL_EXEMPTION_ATTRIBUTE_ID = "partialExemption"; //$NON-NLS-1$
+
     private List<Bookmark> bookmarks;
     private List<AttributeType> attributeTypes;
     private Map<String, ConfigurationSet> configurationSets;
@@ -149,6 +151,29 @@ public class ClientSettings
         managementFee.setType(Double.class);
         managementFee.setConverter(PercentConverter.class);
         attributeTypes.add(managementFee);
+
+        attributeTypes.add(createPartialExemptionAttributeType());
+    }
+
+    /**
+     * Creates the attribute type holding the partial exemption
+     * (Teilfreistellung) of an investment fund according to § 20 InvStG.
+     */
+    /* package */ static AttributeType createPartialExemptionAttributeType()
+    {
+        AttributeType partialExemption = new AttributeType(PARTIAL_EXEMPTION_ATTRIBUTE_ID);
+        partialExemption.setName(Messages.AttributesPartialExemptionName);
+        partialExemption.setColumnLabel(Messages.AttributesPartialExemptionColumn);
+        partialExemption.setTarget(Security.class);
+        partialExemption.setType(Double.class);
+        partialExemption.setConverter(PercentConverter.class);
+        return partialExemption;
+    }
+
+    public Optional<AttributeType> getOptionalPartialExemptionAttributeType()
+    {
+        return getAttributeTypes().filter(t -> PARTIAL_EXEMPTION_ATTRIBUTE_ID.equals(t.getId()))
+                        .filter(t -> t.supports(Security.class)).findFirst();
     }
 
     public List<Bookmark> getBookmarks()

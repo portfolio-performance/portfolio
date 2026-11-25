@@ -18,6 +18,11 @@ public interface ExchangeRateTimeSeries
 
     Optional<ExchangeRate> lookupRate(LocalDate requestedTime);
 
+    default Optional<ExchangeRate> lookupRateAsOf(LocalDate date)
+    {
+        return lookupRate(date).filter(rate -> !rate.getTime().isAfter(date));
+    }
+
     default Optional<ExchangeRate> lookupRate(LocalDateTime requestedTime)
     {
         return lookupRate(requestedTime.toLocalDate());

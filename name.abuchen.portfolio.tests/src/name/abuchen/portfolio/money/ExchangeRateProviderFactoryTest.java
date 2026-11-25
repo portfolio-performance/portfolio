@@ -4,12 +4,14 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
 
 import org.junit.Test;
 
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.money.impl.ExchangeRateTimeSeriesImpl;
 import name.abuchen.portfolio.money.impl.SecurityBasedExchangeRateProvider;
 
 @SuppressWarnings("nls")
@@ -77,5 +79,41 @@ public class ExchangeRateProviderFactoryTest
         var factory = new ExchangeRateProviderFactory(client, List.of(new SecurityBasedExchangeRateProvider()));
 
         assertThat(factory.hasTimeSeries("ARS", CurrencyUnit.EUR), is(true));
+    }
+
+    @Test
+    public void testAsOfLookupDoesNotUseFutureRates()
+    {
+        var january = LocalDate.of(2023, 1, 2);
+        var february = LocalDate.of(2023, 2, 1);
+        var provider = new ExchangeRateProvider()
+        {
+            @Override
+            public String getName()
+            {
+                return "test";
+            }
+
+            @Override
+            public List<ExchangeRateTimeSeries> getAvailableTimeSeries(Client client)
+            {
+                var usd = new ExchangeRateTimeSeriesImpl(this, CurrencyUnit.EUR, CurrencyUnit.USD);
+                usd.addRate(new ExchangeRate(january, BigDecimal.ONE));
+                var gbp = new ExchangeRateTimeSeriesImpl(this, CurrencyUnit.EUR, "GBP");
+                gbp.addRate(new ExchangeRate(february, new BigDecimal("0.8")));
+                return List.of(usd, gbp);
+            }
+        };
+        var factory = new ExchangeRateProviderFactory(new Client(), List.of(provider));
+        var direct = new CurrencyConverterImpl(factory, "GBP");
+        var inverse = new CurrencyConverterImpl(factory, CurrencyUnit.EUR);
+        var chained = new CurrencyConverterImpl(factory, CurrencyUnit.USD);
+
+        assertThat(direct.findRate(january, CurrencyUnit.EUR).isEmpty(), is(true));
+        assertThat(inverse.findRate(january, "GBP").isEmpty(), is(true));
+        assertThat(chained.findRate(january, "GBP").isEmpty(), is(true));
+        assertThat(chained.findRate(february, "GBP").orElseThrow().getValue(), is(new BigDecimal("1.2500000000")));
+        assertThat(direct.getRate(january, CurrencyUnit.EUR).getTime(), is(february));
+        assertThat(chained.getRate(january, "GBP").getValue(), is(new BigDecimal("1.2500000000")));
     }
 }

@@ -8,6 +8,7 @@ import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Predicate;
@@ -59,6 +60,7 @@ import name.abuchen.portfolio.ui.views.dashboard.DashboardView;
 import name.abuchen.portfolio.ui.views.holdings.HoldingsPieChartView;
 import name.abuchen.portfolio.ui.views.payments.PaymentsView;
 import name.abuchen.portfolio.ui.views.settings.SettingsView;
+import name.abuchen.portfolio.ui.views.taxes.AdvanceLumpSumView;
 import name.abuchen.portfolio.ui.views.taxonomy.TaxonomyView;
 import name.abuchen.portfolio.ui.views.trades.TradeDetailsView;
 import name.abuchen.portfolio.ui.wizards.datatransfer.taxonomy.MultiTaxonomyImportWizard;
@@ -503,6 +505,9 @@ public final class Navigation
         performance.add(new Item(Messages.LabelSecurities, SecuritiesPerformanceView.class));
         performance.add(new Item(Messages.LabelPayments, PaymentsView.class, true));
         performance.add(new Item(Messages.LabelTrades, TradeDetailsView.class));
+
+        if (AdvanceLumpSumView.isRelevantFor(Locale.getDefault()))
+            performance.add(new Item(Messages.LabelAdvanceLumpSum, AdvanceLumpSumView.class));
     }
 
     private void createTaxonomyDataSection(Client client)
