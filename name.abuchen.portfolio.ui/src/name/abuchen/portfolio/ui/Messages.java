@@ -758,6 +758,7 @@ public class Messages extends NLS
     public static String LabelHide;
     public static String LabelHideMarkings;
     public static String LabelHistoricalReturnsAndVolatiltity;
+    public static String LabelHoldingsWeightVsReturn;
     public static String LabelImportNotesFromSource;
     public static String LabelIncludeSecuritiesInPieChart;
     public static String LabelIncludeUnassignedCategoryInCharts;

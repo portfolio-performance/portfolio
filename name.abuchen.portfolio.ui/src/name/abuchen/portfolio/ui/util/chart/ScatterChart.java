@@ -20,6 +20,7 @@ import name.abuchen.portfolio.ui.util.Colors;
 public class ScatterChart extends Chart // NOSONAR
 {
     private ChartContextMenu contextMenu;
+    private final ScatterChartToolTip toolTip;
     private Color highlightColor = Colors.BLACK;
 
     @SuppressWarnings("restriction")
@@ -67,7 +68,7 @@ public class ScatterChart extends Chart // NOSONAR
             }
         });
 
-        new ScatterChartToolTip(this);
+        this.toolTip = new ScatterChartToolTip(this);
 
         ZoomMouseWheelListener.attachTo(this);
         MovePlotKeyListener.attachTo(this);
@@ -75,6 +76,11 @@ public class ScatterChart extends Chart // NOSONAR
         getPlotArea().getControl().addTraverseListener(event -> event.doit = true);
 
         this.contextMenu = new ChartContextMenu(this);
+    }
+
+    public ScatterChartToolTip getToolTip()
+    {
+        return toolTip;
     }
 
     public Color getHighlightColor()
