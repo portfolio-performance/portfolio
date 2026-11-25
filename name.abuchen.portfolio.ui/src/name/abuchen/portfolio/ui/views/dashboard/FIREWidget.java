@@ -53,7 +53,8 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
     private static final String DEFAULT_MONTHLY_SAVINGS_INPUT = "5000"; //$NON-NLS-1$
 
     public record FIREData(Money fireNumber, Money currentValue, Money monthlySavings, double twror, double timeToFire,
-                    LocalDate targetDate, Money yearlyWithdrawal, Money currentYearlyWithdrawal)
+                    LocalDate targetDate, double withdrawalRate, Money yearlyWithdrawal,
+                    Money currentYearlyWithdrawal)
     {
     }
 
@@ -579,7 +580,7 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
                             ? currentValue.multiplyAndRound(withdrawal)
                             : null;
 
-            return new FIREData(fireNumber, currentValue, monthlySavings, twror, timeToFire, targetDate,
+            return new FIREData(fireNumber, currentValue, monthlySavings, twror, timeToFire, targetDate, withdrawal,
                             yearlyWithdrawal, currentYearlyWithdrawal);
         };
     }
@@ -1066,7 +1067,8 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
             targetDateLabel.setTextColor(Colors.theme().defaultForeground());
         }
 
-        showWithdrawal(getEffectiveWithdrawal());
+        // show the rate the amounts below were calculated with
+        showWithdrawal(data.withdrawalRate());
 
         if (data.yearlyWithdrawal() == null)
         {
