@@ -991,6 +991,7 @@ public class SecuritiesChart
         customPaintListeners.clear();
         customTooltipEvents.clear();
         chart.resetAxes();
+        chart.setFirstQuote(null);
         messagePainter.setMessage(null);
     }
 
