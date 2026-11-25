@@ -27,6 +27,7 @@ import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.views.dashboard.charts.ClientDataSeriesChartWidget;
 import name.abuchen.portfolio.ui.views.dashboard.charts.DrawdownChartWidget;
 import name.abuchen.portfolio.ui.views.dashboard.charts.HoldingsChartWidget;
+import name.abuchen.portfolio.ui.views.dashboard.charts.HoldingsWeightReturnWidget;
 import name.abuchen.portfolio.ui.views.dashboard.charts.RebalancingChartWidget;
 import name.abuchen.portfolio.ui.views.dashboard.charts.RebalancingTargetChartWidget;
 import name.abuchen.portfolio.ui.views.dashboard.charts.TaxonomyChartWidget;
@@ -344,6 +345,11 @@ public enum WidgetFactory
 
     PERFORMANCE_TOP_CONTRIBUTORS_RETURN(Messages.LabelTopContributorsReturn, Messages.ClientEditorLabelPerformance,
                     TopContributorsReturnWidget::new),
+
+    HOLDINGS_WEIGHT_RETURN(Messages.LabelHoldingsWeightVsReturn, Messages.ClientEditorLabelPerformance,
+                    config -> config.put(Dashboard.Config.HEIGHT.name(),
+                                    String.valueOf(ChartHeightConfig.Height.TWOX.getPixel())),
+                    HoldingsWeightReturnWidget::new),
 
     CHART(Messages.LabelPerformanceChart, Messages.ClientEditorLabelPerformance, Images.VIEW_LINECHART,
                     (widget, data) -> new ChartWidget(widget, data, DataSeries.UseCase.PERFORMANCE)),

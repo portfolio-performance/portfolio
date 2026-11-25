@@ -30,6 +30,11 @@ public class ChartHeightConfig implements WidgetConfig
             this.pixel = pixel;
             this.label = label;
         }
+
+        public int getPixel()
+        {
+            return pixel;
+        }
     }
 
     private final WidgetDelegate<?> delegate;
