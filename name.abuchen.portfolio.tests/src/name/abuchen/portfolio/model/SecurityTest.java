@@ -10,6 +10,7 @@ import java.beans.IntrospectionException;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.InvocationTargetException;
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -50,7 +51,7 @@ public class SecurityTest
                 skipped++;
         }
 
-        assertThat(skipped, equalTo(13));
+        assertThat(skipped, equalTo(14));
 
         Security target = source.deepCopy();
         assertThat(target.getUUID(), not(equalTo(source.getUUID())));
@@ -71,6 +72,24 @@ public class SecurityTest
 
             assertThat(targetValue, equalTo(sourceValue));
         }
+    }
+
+    @Test
+    public void testMultiplierDefaultAndDeepCopy()
+    {
+        Security security = new Security();
+        assertThat(security.getMultiplier(), equalTo(BigDecimal.ONE));
+
+        security.setMultiplier(new BigDecimal("2.5"));
+        assertThat(security.getMultiplier(), equalTo(new BigDecimal("2.5")));
+        assertThat(security.deepCopy().getMultiplier(), equalTo(new BigDecimal("2.5")));
+
+        security.setMultiplier(BigDecimal.ONE);
+        assertThat(security.getMultiplier(), equalTo(BigDecimal.ONE));
+
+        security.setMultiplier(new BigDecimal("3"));
+        security.setMultiplier(null);
+        assertThat(security.getMultiplier(), equalTo(BigDecimal.ONE));
     }
 
     @Test
