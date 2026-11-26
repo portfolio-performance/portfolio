@@ -170,6 +170,15 @@ public class CSVImportDefinitionPage extends AbstractWizardPage
         config.writeTo(importer);
     }
 
+    /**
+     * Returns the label of the CSV configuration in use, or null if the columns
+     * are mapped without a configuration.
+     */
+    public String getCurrentConfigLabel()
+    {
+        return currentConfigLabel;
+    }
+
     @Override
     public IWizardPage getNextPage()
     {
