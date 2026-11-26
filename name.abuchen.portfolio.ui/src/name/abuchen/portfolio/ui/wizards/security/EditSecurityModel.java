@@ -295,8 +295,7 @@ import name.abuchen.portfolio.ui.util.BindingHelper;
     private boolean isRetired;
 
     /**
-     * Multiplier (leverage factor) scaled with {@link Values#Quote} to bind it
-     * to a decimal input
+     * Multiplier scaled with {@link Values#Quote} to bind it to a quote input
      */
     private long multiplier;
 
@@ -332,8 +331,7 @@ import name.abuchen.portfolio.ui.util.BindingHelper;
         this.latestFeed = security.getLatestFeed();
         this.latestFeedURL = security.getLatestFeedURL();
         this.isRetired = security.isRetired();
-        this.multiplier = security.getMultiplier().multiply(Values.Quote.getBigDecimalFactor())
-                        .setScale(0, RoundingMode.HALF_UP).longValue();
+        this.multiplier = toQuote(security.getMultiplier());
 
         for (Taxonomy taxonomy : client.getTaxonomies())
             this.taxonomies.add(new TaxonomyDesignation(taxonomy, security));
@@ -606,11 +604,8 @@ import name.abuchen.portfolio.ui.util.BindingHelper;
         security.setLatestFeedURL(latestFeedURL);
         security.setRetired(isRetired);
 
-        // only update the multiplier if it was changed in the dialog (keeps
-        // values with more decimal digits than the input supports)
-        long oldMultiplier = security.getMultiplier().multiply(Values.Quote.getBigDecimalFactor())
-                        .setScale(0, RoundingMode.HALF_UP).longValue();
-        if (multiplier > 0 && multiplier != oldMultiplier)
+        // keep multipliers with more digits than the input field supports
+        if (multiplier > 0 && multiplier != toQuote(security.getMultiplier()))
             security.setMultiplier(BigDecimal.valueOf(multiplier, Values.Quote.precision()).stripTrailingZeros());
 
         Attributes a = new Attributes();
@@ -623,5 +618,10 @@ import name.abuchen.portfolio.ui.util.BindingHelper;
         feedProperties.entrySet().stream().filter(entry -> !Strings.isNullOrEmpty(entry.getValue()))
                         .forEach(entry -> security.addProperty(new SecurityProperty(SecurityProperty.Type.FEED,
                                         entry.getKey(), entry.getValue())));
+    }
+
+    private static long toQuote(BigDecimal value)
+    {
+        return value.multiply(Values.Quote.getBigDecimalFactor()).setScale(0, RoundingMode.HALF_UP).longValue();
     }
 }

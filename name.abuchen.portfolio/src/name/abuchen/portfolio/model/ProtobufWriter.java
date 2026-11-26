@@ -262,9 +262,9 @@ import name.abuchen.portfolio.money.Money;
                 {
                     security.setMultiplier(new BigDecimal(newSecurity.getMultiplier()));
                 }
-                catch (IllegalArgumentException e) // incl. NumberFormatException
+                catch (IllegalArgumentException e)
                 {
-                    // keep the default multiplier of 1 so that the file opens
+                    // includes NumberFormatException; keep the default of 1
                     PortfolioLog.error(e);
                 }
             }

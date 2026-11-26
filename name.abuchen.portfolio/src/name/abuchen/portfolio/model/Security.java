@@ -687,19 +687,14 @@ public final class Security implements Attributable, InvestmentVehicle
         this.updatedAt = Instant.now();
     }
 
-    /**
-     * Returns the multiplier (leverage factor) used to calculate the notional
-     * exposure of a position. Defaults to 1.
-     */
     public BigDecimal getMultiplier()
     {
         return multiplier != null ? multiplier : BigDecimal.ONE;
     }
 
     /**
-     * Sets the multiplier (leverage factor). Null resets it to 1. The
-     * multiplier must be positive; short positions (negative multipliers) are
-     * not supported.
+     * Sets the multiplier. Null resets it to 1. Short positions (negative
+     * multipliers) are not supported.
      *
      * @throws IllegalArgumentException
      *             if the multiplier is zero or negative

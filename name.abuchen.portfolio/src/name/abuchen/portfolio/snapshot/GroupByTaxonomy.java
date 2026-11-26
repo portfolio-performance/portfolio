@@ -16,7 +16,6 @@ import name.abuchen.portfolio.model.InvestmentVehicle;
 import name.abuchen.portfolio.model.Taxonomy;
 import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.Money;
-import name.abuchen.portfolio.money.MoneyCollectors;
 
 public final class GroupByTaxonomy
 {
@@ -177,23 +176,9 @@ public final class GroupByTaxonomy
         return date;
     }
 
-    /**
-     * Returns the total market value.
-     */
     public Money getValuation()
     {
         return valuation;
-    }
-
-    /**
-     * Returns the total notional exposure, i.e. the sum of the notional
-     * valuation of all categories (market value multiplied by the multiplier
-     * of each security).
-     */
-    public Money getNotionalValuation()
-    {
-        return categories.stream().map(AssetCategory::getNotionalValuation)
-                        .collect(MoneyCollectors.sum(converter.getTermCurrency()));
     }
 
     public CurrencyConverter getCurrencyConverter()

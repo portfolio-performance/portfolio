@@ -30,17 +30,14 @@ public class AssetCategory
         this.notionalValuation = MutableMoney.of(converter.getTermCurrency());
     }
 
-    /**
-     * Returns the market value of all positions in this category.
-     */
     public Money getValuation()
     {
         return this.valuation.toMoney();
     }
 
     /**
-     * Returns the notional exposure of all positions in this category, i.e.
-     * the market value multiplied by the multiplier of each security.
+     * Returns the notional exposure, i.e. the market value multiplied by the
+     * multiplier of each security.
      */
     public Money getNotionalValuation()
     {
@@ -48,8 +45,8 @@ public class AssetCategory
     }
 
     /**
-     * Returns the share of the market value of this category in the total
-     * assets (also based on market value).
+     * Returns the share of the market value in the total assets. The
+     * multiplier is not applied.
      */
     public double getShare()
     {

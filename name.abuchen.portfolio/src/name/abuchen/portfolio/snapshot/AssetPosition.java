@@ -38,19 +38,14 @@ public class AssetPosition
         this.notionalValuation = position.calculateNotionalValue();
     }
 
-    /**
-     * Returns the market value of the position (shares x price), converted
-     * into the term currency. The multiplier of the security is not applied.
-     */
     public Money getValuation()
     {
         return converter.convert(date, valuation);
     }
 
     /**
-     * Returns the notional exposure of the position, i.e. the market value
-     * multiplied by the multiplier of the security, converted into the term
-     * currency.
+     * Returns the notional exposure, i.e. the market value multiplied by the
+     * multiplier of the security.
      */
     public Money getNotionalValuation()
     {
@@ -58,8 +53,8 @@ public class AssetPosition
     }
 
     /**
-     * Returns the share of the market value of this position in the total
-     * assets (also based on market value). The multiplier is not applied.
+     * Returns the share of the market value in the total assets. The
+     * multiplier is not applied.
      */
     public double getShare()
     {
