@@ -81,12 +81,21 @@ public class UpvestPDFExtractor extends AbstractPDFExtractor
                             t.setAmount(asAmount(v.get("amount")));
                         })
 
-                        // @formatter:off
-                        // Handelsdatum, Uhrzeit: 02.02.2026 15:05:46
-                        // @formatter:on
-                        .section("date", "time") //
-                        .match("^Handelsdatum, Uhrzeit: (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})\\s+(?<time>[\\d]{2}:[\\d]{2}:[\\d]{2}).*$") //
-                        .assign((t, v) -> t.setDate(asDate(v.get("date"), v.get("time"))))
+                        .oneOf( //
+                                        // @formatter:off
+                                        // Handelsdatum, Uhrzeit: 02.02.2026 15:05:46
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("date", "time") //
+                                                        .match("^Handelsdatum, Uhrzeit: (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})\\s+(?<time>[\\d]{2}:[\\d]{2}:[\\d]{2}).*$") //
+                                                        .assign((t, v) -> t.setDate(asDate(v.get("date"), v.get("time")))),
+                                        // @formatter:off
+                                        // Handelsdatum: 01.11.2026
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("date") //
+                                                        .match("^Handelsdatum: (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
+                                                        .assign((t, v) -> t.setDate(asDate(v.get("date")))))
 
                         // @formatter:off
                         // Abrechnungsnummer
@@ -94,7 +103,7 @@ public class UpvestPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("note").optional() //
                         .match("^Abrechnungsnummer.*$") //
-                        .match("^.*\\s+(?<note>[a-z0-9\\-]+)\\s*$") //
+                        .match("^.*\\s+(?<note>[A-Za-z0-9\\-]+)\\s*$") //
                         .assign((t, v) -> t.setNote("Abr.-Nr.: " + trim(v.get("note"))))
 
                         .wrap(BuySellEntryItem::new);

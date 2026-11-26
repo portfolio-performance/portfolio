@@ -1,0 +1,62 @@
+PDFBox Version: 3.0.8
+Portfolio Performance Version: 0.90.0
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+Wertpapierabrechnung 
+Kauf 
+Abrechnungsnummer 
+wdUxbzu bWbrb 01a162bd-M430-33I5-843a-619b8S2roQqA 
+Xxxxx-Xxxx-Str. 10 
+44597 kjARhlQgzBn 
+Deutschland Depotinhaber Depotnummer 
+ZXkVLOp ZLYpF 595404248-1 
+Wir haben für Sie gekauft Berlin, 17.11.2026 
+Wertpapier ISIN 
+AEFS-A.EUR.STR.I.RNXTEOD LU3227875377 
+Nominal/Anzahl Kurs Kurswert 
+10,12000 Stück 24,69 EUR 249,86 EUR 
+Handel 
+Handelsdatum: 01.11.2026 
+Handelsplatz: Außerbörslich, via Kapitalverwaltungsgesellschaft 
+Ordertyp: Market Order 
+Verwahrung 
+Verwahrart: Wertpapierrechnung 
+Lagerland: Luxemburg 
+Valuta Betrag zu Ihren Lasten 
+27.11.2026 249,86 EUR 
+Der Betrag wird über das mit dem Depot 128569835 verknüpfte Verrechnungskonto abgerechnet. 
+Bitte prüfen Sie die Angaben auf Richtigkeit und teilen Sie uns etwaige Einwendungen unverzüglich mit. 
+Dokument ID: 1a089aec-75df-26x7-srH5-0j622wK93251
+Upvest Securities GmbH, Prenzlauer Allee 242-247, 10405 Berlin, Geschäftsführer: Martin Kassing, Tobias Auferoth, Sitz der Gesellschaft: Berlin; Amtsgericht
+Charlottenburg: HRB 232445 B, USt-ID: DE346524922 Aufsichtsbehörde: Bundesanstalt für Finanzdienstleistungsaufsicht, BaFin
+Securities settlement 
+Purchase 
+Statement number 
+wDpPkNN eybck 01a162bd-Q176-23w0-843a-541z1t8TGLcu 
+Xxxxx-Xxxx-Str. 10 
+36537 qgVZGCnIEmw 
+Germany Securities account 
+Securities account holder 
+number 
+eqbXDWC BCkCG 
+057955487-1 
+We have bought for you Berlin, 17.11.2026 
+Security ISIN 
+AEFS-A.EUR.STR.I.RNXTEOD LU3227875377 
+Nominal value / Quantity Price Market value 
+10.12000 unit(s) 24.69 EUR 249.86 EUR 
+Trade 
+Trading date: 01.11.2026 
+Trading venue: Over-the-Counter, via capital management company 
+Order type: Market order 
+Custody 
+Type of custody: Non-collective safe custody 
+Country of deposit: Luxembourg 
+Value date Amount debited 
+27.11.2026 249.86 EUR 
+The amount will be settled with the clearing account linked to securities account 776455426. 
+Please check the information for accuracy and notify us immediately of any objections. 
+Document ID: 1a089aec-75df-26W7-IFZ1-7R928JN87769
+Upvest Securities GmbH, Prenzlauer Allee 242-247, 10405 Berlin; Managing Directors: Martin Kassing, Tobias Auferoth; Company's Head Office: Berlin; Charlottenburg
+District Court: HRB 232445 B, VAT-ID: IN434858995; Supervisory Authority: Bundesanstalt für Finanzdienstleistungsaufsicht (BaFin) [German Federal Financial
+Supervisory Authority].

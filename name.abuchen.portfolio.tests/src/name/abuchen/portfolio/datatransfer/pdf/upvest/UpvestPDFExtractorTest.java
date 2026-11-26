@@ -75,6 +75,40 @@ public class UpvestPDFExtractorTest
     }
 
     @Test
+    public void testKauf02()
+    {
+        var extractor = new UpvestPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf02.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("LU3227875377"), hasWkn(null), hasTicker(null), //
+                        hasName("AEFS-A.EUR.STR.I.RNXTEOD"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2026-11-01"), hasShares(10.12), //
+                        hasSource("Kauf02.txt"), //
+                        hasNote("Abr.-Nr.: 01a162bd-M430-33I5-843a-619b8S2roQqA"), //
+                        hasAmount("EUR", 249.86), hasGrossValue("EUR", 249.86), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+    }
+
+    @Test
     public void testVerkauf01()
     {
         var extractor = new UpvestPDFExtractor(new Client());
