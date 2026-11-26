@@ -703,6 +703,40 @@ public class SBrokerPDFExtractorTest
     }
 
     @Test
+    public void testWertpapierKauf18()
+    {
+        var extractor = new SBrokerPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf18.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("SE0000667891"), hasWkn(null), hasTicker(null), //
+                        hasName("Sandvik AB Namn-Aktier o.N."), //
+                        hasCurrencyCode("EUR"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2014-01-20T09:38"), hasShares(400.00), //
+                        hasSource("Kauf18.txt"), //
+                        hasNote("Abrechnungs-Nr. 21404248"), //
+                        hasAmount("EUR", 4238.53), hasGrossValue("EUR", 4220.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 16.45 + 2.08))));
+    }
+
+    @Test
     public void testWertpapierVerkauf01()
     {
         var extractor = new SBrokerPDFExtractor(new Client());

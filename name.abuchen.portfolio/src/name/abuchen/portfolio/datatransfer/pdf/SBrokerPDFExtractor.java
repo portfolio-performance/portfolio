@@ -2015,6 +2015,14 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                         .assign((t, v) -> processFeeEntries(t, v, type))
 
                         // @formatter:off
+                        // Börse Quotrix Fremde Spesen EUR 2,08-
+                        // Börse Xetra/EDE Fremde Spesen               EUR 0,60-
+                        // @formatter:on
+                        .section("currency", "fee").optional() //
+                        .match("^.* Fremde Spesen[\\s]{1,}(?<currency>[A-Z]{3}) (?<fee>[\\.,\\d]+)[\\s]*\\-$") //
+                        .assign((t, v) -> processFeeEntries(t, v, type))
+
+                        // @formatter:off
                         // Provision 1,48- EUR
                         // @formatter:on
                         .section("fee", "currency").optional() //
