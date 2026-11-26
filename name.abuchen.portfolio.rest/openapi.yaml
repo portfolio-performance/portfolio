@@ -421,6 +421,99 @@ paths:
       operationId: listInstruments
       tags: [Instruments]
       summary: List the instruments in a file
+      description: |
+        Pass `filter` as a URL-encoded JSON object to return only matching
+        instruments. Criteria are combined with AND; use an array for OR within
+        one criterion. Match fixed fields (`uuid`, `name`, `currencyCode`,
+        `isin`, `wkn`, `tickerSymbol`, `note`) exactly. Put custom attribute ids
+        under `attributes`; resolve them with
+        `GET .../instruments/attribute-types`. `watchlist` matches a watch-list
+        name. `classification` matches an assigned taxonomy classification by
+        its `name`, optionally narrowed by taxonomy name. Omitting `filter`
+        returns every instrument.
+      parameters:
+        - name: filter
+          in: query
+          required: false
+          content:
+            application/json:
+              schema:
+                type: object
+                description: Exact-match criteria; every property must match.
+                properties:
+                  uuid:
+                    description: Instrument UUID.
+                    oneOf:
+                      - type: string
+                      - type: array
+                        items: { type: string }
+                  name:
+                    description: Instrument name.
+                    oneOf:
+                      - type: string
+                      - type: array
+                        items: { type: string }
+                  currencyCode:
+                    description: Instrument currency code.
+                    oneOf:
+                      - type: string
+                      - type: array
+                        items: { type: string }
+                  isin:
+                    description: ISIN.
+                    oneOf:
+                      - type: string
+                      - type: array
+                        items: { type: string }
+                  wkn:
+                    description: WKN.
+                    oneOf:
+                      - type: string
+                      - type: array
+                        items: { type: string }
+                  tickerSymbol:
+                    description: Ticker symbol.
+                    oneOf:
+                      - type: string
+                      - type: array
+                        items: { type: string }
+                  note:
+                    description: Instrument note.
+                    oneOf:
+                      - type: string
+                      - type: array
+                        items: { type: string }
+                  attributes:
+                    type: object
+                    description: Custom attribute ids and their exact values.
+                    additionalProperties:
+                      oneOf:
+                        - type: string
+                        - type: number
+                        - type: boolean
+                        - type: 'null'
+                        - type: array
+                          items:
+                            oneOf:
+                              - type: string
+                              - type: number
+                              - type: boolean
+                              - type: 'null'
+                  watchlist:
+                    description: Name of a watch list containing the instrument.
+                    oneOf:
+                      - type: string
+                      - type: array
+                        items: { type: string }
+                  classification:
+                    type: object
+                    description: An assigned classification, optionally scoped to one taxonomy.
+                    properties:
+                      name: { type: string, description: Classification name. }
+                      taxonomy: { type: string, description: Optional taxonomy name. }
+                    required: [name]
+                    additionalProperties: false
+                additionalProperties: false
       responses:
         "200":
           description: The instruments in the file
