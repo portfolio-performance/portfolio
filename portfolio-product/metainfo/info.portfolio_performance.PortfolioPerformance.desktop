@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Name=Portfolio Performance
+Comment=Calculate the overall performance of an investment portfolio
+Exec=PortfolioPerformance %f
+Icon=info.portfolio_performance.PortfolioPerformance
+Terminal=false
+Categories=Office;Finance;Java;
+SingleMainWindow=true
+StartupWMClass=Portfolio Performance
