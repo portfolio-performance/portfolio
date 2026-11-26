@@ -673,21 +673,27 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
 
                         // @formatter:off
                         // Einbehaltene Quellensteuer 25,00% auf 259,00 EUR 64,75- EUR
+                        // @formatter:on
+                        .section("note") //
+                        .documentContext("shares", "name", "isin", "wkn", "nameContinued", "currency") //
+                        .match("^(?<note>Einbehaltene Quellensteuer [\\.,\\d]+% auf [\\.,\\d]+ [A-Z]{3}) [\\.,\\d]+\\- [A-Z]{3}$") //
+                        .assign((t, v) -> {
+                            t.setShares(asShares(v.get("shares")));
+                            t.setSecurity(getOrCreateSecurity(v));
+                            t.setNote(trim(v.get("note")));
+                        })
+
+                        // @formatter:off
                         // Ausmachender Betrag 64,75- EUR
                         // Den Gegenwert buchen wir mit Valuta 27.12.2024 zu Lasten des Kontos 2361177033
                         // @formatter:on
-                        .section("note", "amount", "date") //
-                        .documentContext("shares", "name", "isin", "wkn", "nameContinued", "currency") //
-                        .match("^(?<note>Einbehaltene Quellensteuer [\\.,\\d]+% auf [\\.,\\d]+ [A-Z]{3}) [\\.,\\d]+\\- [A-Z]{3}$") //
-                        .match("^Ausmachender Betrag (?<amount>[\\.,\\d]+)\\- [A-Z]{3}$") //
+                        .section("amount", "currency", "date") //
+                        .match("^Ausmachender Betrag (?<amount>[\\.,\\d]+)\\- (?<currency>[A-Z]{3})$") //
                         .match("^Den Gegenwert buchen wir mit Valuta (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) zu Lasten .*$") //
                         .assign((t, v) -> {
                             t.setDateTime(asDate(v.get("date")));
-                            t.setShares(asShares(v.get("shares")));
-                            t.setSecurity(getOrCreateSecurity(v));
-                            t.setCurrencyCode(v.get("currency"));
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(asAmount(v.get("amount")));
-                            t.setNote(trim(v.get("note")));
                         })
 
                         .wrap(TransactionItem::new));
@@ -700,18 +706,24 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
 
                         // @formatter:off
                         // Steuerausgleich 14,02 EUR
+                        // @formatter:on
+                        .section("amount", "currency") //
+                        .match("^Steuerausgleich (?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
+                        .assign((t, v) -> {
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                            t.setAmount(asAmount(v.get("amount")));
+                        })
+
+                        // @formatter:off
                         // Den ausmachenden Betrag buchen wir mit Valuta 14.01.2025 zu Gunsten des Kontos 1702408062
                         // @formatter:on
-                        .section("amount", "date") //
+                        .section("date") //
                         .documentContext("shares", "name", "isin", "wkn", "nameContinued", "currency") //
-                        .match("^Steuerausgleich (?<amount>[\\.,\\d]+) [A-Z]{3}$") //
                         .match("^Den ausmachenden Betrag buchen wir mit Valuta (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) zu Gunsten .*$") //
                         .assign((t, v) -> {
                             t.setDateTime(asDate(v.get("date")));
                             t.setShares(asShares(v.get("shares")));
                             t.setSecurity(getOrCreateSecurity(v));
-                            t.setCurrencyCode(v.get("currency"));
-                            t.setAmount(asAmount(v.get("amount")));
                         })
 
                         .wrap(TransactionItem::new));
