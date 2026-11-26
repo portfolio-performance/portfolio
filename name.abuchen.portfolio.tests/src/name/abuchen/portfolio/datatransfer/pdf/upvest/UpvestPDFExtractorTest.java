@@ -1,8 +1,10 @@
 package name.abuchen.portfolio.datatransfer.pdf.upvest;
 
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.dividend;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasAmount;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasCurrencyCode;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasDate;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasExDate;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasFees;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasGrossValue;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasIsin;
@@ -174,5 +176,39 @@ public class UpvestPDFExtractorTest
                         hasNote("Abr.-Nr.: 1a2b3c4d-5e6f-4a7b-8c9d-0e1f2a3b4c5d"), //
                         hasAmount("EUR", 1205.11), hasGrossValue("EUR", 1209.15), //
                         hasTaxes("EUR", 3.83 + 0.21 + 0.00), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testDividende01()
+    {
+        var extractor = new UpvestPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende01.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("LU3227875377"), hasWkn(null), hasTicker(null), //
+                        hasName("AEFS-A.EUR.STR.I.RNXTEOD"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2026-11-25"), hasExDate(null), hasShares(685.05), //
+                        hasSource("Dividende01.txt"), //
+                        hasNote("Ord.-Nr.: 203n8904-a515-4500-a2e5-5446BNC0hQ60"), //
+                        hasAmount("EUR", 76.97), hasGrossValue("EUR", 104.53), //
+                        hasTaxes("EUR", 0.00 + 26.13 + 1.43 + 0.00), hasFees("EUR", 0.00))));
     }
 }
