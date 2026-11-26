@@ -26,6 +26,7 @@ import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityEvent;
 import name.abuchen.portfolio.model.SecurityEvent.DividendEvent;
 import name.abuchen.portfolio.money.Money;
+import name.abuchen.portfolio.snapshot.filter.PortfolioClientFilter;
 import name.abuchen.portfolio.ui.views.dashboard.DividendListWidget.DateType;
 import name.abuchen.portfolio.ui.views.dashboard.DividendListWidget.DividendItem;
 import name.abuchen.portfolio.ui.views.dashboard.DividendListWidget.ShowEventsStarting;
@@ -285,6 +286,41 @@ public class DividendListWidgetTest
                         + "2024-07-14 Security 1 EUR 0,22 [" + DateType.EX_DIVIDEND_DATE.name() + "]\n" //
                         + "2024-08-11 Security 1 EUR 0,22 [" + DateType.PAYMENT_DATE.name() + "]",
                         getListAsString(items));
+    }
+
+    @Test
+    public void testAllAndActiveInstrumentsApplyDashboardFilter()
+    {
+        var security3 = new Security("Security 3", "EUR");
+        security3.addEvent(new DividendEvent( //
+                        LocalDate.of(2024, 4, 9), LocalDate.of(2024, 4, 12), Money.of("EUR", 55), "source"));
+        testClient.addSecurity(security3);
+
+        var dashboardData = new DashboardData(testClient);
+        dashboardData.setClientFilter(
+                        new PortfolioClientFilter(List.of(testClient.getPortfolios().get(0)), List.of()));
+
+        var now = LocalDate.of(2024, 4, 8);
+        var expected = "2024-02-04 Security 1 EUR 0,33 [" + DateType.EX_DIVIDEND_DATE.name() + "]\n" //
+                        + "2024-03-05 Security 1 EUR 0,33 [" + DateType.PAYMENT_DATE.name() + "]\n" //
+                        + "2024-04-09 Security 1 EUR 0,55 [" + DateType.EX_DIVIDEND_DATE.name() + "]\n" //
+                        + "2024-04-12 Security 1 EUR 0,55 [" + DateType.PAYMENT_DATE.name() + "]\n" //
+                        + "2024-07-14 Security 1 EUR 0,22 [" + DateType.EX_DIVIDEND_DATE.name() + "]\n" //
+                        + "2024-08-11 Security 1 EUR 0,22 [" + DateType.PAYMENT_DATE.name() + "]";
+
+        for (var filter : List.of(DividendListWidget.SecurityFilter.ALL,
+                        DividendListWidget.SecurityFilter.ACTIVE))
+        {
+            var widget = new Widget();
+            widget.getConfiguration().put(Dashboard.Config.SECURITY_FILTER.name(), filter.name());
+            widget.getConfiguration().put(Dashboard.Config.DATE_TYPE_FILTER.name(),
+                            DividendListWidget.DateType.ALL_DATES.name());
+            widget.getConfiguration().put(Dashboard.Config.START_YEAR.name(),
+                            DividendListWidget.ShowEventsStarting.THREE_MONTHS_AGO.name());
+
+            var dividendList = new DividendListWidget(widget, dashboardData);
+            assertEquals(filter.name(), expected, getListAsString(dividendList.getUpdateTask(now)));
+        }
     }
 
     private String getListAsString(List<DividendItem> list)

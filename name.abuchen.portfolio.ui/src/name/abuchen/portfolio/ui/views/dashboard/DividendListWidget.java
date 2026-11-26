@@ -284,13 +284,14 @@ public class DividendListWidget extends AbstractSecurityListWidget<DividendListW
     {
         var security = get(SecuritySelectionConfig.class).getValue();
         var clientFilter = get(ClientFilterConfig.class);
+        var dashboardClient = getDashboardData().getFilteredClient();
 
         switch (security)
         {
             case ALL:
-                return getClient().getSecurities();
+                return dashboardClient.getSecurities();
             case ACTIVE:
-                return getClient().getSecurities().stream().filter(s -> !s.isRetired()).toList();
+                return dashboardClient.getSecurities().stream().filter(s -> !s.isRetired()).toList();
             case OWNED:
                 var filteredClient = getDashboardData().getFilteredClient(clientFilter.getSelectedFilter());
                 var snapshot = ClientSnapshot.create(filteredClient, getDashboardData().getCurrencyConverter(), now);
