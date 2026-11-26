@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -92,6 +93,20 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
      */
     private boolean doExtractBeforeEveryPageDisplay = false;
 
+    /**
+     * Optional qualifier for the preference keys of the target account and
+     * portfolio, e.g. the label of the CSV configuration. If empty, the target
+     * is remembered per extractor.
+     */
+    private Supplier<String> targetPreferenceQualifier = () -> null;
+
+    /**
+     * The preference key used when the dropdowns were last populated. The
+     * selection is saved under this key because the qualifier can already
+     * point to another CSV configuration while the extraction is running.
+     */
+    private String populatedTargetKey;
+
     private ExtractedItemsTable itemsTable;
     private TableViewer errorTableViewer;
 
@@ -153,6 +168,18 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
     public void setDoExtractBeforeEveryPageDisplay(boolean doExtractBeforeEveryPageDisplay)
     {
         this.doExtractBeforeEveryPageDisplay = doExtractBeforeEveryPageDisplay;
+    }
+
+    public void setTargetPreferenceQualifier(Supplier<String> targetPreferenceQualifier)
+    {
+        this.targetPreferenceQualifier = Objects.requireNonNull(targetPreferenceQualifier);
+    }
+
+    private String getTargetPreferenceKey()
+    {
+        var qualifier = targetPreferenceQualifier.get();
+        return qualifier == null || qualifier.isEmpty() ? extractor.getLabel()
+                        : extractor.getLabel() + " / " + qualifier; //$NON-NLS-1$
     }
 
     public List<ExtractedEntry> getEntries()
@@ -297,6 +324,9 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
         // idea: generally one type of document (i.e. from the same bank) will
         // be imported into the same account
 
+        var targetKey = getTargetPreferenceKey();
+        populatedTargetKey = targetKey;
+
         for (var entry : primaryAccounts.entrySet())
         {
             var currency = entry.getKey();
@@ -317,12 +347,13 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
                 }
             }
 
-            var uuid = preferences.getString(IMPORT_TARGET_ACCOUNT + extractor.getLabel() + currency);
+            var uuid = preferences.getString(IMPORT_TARGET_ACCOUNT + targetKey + currency);
 
             // previously, the preferences were stored without currency.
-            // Use as fallback for the time being (changed in May 2025)
-            if (uuid.isEmpty())
-                uuid = preferences.getString(IMPORT_TARGET_ACCOUNT + extractor.getLabel());
+            // Use as fallback for the time being (changed in May 2025). Keys
+            // qualified by a CSV configuration never existed without currency.
+            if (uuid.isEmpty() && targetKey.equals(extractor.getLabel()))
+                uuid = preferences.getString(IMPORT_TARGET_ACCOUNT + targetKey);
 
             var accountUUID = uuid;
             var index = IntStream.range(0, list.size()) //
@@ -349,7 +380,7 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
         if (!activePortfolios.isEmpty())
         {
             String uuid = portfolio != null ? portfolio.getUUID()
-                            : preferences.getString(IMPORT_TARGET_PORTFOLIO + extractor.getLabel());
+                            : preferences.getString(IMPORT_TARGET_PORTFOLIO + targetKey);
             // do not trigger a selection (do not use #setSelection)
             primaryPortfolio.getCombo().select(IntStream.range(0, activePortfolios.size())
                             .filter(i -> activePortfolios.get(i).getUUID().equals(uuid)).findAny().orElse(0));
@@ -464,18 +495,20 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
     @Override
     public void afterPage()
     {
+        var targetKey = populatedTargetKey != null ? populatedTargetKey : getTargetPreferenceKey();
+
         for (var entry : primaryAccounts.entrySet())
         {
             var currency = entry.getKey();
             var selectedAccount = entry.getValue().getRight().getStructuredSelection().getFirstElement();
             if (selectedAccount != null)
             {
-                preferences.setValue(IMPORT_TARGET_ACCOUNT + extractor.getLabel() + currency,
+                preferences.setValue(IMPORT_TARGET_ACCOUNT + targetKey + currency,
                                 ((Account) selectedAccount).getUUID());
             }
         }
 
-        preferences.setValue(IMPORT_TARGET_PORTFOLIO + extractor.getLabel(), getPortfolio().getUUID());
+        preferences.setValue(IMPORT_TARGET_PORTFOLIO + targetKey, getPortfolio().getUUID());
 
         preferences.setValue(IMPORT_CONVERT_BUYSELL_TO_DELIVERY + extractor.getLabel(), doConvertToDelivery());
         preferences.setValue(IMPORT_REMOVE_DIVIDENDS + extractor.getLabel(), doRemoveDividends());

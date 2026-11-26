@@ -186,6 +186,9 @@ public class CSVImportWizard extends Wizard
             reviewPage.setAccount(account);
         if (portfolio != null)
             reviewPage.setPortfolio(portfolio);
+        // remember the target account and portfolio per CSV configuration,
+        // because a configuration usually belongs to one bank or broker
+        reviewPage.setTargetPreferenceQualifier(definitionPage::getCurrentConfigLabel);
         reviewPage.setDoExtractBeforeEveryPageDisplay(true);
         addPage(reviewPage);
 
