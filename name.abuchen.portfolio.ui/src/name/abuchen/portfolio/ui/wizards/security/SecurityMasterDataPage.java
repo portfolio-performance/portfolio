@@ -80,6 +80,10 @@ public class SecurityMasterDataPage extends AbstractPage
 
             ComboViewer calendar = bindings.bindCalendarCombo(container, Messages.LabelSecurityCalendar, "calendar"); //$NON-NLS-1$
             calendar.getCombo().setToolTipText(Messages.LabelSecurityCalendarToolTip);
+
+            Control multiplier = bindings.bindMandatoryQuoteInput(container, Messages.ColumnMultiplier,
+                            "multiplier"); //$NON-NLS-1$
+            multiplier.setToolTipText(Messages.ColumnMultiplierToolTip);
         }
 
         Control control = bindings.bindBooleanInput(container, Messages.ColumnRetired, "retired"); //$NON-NLS-1$
