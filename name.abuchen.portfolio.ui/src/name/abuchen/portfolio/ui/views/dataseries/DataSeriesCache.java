@@ -160,7 +160,14 @@ public class DataSeriesCache
                 case PORTFOLIO_PLUS_ACCOUNT:
                     portfolio = findPortfolio(filteredClient, (Portfolio) series.getInstance());
                     if (portfolio == null)
-                        return emptyIndex(reportingPeriod, warnings);
+                    {
+                        account = findAccount(filteredClient,
+                                        ((Portfolio) series.getInstance()).getReferenceAccount());
+                        if (account == null)
+                            return emptyIndex(reportingPeriod, warnings);
+                        return PerformanceIndex.forAccount(filteredClient, converter, account, reportingPeriod,
+                                        warnings);
+                    }
                     return PerformanceIndex.forPortfolioPlusAccount(filteredClient, converter, portfolio,
                                     reportingPeriod, warnings);
 
@@ -227,7 +234,12 @@ public class DataSeriesCache
         Client pretaxClient = new WithoutTaxesFilter().filter(filteredClient);
         Portfolio portfolio = findPortfolio(pretaxClient, (Portfolio) series.getInstance());
         if (portfolio == null)
-            return emptyIndex(reportingPeriod, warnings);
+        {
+            Account account = findAccount(pretaxClient, ((Portfolio) series.getInstance()).getReferenceAccount());
+            if (account == null)
+                return emptyIndex(reportingPeriod, warnings);
+            return PerformanceIndex.forAccount(pretaxClient, converter, account, reportingPeriod, warnings);
+        }
 
         return PerformanceIndex.forPortfolioPlusAccount(pretaxClient, converter, portfolio, reportingPeriod, warnings);
     }

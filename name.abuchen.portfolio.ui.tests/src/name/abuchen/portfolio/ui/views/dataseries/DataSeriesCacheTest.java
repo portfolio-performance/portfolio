@@ -12,6 +12,7 @@ import org.junit.Test;
 import name.abuchen.portfolio.junit.AccountBuilder;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.snapshot.PerformanceIndex;
@@ -48,6 +49,28 @@ public class DataSeriesCacheTest
         cache.setClientFilter(new PortfolioClientFilter(Collections.emptyList(), List.of(accountA)));
 
         assertThat(lastTotal(cache.lookup(series, INTERVAL)), is(Values.Amount.factorize(100)));
+    }
+
+    @Test
+    public void testPortfolioPlusAccountKeepsReferenceAccountWhenPortfolioIsFilteredOut()
+    {
+        Client client = new Client();
+
+        Account referenceAccount = new AccountBuilder().deposit_("2024-01-01", Values.Amount.factorize(100))
+                        .addTo(client);
+        Portfolio portfolio = new Portfolio("portfolio");
+        portfolio.setReferenceAccount(referenceAccount);
+        client.addPortfolio(portfolio);
+
+        DataSeriesCache cache = new DataSeriesCache(client, new ExchangeRateProviderFactory(client));
+        cache.setClientFilter(new PortfolioClientFilter(Collections.emptyList(), List.of(referenceAccount)));
+
+        for (var type : List.of(DataSeries.Type.PORTFOLIO_PLUS_ACCOUNT,
+                        DataSeries.Type.PORTFOLIO_PLUS_ACCOUNT_PRETAX))
+        {
+            DataSeries series = new DataSeries(type, portfolio, "portfolio", null);
+            assertThat(type.name(), lastTotal(cache.lookup(series, INTERVAL)), is(Values.Amount.factorize(100)));
+        }
     }
 
     @Test
