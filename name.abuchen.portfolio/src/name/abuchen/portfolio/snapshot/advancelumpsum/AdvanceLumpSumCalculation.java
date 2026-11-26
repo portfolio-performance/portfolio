@@ -26,6 +26,7 @@ import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.PortfolioTransferEntry;
 import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.model.SecurityEvent.DividendEvent;
 import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.CurrencyUnit;
@@ -38,7 +39,8 @@ import name.abuchen.portfolio.money.Values;
  * Estimates the German Vorabpauschale (§ 18 InvStG) per portfolio and security
  * for one calendar year. Only securities with a partial exemption attribute
  * (Teilfreistellung) are treated as investment funds. The calculation does not
- * create any transactions.
+ * create any transactions. Stored fund dividend events can supplement bookings
+ * for distributions paid while the client was not entitled to them.
  */
 public class AdvanceLumpSumCalculation
 {
@@ -156,6 +158,11 @@ public class AdvanceLumpSumCalculation
             if (bookings.stream().anyMatch(b -> b.transaction().getShares() <= 0))
                 holdings.put(security, new TreeMap<>());
         });
+        for (var security : client.getSecurities())
+        {
+            if (security.getEvents().stream().anyMatch(DividendEvent.class::isInstance))
+                holdings.computeIfAbsent(security, s -> new TreeMap<>());
+        }
         var lotsByPortfolio = collectLots(attribute.get(), cutoff, holdings);
         var distributionsBySecurity = new HashMap<Security, Distributions>();
 
@@ -172,7 +179,8 @@ public class AdvanceLumpSumCalculation
                             .forEach(e -> {
                                 var security = e.getKey();
                                 var distributions = distributionsBySecurity.computeIfAbsent(security,
-                                                s -> distributionsPerShare(dividendBookings.getOrDefault(s, List.of()),
+                                                s -> distributionsPerShare(s, year, cutoff,
+                                                                dividendBookings.getOrDefault(s, List.of()),
                                                                 holdings.get(s)));
                                 var item = calculate(portfolio, security, e.getValue(), attribute.get(),
                                                 baseInterestRate, taxRate, cutoff, distributions);
@@ -433,7 +441,8 @@ public class AdvanceLumpSumCalculation
         return bookings;
     }
 
-    private Distributions distributionsPerShare(List<Booking> bookings, NavigableMap<LocalDate, Long> holdings)
+    private Distributions distributionsPerShare(Security security, int year, LocalDate cutoff, List<Booking> bookings,
+                    NavigableMap<LocalDate, Long> holdings)
     {
         record DistributionDate(LocalDate date, boolean exDate)
         {
@@ -524,7 +533,61 @@ public class AdvanceLumpSumCalculation
             answer = answer.add(payment.amount().multiply(Values.Share.getBigDecimalFactor())
                             .divide(BigDecimal.valueOf(shares), MC));
         }
+
+        if (holdings != null)
+        {
+            for (var event : unbookedDistributions(security, year, cutoff, bookings, holdings))
+            {
+                var amount = event.getAmount();
+                var converted = convert(event.getPaymentDate(), amount.getCurrencyCode(), amount.getAmount(),
+                                Values.Amount.precision());
+                missingRates |= converted.isEmpty();
+                answer = answer.add(converted.orElse(BigDecimal.ZERO));
+            }
+        }
+
         return new Distributions(unresolved || missingRates ? BigDecimal.ZERO : answer, unresolved, missingRates);
+    }
+
+    private static List<DividendEvent> unbookedDistributions(Security security, int year, LocalDate cutoff,
+                    List<Booking> bookings, NavigableMap<LocalDate, Long> holdings)
+    {
+        var candidates = new HashMap<LocalDate, Optional<DividendEvent>>();
+        for (var event : security.getEvents())
+        {
+            if (!(event instanceof DividendEvent dividend) || dividend.getDate() == null
+                            || dividend.getPaymentDate() == null || dividend.getAmount() == null
+                            || dividend.getAmount().getAmount() <= 0)
+                continue;
+
+            var exDate = dividend.getDate();
+            var paymentDate = dividend.getPaymentDate();
+            if (paymentDate.getYear() != year || paymentDate.isAfter(cutoff) || exDate.isAfter(paymentDate))
+                continue;
+
+            var holding = holdings.lowerEntry(exDate);
+            if (holding != null && holding.getValue() != 0)
+                continue;
+
+            // Count identical source entries once, but skip conflicting entries for the same ex-date.
+            candidates.merge(exDate, Optional.of(dividend), (a, b) -> a.filter(
+                            d -> d.getPaymentDate().equals(paymentDate) && d.getAmount().equals(dividend.getAmount())));
+        }
+
+        return candidates.values().stream().flatMap(Optional::stream)
+                        .filter(event -> bookings.stream().map(Booking::transaction)
+                                        .filter(tx -> !tx.getGrossValue().isZero())
+                                        .noneMatch(tx -> couldMatch(event, tx)))
+                        .toList();
+    }
+
+    private static boolean couldMatch(DividendEvent event, AccountTransaction booking)
+    {
+        if (booking.getExDate() != null)
+            return event.getDate().equals(booking.getExDate().toLocalDate());
+
+        return Math.abs(ChronoUnit.DAYS.between(event.getPaymentDate(), booking.getDateTime().toLocalDate()))
+                        <= AMBIGUOUS_PAYMENT_WINDOW_DAYS;
     }
 
     private static Quote toQuote(String currencyCode, BigDecimal value)

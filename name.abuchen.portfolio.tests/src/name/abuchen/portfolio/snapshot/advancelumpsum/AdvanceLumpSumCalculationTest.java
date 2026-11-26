@@ -24,6 +24,7 @@ import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransferEntry;
 import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.model.SecurityEvent.DividendEvent;
 import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.money.CurrencyConverterImpl;
 import name.abuchen.portfolio.money.CurrencyUnit;
@@ -131,6 +132,40 @@ public class AdvanceLumpSumCalculationTest
 
         assertThat(item.distributionsPerShare().getAmount(), is(Values.Quote.factorize(1)));
         assertThat(item.advanceLumpSum(), is(euro(7.85)));
+    }
+
+    @Test
+    public void testLocalDistributionBeforePurchaseReducesAdvanceLumpSumOnce()
+    {
+        var fund = fund(0.3, 110);
+        var exDate = LocalDate.parse("2023-02-13");
+        var paymentDate = LocalDate.parse("2023-02-15");
+        fund.addEvent(new DividendEvent(exDate, paymentDate, euro(1), "first"));
+        fund.addEvent(new DividendEvent(exDate, paymentDate, euro(1), "second"));
+        fund.addEvent(new DividendEvent(LocalDate.parse("2023-12-29"), LocalDate.parse("2024-01-03"), euro(2),
+                        "first"));
+        new PortfolioBuilder(account).buy(fund, "2023-07-01", sharesOf(10), amountOf(1000)).addTo(client);
+
+        var item = calculate2023().items().get(0);
+
+        assertThat(item.distributionsPerShare().getAmount(), is(Values.Quote.factorize(1)));
+        assertThat(item.advanceLumpSum(), is(euro(3.93)));
+    }
+
+    @Test
+    public void testLocalDistributionNearBookingWithoutExDateIsNotAdded()
+    {
+        var fund = fund(0.3, 110);
+        fund.addEvent(new DividendEvent(LocalDate.parse("2023-02-13"), LocalDate.parse("2023-02-15"), euro(1),
+                        "first"));
+        var broker = new AccountBuilder().dividend("2023-02-22", amountOf(10), fund).addTo(client);
+        broker.getTransactions().get(0).setShares(sharesOf(10));
+        new PortfolioBuilder(broker).buy(fund, "2023-07-01", sharesOf(10), amountOf(1000)).addTo(client);
+
+        var item = calculate2023().items().get(0);
+
+        assertThat(item.distributionsPerShare().getAmount(), is(Values.Quote.factorize(1)));
+        assertThat(item.advanceLumpSum(), is(euro(3.93)));
     }
 
     @Test
