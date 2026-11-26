@@ -9,6 +9,7 @@ import static org.hamcrest.Matchers.is;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Locale;
 import java.util.Map;
 
 import org.junit.Before;
@@ -44,7 +45,16 @@ public class AdvanceLumpSumCalculationTest
     @Before
     public void setUp()
     {
-        client = new Client();
+        var defaultLocale = Locale.getDefault();
+        try
+        {
+            Locale.setDefault(Locale.GERMANY);
+            client = new Client();
+        }
+        finally
+        {
+            Locale.setDefault(defaultLocale);
+        }
         account = new AccountBuilder().addTo(client);
     }
 

@@ -1,12 +1,15 @@
 package name.abuchen.portfolio.model;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.EnumSet;
+import java.util.Locale;
+import java.util.Map;
 
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.junit.Rule;
@@ -212,7 +215,7 @@ public class ClientFactoryTest
     @Test
     public void testMigrationAddsPartialExemptionAttribute() throws IOException
     {
-        var client = loadClientWithVersion(70, "<attributeTypes/>");
+        var client = loadClientWithVersion(70, "<attributeTypes/>", Locale.GERMANY);
 
         var attribute = client.getSettings().getOptionalPartialExemptionAttributeType();
         assertTrue("partial exemption attribute must exist for files of version 70", attribute.isPresent());
@@ -223,6 +226,35 @@ public class ClientFactoryTest
     }
 
     @Test
+    public void testMigrationSkipsPartialExemptionAttributeOutsideGermany() throws IOException
+    {
+        var client = loadClientWithVersion(70, "<attributeTypes/>", Locale.forLanguageTag("de-AT"));
+
+        assertFalse(client.getSettings().getOptionalPartialExemptionAttributeType().isPresent());
+        assertEquals(Client.CURRENT_VERSION, client.getVersion());
+    }
+
+    @Test
+    public void testPartialExemptionDefaultFollowsGermanLocale()
+    {
+        var defaultLocale = Locale.getDefault();
+        try
+        {
+            var expectations = Map.of(Locale.GERMANY, true, Locale.GERMAN, true, Locale.forLanguageTag("en-DE"), true,
+                            Locale.forLanguageTag("de-AT"), false, Locale.US, false);
+            expectations.forEach((locale, expected) -> {
+                Locale.setDefault(locale);
+                assertEquals(locale.toLanguageTag(), expected.booleanValue(),
+                                new Client().getSettings().getOptionalPartialExemptionAttributeType().isPresent());
+            });
+        }
+        finally
+        {
+            Locale.setDefault(defaultLocale);
+        }
+    }
+
+    @Test
     public void testMigrationDoesNotDuplicateExistingPartialExemptionAttribute() throws IOException
     {
         var client = loadClientWithVersion(70, "<attributeTypes><attribute-type>"
@@ -230,12 +262,12 @@ public class ClientFactoryTest
                         + "<target>name.abuchen.portfolio.model.Security</target>"
                         + "<type>java.lang.Double</type>"
                         + "<converterClass>name.abuchen.portfolio.model.AttributeType$PercentConverter</converterClass>"
-                        + "</attribute-type></attributeTypes>");
+                        + "</attribute-type></attributeTypes>", Locale.GERMANY);
 
         assertEquals(1L, countAttributes(client, ClientSettings.PARTIAL_EXEMPTION_ATTRIBUTE_ID));
     }
 
-    private Client loadClientWithVersion(int version, String settings) throws IOException
+    private Client loadClientWithVersion(int version, String settings, Locale locale) throws IOException
     {
         var xmlFile = tempFolder.newFile("old" + version + ".portfolio");
 
@@ -246,7 +278,16 @@ public class ClientFactoryTest
                                             .getBytes(StandardCharsets.UTF_8));
         }
 
-        return ClientFactory.load(xmlFile, null, new NullProgressMonitor());
+        var defaultLocale = Locale.getDefault();
+        try
+        {
+            Locale.setDefault(locale);
+            return ClientFactory.load(xmlFile, null, new NullProgressMonitor());
+        }
+        finally
+        {
+            Locale.setDefault(defaultLocale);
+        }
     }
 
     private long countAttributes(Client client, String id)

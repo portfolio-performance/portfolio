@@ -27,6 +27,7 @@ import org.eclipse.swt.widgets.Display;
 
 import name.abuchen.portfolio.bootstrap.BundleMessages;
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.PartialExemption;
 import name.abuchen.portfolio.model.Taxonomy;
 import name.abuchen.portfolio.model.TaxonomyJSONExporter;
 import name.abuchen.portfolio.model.TaxonomyTemplate;
@@ -506,7 +507,7 @@ public final class Navigation
         performance.add(new Item(Messages.LabelPayments, PaymentsView.class, true));
         performance.add(new Item(Messages.LabelTrades, TradeDetailsView.class));
 
-        if (AdvanceLumpSumView.isRelevantFor(Locale.getDefault()))
+        if (PartialExemption.isRelevantFor(Locale.getDefault()))
             performance.add(new Item(Messages.LabelAdvanceLumpSum, AdvanceLumpSumView.class));
     }
 

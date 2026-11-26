@@ -1,5 +1,6 @@
 package name.abuchen.portfolio.model;
 
+import java.util.Locale;
 import java.util.Optional;
 
 import name.abuchen.portfolio.Messages;
@@ -32,6 +33,20 @@ public enum PartialExemption
     public double getValue()
     {
         return value;
+    }
+
+    /**
+     * German language without a country also counts as Germany because the
+     * language preference offers a plain German entry.
+     */
+    public static boolean isRelevantFor(Locale locale)
+    {
+        if (locale == null)
+            return false;
+
+        var country = locale.getCountry();
+        return country.isEmpty() ? Locale.GERMAN.getLanguage().equals(locale.getLanguage())
+                        : Locale.GERMANY.getCountry().equals(country);
     }
 
     /**

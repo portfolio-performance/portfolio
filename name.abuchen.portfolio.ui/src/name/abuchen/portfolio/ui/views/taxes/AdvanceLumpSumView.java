@@ -9,7 +9,6 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.StringJoiner;
@@ -167,22 +166,6 @@ public class AdvanceLumpSumView extends AbstractFinanceView
     protected String getDefaultTitle()
     {
         return Messages.LabelAdvanceLumpSum;
-    }
-
-    /**
-     * The advance lump sum is a German tax. The report is therefore only
-     * offered for a German locale. An explicit German language without a
-     * country counts as Germany because the language preference preselects the
-     * plain language entry.
-     */
-    public static boolean isRelevantFor(Locale locale)
-    {
-        if (locale == null)
-            return false;
-
-        var country = locale.getCountry();
-        return country.isEmpty() ? Locale.GERMAN.getLanguage().equals(locale.getLanguage())
-                        : "DE".equals(country); //$NON-NLS-1$
     }
 
     @Override

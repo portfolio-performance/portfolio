@@ -120,18 +120,6 @@ public class AdvanceLumpSumViewTest
     }
 
     @Test
-    public void testReportIsRelevantForGermanLocales()
-    {
-        assertThat(AdvanceLumpSumView.isRelevantFor(Locale.GERMANY), is(true));
-        // language preference preselects the plain language entry
-        assertThat(AdvanceLumpSumView.isRelevantFor(Locale.GERMAN), is(true));
-        // the tax exists only in Germany
-        assertThat(AdvanceLumpSumView.isRelevantFor(Locale.forLanguageTag("de-AT")), is(false));
-        assertThat(AdvanceLumpSumView.isRelevantFor(Locale.US), is(false));
-        assertThat(AdvanceLumpSumView.isRelevantFor(null), is(false));
-    }
-
-    @Test
     public void testParseAmount()
     {
         assertThat(AdvanceLumpSumView.parseAmount("1.000,00"), is(Values.Amount.factorize(1000)));

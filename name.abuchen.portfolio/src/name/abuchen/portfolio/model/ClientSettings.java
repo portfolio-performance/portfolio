@@ -3,6 +3,7 @@ package name.abuchen.portfolio.model;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -152,14 +153,20 @@ public class ClientSettings
         managementFee.setConverter(PercentConverter.class);
         attributeTypes.add(managementFee);
 
-        attributeTypes.add(createPartialExemptionAttributeType());
+        addPartialExemptionAttributeIfRelevant();
+    }
+
+    /* package */ void addPartialExemptionAttributeIfRelevant()
+    {
+        if (PartialExemption.isRelevantFor(Locale.getDefault()) && getOptionalPartialExemptionAttributeType().isEmpty())
+            attributeTypes.add(createPartialExemptionAttributeType());
     }
 
     /**
      * Creates the attribute type holding the partial exemption
      * (Teilfreistellung) of an investment fund according to § 20 InvStG.
      */
-    /* package */ static AttributeType createPartialExemptionAttributeType()
+    private static AttributeType createPartialExemptionAttributeType()
     {
         AttributeType partialExemption = new AttributeType(PARTIAL_EXEMPTION_ATTRIBUTE_ID);
         partialExemption.setName(Messages.AttributesPartialExemptionName);

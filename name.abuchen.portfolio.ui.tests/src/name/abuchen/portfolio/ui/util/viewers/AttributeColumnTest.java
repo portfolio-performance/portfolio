@@ -13,6 +13,7 @@ import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.junit.Test;
@@ -158,7 +159,17 @@ public class AttributeColumnTest
     @Test
     public void testPartialExemptionIsEditedBySelection()
     {
-        var client = new Client();
+        Client client;
+        var defaultLocale = Locale.getDefault();
+        try
+        {
+            Locale.setDefault(Locale.GERMANY);
+            client = new Client();
+        }
+        finally
+        {
+            Locale.setDefault(defaultLocale);
+        }
         var attribute = client.getSettings().getOptionalPartialExemptionAttributeType().orElseThrow();
 
         var column = AttributeColumn.createFor(client, Security.class)
