@@ -1,0 +1,90 @@
+PDFBox Version: 3.0.8
+Portfolio Performance Version: 0.90.0
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+Wertpapierabrechnung 
+Ausschüttung 
+Auftragsnummer 
+OgbtsxP MkitQ 203n8904-a515-4500-a2e5-5446BNC0hQ60 
+Xxxxx-Xxxx-Str. 10 
+78736 IofihCCcKMy 
+Deutschland Depotinhaber Depotnummer 
+AtyQtHX vaiQr 589415257-1 
+Sie haben eine Ausschüttung erhalten Berlin, 25.11.2026 
+Wertpapier ISIN 
+AEFS-A.EUR.STR.I.RNXTEOD LU3227875377 
+Positionsgröße / Anteile Auszahlung pro Stück Gesamteinnahme 
+685,05 Stück 0,1526 EUR 104,53 EUR 
+Dividende: 104,53 EUR 
+Gezahlte ausländische Quellensteuer (0 %): 0,00 EUR 
+Anrechenbare ausländische Quellensteuer: 0,00 EUR 
+Zwischensumme: 104,53 EUR 
+Gesamteinnahme: 104,53 EUR 
+Reduktion der Bemessungsgrundlage durch ausländische Quellensteuer: 0,00 EUR 
+Teilfreistellung Investmentfonds (0 %): 0,00 EUR 
+Steuerliche Bemessungsgrundlage: 104,53 EUR 
+Einbehaltene deutsche Kapitalertragsteuer: 26,13 EUR 
+Einbehaltener deutscher Solidaritätszuschlag: 1,43 EUR 
+Einbehaltene deutsche Kirchensteuer: 0,00 EUR 
+Gesamtbetrag der einbehaltenen Steuern: 27,56 EUR 
+Wertstellung Betrag zu Ihren Gunsten 
+25.11.2026 76,97 EUR 
+Der Betrag wird über das mit dem Depot 819033379 verknüpfte Verrechnungskonto abgerechnet. 
+Dokument ID: 7004ad6f-14fb-8Dj3-9c6f-l1t2cZW57558
+Upvest Securities GmbH, Prenzlauer Allee 242-247, 10405 Berlin, Geschäftsführer: Martin Kassing, Tobias Auferoth, Sitz der Gesellschaft: Berlin; Amtsgericht
+Charlottenburg: HRB 232445 B, USt-ID: DE346524922 Aufsichtsbehörde: Bundesanstalt für Finanzdienstleistungsaufsicht, BaFin
+Die folgende Tabelle zeigt die Auswirkungen dieses Geschäfts auf Ihre Verlustverrechnungstöpfe und den 
+Sparerpauschbetrag. 
+Vor dem Geschäft Veränderung Nach dem Geschäft 
+Verlusttopf "Aktien" 0,00 EUR 0,00 EUR 0,00 EUR 
+Verlusttopf "Sonstige" 0,00 EUR 0,00 EUR 0,00 EUR 
+Anrechenbare Quellensteuer 0,00 EUR 0,00 EUR 0,00 EUR 
+Freistellungsauftrag 0,00 EUR 0,00 EUR 0,00 EUR 
+Dokument ID: 7004ad6f-14fb-3Sw6-9c6f-h5L0xJS89442
+Upvest Securities GmbH, Prenzlauer Allee 242-247, 10405 Berlin, Geschäftsführer: Martin Kassing, Tobias Auferoth, Sitz der Gesellschaft: Berlin; Amtsgericht
+Charlottenburg: HRB 232445 B, USt-ID: DE346524922 Aufsichtsbehörde: Bundesanstalt für Finanzdienstleistungsaufsicht, BaFin
+Securities settlement 
+Distribution 
+Order number 
+YmEGQBK EUKqK 728l6994-a515-0003-a2e5-3846ccc2da07 
+Xxxxx-Xxxx-Str. 10 
+09845 dJBQtmyPnNi 
+Germany Securities account 
+Securities account holder 
+number 
+gBdtYoS smRSq 
+135894976-1 
+You have received a dividend Berlin, 25.11.2026 
+Security ISIN 
+AEFS-A.EUR.STR.I.RNXTEOD LU3227875377 
+Position size/units Payment per unit Total income 
+685.05 unit(s) 0.1526 EUR 104.53 EUR 
+Dividend: 104.53 EUR 
+International withholding tax (0%): 0.00 EUR 
+Chargeable withholding tax: 0.00 EUR 
+Subtotal: 104.53 EUR 
+Total income: 104.53 EUR 
+Reduction of the assessment base by foreign withholding tax: 0.00 EUR 
+Partial exemption investment funds (0%): 0.00 EUR 
+Tax assessment base: 104.53 EUR 
+German withholding tax: 26.13 EUR 
+German solidarity surcharge: 1.43 EUR 
+Church tax: 0.00 EUR 
+Total amount of withheld taxes: 27.56 EUR 
+Value date Amount credited 
+25.11.2026 76.97 EUR 
+The amount will be settled with the clearing account linked to securities account 753884126. 
+Document ID: 7004ad6f-14fb-8Fi3-9c6f-D2R4OlQ18583
+Upvest Securities GmbH, Prenzlauer Allee 242-247, 10405 Berlin; Managing Directors: Martin Kassing, Tobias Auferoth; Company's Head Office: Berlin; Charlottenburg
+District Court: HRB 232445 B, VAT-ID: DE346524922; Supervisory Authority: Bundesanstalt für Finanzdienstleistungsaufsicht (BaFin) [German Federal Financial
+Supervisory Authority].
+The following table shows the impact of this transaction on your loss offset accounts and saver's allowance. 
+Before the transaction Change After the transaction 
+Loss balance "Equities" 0.00 EUR 0.00 EUR 0.00 EUR 
+Loss balance "Other" 0.00 EUR 0.00 EUR 0.00 EUR 
+Creditable withholding tax 0.00 EUR 0.00 EUR 0.00 EUR 
+Exemption order 0.00 EUR 0.00 EUR 0.00 EUR 
+Document ID: 7004ad6f-14fb-2kz2-9c6f-t7w9dPJ90997
+Upvest Securities GmbH, Prenzlauer Allee 242-247, 10405 Berlin; Managing Directors: Martin Kassing, Tobias Auferoth; Company's Head Office: Berlin; Charlottenburg
+District Court: HRB 232445 B, VAT-ID: DE346524922; Supervisory Authority: Bundesanstalt für Finanzdienstleistungsaufsicht (BaFin) [German Federal Financial
+Supervisory Authority].
