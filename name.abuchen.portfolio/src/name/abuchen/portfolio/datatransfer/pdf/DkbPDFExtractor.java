@@ -65,6 +65,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
         addDividendTransaction();
         addTransferOutTransaction();
         addAdvanceTaxTransaction();
+        addWithholdingTaxCorporateActionTransaction();
         addBuyTransactionFundsSavingsPlan();
         addAccountStatementTransaction_Format01();
         addAccountStatementTransaction_Format02();
@@ -632,6 +633,100 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
 
                             return new TransactionItem(t);
                         });
+    }
+
+    private void addWithholdingTaxCorporateActionTransaction()
+    {
+        final var type = new DocumentType("Quellensteuerbelastung in Folge einer Kapitalmaßnahme", //
+                        documentContext -> documentContext //
+                                        // @formatter:off
+                                        // Nominale Wertpapierbezeichnung ISIN (WKN)
+                                        // Stück 350 LOUIS HACHETTE GROUP FR001400TL40 (A40V35)
+                                        // ACTIONS PORT. EO -,20
+                                        // @formatter:on
+                                        .section("shares", "name", "isin", "wkn", "nameContinued") //
+                                        .find("Nominale Wertpapierbezeichnung ISIN \\(WKN\\)") //
+                                        .match("^Stück (?<shares>[\\.,\\d]+) (?<name>.*) (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) \\((?<wkn>[A-Z0-9]{6})\\)$") //
+                                        .match("^(?<nameContinued>.*)$") //
+                                        .assign((ctx, v) -> {
+                                            ctx.put("shares", v.get("shares"));
+                                            ctx.put("name", trim(v.get("name")));
+                                            ctx.put("isin", v.get("isin"));
+                                            ctx.put("wkn", v.get("wkn"));
+                                            ctx.put("nameContinued", trim(v.get("nameContinued")));
+                                        })
+
+                                        // @formatter:off
+                                        // Einbehaltene Quellensteuer 25,00% auf 259,00 EUR 64,75- EUR
+                                        // @formatter:on
+                                        .section("currency") //
+                                        .match("^Einbehaltene Quellensteuer [\\.,\\d]+% auf [\\.,\\d]+ (?<currency>[A-Z]{3}) [\\.,\\d]+\\- [A-Z]{3}$") //
+                                        .assign((ctx, v) -> ctx.put("currency", asCurrencyCode(v.get("currency")))));
+
+        this.addDocumentTyp(type);
+
+        var taxesBlock = new Block("^Einbehaltene Quellensteuer .*$");
+        type.addBlock(taxesBlock);
+        taxesBlock.set(new Transaction<AccountTransaction>()
+
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.TAXES))
+
+                        // @formatter:off
+                        // Einbehaltene Quellensteuer 25,00% auf 259,00 EUR 64,75- EUR
+                        // @formatter:on
+                        .section("note") //
+                        .documentContext("shares", "name", "isin", "wkn", "nameContinued", "currency") //
+                        .match("^(?<note>Einbehaltene Quellensteuer [\\.,\\d]+% auf [\\.,\\d]+ [A-Z]{3}) [\\.,\\d]+\\- [A-Z]{3}$") //
+                        .assign((t, v) -> {
+                            t.setShares(asShares(v.get("shares")));
+                            t.setSecurity(getOrCreateSecurity(v));
+                            t.setNote(trim(v.get("note")));
+                        })
+
+                        // @formatter:off
+                        // Ausmachender Betrag 64,75- EUR
+                        // Den Gegenwert buchen wir mit Valuta 27.12.2024 zu Lasten des Kontos 2361177033
+                        // @formatter:on
+                        .section("amount", "currency", "date") //
+                        .match("^Ausmachender Betrag (?<amount>[\\.,\\d]+)\\- (?<currency>[A-Z]{3})$") //
+                        .match("^Den Gegenwert buchen wir mit Valuta (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) zu Lasten .*$") //
+                        .assign((t, v) -> {
+                            t.setDateTime(asDate(v.get("date")));
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                            t.setAmount(asAmount(v.get("amount")));
+                        })
+
+                        .wrap(TransactionItem::new));
+
+        var taxRefundBlock = new Block("^Steuerausgleich [\\.,\\d]+ [A-Z]{3}$");
+        type.addBlock(taxRefundBlock);
+        taxRefundBlock.set(new Transaction<AccountTransaction>()
+
+                        .subject(() -> new AccountTransaction(AccountTransaction.Type.TAX_REFUND))
+
+                        // @formatter:off
+                        // Steuerausgleich 14,02 EUR
+                        // @formatter:on
+                        .section("amount", "currency") //
+                        .match("^Steuerausgleich (?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
+                        .assign((t, v) -> {
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                            t.setAmount(asAmount(v.get("amount")));
+                        })
+
+                        // @formatter:off
+                        // Den ausmachenden Betrag buchen wir mit Valuta 14.01.2025 zu Gunsten des Kontos 1702408062
+                        // @formatter:on
+                        .section("date") //
+                        .documentContext("shares", "name", "isin", "wkn", "nameContinued", "currency") //
+                        .match("^Den ausmachenden Betrag buchen wir mit Valuta (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) zu Gunsten .*$") //
+                        .assign((t, v) -> {
+                            t.setDateTime(asDate(v.get("date")));
+                            t.setShares(asShares(v.get("shares")));
+                            t.setSecurity(getOrCreateSecurity(v));
+                        })
+
+                        .wrap(TransactionItem::new));
     }
 
     private void addBuyTransactionFundsSavingsPlan()

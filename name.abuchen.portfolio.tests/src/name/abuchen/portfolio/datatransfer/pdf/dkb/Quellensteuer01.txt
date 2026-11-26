@@ -1,0 +1,67 @@
+PDFBox Version: 3.0.8
+Portfolio Performance Version: 0.90.0
+System: macosx | aarch64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+10919 Berlin Seite 1 von 2
+Depotnummer 194220915
+Kundennummer 8116334267
+XZPHJq IfgQPXwu pTmbpy
+Belegnummer 64588595
+wlQW Datum 14.01.2025
+TEOQUA exdDGTOr DmRYhK Kapitalmaßnahme FR00001277714700
+ih moLzGjcoGKb 0
+43427 hZucHl
+Quellensteuerbelastung in Folge einer Kapitalmaßnahme
+Nominale Wertpapierbezeichnung ISIN (WKN)
+Stück 350 LOUIS HACHETTE GROUP FR001400TL40 (A40V35)
+ACTIONS PORT. EO -,20
+Hyyt IjhzSLD qaiI uTMkfR,
+für den obigen Depotbestand aus Buchung vom 18.12.2024 mit Belegnummer 67241973 hat die Lagerstelle für die
+Quellensteuerberechnung einen Betrag von 0,74 EUR pro Stück zugrunde gelegt.
+Einbehaltene Quellensteuer 25,00% auf 259,00 EUR 64,75- EUR
+Davon eingebuchte anrechenbare Quellensteuer 12,80% 33,15 EUR
+Ausmachender Betrag 64,75- EUR
+Den Gegenwert buchen wir mit Valuta 27.12.2024 zu Lasten des Kontos 2361177033
+(IBAN fu42 0726 1274 5977 9322 14), BLZ 488 253 50 (BIC NyzeMNp5130).
+Im Rahmen der gebuchten Entflechtung (Spin off) der LOUIS HACHETTE GROUP belasten wir gemäß der Vorgehensweise
+unserer Lagerstelle 25% Quellensteuer auf den quellensteuerpflichtigen Anteil. Dieser entspricht EUR 0,74 je zugebuchter
+LOUIS HACHETTE GROUP Aktie (ISIN FR001400TL40/WKN A40V35). Bitte beachten Sie, dass von der Kursbasis EUR
+1,20 (fiskaler Referenzpreis) EUR 0,74 je Aktie quellensteuerpflichtig sind und der quellensteuerfreie Anteil EUR 0,46 je
+Aktie beträgt.
+12,2% Quellensteuer sind rückforderbar.
+Ihre Fragen beantworten wir gern.
+Mit freundlichen Grüßen
+Deutsche Kreditbank AG
+Ermittlung steuerrelevanter Erträge auf Folgeseite.
+1283.01167539.00086505KM70
+Seite 2 von 2
+Depotnummer 436615596
+Kundennummer 3915810067
+Belegnummer 99026228
+Datum 14.01.2025
+Veräußerung infolge von Kapitalmaßnahme - Kurswert 0,00 EUR
+steuerrelevanter Bewertungskurs liegt nicht vor
+Steuerliche Informationen zur angerechneten Quellensteuer (Geschäftsvorfallnummer 86119827114)
+Steuerliche Ausgleichsrechnung (Verrechnung von Verrechnungstopfguthaben mit Steuern)
+Anrechenbare ausländische Quellensteuer 12,53- EUR
+Verrechnete anrechenbare ausländische Quellensteuer (Verhältnis 100/25) 50,12- EUR
+Berechnungsgrundlage für die Kapitalertragsteuer 50,10- EUR
+Kapitalertragsteuer 24,45 % auf 50,10- EUR 12,25 EUR
+Solidaritätszuschlag 5,50 % auf 12,25- EUR 0,67 EUR
+Kirchensteuer 9,00 % auf 12,25- EUR 1,10 EUR
+Steuerausgleich 14,02 EUR
+Den ausmachenden Betrag buchen wir mit Valuta 14.01.2025 zu Gunsten des Kontos 1702408062
+(IBAN hw46 3238 8607 1344 1909 97), BLZ 15911336. (BIC xYNxUqL2414)
+Nachrichtlich die Übersicht Ihrer Verrechnungs- und Steuertopfsalden zum Zeitpunkt der Erstellung der Abrechnung.
+Verlustverrechnungstöpfe Berechnungsgrundlage
+der gezahlten Steuern
+Euro Aktien Sonstige Sparer- anrechenbare Aktien und Sonstige
+Pauschbetrag Quellensteuer
+Vorher 0,00 0,00 0,00 0,00 50,10
+Anrechenbare 0,00 0,00 0,00 33,15 0,00
+Quellensteuer aus
+Kapitalmaßnahmen
+Steuerausgleich 0,00 0,00 0,00 12,53- 50,10-
+Nachher 0,00 0,00 0,00 20,62 0,00
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+0987.03457850.0095776KM70
