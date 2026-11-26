@@ -78,8 +78,8 @@ public class PaymentsView extends AbstractFinanceView
 
         // setup filter
         clientFilterMenu = new ClientFilterMenu(client, preferences, filter -> {
-            setFilteredClientToModel(filter);
             viewInput.setClientFilterId(clientFilterMenu.getSelectedItem().getId());
+            updateFilteredClient();
             model.recalculate();
         });
 
@@ -101,18 +101,53 @@ public class PaymentsView extends AbstractFinanceView
         });
     }
 
-    private void setFilteredClientToModel(ClientFilter filter)
+    private void setFilteredClient(Client filteredClient)
     {
-        Client filteredClient = filter.filter(client);
         model.setFilteredClient(filteredClient);
         setToContext(UIConstants.Context.FILTERED_CLIENT, filteredClient);
     }
 
+    private void setFilteredClientToModel(ClientFilter filter)
+    {
+        setFilteredClient(filter.filter(client));
+    }
+
     private void loadSavedFilterIdAndSetFilteredClientToModel()
     {
-        viewInput.getClientFilterId()
-                        .ifPresent(clientFilterId -> clientFilterMenu.selectItemFromClientFilterId(clientFilterId)
-                                        .ifPresent(item -> setFilteredClientToModel(item.getFilter())));
+        var selectedItem = viewInput.getClientFilterId().filter(id -> !id.isEmpty())
+                        .flatMap(clientFilterMenu::selectItemFromClientFilterId);
+
+        // without a widget filter the dashboard filter determines the view
+        if (selectedItem.isEmpty())
+            viewInput.getDashboardFilterId().filter(id -> !id.isEmpty())
+                            .flatMap(clientFilterMenu::selectItemFromClientFilterId);
+
+        updateFilteredClient();
+    }
+
+    /**
+     * Applies the widget filter on top of the dashboard filter, if both are
+     * active. The dashboard filter remains the outer boundary, so the drill-down
+     * includes only accounts and portfolios selected in both places.
+     */
+    private void updateFilteredClient()
+    {
+        ClientFilterMenu.Item widgetItem = clientFilterMenu.getSelectedItem();
+
+        ClientFilterMenu.Item dashboardItem = viewInput.getDashboardFilterId().filter(id -> !id.isEmpty())
+                        .filter(id -> !id.equals(widgetItem.getId()))
+                        .flatMap(id -> clientFilterMenu.getAllItems().filter(item -> item.getId().equals(id)).findAny())
+                        .orElse(null);
+
+        if (dashboardItem == null)
+        {
+            setFilteredClientToModel(widgetItem.getFilter());
+        }
+        else
+        {
+            Client dashboardFilteredClient = dashboardItem.getFilter().filter(client);
+            setFilteredClient(ClientFilterMenu.applyFilter(widgetItem.getFilter(), dashboardFilteredClient));
+        }
     }
 
     @Override

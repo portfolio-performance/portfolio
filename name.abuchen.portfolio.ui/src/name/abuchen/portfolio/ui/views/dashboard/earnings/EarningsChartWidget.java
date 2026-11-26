@@ -125,14 +125,14 @@ public class EarningsChartWidget extends WidgetDelegate<PaymentsViewModel>
                 int tab = chartBuilder.getTabIndex();
                 int startYear = get(StartYearConfig.class).getStartYear();
                 String filterIdent = get(ClientFilterConfig.class).getSelectedItem().getId();
-                if (filterIdent.isEmpty())
-                    filterIdent = getDashboardData().getClientFilterId();
                 EarningType earningsType = get(EarningTypeConfig.class).getValue();
                 PaymentsViewModel.Mode mode = earningsType.getPaymentsViewModelMode();
                 GrossNetType grossNetType = get(GrossNetTypeConfig.class).getValue();
 
-                part.activateView(PaymentsView.class, new PaymentsViewInput(tab, startYear, Optional.of(filterIdent),
-                                mode, grossNetType == GrossNetType.GROSS, false, CostMethod.FIFO));
+                var viewInput = new PaymentsViewInput(tab, startYear, Optional.of(filterIdent), mode,
+                                grossNetType == GrossNetType.GROSS, false, CostMethod.FIFO);
+                viewInput.setDashboardFilterId(getDashboardData().getClientFilterId());
+                part.activateView(PaymentsView.class, viewInput);
             }
         });
 

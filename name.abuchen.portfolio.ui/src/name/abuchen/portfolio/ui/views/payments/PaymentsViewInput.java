@@ -35,6 +35,7 @@ public class PaymentsViewInput
     private int tab;
     private int year;
     private Optional<String> clientFilterId;
+    private Optional<String> dashboardFilterId = Optional.empty();
     private PaymentsViewModel.Mode mode;
     private boolean useGrossValue;
     private boolean useConsolidateRetired;
@@ -80,6 +81,21 @@ public class PaymentsViewInput
     public void setClientFilterId(String clientFilterId)
     {
         this.clientFilterId = Optional.ofNullable(clientFilterId);
+    }
+
+    /**
+     * Returns the filter selected in the dashboard, if the view was opened from
+     * a dashboard widget. The dashboard filter is the outer boundary and is
+     * composed with the widget's own filter.
+     */
+    public Optional<String> getDashboardFilterId()
+    {
+        return dashboardFilterId;
+    }
+
+    public void setDashboardFilterId(String dashboardFilterId)
+    {
+        this.dashboardFilterId = Optional.ofNullable(dashboardFilterId);
     }
 
     public PaymentsViewModel.Mode getMode()
