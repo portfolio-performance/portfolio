@@ -123,12 +123,15 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:off
                                         // Handelstag 05.05.2021 EUR 498,20-
                                         // Handelszeit 09:04
+                                        //
+                                        // Handelstag 07.03.201 1 Kurswert                    EUR 3.943,15-
+                                        // Handelszeit 12:10 Orderentgelt                EUR 15,76-
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("date", "time") //
-                                                        .match("^Handelstag (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
+                                                        .match("^Handelstag (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{3}[\\s]?[\\d]).*$") //
                                                         .match("^Handelszeit (?<time>[\\d]{2}:[\\d]{2}).*$") //
-                                                        .assign((t, v) -> t.setDate(asDate(v.get("date"), v.get("time")))),
+                                                        .assign((t, v) -> t.setDate(asDate(stripBlanks(v.get("date")), v.get("time")))),
                                         // @formatter:off
                                         // Schlusstag 05.11.2021
                                         // @formatter:on
@@ -166,10 +169,13 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:off
                                         // Wert Konto-Nr. Betrag zu Ihren Lasten
                                         // 01.10.2014 10/0000/000 EUR 1.930,17
+                                        //
+                                        // Wert  Konto-Nr. Betrag zu Ihren Lasten
+                                        // 09.03.2011 32/7781/462 EUR 3.959,51
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("currency", "amount") //
-                                                        .find("Wert Konto\\-Nr\\. Betrag zu Ihren (Gunsten|Lasten).*") //
+                                                        .find("Wert[\\s]{1,}Konto\\-Nr\\. Betrag zu Ihren (Gunsten|Lasten).*") //
                                                         .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\/\\d]+ (?<currency>[\\w]{3}) (?<amount>[\\.,\\d]+)$") //
                                                         .assign((t, v) -> {
                                                             t.setAmount(asAmount(v.get("amount")));

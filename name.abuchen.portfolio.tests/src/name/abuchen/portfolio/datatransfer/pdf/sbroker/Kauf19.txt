@@ -1,0 +1,50 @@
+PDFBox Version: 3.0.8
+Portfolio Performance Version: 0.90.0
+System: macosx | aarch64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+BELEGDRUCK=J
+ORIGINAL=1
+FAXVERSAND=N
+ EMAILVERSAND=N
+Wertpapierabrechnung DEPOTNUMMER=875/6932/647
+ DEPOTUNTERBEZEICHNUNG=
+VERSANDARTENSCHLUESSEL=0000
+Kauf ADRESSZEILE1=Frau
+Kommissionsgeschäft ADRESSZEILE2=jvuzzF JpRVtU
+ADRESSZEILE3=mr ieesfTXqsBT 2
+ADRESSZEILE4=58586 GUMQiM
+       ADRESSZEILE5=
+iPgz  Depot-Nr. Abrechnungs-Nr. ADRESSZEILE6=
+GDkHyM dvyMAo  100/2797/157 56742941 BELEGNUMMER=4227
+PJ eljZNmshQJo 3  qhqHAXDhDUpL=1
+43543 Ciznki  STEUERERSTATTUNG=N
+ 
+Depotinhaber
+DQbRvg VfpsLV
+  
+Wir haben für Sie gekauft Wiesbaden, 07.03.2011
+  
+Gattungsbezeichnung ISIN
+E.ON AG Namens-Aktien o.N. DE000ENAG999
+Nominal Kurs
+STK 170,000 EUR 23,1950
+  
+Handelstag 07.03.201 1 Kurswert                    EUR 3.943,15-
+Handelszeit 12:10 Orderentgelt                EUR 15,76-
+Börse Xetra/EDE Fremde Spesen               EUR 0,60-
+Verwahrart Girosammelverwahrung
+ 
+Wert  Konto-Nr. Betrag zu Ihren Lasten  
+09.03.2011 32/7781/462 EUR 3.959,51
+  
+ 
+ 
+Fremde Spesen beinhalten ggf. gesetzliche MwSt.
+Wir werden in Ihrem Depot wie angegeben buchen.
+ 
+Mit freundlichen Grüßen
+S Broker AG & Co. KG
+Dieser Beleg wird maschinell erstellt und daher nicht unterschrieben.
+           
+3.31/ABREABHNHANDKFDI/IwbPFZkf/224033/642771/385142
+            

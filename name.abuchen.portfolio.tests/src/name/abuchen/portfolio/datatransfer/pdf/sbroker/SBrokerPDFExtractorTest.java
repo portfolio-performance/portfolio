@@ -737,6 +737,40 @@ public class SBrokerPDFExtractorTest
     }
 
     @Test
+    public void testWertpapierKauf19()
+    {
+        var extractor = new SBrokerPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf19.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("DE000ENAG999"), hasWkn(null), hasTicker(null), //
+                        hasName("E.ON AG Namens-Aktien o.N."), //
+                        hasCurrencyCode("EUR"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2011-03-07T12:10"), hasShares(170.00), //
+                        hasSource("Kauf19.txt"), //
+                        hasNote("Abrechnungs-Nr. 56742941"), //
+                        hasAmount("EUR", 3959.51), hasGrossValue("EUR", 3943.15), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 15.76 + 0.60))));
+    }
+
+    @Test
     public void testWertpapierVerkauf01()
     {
         var extractor = new SBrokerPDFExtractor(new Client());
