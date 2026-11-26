@@ -1,0 +1,41 @@
+PDFBox Version: 3.0.8
+Portfolio Performance Version: 0.90.0
+System: macosx | aarch64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+BELEGDRUCK=J
+ORIGINAL=1
+FAXVERSAND=N
+Wertpapierabrechnung EMAILVERSAND=N
+DEPOTNUMMER=577/0570/503
+Kauf Limitauftrag DEPOTUNTERBEZEICHNUNG=
+Kommissionsgeschäft VERSANDARTENSCHLUESSEL=0000
+ADRESSZEILE1=pFUR
+ADRESSZEILE2=LpPaSZ aeGwpb
+ADRESSZEILE3=JT YnOTDfNPAyx 0
+Tdri        Depot-Nr. Abrechnungs-Nr. ADRESSZEILE4=49863 qDmKnx
+owqxBy hhmBmT 623/0294/247 21404248 ADRESSZEILE5=
+Ee QQNGjEvYfVC 8 ADRESSZEILE6=
+28254 qBsDhK BELEGNUMMER=6520
+SEITENNUMMER=1
+Depotinhaber STEUERERSTATTUNG=N
+uXLpOi LwkXzf
+Wiesbaden, 20.01.2014
+Wir haben für Sie gekauft
+Gattungsbezeichnung ISIN
+Sandvik AB Namn-Aktier o.N. SE0000667891
+Nominal Kurs
+STK 400,000 EUR 10,5500
+Handelstag 20.01.2014 Kurswert EUR 4.220,00-
+Handelszeit 09:38 Orderentgelt EUR 16,45-
+Börse Quotrix Fremde Spesen EUR 2,08-
+Verwahrart Wertpapierrechnung
+Lagerland Schweden
+Wert Konto-Nr. Betrag zu Ihren Lasten
+22.01.2014 88/0352/460 EUR 4.238,53
+Fremde Spesen beinhalten ggf. gesetzliche MwSt.
+Mit freundlichen Grüßen
+S Broker AG & Co. KG
+Dieser Beleg wird maschinell erstellt und daher nicht unterschrieben.
+           
+3.18/ABREABHNHANDKFDI/GAAASAFG/006520/210114/005645
+            
