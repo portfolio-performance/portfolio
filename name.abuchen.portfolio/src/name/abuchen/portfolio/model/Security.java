@@ -696,8 +696,19 @@ public final class Security implements Attributable, InvestmentVehicle
         return multiplier != null ? multiplier : BigDecimal.ONE;
     }
 
+    /**
+     * Sets the multiplier (leverage factor). Null resets it to 1. The
+     * multiplier must be positive; short positions (negative multipliers) are
+     * not supported.
+     *
+     * @throws IllegalArgumentException
+     *             if the multiplier is zero or negative
+     */
     public void setMultiplier(BigDecimal multiplier)
     {
+        if (multiplier != null && multiplier.signum() <= 0)
+            throw new IllegalArgumentException("multiplier must be positive: " + multiplier); //$NON-NLS-1$
+
         this.multiplier = multiplier == null || multiplier.compareTo(BigDecimal.ONE) == 0 ? null : multiplier;
         this.updatedAt = Instant.now();
     }

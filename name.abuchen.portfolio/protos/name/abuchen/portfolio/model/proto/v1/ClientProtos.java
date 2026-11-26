@@ -224,11 +224,12 @@ public final class ClientProtos {
       "vent\0225\n\nproperties\030\023 \003(\0132!.name.abuchen." +
       "portfolio.PKeyValue\022\021\n\tisRetired\030\024 \001(\010\022-" +
       "\n\tupdatedAt\030\025 \001(\0132\032.google.protobuf.Time" +
-      "stamp\022\027\n\nmultiplier\030\026 \001(\tH\r\210\001\001B\013\n\t_onlineIdB\017\n\r_currencyCodeB\025\n\023_" +
-      "targetCurrencyCodeB\007\n\005_noteB\007\n\005_isinB\017\n\r" +
-      "_tickerSymbolB\006\n\004_wknB\013\n\t_calendarB\007\n\005_f" +
-      "eedB\n\n\010_feedURLB\r\n\013_latestFeedB\020\n\016_lates" +
-      "tFeedURLB\t\n\007_latestB\r\n\013_multiplier\".\n\nPWatchlist\022\014\n\004nam" +
+      "stamp\022\027\n\nmultiplier\030\026 \001(\tH\r\210\001\001B\013\n\t_onlin" +
+      "eIdB\017\n\r_currencyCodeB\025\n\023_targetCurrencyC" +
+      "odeB\007\n\005_noteB\007\n\005_isinB\017\n\r_tickerSymbolB\006" +
+      "\n\004_wknB\013\n\t_calendarB\007\n\005_feedB\n\n\010_feedURL" +
+      "B\r\n\013_latestFeedB\020\n\016_latestFeedURLB\t\n\007_la" +
+      "testB\r\n\013_multiplier\".\n\nPWatchlist\022\014\n\004nam" +
       "e\030\001 \001(\t\022\022\n\nsecurities\030\002 \003(\t\"\321\001\n\010PAccount" +
       "\022\014\n\004uuid\030\001 \001(\t\022\014\n\004name\030\002 \001(\t\022\024\n\014currency" +
       "Code\030\003 \001(\t\022\021\n\004note\030\004 \001(\tH\000\210\001\001\022\021\n\tisRetir" +

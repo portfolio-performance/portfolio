@@ -92,6 +92,18 @@ public class SecurityTest
         assertThat(security.getMultiplier(), equalTo(BigDecimal.ONE));
     }
 
+    @Test(expected = IllegalArgumentException.class)
+    public void testMultiplierRejectsZero()
+    {
+        new Security().setMultiplier(BigDecimal.ZERO);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testMultiplierRejectsNegative()
+    {
+        new Security().setMultiplier(new BigDecimal("-2"));
+    }
+
     @Test
     public void testSetLatest()
     {

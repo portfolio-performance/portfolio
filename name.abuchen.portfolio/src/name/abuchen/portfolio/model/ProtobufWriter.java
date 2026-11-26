@@ -257,7 +257,17 @@ import name.abuchen.portfolio.money.Money;
             security.setRetired(newSecurity.getIsRetired());
 
             if (newSecurity.hasMultiplier())
-                security.setMultiplier(new BigDecimal(newSecurity.getMultiplier()));
+            {
+                try
+                {
+                    security.setMultiplier(new BigDecimal(newSecurity.getMultiplier()));
+                }
+                catch (IllegalArgumentException e) // incl. NumberFormatException
+                {
+                    // keep the default multiplier of 1 so that the file opens
+                    PortfolioLog.error(e);
+                }
+            }
 
             security.setUpdatedAt(fromUpdatedAtTimestamp(newSecurity.getUpdatedAt()));
 
