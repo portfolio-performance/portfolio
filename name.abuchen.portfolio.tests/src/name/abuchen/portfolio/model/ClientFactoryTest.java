@@ -5,12 +5,16 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.StringReader;
+import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.util.EnumSet;
 
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
+
+import name.abuchen.portfolio.money.CurrencyUnit;
 
 @SuppressWarnings("nls")
 public class ClientFactoryTest
@@ -206,5 +210,31 @@ public class ClientFactoryTest
         var flags = ClientFactory.getFlags(file);
         assertTrue(flags.contains(SaveFlag.XML));
         assertTrue(flags.contains(SaveFlag.ID_REFERENCES));
+    }
+
+    @Test
+    public void testInvalidMultiplierInXmlIsResetToOne() throws IOException
+    {
+        var client = new Client();
+
+        var zero = new Security("Zero", CurrencyUnit.EUR);
+        zero.setMultiplier(new BigDecimal("7.25"));
+        client.addSecurity(zero);
+
+        var negative = new Security("Negative", CurrencyUnit.EUR);
+        negative.setMultiplier(new BigDecimal("8.25"));
+        client.addSecurity(negative);
+
+        var xml = ClientTestUtilities.toString(client);
+        assertTrue(xml.contains("<multiplier>7.25</multiplier>"));
+        assertTrue(xml.contains("<multiplier>8.25</multiplier>"));
+
+        xml = xml.replace("<multiplier>7.25</multiplier>", "<multiplier>0</multiplier>")
+                        .replace("<multiplier>8.25</multiplier>", "<multiplier>-2</multiplier>");
+
+        var loaded = ClientFactory.load(new StringReader(xml));
+
+        assertEquals(BigDecimal.ONE, loaded.getSecurities().get(0).getMultiplier());
+        assertEquals(BigDecimal.ONE, loaded.getSecurities().get(1).getMultiplier());
     }
 }
