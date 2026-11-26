@@ -38,7 +38,7 @@ public class UpvestPDFExtractor extends AbstractPDFExtractor
 
         var pdfTransaction = new Transaction<BuySellEntry>();
 
-        Block firstRelevantLine = new Block("^Wertpapierabrechnung.*$");
+        var firstRelevantLine = new Block("^Wertpapierabrechnung.*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -51,31 +51,31 @@ public class UpvestPDFExtractor extends AbstractPDFExtractor
                         .assign((t, v) -> t.setType(PortfolioTransaction.Type.SELL))
 
                         // @formatter:off
-                        // Wertpapier ISIN 
-                        // XTR.II EUR OV.RATE SW. 1C LU0290358497 
-                        // Nominal/Anzahl Kurs Kurswert 
-                        // 2,60301 Stück 148,31 EUR 386,05 EUR 
+                        // Wertpapier ISIN
+                        // XTR.II EUR OV.RATE SW. 1C LU0290358497
+                        // Nominal/Anzahl Kurs Kurswert
+                        // 2,60301 Stück 148,31 EUR 386,05 EUR
                         // @formatter:on
                         .section("name", "isin", "currency") //
                         .match("^Wertpapier\\s+ISIN.*$") //
                         .match("^(?<name>.*)\\s+(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])\\s*$") //
-                        .match("^[\\d,.]+\\s+St.ck\\s+[\\d,.]+\\s+[A-Z]{3}\\s+[\\d,.]+\\s+(?<currency>[A-Z]{3})\\s*$") //
+                        .match("^[\\.,\\d]+\\s+St.ck\\s+[\\.,\\d]+\\s+[A-Z]{3}\\s+[\\.,\\d]+\\s+(?<currency>[A-Z]{3})\\s*$") //
                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
                         // @formatter:off
-                        // 2,60301 Stück 148,31 EUR 386,05 EUR 
+                        // 2,60301 Stück 148,31 EUR 386,05 EUR
                         // @formatter:on
                         .section("shares") //
-                        .match("^(?<shares>[\\d,.]+)\\s+St.ck\\s+[\\d,.]+\\s+[A-Z]{3}\\s+[\\d,.]+\\s+[A-Z]{3}\\s*$") //
+                        .match("^(?<shares>[\\.,\\d]+)\\s+St.ck\\s+[\\.,\\d]+\\s+[A-Z]{3}\\s+[\\.,\\d]+\\s+[A-Z]{3}\\s*$") //
                         .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
                         // @formatter:off
-                        // Valuta Betrag zu Ihren Gunsten 
-                        // 04.02.2026 386,04 EUR 
+                        // Valuta Betrag zu Ihren Gunsten
+                        // 04.02.2026 386,04 EUR
                         // @formatter:on
                         .section("amount", "currency") //
-                        .match("^Valuta Betrag zu.*$")
-                        .match("^\\d{2}\\.\\d{2}\\.\\d{4}\\s+(?<amount>[\\d,.]+)\\s+(?<currency>[A-Z]{3})\\s*$") //
+                        .match("^Valuta Betrag zu.*$") //
+                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}\\s+(?<amount>[\\.,\\d]+)\\s+(?<currency>[A-Z]{3})\\s*$") //
                         .assign((t, v) -> {
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(asAmount(v.get("amount")));
@@ -85,7 +85,7 @@ public class UpvestPDFExtractor extends AbstractPDFExtractor
                         // Handelsdatum, Uhrzeit: 02.02.2026 15:05:46
                         // @formatter:on
                         .section("date", "time") //
-                        .match("^Handelsdatum, Uhrzeit: (?<date>\\d{2}\\.\\d{2}\\.\\d{4})\\s+(?<time>\\d{2}:\\d{2}:\\d{2}).*$") //
+                        .match("^Handelsdatum, Uhrzeit: (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})\\s+(?<time>[\\d]{2}:[\\d]{2}:[\\d]{2}).*$") //
                         .assign((t, v) -> t.setDate(asDate(v.get("date"), v.get("time"))))
 
                         // @formatter:off
@@ -98,6 +98,7 @@ public class UpvestPDFExtractor extends AbstractPDFExtractor
                         .assign((t, v) -> t.setNote("Abr.-Nr.: " + trim(v.get("note"))))
 
                         .wrap(BuySellEntryItem::new);
+
         addTaxesSectionsTransaction(pdfTransaction, type);
     }
 
@@ -105,11 +106,11 @@ public class UpvestPDFExtractor extends AbstractPDFExtractor
     {
         transaction //
 
-        // @formatter:off
+                        // @formatter:off
                         // Steuererrechnung
-                        // Kapitalertragssteuer: 0,01 EUR 
-                        // Solidaritätszuschlag: 0,00 EUR 
-                        // Kirchensteuer: 0,00 EUR 
+                        // Kapitalertragssteuer: 0,01 EUR
+                        // Solidaritätszuschlag: 0,00 EUR
+                        // Kirchensteuer: 0,00 EUR
                         // @formatter:on
                         .section("tax", "currency").multipleTimes().optional() //
                         .match("^(Kapitalertragssteuer|Solidarit.tszuschlag|Kirchensteuer): (?<tax>[\\.,\\d]+)\\s+(?<currency>[A-Z]{3}).*$") //

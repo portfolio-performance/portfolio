@@ -4,7 +4,6 @@ import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetGros
 import static name.abuchen.portfolio.util.TextUtil.concatenate;
 import static name.abuchen.portfolio.util.TextUtil.trim;
 
-import name.abuchen.portfolio.datatransfer.ExtrExchangeRate;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
@@ -35,12 +34,12 @@ public class VanguardGroupEuropePDFExtractor extends AbstractPDFExtractor
 
     private void addBuySellTransaction()
     {
-        DocumentType type = new DocumentType("Wertpapierabrechnung: (Kauf|Verkauf)");
+        final var type = new DocumentType("Wertpapierabrechnung: (Kauf|Verkauf)");
         this.addDocumentTyp(type);
 
-        Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
+        var pdfTransaction = new Transaction<BuySellEntry>();
 
-        Block firstRelevantLine = new Block("^Wertpapierabrechnung: (Kauf|Verkauf)$");
+        var firstRelevantLine = new Block("^Wertpapierabrechnung: (Kauf|Verkauf)$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -63,10 +62,10 @@ public class VanguardGroupEuropePDFExtractor extends AbstractPDFExtractor
                         // Kurs (Stückpreis) EUR 25,0900
                         // @formatter:on
                         .section("name", "name1", "isin", "currency") //
-                        .match("^Wertpapierbezeichnung (?<name>.*)") //
+                        .match("^Wertpapierbezeichnung (?<name>.*)$") //
                         .match("^(?<name1>.*)$") //
                         .match("^ISIN (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
-                        .match("^Kurs \\(.*\\) (?<currency>[\\w]{3}) [\\.,\\d]+$") //
+                        .match("^Kurs \\(.*\\) (?<currency>[A-Z]{3}) [\\.,\\d]+$") //
                         .assign((t, v) -> {
                             if (!v.get("name1").startsWith("ISIN"))
                                 v.put("name", v.get("name") + " " + v.get("name1"));
@@ -96,8 +95,8 @@ public class VanguardGroupEuropePDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("currency", "amount") //
-                                                        .find("Kurswert [\\w]{3} [\\.,\\d]+$") //
-                                                        .match("^(?<currency>[\\w]{3}) (?<amount>[\\.,\\d]+)$") //
+                                                        .find("Kurswert [A-Z]{3} [\\.,\\d]+") //
+                                                        .match("^(?<currency>[A-Z]{3}) (?<amount>[\\.,\\d]+)$") //
                                                         .match("^Abrechnungskonto .*$") //
                                                         .assign((t, v) -> {
                                                             t.setAmount(asAmount(v.get("amount")));
@@ -108,7 +107,7 @@ public class VanguardGroupEuropePDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("currency", "amount") //
-                                                        .match("^Abbuchungsbetrag (?<currency>[\\w]{3}) (?<amount>[\\.,\\d]+)$") //
+                                                        .match("^Abbuchungsbetrag (?<currency>[A-Z]{3}) (?<amount>[\\.,\\d]+)$") //
                                                         .assign((t, v) -> {
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                                             t.setAmount(asAmount(v.get("amount")));
@@ -135,12 +134,12 @@ public class VanguardGroupEuropePDFExtractor extends AbstractPDFExtractor
 
     private void addDividendTransaction()
     {
-        DocumentType type = new DocumentType("Bardividende");
+        final var type = new DocumentType("Bardividende");
         this.addDocumentTyp(type);
 
-        Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
+        var pdfTransaction = new Transaction<AccountTransaction>();
 
-        Block firstRelevantLine = new Block("^Bardividende$", "^Steuerliche Informationen .*$");
+        var firstRelevantLine = new Block("^Bardividende$", "^Steuerliche Informationen .*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -158,7 +157,7 @@ public class VanguardGroupEuropePDFExtractor extends AbstractPDFExtractor
                         .match("^Wertpapierbezeichnung (?<name>.*)$") //
                         .match("^(?<name1>.*) \\([A-Z]{2}[A-Z0-9]{9}[0-9]\\)$") //
                         .match("^ISIN (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
-                        .match("^(Original\\-)?Aussch.ttung (?<currency>[\\w]{3}) [\\.,\\d]+ .*$") //
+                        .match("^(Original\\-)?Aussch.ttung (?<currency>[A-Z]{3}) [\\.,\\d]+ .*$") //
                         .assign((t, v) -> {
                             if (!v.get("name1").startsWith("ISIN"))
                                 v.put("name", trim(v.get("name")) + " " + trim(v.get("name1")));
@@ -191,7 +190,7 @@ public class VanguardGroupEuropePDFExtractor extends AbstractPDFExtractor
                         // Ausmachender Betrag EUR 26,91
                         // @formatter:on
                         .section("currency", "amount") //
-                        .match("^Ausmachender Betrag (?<currency>[\\w]{3}) (?<amount>[\\.,\\d]+)$") //
+                        .match("^Ausmachender Betrag (?<currency>[A-Z]{3}) (?<amount>[\\.,\\d]+)$") //
                         .assign((t, v) -> {
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
@@ -203,15 +202,15 @@ public class VanguardGroupEuropePDFExtractor extends AbstractPDFExtractor
                         // Bruttobetrag EUR 0,64
                         // @formatter:on
                         .section("termCurrency", "exchangeRate", "baseCurrency", "gross").optional() //
-                        .match("^(Original\\-)?Aussch.ttung (?<termCurrency>[\\w]{3}) [\\.,\\d]+ .*$") //
+                        .match("^(Original\\-)?Aussch.ttung (?<termCurrency>[A-Z]{3}) [\\.,\\d]+ .*$") //
                         .match("^Wechselkurs (?<exchangeRate>[\\.,\\d]+)$") //
-                        .match("^Bruttobetrag (?<baseCurrency>[\\w]{3}) (?<gross>[\\.,\\d]+)$") //
+                        .match("^Bruttobetrag (?<baseCurrency>[A-Z]{3}) (?<gross>[\\.,\\d]+)$") //
                         .assign((t, v) -> {
-                            ExtrExchangeRate rate = asExchangeRate(v);
+                            var rate = asExchangeRate(v);
                             type.getCurrentContext().putType(rate);
 
-                            Money gross = Money.of(rate.getBaseCurrency(), asAmount(v.get("gross")));
-                            Money fxGross = rate.convert(rate.getTermCurrency(), gross);
+                            var gross = Money.of(rate.getBaseCurrency(), asAmount(v.get("gross")));
+                            var fxGross = rate.convert(rate.getTermCurrency(), gross);
 
                             checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                         })
@@ -237,7 +236,7 @@ public class VanguardGroupEuropePDFExtractor extends AbstractPDFExtractor
                         // Kapitalertragsteuer EUR 0,28
                         // @formatter:on
                         .section("currency", "tax").optional() //
-                        .match("^Kapitalertrags(s)?teuer (?<currency>[\\w]{3}) (\\-)?(?<tax>[\\.,\\d]+)$") //
+                        .match("^Kapitalertrags(s)?teuer (?<currency>[A-Z]{3}) (\\-)?(?<tax>[\\.,\\d]+)$") //
                         .assign((t, v) -> processTaxEntries(t, v, type))
 
                         // @formatter:off
@@ -245,14 +244,14 @@ public class VanguardGroupEuropePDFExtractor extends AbstractPDFExtractor
                         // Solidaritätszuschlag EUR 0,01
                         // @formatter:on
                         .section("currency", "tax").optional() //
-                        .match("^Solidarit.tszuschlag (?<currency>[\\w]{3}) (\\-)?(?<tax>[\\.,\\d]+)$") //
+                        .match("^Solidarit.tszuschlag (?<currency>[A-Z]{3}) (\\-)?(?<tax>[\\.,\\d]+)$") //
                         .assign((t, v) -> processTaxEntries(t, v, type))
 
                         // @formatter:off
                         // Kirchensteuer EUR 0,00
                         // @formatter:on
                         .section("currency", "tax").optional() //
-                        .match("^Kirchensteuer (?<currency>[\\w]{3}) (\\-)?(?<tax>[\\.,\\d]+)$") //
+                        .match("^Kirchensteuer (?<currency>[A-Z]{3}) (\\-)?(?<tax>[\\.,\\d]+)$") //
                         .assign((t, v) -> processTaxEntries(t, v, type));
     }
 }
