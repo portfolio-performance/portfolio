@@ -62,8 +62,8 @@ public class HoldingsChartWidget extends CircularChartWidget<ClientSnapshot>
     {
         return () -> {
             ClientFilter clientFilter = get(ClientFilterConfig.class).getSelectedFilter();
-            return ClientSnapshot.create(clientFilter.filter(getClient()), getDashboardData().getCurrencyConverter(),
-                            LocalDate.now());
+            return ClientSnapshot.create(getDashboardData().getFilteredClient(clientFilter),
+                            getDashboardData().getCurrencyConverter(), LocalDate.now());
         };
     }
 

@@ -129,8 +129,10 @@ public class EarningsChartWidget extends WidgetDelegate<PaymentsViewModel>
                 PaymentsViewModel.Mode mode = earningsType.getPaymentsViewModelMode();
                 GrossNetType grossNetType = get(GrossNetTypeConfig.class).getValue();
 
-                part.activateView(PaymentsView.class, new PaymentsViewInput(tab, startYear, Optional.of(filterIdent),
-                                mode, grossNetType == GrossNetType.GROSS, false, CostMethod.FIFO));
+                var viewInput = new PaymentsViewInput(tab, startYear, Optional.of(filterIdent), mode,
+                                grossNetType == GrossNetType.GROSS, false, CostMethod.FIFO);
+                viewInput.setDashboardFilterId(getDashboardData().getClientFilterId());
+                part.activateView(PaymentsView.class, viewInput);
             }
         });
 
@@ -148,10 +150,11 @@ public class EarningsChartWidget extends WidgetDelegate<PaymentsViewModel>
         CacheKey key = new CacheKey(PaymentsViewModel.class, clientFilter, startYear, earningsType, grossNetType);
 
         return () -> (PaymentsViewModel) getDashboardData().getCache().computeIfAbsent(key, k -> {
-            PaymentsViewModel model = new PaymentsViewModel(getDashboardData().getCurrencyConverter(), getClient());
+            PaymentsViewModel model = new PaymentsViewModel(getDashboardData().getCurrencyConverter(),
+                            getDashboardData().getFilteredClient());
             PaymentsViewModel.Mode mode = earningsType.getPaymentsViewModelMode();
             model.configure(startYear, mode, grossNetType == GrossNetType.GROSS, false, CostMethod.FIFO);
-            model.setFilteredClient(clientFilter.filter(getClient()));
+            model.setFilteredClient(getDashboardData().getFilteredClient(clientFilter));
             model.recalculate();
             return model;
         });

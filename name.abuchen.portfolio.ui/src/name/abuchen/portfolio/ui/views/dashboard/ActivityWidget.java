@@ -277,7 +277,7 @@ public class ActivityWidget extends WidgetDelegate<List<TransactionPair<?>>>
         CacheKey key = new CacheKey(TransactionPair.class, clientFilter, interval);
 
         return () -> (List<TransactionPair<?>>) getDashboardData().getCache().computeIfAbsent(key,
-                        k -> clientFilter.filter(getClient()).getAllTransactions());
+                        k -> getDashboardData().getFilteredClient(clientFilter).getAllTransactions());
     }
 
     @Override

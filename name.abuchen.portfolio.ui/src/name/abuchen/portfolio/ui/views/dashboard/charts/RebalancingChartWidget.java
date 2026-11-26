@@ -92,7 +92,8 @@ public class RebalancingChartWidget extends WidgetDelegate<TaxonomyModel>
                                 getClient(), taxonomy);
 
                 // apply filter if applicable
-                Client filteredClient = get(ClientFilterConfig.class).getSelectedFilter().filter(getClient());
+                Client filteredClient = getDashboardData()
+                                .getFilteredClient(get(ClientFilterConfig.class).getSelectedFilter());
                 if (filteredClient != getClient())
                     model.updateClientSnapshot(filteredClient);
 

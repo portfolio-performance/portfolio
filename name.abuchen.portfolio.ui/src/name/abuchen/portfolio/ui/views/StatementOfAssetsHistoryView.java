@@ -23,6 +23,7 @@ import com.google.common.collect.Lists;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.UIConstants;
+import name.abuchen.portfolio.ui.util.ClientFilterDropDown;
 import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.DropDown;
 import name.abuchen.portfolio.ui.util.SimpleAction;
@@ -49,6 +50,7 @@ public class StatementOfAssetsHistoryView extends AbstractHistoricView
     private DataSeriesConfigurator configurator;
     private StatementOfAssetsSeriesBuilder seriesBuilder;
     private ChartViewConfig chartViewConfig;
+    private ClientFilterDropDown clientFilter;
 
     @Inject
     @Optional
@@ -75,6 +77,11 @@ public class StatementOfAssetsHistoryView extends AbstractHistoricView
     protected void addButtons(ToolBarManager toolBar)
     {
         super.addButtons(toolBar);
+
+        this.clientFilter = new ClientFilterDropDown(getClient(), getPreferenceStore(),
+                        StatementOfAssetsHistoryView.class.getSimpleName(), filter -> notifyModelUpdated());
+        toolBar.add(clientFilter);
+
         addExportButton(toolBar);
         toolBar.add(new DropDown(Messages.MenuConfigureChart, Images.CONFIG, SWT.NONE,
                         manager -> configurator.configMenuAboutToShow(manager)));
@@ -129,7 +136,9 @@ public class StatementOfAssetsHistoryView extends AbstractHistoricView
         chart.getAxisSet().getYAxis(0).getTick().setFormat(new ThousandsNumberFormat());
 
         DataSeriesCache cache = make(DataSeriesCache.class);
+        cache.setClientFilter(clientFilter.getSelectedFilter());
         seriesBuilder = new StatementOfAssetsSeriesBuilder(chart, cache);
+        setToContext(UIConstants.Context.FILTERED_CLIENT, cache.getFilteredClient());
 
         configurator = new DataSeriesConfigurator(this, DataSeries.UseCase.STATEMENT_OF_ASSETS);
         if (chartViewConfig != null)
@@ -188,7 +197,9 @@ public class StatementOfAssetsHistoryView extends AbstractHistoricView
     @Override
     public void notifyModelUpdated()
     {
-        seriesBuilder.getCache().clear();
+        var cache = seriesBuilder.getCache();
+        cache.setClientFilter(clientFilter.getSelectedFilter());
+        setToContext(UIConstants.Context.FILTERED_CLIENT, cache.getFilteredClient());
         updateChart();
     }
 
