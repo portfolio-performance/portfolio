@@ -17,6 +17,7 @@ public class AssetCategory
     private final List<AssetPosition> positions = new ArrayList<>();
     private final Money totalAssets;
     private final MutableMoney valuation;
+    private final MutableMoney notionalValuation;
 
     /* package */ AssetCategory(Classification classification, CurrencyConverter converter, LocalDate date,
                     Money totalAssets)
@@ -26,13 +27,30 @@ public class AssetCategory
         this.date = date;
         this.totalAssets = totalAssets;
         this.valuation = MutableMoney.of(converter.getTermCurrency());
+        this.notionalValuation = MutableMoney.of(converter.getTermCurrency());
     }
 
+    /**
+     * Returns the market value of all positions in this category.
+     */
     public Money getValuation()
     {
         return this.valuation.toMoney();
     }
 
+    /**
+     * Returns the notional exposure of all positions in this category, i.e.
+     * the market value multiplied by the multiplier of each security.
+     */
+    public Money getNotionalValuation()
+    {
+        return this.notionalValuation.toMoney();
+    }
+
+    /**
+     * Returns the share of the market value of this category in the total
+     * assets (also based on market value).
+     */
     public double getShare()
     {
         return (double) this.valuation.getAmount() / (double) this.totalAssets.getAmount();
@@ -52,5 +70,6 @@ public class AssetCategory
     {
         this.positions.add(p);
         this.valuation.add(converter.convert(date, p.getValuation()));
+        this.notionalValuation.add(converter.convert(date, p.getNotionalValuation()));
     }
 }
