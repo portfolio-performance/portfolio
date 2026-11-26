@@ -256,6 +256,19 @@ import name.abuchen.portfolio.money.Money;
 
             security.setRetired(newSecurity.getIsRetired());
 
+            if (newSecurity.hasMultiplier())
+            {
+                try
+                {
+                    security.setMultiplier(new BigDecimal(newSecurity.getMultiplier()));
+                }
+                catch (IllegalArgumentException e)
+                {
+                    // includes NumberFormatException; keep the default of 1
+                    PortfolioLog.error(e);
+                }
+            }
+
             security.setUpdatedAt(fromUpdatedAtTimestamp(newSecurity.getUpdatedAt()));
 
             client.addSecurity(security);
@@ -993,6 +1006,9 @@ import name.abuchen.portfolio.money.Money;
             }
 
             newSecurity.setIsRetired(security.isRetired());
+
+            if (security.getMultiplier().compareTo(BigDecimal.ONE) != 0)
+                newSecurity.setMultiplier(security.getMultiplier().toPlainString());
 
             newSecurity.setUpdatedAt(asUpdatedAtTimestamp(security.getUpdatedAt()));
 

@@ -149,6 +149,8 @@ public class ClientFactory
 
                 upgradeModel(client);
 
+                fixInvalidMultipliers(client);
+
                 return client;
             }
             catch (XStreamException e)
@@ -963,6 +965,8 @@ public class ClientFactory
                 // added exDate date field
             case 69: // NOSONAR
                 // add (optional) weight to client filter
+            case 70: // NOSONAR
+                // added (optional) multiplier to security
 
                 client.setVersion(Client.CURRENT_VERSION);
                 break;
@@ -1694,6 +1698,22 @@ public class ClientFactory
                 {
                     security.removeProperty(null);
                 }
+            }
+        }
+    }
+
+    private static void fixInvalidMultipliers(Client client)
+    {
+        for (Security security : client.getSecurities())
+        {
+            if (security.getMultiplier().signum() <= 0)
+            {
+                PortfolioLog.warning(MessageFormat.format("Invalid multiplier {0} of security {1} reset to 1", //$NON-NLS-1$
+                                security.getMultiplier().toPlainString(), security.getName()));
+
+                Instant updatedAt = security.getUpdatedAt();
+                security.setMultiplier(null);
+                security.setUpdatedAt(updatedAt);
             }
         }
     }

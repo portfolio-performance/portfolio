@@ -25,6 +25,7 @@ public class AssetPosition
     private final LocalDate date;
     private final Money totalAssets;
     private final Money valuation;
+    private final Money notionalValuation;
 
     /* package */ AssetPosition(SecurityPosition position, CurrencyConverter converter, LocalDate date,
                     Money totalAssets)
@@ -34,6 +35,7 @@ public class AssetPosition
         this.date = date;
         this.totalAssets = totalAssets;
         this.valuation = position.calculateValue();
+        this.notionalValuation = position.calculateNotionalValue();
     }
 
     public Money getValuation()
@@ -41,6 +43,19 @@ public class AssetPosition
         return converter.convert(date, valuation);
     }
 
+    /**
+     * Returns the notional exposure, i.e. the market value multiplied by the
+     * multiplier of the security.
+     */
+    public Money getNotionalValuation()
+    {
+        return converter.convert(date, notionalValuation);
+    }
+
+    /**
+     * Returns the share of the market value in the total assets. The
+     * multiplier is not applied.
+     */
     public double getShare()
     {
         return (double) getValuation().getAmount() / (double) this.totalAssets.getAmount();

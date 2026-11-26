@@ -6,6 +6,7 @@ import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertNotNull;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -24,6 +25,7 @@ import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Taxonomy;
 import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Money;
+import name.abuchen.portfolio.money.MoneyCollectors;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.snapshot.filter.ClientClassificationFilter;
 import name.abuchen.portfolio.snapshot.filter.ClientFilter;
@@ -79,6 +81,60 @@ public class GroupByTaxonomyTest
 
         AssetCategory realEstate = grouping.byClassification(taxonomy.getClassificationById("realestate"));
         assertThat(realEstate, nullValue());
+    }
+
+    @Test
+    public void testThatMultiplierDoesNotChangeStatementOfAssets()
+    {
+        Client client = new Client();
+
+        Taxonomy taxonomy = new TaxonomyBuilder() //
+                        .addClassification("equity") //
+                        .addTo(client);
+
+        Security leveraged = new SecurityBuilder() //
+                        .addPrice("2010-01-01", Values.Quote.factorize(10)) //
+                        .assign(taxonomy, "equity") //
+                        .addTo(client);
+        leveraged.setMultiplier(new BigDecimal("2.5"));
+
+        Account account = new AccountBuilder() //
+                        .deposit_("2010-01-01", Values.Amount.factorize(50)) //
+                        .addTo(client);
+
+        new PortfolioBuilder(account) //
+                        .inbound_delivery(leveraged, "2010-01-01", Values.Share.factorize(10), 10000) //
+                        .addTo(client);
+
+        ClientSnapshot snapshot = ClientSnapshot.create(client, new TestCurrencyConverter(),
+                        LocalDate.parse("2010-01-01"));
+        assertThat(snapshot.getMonetaryAssets(), is(Money.of(CurrencyUnit.EUR, 150_00)));
+
+        // statement of assets without taxonomy
+        AssetPosition position = snapshot.getPositionsByVehicle().get(leveraged);
+        assertThat(position.getValuation(), is(Money.of(CurrencyUnit.EUR, 100_00)));
+        assertThat(position.getNotionalValuation(), is(Money.of(CurrencyUnit.EUR, 250_00)));
+
+        Money sum = snapshot.getAssetPositions().map(AssetPosition::getValuation)
+                        .collect(MoneyCollectors.sum(CurrencyUnit.EUR));
+        assertThat(sum, is(snapshot.getMonetaryAssets()));
+
+        // statement of assets grouped by taxonomy (incl. left overs)
+        GroupByTaxonomy grouping = snapshot.groupByTaxonomy(taxonomy);
+
+        AssetCategory equity = grouping.byClassification(taxonomy.getClassificationById("equity"));
+        assertThat(equity.getValuation(), is(Money.of(CurrencyUnit.EUR, 100_00)));
+        assertThat(equity.getShare(), is(100_00d / 150_00d));
+        assertThat(equity.getNotionalValuation(), is(Money.of(CurrencyUnit.EUR, 250_00)));
+        assertThat(equity.getPositions().get(0).getValuation(), is(Money.of(CurrencyUnit.EUR, 100_00)));
+
+        Money positions = grouping.getCategories().flatMap(c -> c.getPositions().stream())
+                        .map(AssetPosition::getValuation).collect(MoneyCollectors.sum(CurrencyUnit.EUR));
+        assertThat(positions, is(grouping.getValuation()));
+
+        Money categories = grouping.getCategories().map(AssetCategory::getValuation)
+                        .collect(MoneyCollectors.sum(CurrencyUnit.EUR));
+        assertThat(categories, is(grouping.getValuation()));
     }
 
     @Test

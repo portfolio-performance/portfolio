@@ -1,5 +1,7 @@
 package name.abuchen.portfolio.ui.wizards.security;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -293,6 +295,12 @@ import name.abuchen.portfolio.ui.util.BindingHelper;
     private boolean isRetired;
 
     /**
+     * Multiplier scaled with {@link Values#Quote} to bind it to a quote input
+     */
+    private long multiplier;
+    private BigDecimal loadedMultiplier;
+
+    /**
      * Used to pipe the status of a manually validated quote provider into the
      * binding context
      */
@@ -324,6 +332,8 @@ import name.abuchen.portfolio.ui.util.BindingHelper;
         this.latestFeed = security.getLatestFeed();
         this.latestFeedURL = security.getLatestFeedURL();
         this.isRetired = security.isRetired();
+        this.loadedMultiplier = security.getMultiplier();
+        this.multiplier = toQuote(loadedMultiplier);
 
         for (Taxonomy taxonomy : client.getTaxonomies())
             this.taxonomies.add(new TaxonomyDesignation(taxonomy, security));
@@ -494,6 +504,16 @@ import name.abuchen.portfolio.ui.util.BindingHelper;
         firePropertyChange("retired", this.isRetired, this.isRetired = isRetired); //$NON-NLS-1$ //NOSONAR
     }
 
+    public long getMultiplier()
+    {
+        return multiplier;
+    }
+
+    public void setMultiplier(long multiplier)
+    {
+        firePropertyChange("multiplier", this.multiplier, this.multiplier = multiplier); //$NON-NLS-1$ //NOSONAR
+    }
+
     public String getStatusHistoricalQuotesProvider()
     {
         return statusHistoricalQuotesProvider;
@@ -586,6 +606,12 @@ import name.abuchen.portfolio.ui.util.BindingHelper;
         security.setLatestFeedURL(latestFeedURL);
         security.setRetired(isRetired);
 
+        // keep multipliers with more digits than the input field supports
+        if (multiplier > 0 && multiplier != toQuote(loadedMultiplier))
+            security.setMultiplier(BigDecimal.valueOf(multiplier, Values.Quote.precision()).stripTrailingZeros());
+        else
+            security.setMultiplier(loadedMultiplier);
+
         Attributes a = new Attributes();
         for (AttributeDesignation attribute : attributes)
             a.put(attribute.getType(), attribute.getValue());
@@ -596,5 +622,10 @@ import name.abuchen.portfolio.ui.util.BindingHelper;
         feedProperties.entrySet().stream().filter(entry -> !Strings.isNullOrEmpty(entry.getValue()))
                         .forEach(entry -> security.addProperty(new SecurityProperty(SecurityProperty.Type.FEED,
                                         entry.getKey(), entry.getValue())));
+    }
+
+    private static long toQuote(BigDecimal value)
+    {
+        return value.multiply(Values.Quote.getBigDecimalFactor()).setScale(0, RoundingMode.HALF_UP).longValue();
     }
 }

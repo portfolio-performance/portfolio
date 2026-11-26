@@ -265,6 +265,8 @@ public class Messages extends NLS
     public static String ColumnMetricExpectedNumberOfQuotes;
     public static String ColumnMetricNumberOfMissingQuotes;
     public static String ColumnMonth;
+    public static String ColumnMultiplier;
+    public static String ColumnMultiplierToolTip;
     public static String ColumnName;
     public static String ColumnNetValue;
     public static String ColumnNextDate;

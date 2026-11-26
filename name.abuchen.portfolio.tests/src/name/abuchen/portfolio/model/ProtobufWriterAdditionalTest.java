@@ -6,6 +6,8 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -45,6 +47,65 @@ public class ProtobufWriterAdditionalTest
         String actual = ClientTestUtilities.toString(newClient);
 
         assertThat(actual, is(expected));
+    }
+
+    @Test
+    public void testSecurityMultiplierRoundTrip() throws IOException
+    {
+        Client client = new Client();
+
+        Security leveraged = new Security();
+        leveraged.setName("Leveraged");
+        leveraged.setMultiplier(new BigDecimal("2.5"));
+        leveraged.setUpdatedAt(Instant.now());
+        client.addSecurity(leveraged);
+
+        Security plain = new Security();
+        plain.setName("Plain");
+        plain.setUpdatedAt(Instant.now());
+        client.addSecurity(plain);
+
+        ProtobufWriter protobufWriter = new ProtobufWriter();
+
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        protobufWriter.save(client, stream);
+        stream.close();
+
+        Client newClient = protobufWriter.load(new ByteArrayInputStream(stream.toByteArray()));
+
+        assertThat(newClient.getSecurities().get(0).getMultiplier(), is(new BigDecimal("2.5")));
+        assertThat(newClient.getSecurities().get(1).getMultiplier(), is(BigDecimal.ONE));
+    }
+
+    @Test
+    public void testInvalidSecurityMultiplierFallsBackToOne() throws IOException
+    {
+        Client client = new Client();
+
+        Security leveraged = new Security();
+        leveraged.setName("Leveraged");
+        leveraged.setMultiplier(new BigDecimal("7.25"));
+        leveraged.setUpdatedAt(Instant.now());
+        client.addSecurity(leveraged);
+
+        ProtobufWriter protobufWriter = new ProtobufWriter();
+
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        protobufWriter.save(client, stream);
+        stream.close();
+
+        // corrupt the stored multiplier ("7.25" -> "7,25") keeping its length
+        byte[] bytes = stream.toByteArray();
+        String content = new String(bytes, StandardCharsets.ISO_8859_1);
+        int index = content.indexOf("7.25");
+        assertThat(index >= 0, is(true));
+        assertThat(content.indexOf("7.25", index + 1), is(-1));
+        bytes[index + 1] = ',';
+
+        Client newClient = protobufWriter.load(new ByteArrayInputStream(bytes));
+
+        assertThat(newClient.getSecurities().size(), is(1));
+        assertThat(newClient.getSecurities().get(0).getMultiplier(), is(BigDecimal.ONE));
     }
 
     @Test

@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.model;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -92,6 +93,12 @@ public final class Security implements Attributable, InvestmentVehicle
     private List<SecurityProperty> properties;
 
     private boolean isRetired = false;
+
+    /**
+     * Leverage factor (or contract size) used to calculate the notional
+     * exposure. Null means 1 (unchanged).
+     */
+    private BigDecimal multiplier;
 
     /**
      * Stores ephemeral data related to the current session that is not
@@ -680,6 +687,27 @@ public final class Security implements Attributable, InvestmentVehicle
         this.updatedAt = Instant.now();
     }
 
+    public BigDecimal getMultiplier()
+    {
+        return multiplier != null ? multiplier : BigDecimal.ONE;
+    }
+
+    /**
+     * Sets the multiplier. Null resets it to 1. Short positions (negative
+     * multipliers) are not supported.
+     *
+     * @throws IllegalArgumentException
+     *             if the multiplier is zero or negative
+     */
+    public void setMultiplier(BigDecimal multiplier)
+    {
+        if (multiplier != null && multiplier.signum() <= 0)
+            throw new IllegalArgumentException("multiplier must be positive: " + multiplier); //$NON-NLS-1$
+
+        this.multiplier = multiplier == null || multiplier.compareTo(BigDecimal.ONE) == 0 ? null : multiplier;
+        this.updatedAt = Instant.now();
+    }
+
     public List<SecurityEvent> getEvents()
     {
         if (this.events == null)
@@ -951,6 +979,7 @@ public final class Security implements Attributable, InvestmentVehicle
             answer.properties = new ArrayList<>(properties);
 
         answer.isRetired = isRetired;
+        answer.multiplier = multiplier;
 
         answer.updatedAt = updatedAt;
 
