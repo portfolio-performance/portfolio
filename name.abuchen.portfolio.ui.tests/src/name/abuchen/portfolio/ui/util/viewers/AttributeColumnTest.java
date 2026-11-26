@@ -3,6 +3,7 @@ package name.abuchen.portfolio.ui.util.viewers;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.everyItem;
 import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
@@ -152,5 +153,17 @@ public class AttributeColumnTest
         type.setType(LocalDate.class);
         type.setConverter(AttributeType.DateConverter.class);
         client.getSettings().addAttributeType(type);
+    }
+
+    @Test
+    public void testPartialExemptionIsEditedBySelection()
+    {
+        var client = new Client();
+        var attribute = client.getSettings().getOptionalPartialExemptionAttributeType().orElseThrow();
+
+        var column = AttributeColumn.createFor(client, Security.class)
+                        .filter(c -> c.getId().equals("attribute$" + attribute.getId())).findFirst().orElseThrow();
+
+        assertThat(column.getEditingSupport(), instanceOf(PartialExemptionEditingSupport.class));
     }
 }

@@ -356,6 +356,11 @@ public class Messages extends NLS
     public static String PDFdbMsgCannotDetermineFileType;
     public static String PDFMsgExtracingFiles;
     public static String PDFMsgFileNotSupported;
+    public static String PartialExemptionEquityFund;
+    public static String PartialExemptionForeignRealEstateFund;
+    public static String PartialExemptionMixedFund;
+    public static String PartialExemptionNone;
+    public static String PartialExemptionRealEstateFund;
     public static String QuoteFeedManual;
     public static String TradeRepublicCSVLabel;
     public static String TradeRepublicCSVMsgFileNotSupported;

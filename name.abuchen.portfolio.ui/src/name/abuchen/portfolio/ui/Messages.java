@@ -210,6 +210,8 @@ public class Messages extends NLS
     public static String ColumnEntryValue;
     public static String ColumnErrorMessages;
     public static String ColumnEstimatedTax;
+    public static String LabelTotalEstimatedTax;
+    public static String LabelTaxableBeforeDeductions;
     public static String ColumnEventType;
     public static String ColumnExchangeRate;
     public static String ColumnExemptionOrder;

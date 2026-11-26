@@ -26,6 +26,7 @@ import name.abuchen.portfolio.model.AttributeType.ImageConverter;
 import name.abuchen.portfolio.model.Attributes;
 import name.abuchen.portfolio.model.Bookmark;
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.ClientSettings;
 import name.abuchen.portfolio.model.InvestmentPlan;
 import name.abuchen.portfolio.model.LimitPrice;
 import name.abuchen.portfolio.model.LimitPriceSettings;
@@ -44,6 +45,7 @@ import name.abuchen.portfolio.ui.util.viewers.CellItemImageClickedListener;
 import name.abuchen.portfolio.ui.util.viewers.Column;
 import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
 import name.abuchen.portfolio.ui.util.viewers.ImageAttributeEditingSupport;
+import name.abuchen.portfolio.ui.util.viewers.PartialExemptionEditingSupport;
 import name.abuchen.portfolio.util.Pair;
 
 public class AttributeColumn extends Column
@@ -403,6 +405,11 @@ public class AttributeColumn extends Column
         {
             setLabelProvider(new ImageLabelProvider(attribute));
             new ImageAttributeEditingSupport(attribute).attachTo(this);
+        }
+        else if (ClientSettings.isPartialExemption(attribute))
+        {
+            setLabelProvider(new AttributeLabelProvider(attribute));
+            new PartialExemptionEditingSupport(attribute).attachTo(this);
         }
         else
         {

@@ -35,8 +35,11 @@ import org.eclipse.jface.window.ToolTip;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 
 import name.abuchen.portfolio.model.Account;
@@ -109,6 +112,7 @@ public class AdvanceLumpSumView extends AbstractFinanceView
     private static final String PREF_PREFIX = AdvanceLumpSumView.class.getSimpleName();
     private static final String PREF_YEAR = PREF_PREFIX + "-year"; //$NON-NLS-1$
     private static final String PREF_TAX_RATE = PREF_PREFIX + "-tax-rate"; //$NON-NLS-1$
+    private static final String SUMMARY_SEPARATOR = " | "; //$NON-NLS-1$
 
     /** first year with a Vorabpauschale (InvStG 2018) */
     private static final int FIRST_YEAR = 2018;
@@ -128,6 +132,8 @@ public class AdvanceLumpSumView extends AbstractFinanceView
     private final Map<Portfolio, Long> exemptionOrders = new HashMap<>();
     private Result result;
 
+    private Composite taxHeadline;
+    private StyledLabel taxAmount;
     private StyledLabel summary;
     private TreeViewer viewer;
     private ShowHideColumnHelper columns;
@@ -289,6 +295,28 @@ public class AdvanceLumpSumView extends AbstractFinanceView
     {
         var container = new Composite(parent, SWT.NONE);
         GridLayoutFactory.fillDefaults().numColumns(1).spacing(0, 5).applyTo(container);
+
+        taxHeadline = new Composite(container, SWT.NONE);
+        GridLayoutFactory.fillDefaults().spacing(0, 8).applyTo(taxHeadline);
+        var headlineLayout = GridDataFactory.fillDefaults().grab(true, false).indent(5, 5).create();
+        headlineLayout.exclude = true;
+        taxHeadline.setLayoutData(headlineLayout);
+        taxHeadline.setVisible(false);
+
+        var taxRow = new Composite(taxHeadline, SWT.NONE);
+        var rowLayout = new RowLayout();
+        rowLayout.marginLeft = rowLayout.marginRight = rowLayout.marginTop = rowLayout.marginBottom = 0;
+        rowLayout.spacing = 12;
+        rowLayout.center = true;
+        taxRow.setLayout(rowLayout);
+        GridDataFactory.fillDefaults().grab(true, false).applyTo(taxRow);
+
+        var taxLabel = new Label(taxRow, SWT.NONE);
+        taxLabel.setText(Messages.LabelTotalEstimatedTax);
+        taxAmount = new StyledLabel(taxRow, SWT.NONE);
+
+        var separator = new Label(taxHeadline, SWT.SEPARATOR | SWT.HORIZONTAL);
+        GridDataFactory.fillDefaults().grab(true, false).applyTo(separator);
 
         summary = new StyledLabel(container, SWT.WRAP);
         GridDataFactory.fillDefaults().grab(true, false).indent(5, 5).applyTo(summary);
@@ -616,7 +644,11 @@ public class AdvanceLumpSumView extends AbstractFinanceView
         viewer.expandAll();
         columns.invalidateCache();
 
-        summary.setText(buildSummary(baseInterestRate.orElse(null)));
+        var hasResult = result != null;
+        taxAmount.setText(hasResult ? formatBoldMoney(result.getTotalTax()) : ""); //$NON-NLS-1$
+        ((GridData) taxHeadline.getLayoutData()).exclude = !hasResult;
+        taxHeadline.setVisible(hasResult);
+        summary.setText(buildSummary(year, baseInterestRate.orElse(null), result));
         summary.getParent().layout(true);
     }
 
@@ -637,7 +669,7 @@ public class AdvanceLumpSumView extends AbstractFinanceView
     }
 
     @SuppressWarnings("nls")
-    private String buildSummary(BaseInterestRate baseInterestRate)
+    /* package */ static String buildSummary(int year, BaseInterestRate baseInterestRate, Result result)
     {
         var text = new StringBuilder();
 
@@ -661,16 +693,12 @@ public class AdvanceLumpSumView extends AbstractFinanceView
 
             if (result != null)
             {
-                text.append(" | ").append(TextUtil.escapeHtml(Messages.LabelAdvanceLumpSum)).append(": <strong>")
-                                .append(Values.Money.format(result.getTotalAdvanceLumpSum())).append("</strong>");
+                text.append(SUMMARY_SEPARATOR).append(TextUtil.escapeHtml(Messages.LabelAdvanceLumpSum)).append(": ")
+                                .append(formatBoldMoney(result.getTotalAdvanceLumpSum()));
                 text.append(formatTaxableSummary(result.getTotalTaxableAmount(), result.getTotalUsedLoss(),
                                 result.getTotalUsedExemption()));
-
-                text.append('\n').append("<strong>").append(TextUtil.escapeHtml(Messages.ColumnEstimatedTax))
-                                .append(": ").append(Values.Money.format(result.getTotalTax())).append("</strong>");
             }
-            text.append('\n');
-
+            text.append("\n\n");
         }
 
         if (result != null)
@@ -707,8 +735,8 @@ public class AdvanceLumpSumView extends AbstractFinanceView
     /* package */ static String formatTaxableSummary(Money taxableAfterDeductions, Money usedLoss, Money usedExemption)
     {
         var taxableBeforeDeductions = taxableAfterDeductions.add(usedLoss).add(usedExemption);
-        var text = new StringBuilder(" | ").append(TextUtil.escapeHtml(Messages.ColumnTaxableAmount))
-                        .append(": <strong>").append(Values.Money.format(taxableBeforeDeductions)).append("</strong>");
+        var text = new StringBuilder(SUMMARY_SEPARATOR).append(TextUtil.escapeHtml(Messages.LabelTaxableBeforeDeductions))
+                        .append(": ").append(formatBoldMoney(taxableBeforeDeductions));
         appendUsedDeduction(text, usedLoss, Messages.MsgAdvanceLumpSumLossUsed);
         appendUsedDeduction(text, usedExemption, Messages.MsgAdvanceLumpSumExemptionOrderUsed);
         return text.toString();
@@ -719,12 +747,12 @@ public class AdvanceLumpSumView extends AbstractFinanceView
         if (amount.getAmount() <= 0)
             return;
 
-        var placeholder = message.indexOf("{0}"); //$NON-NLS-1$
-        var value = "<strong>" + TextUtil.escapeHtml(Values.Money.format(amount)) + "</strong>"; //$NON-NLS-1$ //$NON-NLS-2$
-        var html = placeholder < 0 ? TextUtil.escapeHtml(message)
-                        : TextUtil.escapeHtml(message.substring(0, placeholder)) + value
-                                        + TextUtil.escapeHtml(message.substring(placeholder + 3));
-        text.append(" | ").append(html); //$NON-NLS-1$
+        text.append(SUMMARY_SEPARATOR).append(MessageFormat.format(TextUtil.escapeHtml(message), formatBoldMoney(amount)));
+    }
+
+    private static String formatBoldMoney(Money amount)
+    {
+        return "<strong>" + TextUtil.escapeHtml(Values.Money.format(amount)) + "</strong>"; //$NON-NLS-1$ //$NON-NLS-2$
     }
 
     @SuppressWarnings("nls")

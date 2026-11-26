@@ -176,6 +176,16 @@ public class ClientSettings
                         .filter(t -> t.supports(Security.class)).findFirst();
     }
 
+    /**
+     * Returns whether the given attribute holds the partial exemption. Such an
+     * attribute is edited by selecting one of the statutory rates instead of
+     * entering a free percentage.
+     */
+    public static boolean isPartialExemption(AttributeType attribute)
+    {
+        return attribute != null && PARTIAL_EXEMPTION_ATTRIBUTE_ID.equals(attribute.getId());
+    }
+
     public List<Bookmark> getBookmarks()
     {
         return bookmarks;

@@ -6,6 +6,8 @@ import static org.hamcrest.Matchers.emptyArray;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
 
+import java.math.BigDecimal;
+import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Locale;
@@ -22,11 +24,28 @@ import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.ExchangeRate;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
+import name.abuchen.portfolio.snapshot.advancelumpsum.AdvanceLumpSumCalculation.Result;
+import name.abuchen.portfolio.snapshot.advancelumpsum.BaseInterestRate;
+import name.abuchen.portfolio.snapshot.advancelumpsum.BaseInterestRate.Source;
 import name.abuchen.portfolio.ui.Messages;
 
 @SuppressWarnings("nls")
 public class AdvanceLumpSumViewTest
 {
+    @Test
+    public void testSummaryHighlightsBaseRateAndSeparatesFiguresFromNotes()
+    {
+        var rate = new BaseInterestRate(2025, new BigDecimal("2.53"), Source.OFFICIAL);
+        var result = new Result(CurrencyUnit.EUR, List.of());
+        var zero = "<strong>" + Values.Money.format(Money.of(CurrencyUnit.EUR, 0)) + "</strong>";
+        var expected = Messages.LabelBaseInterestRate + " 2025: <strong>2,53 %</strong> ("
+                        + Messages.LabelBaseInterestRateSourceOfficial + ") | " + Messages.LabelAdvanceLumpSum + ": "
+                        + zero + " | " + Messages.LabelTaxableBeforeDeductions + ": " + zero + "\n\n<em>"
+                        + Messages.MsgAdvanceLumpSumInfo + "</em>";
+
+        assertThat(AdvanceLumpSumView.buildSummary(2025, rate, result), is(expected));
+    }
+
     @Test
     public void testSummaryShowsTaxableAmountBeforeListingUsedDeductions()
     {
@@ -34,25 +53,21 @@ public class AdvanceLumpSumViewTest
         var taxable = Money.of(CurrencyUnit.EUR, 10000);
         var loss = Money.of(CurrencyUnit.EUR, 3000);
         var exemption = Money.of(CurrencyUnit.EUR, 2000);
-        var taxableLabel = " | " + Messages.ColumnTaxableAmount + ": <strong>" + Values.Money.format(taxable)
-                        + "</strong>";
-        var lossLabel = bold(Messages.MsgAdvanceLumpSumLossUsed, loss);
-        var exemptionLabel = bold(Messages.MsgAdvanceLumpSumExemptionOrderUsed, exemption);
+        var separator = " | ";
+        var taxableLabel = separator + Messages.LabelTaxableBeforeDeductions + ": <strong>"
+                        + Values.Money.format(taxable) + "</strong>";
+        var lossLabel = MessageFormat.format(Messages.MsgAdvanceLumpSumLossUsed,
+                        "<strong>" + Values.Money.format(loss) + "</strong>");
+        var exemptionLabel = MessageFormat.format(Messages.MsgAdvanceLumpSumExemptionOrderUsed,
+                        "<strong>" + Values.Money.format(exemption) + "</strong>");
 
         assertThat(AdvanceLumpSumView.formatTaxableSummary(taxable, zero, zero), is(taxableLabel));
         assertThat(AdvanceLumpSumView.formatTaxableSummary(Money.of(CurrencyUnit.EUR, 7000), loss, zero),
-                        is(taxableLabel + " | " + lossLabel));
+                        is(taxableLabel + separator + lossLabel));
         assertThat(AdvanceLumpSumView.formatTaxableSummary(Money.of(CurrencyUnit.EUR, 8000), zero, exemption),
-                        is(taxableLabel + " | " + exemptionLabel));
+                        is(taxableLabel + separator + exemptionLabel));
         assertThat(AdvanceLumpSumView.formatTaxableSummary(Money.of(CurrencyUnit.EUR, 5000), loss, exemption),
-                        is(taxableLabel + " | " + lossLabel + " | " + exemptionLabel));
-    }
-
-    private static String bold(String message, Money amount)
-    {
-        var placeholder = message.indexOf("{0}");
-        return message.substring(0, placeholder) + "<strong>" + Values.Money.format(amount) + "</strong>"
-                        + message.substring(placeholder + 3);
+                        is(taxableLabel + separator + lossLabel + separator + exemptionLabel));
     }
 
     private static Locale defaultLocale;
