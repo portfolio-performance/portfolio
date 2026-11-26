@@ -298,6 +298,7 @@ import name.abuchen.portfolio.ui.util.BindingHelper;
      * Multiplier scaled with {@link Values#Quote} to bind it to a quote input
      */
     private long multiplier;
+    private BigDecimal loadedMultiplier;
 
     /**
      * Used to pipe the status of a manually validated quote provider into the
@@ -331,7 +332,8 @@ import name.abuchen.portfolio.ui.util.BindingHelper;
         this.latestFeed = security.getLatestFeed();
         this.latestFeedURL = security.getLatestFeedURL();
         this.isRetired = security.isRetired();
-        this.multiplier = toQuote(security.getMultiplier());
+        this.loadedMultiplier = security.getMultiplier();
+        this.multiplier = toQuote(loadedMultiplier);
 
         for (Taxonomy taxonomy : client.getTaxonomies())
             this.taxonomies.add(new TaxonomyDesignation(taxonomy, security));
@@ -605,8 +607,10 @@ import name.abuchen.portfolio.ui.util.BindingHelper;
         security.setRetired(isRetired);
 
         // keep multipliers with more digits than the input field supports
-        if (multiplier > 0 && multiplier != toQuote(security.getMultiplier()))
+        if (multiplier > 0 && multiplier != toQuote(loadedMultiplier))
             security.setMultiplier(BigDecimal.valueOf(multiplier, Values.Quote.precision()).stripTrailingZeros());
+        else
+            security.setMultiplier(loadedMultiplier);
 
         Attributes a = new Attributes();
         for (AttributeDesignation attribute : attributes)

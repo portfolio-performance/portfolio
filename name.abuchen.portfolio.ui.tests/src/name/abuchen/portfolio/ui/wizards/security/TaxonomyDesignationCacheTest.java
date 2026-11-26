@@ -5,6 +5,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
+import java.math.BigDecimal;
 import java.text.MessageFormat;
 
 import org.eclipse.core.runtime.IStatus;
@@ -156,6 +157,22 @@ public class TaxonomyDesignationCacheTest
 
         secondDesignation.getLinks().get(0).setWeight(Classification.ONE_HUNDRED_PERCENT);
         assertTrue(model.validateAssignments().isOK());
+    }
+
+    @Test
+    public void testTemporarySecurityKeepsLoadedMultiplier()
+    {
+        security.setMultiplier(new BigDecimal("2.123456789"));
+        var model = new EditSecurityModel(client, security);
+
+        var copy = new Security(null, null);
+        model.setAttributes(copy);
+        assertEquals(new BigDecimal("2.123456789"), copy.getMultiplier());
+
+        model.setMultiplier(Values.Quote.factorize(3));
+        copy = new Security(null, null);
+        model.setAttributes(copy);
+        assertEquals(new BigDecimal("3"), copy.getMultiplier());
     }
 
     private void addLink(TaxonomyDesignation target, Classification classification, int weight)
