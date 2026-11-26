@@ -33,7 +33,7 @@ public class AssetPosition
         this.converter = converter;
         this.date = date;
         this.totalAssets = totalAssets;
-        this.valuation = position.calculateValue();
+        this.valuation = position.calculateNotionalValue();
     }
 
     public Money getValuation()

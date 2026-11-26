@@ -366,4 +366,21 @@ public interface PSecurityOrBuilder extends
    * <code>.google.protobuf.Timestamp updatedAt = 21;</code>
    */
   com.google.protobuf.TimestampOrBuilder getUpdatedAtOrBuilder();
+
+  /**
+   * <code>optional string multiplier = 22;</code>
+   * @return Whether the multiplier field is set.
+   */
+  boolean hasMultiplier();
+  /**
+   * <code>optional string multiplier = 22;</code>
+   * @return The multiplier.
+   */
+  java.lang.String getMultiplier();
+  /**
+   * <code>optional string multiplier = 22;</code>
+   * @return The bytes for multiplier.
+   */
+  com.google.protobuf.ByteString
+      getMultiplierBytes();
 }

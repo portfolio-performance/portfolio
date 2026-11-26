@@ -207,7 +207,7 @@ public final class ClientProtos {
       "\t\022/\n\004data\030\004 \003(\0132!.name.abuchen.portfolio" +
       ".PAnyValue\022\016\n\006source\030\005 \001(\t\"7\n\004Type\022\017\n\013ST" +
       "OCK_SPLIT\020\000\022\010\n\004NOTE\020\001\022\024\n\020DIVIDEND_PAYMEN" +
-      "T\020\002\"\325\006\n\tPSecurity\022\014\n\004uuid\030\001 \001(\t\022\025\n\010onlin" +
+      "T\020\002\"\375\006\n\tPSecurity\022\014\n\004uuid\030\001 \001(\t\022\025\n\010onlin" +
       "eId\030\002 \001(\tH\000\210\001\001\022\014\n\004name\030\003 \001(\t\022\031\n\014currency" +
       "Code\030\004 \001(\tH\001\210\001\001\022\037\n\022targetCurrencyCode\030\005 " +
       "\001(\tH\002\210\001\001\022\021\n\004note\030\006 \001(\tH\003\210\001\001\022\021\n\004isin\030\007 \001(" +
@@ -224,11 +224,11 @@ public final class ClientProtos {
       "vent\0225\n\nproperties\030\023 \003(\0132!.name.abuchen." +
       "portfolio.PKeyValue\022\021\n\tisRetired\030\024 \001(\010\022-" +
       "\n\tupdatedAt\030\025 \001(\0132\032.google.protobuf.Time" +
-      "stampB\013\n\t_onlineIdB\017\n\r_currencyCodeB\025\n\023_" +
+      "stamp\022\027\n\nmultiplier\030\026 \001(\tH\r\210\001\001B\013\n\t_onlineIdB\017\n\r_currencyCodeB\025\n\023_" +
       "targetCurrencyCodeB\007\n\005_noteB\007\n\005_isinB\017\n\r" +
       "_tickerSymbolB\006\n\004_wknB\013\n\t_calendarB\007\n\005_f" +
       "eedB\n\n\010_feedURLB\r\n\013_latestFeedB\020\n\016_lates" +
-      "tFeedURLB\t\n\007_latest\".\n\nPWatchlist\022\014\n\004nam" +
+      "tFeedURLB\t\n\007_latestB\r\n\013_multiplier\".\n\nPWatchlist\022\014\n\004nam" +
       "e\030\001 \001(\t\022\022\n\nsecurities\030\002 \003(\t\"\321\001\n\010PAccount" +
       "\022\014\n\004uuid\030\001 \001(\t\022\014\n\004name\030\002 \001(\t\022\024\n\014currency" +
       "Code\030\003 \001(\t\022\021\n\004note\030\004 \001(\tH\000\210\001\001\022\021\n\tisRetir" +
@@ -415,7 +415,7 @@ public final class ClientProtos {
     internal_static_name_abuchen_portfolio_PSecurity_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_name_abuchen_portfolio_PSecurity_descriptor,
-        new java.lang.String[] { "Uuid", "OnlineId", "Name", "CurrencyCode", "TargetCurrencyCode", "Note", "Isin", "TickerSymbol", "Wkn", "Calendar", "Feed", "FeedURL", "Prices", "LatestFeed", "LatestFeedURL", "Latest", "Attributes", "Events", "Properties", "IsRetired", "UpdatedAt", "OnlineId", "CurrencyCode", "TargetCurrencyCode", "Note", "Isin", "TickerSymbol", "Wkn", "Calendar", "Feed", "FeedURL", "LatestFeed", "LatestFeedURL", "Latest", });
+        new java.lang.String[] { "Uuid", "OnlineId", "Name", "CurrencyCode", "TargetCurrencyCode", "Note", "Isin", "TickerSymbol", "Wkn", "Calendar", "Feed", "FeedURL", "Prices", "LatestFeed", "LatestFeedURL", "Latest", "Attributes", "Events", "Properties", "IsRetired", "UpdatedAt", "Multiplier", "OnlineId", "CurrencyCode", "TargetCurrencyCode", "Note", "Isin", "TickerSymbol", "Wkn", "Calendar", "Feed", "FeedURL", "LatestFeed", "LatestFeedURL", "Latest", "Multiplier", });
     internal_static_name_abuchen_portfolio_PWatchlist_descriptor =
       getDescriptor().getMessageTypes().get(9);
     internal_static_name_abuchen_portfolio_PWatchlist_fieldAccessorTable = new

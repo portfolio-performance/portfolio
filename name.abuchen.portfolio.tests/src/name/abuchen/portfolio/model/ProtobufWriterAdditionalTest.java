@@ -6,6 +6,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -45,6 +46,34 @@ public class ProtobufWriterAdditionalTest
         String actual = ClientTestUtilities.toString(newClient);
 
         assertThat(actual, is(expected));
+    }
+
+    @Test
+    public void testSecurityMultiplierRoundTrip() throws IOException
+    {
+        Client client = new Client();
+
+        Security leveraged = new Security();
+        leveraged.setName("Leveraged");
+        leveraged.setMultiplier(new BigDecimal("2.5"));
+        leveraged.setUpdatedAt(Instant.now());
+        client.addSecurity(leveraged);
+
+        Security plain = new Security();
+        plain.setName("Plain");
+        plain.setUpdatedAt(Instant.now());
+        client.addSecurity(plain);
+
+        ProtobufWriter protobufWriter = new ProtobufWriter();
+
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        protobufWriter.save(client, stream);
+        stream.close();
+
+        Client newClient = protobufWriter.load(new ByteArrayInputStream(stream.toByteArray()));
+
+        assertThat(newClient.getSecurities().get(0).getMultiplier(), is(new BigDecimal("2.5")));
+        assertThat(newClient.getSecurities().get(1).getMultiplier(), is(BigDecimal.ONE));
     }
 
     @Test

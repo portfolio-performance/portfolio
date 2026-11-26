@@ -104,6 +104,22 @@ public class SecurityPosition
         return Money.of(investment.getCurrencyCode(), marketValue);
     }
 
+    /**
+     * Returns the notional exposure, i.e. the market value multiplied by the
+     * multiplier of the security (1 unless configured).
+     */
+    public Money calculateNotionalValue()
+    {
+        Money value = calculateValue();
+
+        if (!(investment instanceof Security security) || security.getMultiplier().compareTo(BigDecimal.ONE) == 0)
+            return value;
+
+        return Money.of(value.getCurrencyCode(), BigDecimal.valueOf(value.getAmount()) //
+                        .multiply(security.getMultiplier(), Values.MC) //
+                        .setScale(0, RoundingMode.HALF_UP).longValue());
+    }
+
     public static SecurityPosition split(SecurityPosition position, int weight)
     {
         List<PortfolioTransaction> splitTransactions = new ArrayList<>(position.transactions.size());

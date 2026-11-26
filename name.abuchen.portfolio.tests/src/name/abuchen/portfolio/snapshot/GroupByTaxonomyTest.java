@@ -6,6 +6,7 @@ import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertNotNull;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -79,6 +80,48 @@ public class GroupByTaxonomyTest
 
         AssetCategory realEstate = grouping.byClassification(taxonomy.getClassificationById("realestate"));
         assertThat(realEstate, nullValue());
+    }
+
+    @Test
+    public void testThatMultiplierScalesNotionalExposure()
+    {
+        Client client = new Client();
+
+        Taxonomy taxonomy = new TaxonomyBuilder() //
+                        .addClassification("equity") //
+                        .addTo(client);
+
+        Security leveraged = new SecurityBuilder() //
+                        .addPrice("2010-01-01", Values.Quote.factorize(10)) //
+                        .assign(taxonomy, "equity") //
+                        .addTo(client);
+        leveraged.setMultiplier(new BigDecimal("2.5"));
+
+        Portfolio portfolio = new PortfolioBuilder() //
+                        .inbound_delivery(leveraged, "2010-01-01", Values.Share.factorize(10), 10000) //
+                        .addTo(client);
+
+        PortfolioSnapshot snapshot = PortfolioSnapshot.create(portfolio, new TestCurrencyConverter(),
+                        LocalDate.parse("2010-01-01"));
+
+        // market value is unchanged
+        assertThat(snapshot.getValue(), is(Money.of(CurrencyUnit.EUR, 100_00)));
+
+        GroupByTaxonomy grouping = snapshot.groupByTaxonomy(taxonomy);
+        AssetCategory equity = grouping.byClassification(taxonomy.getClassificationById("equity"));
+        assertThat(equity.getValuation(), is(Money.of(CurrencyUnit.EUR, 250_00)));
+    }
+
+    @Test
+    public void testThatDefaultMultiplierIsOne()
+    {
+        Security security = new Security();
+        assertThat(security.getMultiplier(), is(BigDecimal.ONE));
+
+        security.setMultiplier(new BigDecimal("1.00"));
+        assertThat(security.getMultiplier(), is(BigDecimal.ONE));
+
+        assertThat(security.deepCopy().getMultiplier(), is(BigDecimal.ONE));
     }
 
     @Test
