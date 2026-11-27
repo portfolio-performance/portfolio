@@ -8,6 +8,7 @@ import java.time.LocalDateTime;
 
 import org.junit.Test;
 
+import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.junit.AccountBuilder;
 import name.abuchen.portfolio.junit.PortfolioBuilder;
 import name.abuchen.portfolio.junit.SecurityBuilder;
@@ -16,6 +17,7 @@ import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Portfolio;
+import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.PortfolioTransferEntry;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.money.CurrencyUnit;
@@ -23,6 +25,7 @@ import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.snapshot.security.BaseSecurityPerformanceRecord.Trails;
 import name.abuchen.portfolio.snapshot.trail.Trail;
+import name.abuchen.portfolio.snapshot.trail.TrailRecord;
 import name.abuchen.portfolio.util.Interval;
 
 @SuppressWarnings("nls")
@@ -263,5 +266,52 @@ public class DeltaCalculationTest
                         .create(client, new TestCurrencyConverter(), interval).getRecord(security)
                         .orElseThrow(IllegalArgumentException::new);
         assertThat(record.getDelta(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1200 - 1000))));
+    }
+
+    /**
+     * Whether the trail contains an exchange rate step that converts a
+     * transaction of the given label.
+     */
+    private boolean containsConversionOf(TrailRecord trail, String transactionLabel)
+    {
+        if (trail.getLabel().startsWith(Messages.CSVColumn_ExchangeRate) && trail.getInputs().size() == 1
+                        && transactionLabel.equals(trail.getInputs().get(0).getLabel()))
+            return true;
+
+        return trail.getInputs().stream().anyMatch(input -> containsConversionOf(input, transactionLabel));
+    }
+
+    /**
+     * A transaction in a currency other than the term currency must be
+     * converted in the trail, just like the valuation at the end. The
+     * {@link PortfolioBuilder} books all transactions in EUR, so the USD
+     * delivery is created directly.
+     */
+    @Test
+    public void testForeignCurrencyTransaction()
+    {
+        Client client = new Client();
+
+        Security security = new SecurityBuilder(CurrencyUnit.USD) //
+                        .addPrice("2020-01-01", Values.Quote.factorize(100)) //
+                        .addPrice("2021-01-31", Values.Quote.factorize(130)) //
+                        .addTo(client);
+
+        Portfolio portfolio = new PortfolioBuilder().addTo(client);
+        portfolio.addTransaction(new PortfolioTransaction(LocalDate.parse("2020-06-01").atStartOfDay(),
+                        CurrencyUnit.USD, Values.Amount.factorize(1000), security, Values.Share.factorize(10),
+                        PortfolioTransaction.Type.DELIVERY_INBOUND, 0, 0));
+
+        LazySecurityPerformanceSnapshot snapshot = LazySecurityPerformanceSnapshot.create(client,
+                        new TestCurrencyConverter(),
+                        Interval.of(LocalDate.parse("2020-01-01"), LocalDate.parse("2021-01-31")));
+        LazySecurityPerformanceRecord record = snapshot.getRecord(security)
+                        .orElseThrow(IllegalArgumentException::new);
+
+        Trail trail = record.explain(Trails.ABSOLUTE_PERFORMANCE).orElseThrow(IllegalArgumentException::new);
+
+        assertThat(trail.getRecord().getValue(), is(record.getDelta()));
+        assertThat(containsConversionOf(trail.getRecord(), PortfolioTransaction.Type.DELIVERY_INBOUND.toString()),
+                        is(true));
     }
 }
