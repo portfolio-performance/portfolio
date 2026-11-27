@@ -1514,6 +1514,13 @@ public class Messages extends NLS
     public static String TooltipDateOfExchangeRate;
     public static String TooltipFIRENumber;
     public static String TooltipHintPressAlt;
+    public static String TooltipLimitPriceAvgPositionAll;
+    public static String TooltipLimitPriceAvgPositionGroup;
+    public static String TooltipLimitPriceFormulaResolved;
+    public static String TooltipLimitPricePurchasePriceFifo;
+    public static String TooltipLimitPriceUnresolvedEmptyGroup;
+    public static String TooltipLimitPriceUnresolvedNoHoldings;
+    public static String TooltipLimitPriceUnresolvedUnknownGroup;
     public static String TooltipMaxDrawdown;
     public static String TooltipMaxDrawdownDuration;
     public static String TooltipMaxDrawdownDurationEndOfPeriod;

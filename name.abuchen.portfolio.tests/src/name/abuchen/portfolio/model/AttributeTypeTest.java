@@ -25,6 +25,7 @@ import name.abuchen.portfolio.model.AttributeType.PercentConverter;
 import name.abuchen.portfolio.model.AttributeType.ProtoConverter;
 import name.abuchen.portfolio.model.AttributeType.ShareConverter;
 import name.abuchen.portfolio.model.LimitPrice.RelationalOperator;
+import name.abuchen.portfolio.model.LimitPrice.TargetMetric;
 import name.abuchen.portfolio.model.proto.v1.PAnyValue;
 import name.abuchen.portfolio.money.Values;
 
@@ -95,6 +96,85 @@ public class AttributeTypeTest
                                         new LimitPrice(RelationalOperator.GREATER_OR_EQUAL, 112345000000L),
                                         new LimitPrice(RelationalOperator.GREATER, 123400000000L),
                                         new LimitPrice(RelationalOperator.GREATER, 123456780000L)));
+    }
+
+    @Test
+    public void testLimitPriceFormulaConverter_deDE()
+    {
+        Locale.setDefault(Locale.GERMANY);
+
+        var converter = new LimitPriceConverter();
+        assertThrows(IllegalArgumentException.class, () -> converter.fromString("<= 0% PP"));
+        assertThrows(IllegalArgumentException.class, () -> converter.fromString("< -50% PP"));
+        assertThrows(IllegalArgumentException.class, () -> converter.fromString("> 50% AVG()"));
+        assertThrows(IllegalArgumentException.class, () -> converter.fromString(">= 50% AVG(   )"));
+        assertThrows(IllegalArgumentException.class, () -> converter.fromString("< 50% AVG(Core"));
+
+        performLimitPriceTests(
+                        Arrays.asList("<= 60% PP", ">= 180% pp", "> 162,5% PP", "<= 0,6 * PP", "< 0,6 PP",
+                                        "< 50% AVG", ">= 200% AVG(Core)", "> 175% AVG[Individual Stocks]"),
+                        Arrays.asList(new LimitPrice(RelationalOperator.SMALLER_OR_EQUAL,
+                                        TargetMetric.PURCHASE_PRICE_FIFO, 0.6d, null),
+                                        new LimitPrice(RelationalOperator.GREATER_OR_EQUAL,
+                                                        TargetMetric.PURCHASE_PRICE_FIFO, 1.8d, null),
+                                        new LimitPrice(RelationalOperator.GREATER,
+                                                        TargetMetric.PURCHASE_PRICE_FIFO, 1.625d, null),
+                                        new LimitPrice(RelationalOperator.SMALLER_OR_EQUAL,
+                                                        TargetMetric.PURCHASE_PRICE_FIFO, 0.6d, null),
+                                        new LimitPrice(RelationalOperator.SMALLER,
+                                                        TargetMetric.PURCHASE_PRICE_FIFO, 0.6d, null),
+                                        new LimitPrice(RelationalOperator.SMALLER,
+                                                        TargetMetric.AVG_POSITION_VALUE, 0.5d, null),
+                                        new LimitPrice(RelationalOperator.GREATER_OR_EQUAL,
+                                                        TargetMetric.AVG_POSITION_VALUE, 2.0d, "Core"),
+                                        new LimitPrice(RelationalOperator.GREATER,
+                                                        TargetMetric.AVG_POSITION_VALUE, 1.75d, "Individual Stocks")));
+
+        assertThat(converter.toString(converter.fromString("< 0,625 * PP")), is("< 62,5% PP"));
+        assertThat(converter.toString(converter.fromString("> 2 * AVG(Core)")), is("> 200% AVG(Core)"));
+    }
+
+    @Test
+    public void testLimitPriceFormulaConverter_deCH()
+    {
+        Locale.setDefault(Locale.forLanguageTag("de-CH"));
+        performLimitPriceTests(
+                        Arrays.asList("< 62.5% PP", "> 1.8 * PP", "<= 50% AVG", ">= 200% AVG(Core)"),
+                        Arrays.asList(new LimitPrice(RelationalOperator.SMALLER,
+                                        TargetMetric.PURCHASE_PRICE_FIFO, 0.625d, null),
+                                        new LimitPrice(RelationalOperator.GREATER,
+                                                        TargetMetric.PURCHASE_PRICE_FIFO, 1.8d, null),
+                                        new LimitPrice(RelationalOperator.SMALLER_OR_EQUAL,
+                                                        TargetMetric.AVG_POSITION_VALUE, 0.5d, null),
+                                        new LimitPrice(RelationalOperator.GREATER_OR_EQUAL,
+                                                        TargetMetric.AVG_POSITION_VALUE, 2.0d, "Core")));
+
+        var converter = new LimitPriceConverter();
+        assertThat(converter.toString(converter.fromString("> 1.625 * PP")), is("> 162.5% PP"));
+    }
+
+    @Test
+    public void testLimitPriceFormulaProto()
+    {
+        Locale.setDefault(Locale.forLanguageTag("de-CH"));
+        var converter = new LimitPriceConverter();
+
+        // Protobuf serialization must be locale-invariant and use F: prefix
+        var upProto = converter.toProto(new LimitPrice(RelationalOperator.GREATER,
+                        TargetMetric.AVG_POSITION_VALUE, 1.625d, "Core"));
+        var downProto = converter.toProto(new LimitPrice(RelationalOperator.SMALLER,
+                        TargetMetric.PURCHASE_PRICE_FIFO, 0.6d, null));
+        assertThat(upProto.getString().startsWith("F:"), is(true));
+        assertThat(downProto.getString().startsWith("F:"), is(true));
+
+        Locale.setDefault(Locale.GERMANY);
+        var deConverter = new LimitPriceConverter();
+        assertThat(deConverter.fromProto(upProto), is(new LimitPrice(RelationalOperator.GREATER,
+                        TargetMetric.AVG_POSITION_VALUE, 1.625d, "Core")));
+        assertThat(deConverter.fromProto(downProto), is(new LimitPrice(RelationalOperator.SMALLER,
+                        TargetMetric.PURCHASE_PRICE_FIFO, 0.6d, null)));
+        assertNull(deConverter.fromProto(PAnyValue.newBuilder().setString("F:invalid").build()));
+        assertNull(deConverter.fromProto(PAnyValue.newBuilder().setString("F:>\t0.5\tUNKNOWN\t").build()));
     }
 
     @Test

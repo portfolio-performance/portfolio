@@ -38,9 +38,9 @@ import name.abuchen.portfolio.events.ChangeEventConstants;
 import name.abuchen.portfolio.events.SecurityCreatedEvent;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.LimitPrice;
+import name.abuchen.portfolio.model.LimitPriceResolver;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
-import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.model.Watchlist;
 import name.abuchen.portfolio.online.QuoteFeed;
 import name.abuchen.portfolio.ui.Images;
@@ -268,13 +268,17 @@ public class SecurityListView extends AbstractFinanceView
 
         private boolean isLimitPriceExceeded(Security security)
         {
+            var latest = security.getSecurityPrice(LocalDate.now());
+            if (latest == null)
+                return false;
+
+            var resolver = getLimitPriceResolver();
             for (Object attribute : security.getAttributes().getMap().values())
             {
                 if (!(attribute instanceof LimitPrice limit))
                     continue;
 
-                SecurityPrice latest = security.getSecurityPrice(LocalDate.now());
-                if (latest != null && limit.isExceeded(latest))
+                if (limit.isExceeded(latest, resolver, security))
                     return true;
             }
 
@@ -355,6 +359,15 @@ public class SecurityListView extends AbstractFinanceView
 
     private Predicate<Security> adhocFilter;
 
+    private LimitPriceResolver limitPriceResolver;
+
+    private LimitPriceResolver getLimitPriceResolver()
+    {
+        if (limitPriceResolver == null)
+            limitPriceResolver = new LimitPriceResolver(getClient());
+        return limitPriceResolver;
+    }
+
     @Override
     protected String getDefaultTitle()
     {
@@ -373,6 +386,9 @@ public class SecurityListView extends AbstractFinanceView
     @Override
     public void notifyModelUpdated()
     {
+        if (limitPriceResolver != null)
+            limitPriceResolver.invalidate();
+
         if (securities != null && !securities.getTableViewer().getTable().isDisposed())
         {
             updateTitle(getDefaultTitle());

@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.model;
 
 import java.text.DecimalFormat;
+import java.util.OptionalLong;
 import java.util.StringJoiner;
 
 import org.eclipse.swt.graphics.Color;
@@ -47,25 +48,59 @@ public class LimitPriceSettings
 
     public String getFullLabel(LimitPrice limit, SecurityPrice price)
     {
-        if (price == null)
+        if (!limit.isStatic())
             return limit.toString();
 
-        StringJoiner joiner = new StringJoiner(" / ", " (", ")"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        return formatStaticLabel(limit.toString(), limit.getValue(), price);
+    }
+
+    public String getFullLabel(LimitPrice limit, OptionalLong resolvedQuote, SecurityPrice price)
+    {
+        if (limit.isStatic())
+            return getFullLabel(limit, price);
+
+        if (resolvedQuote == null || resolvedQuote.isEmpty())
+            return limit.toString() + " (\u2014)"; //$NON-NLS-1$
+
+        long limitQuote = resolvedQuote.getAsLong();
+        var quoteLabel = Values.CalculatedQuote.format(limitQuote);
+        var distanceSuffix = formatDistanceSuffix(limitQuote, price);
+
+        if (distanceSuffix.isEmpty())
+            return limit.toString() + " (" + quoteLabel + ")"; //$NON-NLS-1$ //$NON-NLS-2$
+        else
+            return limit.toString() + ": " + quoteLabel + distanceSuffix; //$NON-NLS-1$
+    }
+
+    private String formatStaticLabel(String baseLabel, long limitQuote, SecurityPrice price)
+    {
+        if (price == null)
+            return baseLabel;
+
+        return baseLabel + formatDistanceSuffix(limitQuote, price);
+    }
+
+    private String formatDistanceSuffix(long limitQuote, SecurityPrice price)
+    {
+        if (price == null)
+            return ""; //$NON-NLS-1$
+
+        var joiner = new StringJoiner(" / ", " (", ")"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         joiner.setEmptyValue(""); //$NON-NLS-1$
         if (getShowAbsoluteDiff())
         {
-            double absDistance = (limit.getValue() - price.getValue()) / Values.Quote.divider();
-            DecimalFormat df = new DecimalFormat("+#.##;-#.##"); //$NON-NLS-1$
+            double absDistance = (limitQuote - price.getValue()) / Values.Quote.divider();
+            var df = new DecimalFormat("+#.##;-#.##"); //$NON-NLS-1$
             joiner.add(df.format(absDistance));
         }
 
         if (getShowRelativeDiff())
         {
-            DecimalFormat df = new DecimalFormat("+#.#%;-#.#%"); //$NON-NLS-1$
-            joiner.add(df.format(limit.calculateRelativeDistance(price.getValue())));
+            var df = new DecimalFormat("+#.#%;-#.#%"); //$NON-NLS-1$
+            joiner.add(df.format(LimitPrice.calculateRelativeDistance(limitQuote, price.getValue())));
         }
 
-        return limit.toString() + joiner.toString();
+        return joiner.toString();
     }
 
     public void setLimitExceededPositivelyColor(Color value)
