@@ -92,9 +92,14 @@ public class NewDashboardDialog extends Dialog
     {
         Dashboard newDashboard = new Dashboard(UUID.randomUUID().toString());
         if (selectedName.equals(TemplateLabel.DASHBOARD.getText()))
+        {
             DefaultLabels.setDefaultName(newDashboard);
+        }
         else
+        {
             newDashboard.setName(selectedName);
+            DefaultLabels.clear(newDashboard);
+        }
 
         switch (selectedTemplate)
         {

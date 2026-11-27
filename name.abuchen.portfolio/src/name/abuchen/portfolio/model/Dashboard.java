@@ -21,7 +21,8 @@ public final class Dashboard
         FLAG_COLORED_VALUE,
         /**
          * marks the label of a widget or the name of a dashboard as default
-         * text which follows the language of the user interface
+         * text which follows the language of the user interface (or as edited
+         * by the user)
          */
         DEFAULT_LABEL;
     }
