@@ -18,6 +18,7 @@ import org.eclipse.swt.widgets.Text;
 import name.abuchen.portfolio.model.Dashboard;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.FormDataFactory;
+import name.abuchen.portfolio.ui.views.dashboard.DefaultLabels.TemplateLabel;
 
 public class NewDashboardDialog extends Dialog
 {
@@ -90,7 +91,10 @@ public class NewDashboardDialog extends Dialog
     public Dashboard createDashboard()
     {
         Dashboard newDashboard = new Dashboard(UUID.randomUUID().toString());
-        newDashboard.setName(selectedName);
+        if (selectedName.equals(TemplateLabel.DASHBOARD.getText()))
+            DefaultLabels.setDefaultName(newDashboard);
+        else
+            newDashboard.setName(selectedName);
 
         switch (selectedTemplate)
         {
@@ -117,10 +121,7 @@ public class NewDashboardDialog extends Dialog
         Dashboard.Column column = new Dashboard.Column();
         newDashboard.getColumns().add(column);
 
-        Dashboard.Widget widget = new Dashboard.Widget();
-        widget.setType(WidgetFactory.DESCRIPTION.name());
-        widget.setLabel(Messages.DescriptionDashboardUse);
-        column.getWidgets().add(widget);
+        addWidget(column, TemplateLabel.DASHBOARD_USE);
 
         newDashboard.getColumns().add(new Dashboard.Column());
     }
@@ -132,88 +133,32 @@ public class NewDashboardDialog extends Dialog
         Dashboard.Column column = new Dashboard.Column();
         newDashboard.getColumns().add(column);
 
-        Dashboard.Widget widget = new Dashboard.Widget();
-        widget.setType(WidgetFactory.HEADING.name());
-        widget.setLabel(Messages.LabelKeyIndicators);
-        column.getWidgets().add(widget);
+        addWidget(column, TemplateLabel.KEY_INDICATORS);
+        addWidget(column, WidgetFactory.TTWROR);
+        addWidget(column, WidgetFactory.IRR);
+        addWidget(column, WidgetFactory.ABSOLUTE_CHANGE);
+        addWidget(column, WidgetFactory.DELTA);
 
-        widget = new Dashboard.Widget();
-        widget.setType(WidgetFactory.TTWROR.name());
-        widget.setLabel(WidgetFactory.TTWROR.getLabel());
-        column.getWidgets().add(widget);
-
-        widget = new Dashboard.Widget();
-        widget.setType(WidgetFactory.IRR.name());
-        widget.setLabel(WidgetFactory.IRR.getLabel());
-        column.getWidgets().add(widget);
-
-        widget = new Dashboard.Widget();
-        widget.setType(WidgetFactory.ABSOLUTE_CHANGE.name());
-        widget.setLabel(WidgetFactory.ABSOLUTE_CHANGE.getLabel());
-        column.getWidgets().add(widget);
-
-        widget = new Dashboard.Widget();
-        widget.setType(WidgetFactory.DELTA.name());
-        widget.setLabel(WidgetFactory.DELTA.getLabel());
-        column.getWidgets().add(widget);
-
-        widget = new Dashboard.Widget();
-        widget.setType(WidgetFactory.HEADING.name());
-        widget.setLabel(Messages.LabelTTWROROneDay);
-        column.getWidgets().add(widget);
-
-        widget = new Dashboard.Widget();
-        widget.setType(WidgetFactory.TTWROR.name());
-        widget.setLabel(WidgetFactory.TTWROR.getLabel());
+        addWidget(column, TemplateLabel.LAST_DAY);
+        var widget = addWidget(column, WidgetFactory.TTWROR);
         widget.getConfiguration().put(Dashboard.Config.REPORTING_PERIOD.name(), "T1"); //$NON-NLS-1$
-        column.getWidgets().add(widget);
-
-        widget = new Dashboard.Widget();
-        widget.setType(WidgetFactory.ABSOLUTE_CHANGE.name());
-        widget.setLabel(WidgetFactory.ABSOLUTE_CHANGE.getLabel());
+        widget = addWidget(column, WidgetFactory.ABSOLUTE_CHANGE);
         widget.getConfiguration().put(Dashboard.Config.REPORTING_PERIOD.name(), "T1"); //$NON-NLS-1$
-        column.getWidgets().add(widget);
 
         column = new Dashboard.Column();
         newDashboard.getColumns().add(column);
 
-        widget = new Dashboard.Widget();
-        widget.setType(WidgetFactory.HEADING.name());
-        widget.setLabel(Messages.LabelRiskIndicators);
-        column.getWidgets().add(widget);
-
-        widget = new Dashboard.Widget();
-        widget.setType(WidgetFactory.MAXDRAWDOWN.name());
-        widget.setLabel(WidgetFactory.MAXDRAWDOWN.getLabel());
-        column.getWidgets().add(widget);
-
-        widget = new Dashboard.Widget();
-        widget.setType(WidgetFactory.MAXDRAWDOWNDURATION.name());
-        widget.setLabel(WidgetFactory.MAXDRAWDOWNDURATION.getLabel());
-        column.getWidgets().add(widget);
-
-        widget = new Dashboard.Widget();
-        widget.setType(WidgetFactory.VOLATILITY.name());
-        widget.setLabel(WidgetFactory.VOLATILITY.getLabel());
-        column.getWidgets().add(widget);
-
-        widget = new Dashboard.Widget();
-        widget.setType(WidgetFactory.SEMIVOLATILITY.name());
-        widget.setLabel(WidgetFactory.SEMIVOLATILITY.getLabel());
-        column.getWidgets().add(widget);
+        addWidget(column, TemplateLabel.RISK_INDICATORS);
+        addWidget(column, WidgetFactory.MAXDRAWDOWN);
+        addWidget(column, WidgetFactory.MAXDRAWDOWNDURATION);
+        addWidget(column, WidgetFactory.VOLATILITY);
+        addWidget(column, WidgetFactory.SEMIVOLATILITY);
 
         column = new Dashboard.Column();
         newDashboard.getColumns().add(column);
 
-        widget = new Dashboard.Widget();
-        widget.setType(WidgetFactory.HEADING.name());
-        widget.setLabel(Messages.PerformanceTabCalculation);
-        column.getWidgets().add(widget);
-
-        widget = new Dashboard.Widget();
-        widget.setType(WidgetFactory.CALCULATION.name());
-        widget.setLabel(WidgetFactory.CALCULATION.getLabel());
-        column.getWidgets().add(widget);
+        addWidget(column, TemplateLabel.CALCULATION);
+        addWidget(column, WidgetFactory.CALCULATION);
     }
 
     /* package */ static void buildEarningsDashboard(Dashboard newDashboard)
@@ -221,28 +166,39 @@ public class NewDashboardDialog extends Dialog
         Dashboard.Column column = new Dashboard.Column();
         newDashboard.getColumns().add(column);
 
-        Dashboard.Widget widget = new Dashboard.Widget();
-        widget.setType(WidgetFactory.HEADING.name());
-        widget.setLabel(Messages.LabelEarnings);
-        column.getWidgets().add(widget);
-
-        widget = new Dashboard.Widget();
-        widget.setType(WidgetFactory.EARNINGS_PER_YEAR_CHART.name());
-        widget.setLabel(WidgetFactory.EARNINGS_PER_YEAR_CHART.getLabel());
-        column.getWidgets().add(widget);
-
-        widget = new Dashboard.Widget();
-        widget.setType(WidgetFactory.EARNINGS_PER_MONTH_CHART.name());
-        widget.setLabel(WidgetFactory.EARNINGS_PER_MONTH_CHART.getLabel());
-        column.getWidgets().add(widget);
+        addWidget(column, TemplateLabel.EARNINGS);
+        addWidget(column, WidgetFactory.EARNINGS_PER_YEAR_CHART);
+        addWidget(column, WidgetFactory.EARNINGS_PER_MONTH_CHART);
 
         column = new Dashboard.Column();
         newDashboard.getColumns().add(column);
 
-        widget = new Dashboard.Widget();
-        widget.setType(WidgetFactory.EARNINGS.name());
-        widget.setLabel(WidgetFactory.EARNINGS.getLabel());
+        addWidget(column, WidgetFactory.EARNINGS);
+    }
+
+    /**
+     * Adds a widget labeled with the default label of the widget type.
+     */
+    private static Dashboard.Widget addWidget(Dashboard.Column column, WidgetFactory widgetType)
+    {
+        var widget = new Dashboard.Widget();
+        widget.setType(widgetType.name());
+        widget.setLabel(widgetType.getLabel());
+        DefaultLabels.markAsDefault(widget);
         column.getWidgets().add(widget);
+        return widget;
+    }
+
+    /**
+     * Adds a widget labeled with the given template label.
+     */
+    private static Dashboard.Widget addWidget(Dashboard.Column column, TemplateLabel label)
+    {
+        var widget = new Dashboard.Widget();
+        widget.setType(label.getWidgetType());
+        DefaultLabels.setLabel(widget, label);
+        column.getWidgets().add(widget);
+        return widget;
     }
 
 }

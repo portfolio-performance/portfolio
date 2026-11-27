@@ -459,6 +459,9 @@ public class DashboardView extends AbstractHistoricView
         dashboardData.setDefaultReportingPeriods(getPart().getClientInput().getReportingPeriods());
         dashboardData.setDefaultReportingPeriod(getReportingPeriod());
 
+        // show default names in the current language
+        getClient().getDashboards().forEach(DefaultLabels::update);
+
         int indexOfSelectedDashboard = Math.max(0, persistedState.getInt(SELECTED_DASHBOARD_KEY));
 
         // fall back to the first dashboard if the persisted index is out of
@@ -838,6 +841,8 @@ public class DashboardView extends AbstractHistoricView
         if (dialog.open() != Window.OK)
             return;
 
+        if (!dialog.getValue().equals(newDashboard.getName()))
+            DefaultLabels.clear(newDashboard);
         newDashboard.setName(dialog.getValue());
 
         getClient().addDashboard(newDashboard);
@@ -854,6 +859,8 @@ public class DashboardView extends AbstractHistoricView
         if (dialog.open() != Window.OK)
             return;
 
+        if (!dialog.getValue().equals(board.getName()))
+            DefaultLabels.clear(board);
         board.setName(dialog.getValue());
         getClient().touch();
         updateTitle(board.getName());
@@ -1020,7 +1027,7 @@ public class DashboardView extends AbstractHistoricView
     private Dashboard createDefaultDashboard()
     {
         Dashboard newDashboard = new Dashboard(UUID.randomUUID().toString());
-        newDashboard.setName(Messages.LabelDashboard);
+        DefaultLabels.setDefaultName(newDashboard);
 
         NewDashboardDialog.buildIndicatorDashboard(newDashboard);
 

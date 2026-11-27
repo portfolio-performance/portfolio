@@ -623,7 +623,9 @@ public enum WidgetFactory
 
     public WidgetDelegate<?> constructDelegate(Dashboard.Widget widget, DashboardData data)
     {
-        return this.createFunction.apply(widget, data);
+        WidgetDelegate<?> delegate = this.createFunction.apply(widget, data);
+        DefaultLabels.update(delegate);
+        return delegate;
     }
 
     public Widget constructWidget()
@@ -631,6 +633,7 @@ public enum WidgetFactory
         Dashboard.Widget widget = new Dashboard.Widget();
         widget.setLabel(label);
         widget.setType(name());
+        DefaultLabels.markAsDefault(widget);
 
         if (defaultConfigFunction != null)
             defaultConfigFunction.accept(widget.getConfiguration());
