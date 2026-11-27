@@ -29,6 +29,7 @@ import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.editor.FilePathHelper;
 import name.abuchen.portfolio.ui.editor.PortfolioPart;
+import name.abuchen.portfolio.ui.util.DocumentPortal;
 import name.abuchen.portfolio.ui.wizards.datatransfer.ImportExtractedItemsWizard;
 import name.abuchen.portfolio.ui.wizards.datatransfer.ImportWizardDialog;
 
@@ -79,6 +80,9 @@ public class ImportIBHandler
             String[] filenames = fileDialog.getFileNames();
 
             if (filenames.length == 0)
+                return;
+
+            if (!DocumentPortal.checkSelectedFiles(shell, fileDialog.getFilterPath(), filenames))
                 return;
 
             List<Extractor.InputFile> files = new ArrayList<>();

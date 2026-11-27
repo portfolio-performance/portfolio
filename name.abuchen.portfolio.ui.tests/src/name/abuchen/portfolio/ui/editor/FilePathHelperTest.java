@@ -189,6 +189,30 @@ public class FilePathHelperTest
     }
 
     /**
+     * Inside the Flatpak sandbox, the file dialog returns a directory of the
+     * document portal. It belongs to the selected file only and must not
+     * replace the remembered directory.
+     */
+    @Test
+    public void testSavePathIgnoresDocumentPortalPath() throws IOException
+    {
+        File defaultDir = folder.newFolder("defaultDir");
+        var portalDir = "/run/user/1000/doc/1a2b3c4d";
+
+        var helper = new FilePathHelper(part, KEY);
+        helper.savePath(defaultDir.getAbsolutePath());
+        helper.savePath(portalDir);
+
+        assertThat(preferenceStore.getString(KEY), is(defaultDir.getAbsolutePath()));
+        verify(eclipsePreferences, never()).put(KEY, portalDir);
+
+        var account = new Account();
+        new FilePathHelper(part, KEY, account.getUUID()).savePath(portalDir);
+
+        assertThat(preferenceStore.getString(KEY + "." + account.getUUID()), is(""));
+    }
+
+    /**
      * A depot that has no entry of its own yet - a newly created one - starts in
      * the default directory.
      */
