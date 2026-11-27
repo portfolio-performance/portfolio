@@ -9,6 +9,7 @@ import static org.hamcrest.Matchers.is;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -117,7 +118,53 @@ public class AdvanceLumpSumCalculationTest
         assertThat(item.taxableAmount(), is(euro(12.50)));
         assertThat(item.tax(), is(euro(3.30)));
         assertThat(item.hasMissingPrices(), is(false));
+        assertThat(item.hasOutdatedPrices(), is(false));
         assertThat(result.getTotalTax(), is(euro(3.30)));
+    }
+
+    @Test
+    public void testPricesFarFromTurnOfYearAreFlaggedButStillUsed()
+    {
+        var attribute = client.getSettings().getOptionalPartialExemptionAttributeType().orElseThrow();
+        var staleStart = new SecurityBuilder().addPrice("2022-11-30", Values.Quote.factorize(100))
+                        .addPrice("2023-02-01", Values.Quote.factorize(105))
+                        .addPrice("2023-12-29", Values.Quote.factorize(110)).addTo(client);
+        var lateFirstPrice = new SecurityBuilder().addPrice("2023-03-01", Values.Quote.factorize(100))
+                        .addPrice("2023-12-29", Values.Quote.factorize(110)).addTo(client);
+        var staleEnd = new SecurityBuilder().addPrice("2022-12-30", Values.Quote.factorize(100))
+                        .addPrice("2023-01-02", Values.Quote.factorize(100))
+                        .addPrice("2023-11-30", Values.Quote.factorize(110)).addTo(client);
+        for (var fund : List.of(staleStart, lateFirstPrice, staleEnd))
+        {
+            fund.getAttributes().put(attribute, 0.3);
+            new PortfolioBuilder(account).buy(fund, "2022-06-01", sharesOf(10), amountOf(1000)).addTo(client);
+        }
+
+        var items = calculate2023().items();
+
+        assertThat(items, hasSize(3));
+        for (var item : items)
+        {
+            assertThat(item.hasOutdatedPrices(), is(true));
+            assertThat(item.hasMissingPrices(), is(false));
+            assertThat(item.advanceLumpSum(), is(euro(17.85)));
+        }
+    }
+
+    @Test
+    public void testCurrentYearEndPriceIsComparedWithValuationDate()
+    {
+        var fund = new SecurityBuilder().addPrice("2022-12-30", Values.Quote.factorize(100))
+                        .addPrice("2023-01-02", Values.Quote.factorize(100))
+                        .addPrice("2023-11-20", Values.Quote.factorize(110)).addTo(client);
+        fund.getAttributes().put(client.getSettings().getOptionalPartialExemptionAttributeType().orElseThrow(), 0.3);
+        new PortfolioBuilder(account).buy(fund, "2022-06-01", sharesOf(10), amountOf(1000)).addTo(client);
+
+        var recent = calculate(2023, "2.55", LocalDate.parse("2023-11-27")).items().get(0);
+        var outdated = calculate(2023, "2.55", LocalDate.parse("2023-12-05")).items().get(0);
+
+        assertThat(recent.hasOutdatedPrices(), is(false));
+        assertThat(outdated.hasOutdatedPrices(), is(true));
     }
 
     @Test

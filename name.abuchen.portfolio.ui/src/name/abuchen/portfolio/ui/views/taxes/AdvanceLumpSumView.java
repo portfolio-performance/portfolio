@@ -13,6 +13,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.StringJoiner;
 import java.util.function.Function;
+import java.util.function.Predicate;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.inject.Inject;
@@ -686,24 +687,12 @@ public class AdvanceLumpSumView extends AbstractFinanceView
 
         if (result != null)
         {
-            var missingPrices = new StringJoiner(", ");
-            result.items().stream().filter(Item::hasMissingPrices).map(i -> i.security().getName()).distinct()
-                            .forEach(missingPrices::add);
-            if (missingPrices.length() > 0)
-                appendWarning(text, MessageFormat.format(Messages.MsgAdvanceLumpSumMissingPrices,
-                                missingPrices.toString()));
-            var missingExchangeRates = new StringJoiner(", ");
-            result.items().stream().filter(Item::hasMissingExchangeRates).map(i -> i.security().getName()).distinct()
-                            .forEach(missingExchangeRates::add);
-            if (missingExchangeRates.length() > 0)
-                appendWarning(text, MessageFormat.format(Messages.MsgAdvanceLumpSumMissingExchangeRates,
-                                missingExchangeRates.toString()));
-            var unresolvedDistributions = new StringJoiner(", ");
-            result.items().stream().filter(Item::hasUnresolvedDistributions).map(i -> i.security().getName())
-                            .distinct().forEach(unresolvedDistributions::add);
-            if (unresolvedDistributions.length() > 0)
-                appendWarning(text, MessageFormat.format(Messages.MsgAdvanceLumpSumUnresolvedDistributions,
-                                unresolvedDistributions.toString()));
+            appendSecurityWarning(text, result, Item::hasMissingPrices, Messages.MsgAdvanceLumpSumMissingPrices);
+            appendSecurityWarning(text, result, Item::hasOutdatedPrices, Messages.MsgAdvanceLumpSumOutdatedPrices);
+            appendSecurityWarning(text, result, Item::hasMissingExchangeRates,
+                            Messages.MsgAdvanceLumpSumMissingExchangeRates);
+            appendSecurityWarning(text, result, Item::hasUnresolvedDistributions,
+                            Messages.MsgAdvanceLumpSumUnresolvedDistributions);
         }
 
         if (year == LocalDate.now().getYear())
@@ -736,6 +725,15 @@ public class AdvanceLumpSumView extends AbstractFinanceView
     private static String formatBoldMoney(Money amount)
     {
         return "<strong>" + TextUtil.escapeHtml(Values.Money.format(amount)) + "</strong>"; //$NON-NLS-1$ //$NON-NLS-2$
+    }
+
+    private static void appendSecurityWarning(StringBuilder text, Result result, Predicate<Item> filter,
+                    String message)
+    {
+        var names = new StringJoiner(", "); //$NON-NLS-1$
+        result.items().stream().filter(filter).map(i -> i.security().getName()).distinct().forEach(names::add);
+        if (names.length() > 0)
+            appendWarning(text, MessageFormat.format(message, names.toString()));
     }
 
     @SuppressWarnings("nls")

@@ -1160,6 +1160,7 @@ public class Messages extends NLS
     public static String MsgAdvanceLumpSumMissingBaseInterestRate;
     public static String MsgAdvanceLumpSumMissingExchangeRates;
     public static String MsgAdvanceLumpSumMissingPrices;
+    public static String MsgAdvanceLumpSumOutdatedPrices;
     public static String MsgAdvanceLumpSumUnresolvedDistributions;
     public static String MsgAuthenticationExpired;
     public static String MsgCheckMissingTickerSymbol;

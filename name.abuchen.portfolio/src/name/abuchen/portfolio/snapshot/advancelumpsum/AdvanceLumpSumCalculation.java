@@ -47,8 +47,8 @@ public class AdvanceLumpSumCalculation
     public record Item(Portfolio portfolio, Security security, long shares, double partialExemption,
                     Quote priceStart, Quote priceEnd, Quote distributionsPerShare, Quote baseYieldPerShare,
                     Quote advanceLumpSumPerShare, Money advanceLumpSum, Money taxableAmount, Money usedLoss,
-                    Money usedExemption, Money tax, boolean hasMissingPrices, boolean hasUnresolvedDistributions,
-                    boolean hasMissingExchangeRates)
+                    Money usedExemption, Money tax, boolean hasMissingPrices, boolean hasOutdatedPrices,
+                    boolean hasUnresolvedDistributions, boolean hasMissingExchangeRates)
     {
     }
 
@@ -101,6 +101,12 @@ public class AdvanceLumpSumCalculation
 
     /** brokers may credit the same distribution on different days */
     private static final int AMBIGUOUS_PAYMENT_WINDOW_DAYS = 31;
+
+    /**
+     * Prices further away from the turn of the year or the valuation date
+     * likely differ from the redemption prices the bank uses.
+     */
+    private static final int MAX_PRICE_DISTANCE_DAYS = 14;
 
     private record Lot(LocalDate acquired, long shares)
     {
@@ -225,7 +231,7 @@ public class AdvanceLumpSumCalculation
                             item.baseYieldPerShare(), item.advanceLumpSumPerShare(), item.advanceLumpSum(),
                             Money.of(currencyCode, net), Money.of(currencyCode, usedLoss),
                             Money.of(currencyCode, usedExemption),
-                            Money.of(currencyCode, tax), item.hasMissingPrices(),
+                            Money.of(currencyCode, tax), item.hasMissingPrices(), item.hasOutdatedPrices(),
                             item.hasUnresolvedDistributions(), item.hasMissingExchangeRates()));
         }
     }
@@ -358,6 +364,8 @@ public class AdvanceLumpSumCalculation
         var lastPrice = security.getSecurityPrice(valuationDate);
         var hasMissingPrices = firstPrice == null || lastPrice.getDate().isBefore(startDate)
                         || lastPrice.getDate().isAfter(valuationDate) || lastPrice.getValue() <= 0;
+        var hasOutdatedPrices = !hasMissingPrices && (isDistant(openingPrice.getDate(), startDate)
+                        || isDistant(lastPrice.getDate(), valuationDate));
         var openingValue = convertPrice(security, openingPrice);
         var firstValue = openingPrice == firstPrice ? openingValue : convertPrice(security, firstPrice);
         var lastValue = convertPrice(security, hasMissingPrices ? null : lastPrice);
@@ -405,7 +413,12 @@ public class AdvanceLumpSumCalculation
                         toQuote(currencyCode, advanceLumpSumPerShare), //
                         toMoney(currencyCode, advanceLumpSum), toMoney(currencyCode, taxable),
                         Money.of(currencyCode, 0), Money.of(currencyCode, 0), toMoney(currencyCode, tax), hasMissingPrices,
-                        paidDistributions.unresolved(), missingRates);
+                        hasOutdatedPrices, paidDistributions.unresolved(), missingRates);
+    }
+
+    private static boolean isDistant(LocalDate date, LocalDate reference)
+    {
+        return Math.abs(ChronoUnit.DAYS.between(date, reference)) > MAX_PRICE_DISTANCE_DAYS;
     }
 
     private Optional<BigDecimal> convertPrice(Security security, SecurityPrice price)
