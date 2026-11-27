@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 public interface CurrencyConverter
 {
@@ -62,6 +63,14 @@ public interface CurrencyConverter
     }
     
     ExchangeRate getRate(LocalDate date, String currencyCode);
+
+    /**
+     * Looks up an as-of rate without substituting a fallback when data is missing.
+     */
+    default Optional<ExchangeRate> findRate(LocalDate date, String currencyCode)
+    {
+        return Optional.of(getRate(date, currencyCode)).filter(rate -> !rate.getTime().isAfter(date));
+    }
 
     /**
      * Returns a CurrencyConverter with the provided term currency

@@ -51,6 +51,7 @@ public enum Images
     PLUS("plus.png"), //$NON-NLS-1$
     CONFIG("config.svg"), //$NON-NLS-1$
     EXPORT("export.svg"), //$NON-NLS-1$
+    EURO("euro.svg"), //$NON-NLS-1$
     SAVE("save.png"), //$NON-NLS-1$
     FILTER_ON("filter_on.svg"), //$NON-NLS-1$
     FILTER_OFF("filter_off.svg"), //$NON-NLS-1$

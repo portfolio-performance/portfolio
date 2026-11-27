@@ -31,6 +31,7 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.FileDialog;
@@ -40,6 +41,8 @@ import org.eclipse.swt.widgets.Text;
 
 import name.abuchen.portfolio.model.AttributeType;
 import name.abuchen.portfolio.model.AttributeType.ImageConverter;
+import name.abuchen.portfolio.model.ClientSettings;
+import name.abuchen.portfolio.model.PartialExemption;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
@@ -293,6 +296,22 @@ public class AttributesPage extends AbstractPage implements IMenuListener
                     }
                 }
             }));
+        }
+        else if (ClientSettings.isPartialExemption(attribute.getType()))
+        {
+            var combo = new Combo(container, SWT.READ_ONLY);
+            value = combo;
+            combo.setItems(PartialExemption.getLabels());
+            GridDataFactory.fillDefaults().align(SWT.FILL, SWT.CENTER).grab(true, false).applyTo(value);
+
+            IObservableValue<Object> attributeModel = BeanProperties.value("value").observe(attribute); //$NON-NLS-1$
+            IObservableValue<Integer> attributeTarget = WidgetProperties.singleSelectionIndex().observe(combo);
+            binding = bindings.getBindingContext().bindValue(attributeTarget, attributeModel,
+                            new UpdateValueStrategy<Integer, Object>()
+                                            .setConverter(IConverter.create(index -> PartialExemption.valueAt(
+                                                            index != null ? (Integer) index : -1))),
+                            new UpdateValueStrategy<Object, Integer>().setConverter(
+                                            IConverter.create(v -> Integer.valueOf(PartialExemption.indexOf((Double) v)))));
         }
         else
         {

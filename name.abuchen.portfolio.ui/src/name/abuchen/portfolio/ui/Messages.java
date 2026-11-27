@@ -57,6 +57,7 @@ public class Messages extends NLS
     public static String BtnLabelApply;
     public static String BtnLabelApplyAndClose;
     public static String BtnLabelOpenInvestmentPlanView;
+    public static String BtnLabelResetBaseInterestRate;
     public static String BtnLabelResetToDefault;
     public static String BtnLabelRestartLater;
     public static String BtnLabelRestartNow;
@@ -114,6 +115,8 @@ public class Messages extends NLS
     public static String ColumnActualPercent;
     public static String ColumnActualValue;
     public static String ColumnActualValueBaseCurrency;
+    public static String ColumnAdvanceLumpSumBalance_Description;
+    public static String ColumnAdvanceLumpSumPerShare;
     public static String ColumnAmount;
     public static String ColumnAttributeDefinedFor;
     public static String ColumnAverage;
@@ -122,6 +125,7 @@ public class Messages extends NLS
     public static String ColumnBalance_Description;
     public static String ColumnBalanceOfReferenceAccount;
     public static String ColumnBaseCurrency;
+    public static String ColumnBaseYieldPerShare;
     public static String ColumnCapitalGains;
     public static String ColumnCapitalGains_Description;
     public static String ColumnCapitalGains_Option;
@@ -177,6 +181,7 @@ public class Messages extends NLS
     public static String ColumnDistanceFromMovingAverage;
     public static String ColumnDistanceFromMovingAverage_Description;
     public static String ColumnDistanceFromMovingAverage_Option;
+    public static String ColumnDistributionsPerShare;
     public static String ColumnDividendMovingAverageTotalRateOfReturn;
     public static String ColumnDividendMovingAverageTotalRateOfReturn_Description;
     public static String ColumnDividendMovingAverageTotalRateOfReturn_MenuLabel;
@@ -204,8 +209,15 @@ public class Messages extends NLS
     public static String ColumnEntity;
     public static String ColumnEntryValue;
     public static String ColumnErrorMessages;
+    public static String ColumnEstimatedTax;
+    public static String LabelTotalEstimatedTax;
+    public static String LabelTaxableBeforeDeductions;
     public static String ColumnEventType;
     public static String ColumnExchangeRate;
+    public static String ColumnExemptionOrder;
+    public static String ColumnExemptionOrder_Description;
+    public static String ColumnGeneralLossBalance;
+    public static String ColumnGeneralLossBalance_Description;
     public static String ColumnExDate;
     public static String ColumnExitValue;
     public static String ColumnExpectedBalance;
@@ -285,6 +297,8 @@ public class Messages extends NLS
     public static String ColumnPortfolio;
     public static String ColumnPreviousClose;
     public static String ColumnPreviousPrice;
+    public static String ColumnPriceEndOfYear;
+    public static String ColumnPriceStartOfYear;
     public static String ColumnProfitLoss;
     public static String ColumnProfitLossBaseCurrency;
     public static String ColumnProfitLossFIFO_Description;
@@ -345,6 +359,7 @@ public class Messages extends NLS
     public static String ColumnTargetCurrency;
     public static String ColumnTargetCurrencyToolTip;
     public static String ColumnTargetValue;
+    public static String ColumnTaxableAmount;
     public static String ColumnTaxes;
     public static String ColumnTaxes_Description;
     public static String ColumnTaxonomy;
@@ -567,6 +582,7 @@ public class Messages extends NLS
     public static String LabelActiveSecurities;
     public static String LabelAdditionsAndModifications;
     public static String LabelAdhocFilter;
+    public static String LabelAdvanceLumpSum;
     public static String LabelAfterTaxAndFees;
     public static String LabelAggregation;
     public static String LabelAggregationDaily;
@@ -589,6 +605,9 @@ public class Messages extends NLS
     public static String LabelBackupModeNextToFile;
     public static String LabelBackupModeRelativeDirectory;
     public static String LabelBaseDataSeries;
+    public static String LabelBaseInterestRate;
+    public static String LabelBaseInterestRateSourceManual;
+    public static String LabelBaseInterestRateSourceOfficial;
     public static String LabelBeforeTaxAndFees;
     public static String LabelBenchmarks;
     public static String LabelBiggerSize;
@@ -707,6 +726,7 @@ public class Messages extends NLS
     public static String LabelEarningsTransactionList;
     public static String LabelEmptyDashboard;
     public static String LabelEmptyTaxonomy;
+    public static String LabelEnterBaseInterestRate;
     public static String LabelError;
     public static String LabelErrorNoHoldings;
     public static String LabelErrorNoTaxonomySelected;
@@ -937,6 +957,8 @@ public class Messages extends NLS
     public static String LabelSubscriptionStatusUpdatedSuccessfully;
     public static String LabelSuffix_HICP;
     public static String LabelSuffix_PreTax;
+    public static String LabelTaxRateWithChurchTax;
+    public static String LabelTaxRateWithoutChurchTax;
     public static String LabelTaxesAndFeesIncluded;
     public static String LabelTaxesAndFeesNotIncluded;
     public static String LabelTaxonomies;
@@ -1057,6 +1079,7 @@ public class Messages extends NLS
     public static String MenuDoNotChange;
     public static String MenuDuplicateDashboardColumn;
     public static String MenuDuplicateTransaction;
+    public static String MenuEditBaseInterestRate;
     public static String MenuEditInvestmentPlan;
     public static String MenuEditTransaction;
     public static String MenuExportChartData;
@@ -1130,6 +1153,17 @@ public class Messages extends NLS
     public static String MsgAccountFromMissing;
     public static String MsgAccountMustBeDifferent;
     public static String MsgAccountToMissing;
+    public static String MsgAdvanceLumpSumCurrentYear;
+    public static String MsgAdvanceLumpSumExemptionOrderUsed;
+    public static String MsgAdvanceLumpSumInfo;
+    public static String MsgAdvanceLumpSumLossUsed;
+    public static String MsgAdvanceLumpSumMissingBaseInterestRate;
+    public static String MsgAdvanceLumpSumMissingExchangeRates;
+    public static String MsgAdvanceLumpSumMissingPrices;
+    public static String MsgAdvanceLumpSumOutdatedPrices;
+    public static String MsgAdvanceLumpSumPriceSource;
+    public static String MsgAdvanceLumpSumTaxCollection;
+    public static String MsgAdvanceLumpSumUnresolvedDistributions;
     public static String MsgAuthenticationExpired;
     public static String MsgCheckMissingTickerSymbol;
     public static String MsgConfirmInstall;
@@ -1170,6 +1204,7 @@ public class Messages extends NLS
     public static String MsgInfoEnableDoubleClickToEdit;
     public static String MsgInfoRetiredSecurities;
     public static String MsgInstrumentWithConfigurationIssue;
+    public static String MsgInvalidBaseInterestRate;
     public static String MsgInvalidImage;
     public static String MsgInvalidImageDetail;
     public static String MsgLoadingFile;
@@ -1512,6 +1547,7 @@ public class Messages extends NLS
     public static String TooltipAverageHoldingPeriod;
     public static String TooltipCurrentDrawdown;
     public static String TooltipDateOfExchangeRate;
+    public static String TooltipDateOfPrice;
     public static String TooltipFIRENumber;
     public static String TooltipHintPressAlt;
     public static String TooltipMaxDrawdown;

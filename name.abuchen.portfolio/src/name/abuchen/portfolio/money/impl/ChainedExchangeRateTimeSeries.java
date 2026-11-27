@@ -49,11 +49,22 @@ public class ChainedExchangeRateTimeSeries implements ExchangeRateTimeSeries
     @Override
     public Optional<ExchangeRate> lookupRate(LocalDate requestedTime)
     {
+        return lookupRate(requestedTime, false);
+    }
+
+    @Override
+    public Optional<ExchangeRate> lookupRateAsOf(LocalDate date)
+    {
+        return lookupRate(date, true);
+    }
+
+    private Optional<ExchangeRate> lookupRate(LocalDate requestedTime, boolean asOf)
+    {
         BigDecimal value = BigDecimal.ONE;
 
         for (int ii = 0; ii < series.length; ii++)
         {
-            Optional<ExchangeRate> answer = series[ii].lookupRate(requestedTime);
+            var answer = asOf ? series[ii].lookupRateAsOf(requestedTime) : series[ii].lookupRate(requestedTime);
             if (!answer.isPresent())
                 return answer;
 

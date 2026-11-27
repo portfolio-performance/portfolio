@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.util.Objects;
+import java.util.Optional;
 
 import name.abuchen.portfolio.Messages;
 
@@ -32,8 +33,17 @@ public class CurrencyConverterImpl implements CurrencyConverter
         if (termCurrency.equals(currencyCode))
             return new ExchangeRate(date, BigDecimal.ONE);
 
-        ExchangeRateTimeSeries series = lookupSeries(currencyCode);
-        return series.lookupRate(date).orElse(FALLBACK_EXCHANGE_RATE);
+        return lookupSeries(currencyCode).lookupRate(date).orElse(FALLBACK_EXCHANGE_RATE);
+    }
+
+    @Override
+    public Optional<ExchangeRate> findRate(LocalDate date, String currencyCode)
+    {
+        if (termCurrency.equals(currencyCode))
+            return Optional.of(new ExchangeRate(date, BigDecimal.ONE));
+
+        return factory.hasTimeSeries(currencyCode, termCurrency) ? lookupSeries(currencyCode).lookupRateAsOf(date)
+                        : Optional.empty();
     }
 
     private ExchangeRateTimeSeries lookupSeries(String currencyCode) // NOSONAR
