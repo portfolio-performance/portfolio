@@ -125,6 +125,16 @@ public class LabelConfig implements WidgetConfig
             delegate.update();
             delegate.getClient().touch();
         }));
+
+        if (!DefaultLabels.isDefault(delegate.getWidget()))
+        {
+            manager.add(new SimpleAction(Messages.MenuResetLabel, a -> {
+                DefaultLabels.reset(delegate);
+
+                delegate.update();
+                delegate.getClient().touch();
+            }));
+        }
     }
 
     private InputDialog createSingleLine()

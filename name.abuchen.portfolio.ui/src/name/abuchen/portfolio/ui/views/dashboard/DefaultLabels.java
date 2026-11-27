@@ -120,6 +120,15 @@ public final class DefaultLabels
     }
 
     /**
+     * Resets the label of the widget to the default label of the widget type.
+     */
+    public static void reset(WidgetDelegate<?> delegate)
+    {
+        markAsDefault(delegate.getWidget());
+        delegate.getWidget().setLabel(delegate.getDefaultLabel());
+    }
+
+    /**
      * Updates a default label of the widget to the current language.
      */
     public static void update(WidgetDelegate<?> delegate)
