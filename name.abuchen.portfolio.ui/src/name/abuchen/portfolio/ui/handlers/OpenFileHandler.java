@@ -24,6 +24,7 @@ import org.eclipse.swt.widgets.Shell;
 
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.UIConstants;
+import name.abuchen.portfolio.ui.util.DocumentPortal;
 
 public class OpenFileHandler
 {
@@ -38,7 +39,7 @@ public class OpenFileHandler
     {
         String path = preferences.get(UIConstants.Preferences.DEFAULT_OPEN_PATH, null);
 
-        if (path != null && !Files.isDirectory(Paths.get(path)))
+        if (path != null && (DocumentPortal.isPortalPath(path) || !Files.isDirectory(Paths.get(path))))
             path = null;
 
         if (path == null)
@@ -52,7 +53,10 @@ public class OpenFileHandler
 
         if (fileSelected != null)
         {
-            preferences.put(UIConstants.Preferences.DEFAULT_OPEN_PATH, dialog.getFilterPath());
+            // a directory of the Flatpak document portal belongs to the
+            // selected file only and is removed later on
+            if (!DocumentPortal.isPortalPath(dialog.getFilterPath()))
+                preferences.put(UIConstants.Preferences.DEFAULT_OPEN_PATH, dialog.getFilterPath());
 
             MPart part = partService.createPart(UIConstants.Part.PORTFOLIO);
             part.setLabel(new File(fileSelected).getName());

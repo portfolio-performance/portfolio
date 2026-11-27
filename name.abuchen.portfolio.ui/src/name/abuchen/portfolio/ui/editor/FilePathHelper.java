@@ -4,6 +4,8 @@ import java.nio.file.Files;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Paths;
 
+import name.abuchen.portfolio.ui.util.DocumentPortal;
+
 public class FilePathHelper
 {
     private final PortfolioPart part;
@@ -38,21 +40,21 @@ public class FilePathHelper
         if (qualifier != null)
         {
             String path = part.getPreferenceStore().getString(getKeyWithQualifier());
-            if (isExistingDirectory(path))
+            if (isUsableDirectory(path))
                 return path;
         }
 
         // second, check file-specific preferences
         String path = part.getPreferenceStore().getString(key);
 
-        if (!isExistingDirectory(path))
+        if (!isUsableDirectory(path))
             path = null;
 
         // third, check application-wide preferences
         if (path == null)
         {
             String p = part.getEclipsePreferences().get(key, null);
-            if (isExistingDirectory(p))
+            if (isUsableDirectory(p))
                 path = p;
         }
 
@@ -65,6 +67,10 @@ public class FilePathHelper
 
     public void savePath(String path)
     {
+        // keep the previously remembered directory instead
+        if (DocumentPortal.isPortalPath(path))
+            return;
+
         if (qualifier != null)
         {
             part.getPreferenceStore().setValue(getKeyWithQualifier(), path);
@@ -82,11 +88,16 @@ public class FilePathHelper
     /**
      * Checks whether the stored path still points to a directory. A remembered
      * directory can have been removed meanwhile, and it can be malformed on
-     * this platform if the client file was last used on another one.
+     * this platform if the client file was last used on another one. A
+     * directory of the Flatpak document portal is never used because it
+     * belongs to a single document only.
      */
-    private static boolean isExistingDirectory(String path)
+    private static boolean isUsableDirectory(String path)
     {
         if (path == null || path.isEmpty())
+            return false;
+
+        if (DocumentPortal.isPortalPath(path))
             return false;
 
         try
