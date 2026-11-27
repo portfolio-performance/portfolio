@@ -187,4 +187,37 @@ public class DeltaCalculationTest
         assertTrailMatchesDelta(client, security,
                         Interval.of(LocalDate.parse("2020-01-01"), LocalDate.parse("2021-01-31")));
     }
+
+    /**
+     * Inbound and outbound deliveries contribute to the delta like buys and
+     * sells, so they must appear in the trail as well.
+     */
+    @Test
+    public void testDeliveries()
+    {
+        Client client = new Client();
+
+        Security security = new SecurityBuilder() //
+                        .addPrice("2020-01-01", Values.Quote.factorize(100)) //
+                        .addPrice("2021-01-31", Values.Quote.factorize(120)) //
+                        .addTo(client);
+
+        new PortfolioBuilder() //
+                        .inbound_delivery(security, "2020-06-01", Values.Share.factorize(20),
+                                        Values.Amount.factorize(2000)) //
+                        .outbound_delivery(security, "2020-12-01", Values.Share.factorize(5),
+                                        Values.Amount.factorize(560), 0, 0) //
+                        .addTo(client);
+
+        Interval interval = Interval.of(LocalDate.parse("2020-01-01"), LocalDate.parse("2021-01-31"));
+
+        assertTrailMatchesDelta(client, security, interval);
+
+        // 15 shares at 120 at the end, plus the sale, minus the purchase;
+        // guards against the delta and the trail agreeing on a wrong value
+        LazySecurityPerformanceRecord record = LazySecurityPerformanceSnapshot
+                        .create(client, new TestCurrencyConverter(), interval).getRecord(security)
+                        .orElseThrow(IllegalArgumentException::new);
+        assertThat(record.getDelta(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1800 + 560 - 2000))));
+    }
 }
