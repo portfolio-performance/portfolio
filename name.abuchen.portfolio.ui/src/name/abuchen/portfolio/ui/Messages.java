@@ -1152,6 +1152,7 @@ public class Messages extends NLS
     public static String MsgErrorExchangeMissing;
     public static String MsgErrorMinimumHeightRequired;
     public static String MsgErrorMissingQuandlCode;
+    public static String MsgErrorMultipleFilesFlatpak;
     public static String MsgErrorNotAValidDate;
     public static String MsgErrorOpeningFile;
     public static String MsgErrorPortfolioNotExist;
