@@ -366,6 +366,53 @@ public class KBCGroupNVPDFExtractorTest
     }
 
     @Test
+    public void testMultiblerAankoopVerkoop03()
+    {
+        var extractor = new KBCGroupNVPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "MultiblerAankoopVerkoop03.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(2L));
+        assertThat(countBuySell(results), is(2L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(4));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00B4K48X80"), hasWkn(null), hasTicker(null), //
+                        hasName("IS.III-CO.MSCI E.UC.ETF EUR(ACC)"), //
+                        hasCurrencyCode("EUR"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("DE0001102580"), hasWkn(null), hasTicker(null), //
+                        hasName("BUNDESREP.DEUTSCH.22-32 0% 15/2REGS"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2026-11-26T14:40:24"), hasShares(240.00), //
+                        hasSource("MultiblerAankoopVerkoop03.txt"), //
+                        hasNote("Borderel 121332432"), //
+                        hasAmount("EUR", 42448.74), hasGrossValue("EUR", 42549.80), //
+                        hasTaxes("EUR", 51.06), hasFees("EUR", 50.00))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2026-11-26T14:49:14"), hasShares(425.00), //
+                        hasSource("MultiblerAankoopVerkoop03.txt"), //
+                        hasNote("Borderel 937855568"), //
+                        hasAmount("EUR", 36316.33), hasGrossValue("EUR", 36256.33), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 60.00))));
+    }
+
+    @Test
     public void testDividende01()
     {
         var extractor = new KBCGroupNVPDFExtractor(new Client());
