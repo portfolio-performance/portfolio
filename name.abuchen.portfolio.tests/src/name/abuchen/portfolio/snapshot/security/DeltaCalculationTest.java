@@ -4,6 +4,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import org.junit.Test;
 
@@ -14,6 +15,8 @@ import name.abuchen.portfolio.junit.TestCurrencyConverter;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.Portfolio;
+import name.abuchen.portfolio.model.PortfolioTransferEntry;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Money;
@@ -219,5 +222,46 @@ public class DeltaCalculationTest
                         .create(client, new TestCurrencyConverter(), interval).getRecord(security)
                         .orElseThrow(IllegalArgumentException::new);
         assertThat(record.getDelta(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1800 + 560 - 2000))));
+    }
+
+    /**
+     * A transfer between two portfolios moves the shares but neither adds to
+     * nor takes from the delta, so the trail must not contain it (the
+     * TRANSFER_OUT and TRANSFER_IN legs would otherwise skew the total).
+     */
+    @Test
+    public void testTransferBetweenPortfolios()
+    {
+        Client client = new Client();
+
+        Security security = new SecurityBuilder() //
+                        .addPrice("2020-01-01", Values.Quote.factorize(100)) //
+                        .addPrice("2021-01-31", Values.Quote.factorize(120)) //
+                        .addTo(client);
+
+        Portfolio portfolioA = new PortfolioBuilder() //
+                        .buy(security, "2020-06-01", Values.Share.factorize(10), Values.Amount.factorize(1000)) //
+                        .addTo(client);
+
+        Portfolio portfolioB = new PortfolioBuilder().addTo(client);
+
+        PortfolioTransferEntry transfer = new PortfolioTransferEntry(portfolioA, portfolioB);
+        transfer.setSecurity(security);
+        transfer.setDate(LocalDateTime.parse("2020-09-01T00:00"));
+        transfer.setShares(Values.Share.factorize(10));
+        transfer.setAmount(Values.Amount.factorize(1100));
+        transfer.setCurrencyCode(security.getCurrencyCode());
+        transfer.insert();
+
+        Interval interval = Interval.of(LocalDate.parse("2020-01-01"), LocalDate.parse("2021-01-31"));
+
+        assertTrailMatchesDelta(client, security, interval);
+
+        // only the purchase and the valuation at the end count; guards against
+        // the delta and the trail agreeing on a wrong value
+        LazySecurityPerformanceRecord record = LazySecurityPerformanceSnapshot
+                        .create(client, new TestCurrencyConverter(), interval).getRecord(security)
+                        .orElseThrow(IllegalArgumentException::new);
+        assertThat(record.getDelta(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1200 - 1000))));
     }
 }
