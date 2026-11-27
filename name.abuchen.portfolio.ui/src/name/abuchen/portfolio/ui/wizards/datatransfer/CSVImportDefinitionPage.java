@@ -934,7 +934,12 @@ public class CSVImportDefinitionPage extends AbstractWizardPage
             else
             {
                 mappedTo.getCombo().select(0);
-                Display.getDefault().timerExec(100, () -> mappedTo.getCombo().setListVisible(true));
+
+                // on macOS, SWT implements setListVisible of a read-only combo
+                // by switching it to a pull-down menu that always shows the
+                // first entry ("---") instead of the selected field
+                if (!Platform.WS_COCOA.equals(Platform.getWS()))
+                    Display.getDefault().timerExec(100, () -> mappedTo.getCombo().setListVisible(true));
             }
 
             return composite;
