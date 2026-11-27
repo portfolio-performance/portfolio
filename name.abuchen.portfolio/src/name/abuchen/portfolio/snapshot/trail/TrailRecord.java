@@ -32,17 +32,6 @@ public interface TrailRecord
         return EmptyTrail.INSTANCE;
     }
 
-    /**
-     * Returns a trail with a value of zero in the given currency. Unlike
-     * {@link #empty()} this trail is not empty and can be used as the minuend
-     * of a {@link #subtract(TrailRecord)} (which {@link #empty()} does not
-     * support), e.g. to render "0 - outflows" when there are no inflows.
-     */
-    public static TrailRecord ofZero(String currencyCode)
-    {
-        return new DefaultTrail(null, Messages.LabelSum, null, Money.of(currencyCode, 0));
-    }
-
     public static TrailRecord of(List<TrailRecord> trails)
     {
         if (trails.isEmpty())
@@ -79,9 +68,15 @@ public interface TrailRecord
         return new ArithmeticTrail(ArithmeticTrail.Operation.ADDITION, Messages.LabelSum, this, trail);
     }
 
+    /**
+     * Subtracts the given trail from this trail. An empty trail stands for
+     * "nothing", i.e. zero: subtracting an empty trail returns this trail
+     * unchanged, and subtracting a trail from an empty trail yields
+     * {@code 0 - trail} (in the currency of the subtracted trail).
+     */
     default TrailRecord subtract(TrailRecord trail)
     {
-        if (trail instanceof EmptyTrail)
+        if (trail.isEmpty())
             return this;
         return new ArithmeticTrail(ArithmeticTrail.Operation.SUBTRACTION, Messages.LabelDifference, this, trail);
     }

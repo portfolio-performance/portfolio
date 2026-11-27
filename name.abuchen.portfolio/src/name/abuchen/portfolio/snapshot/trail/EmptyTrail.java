@@ -2,6 +2,7 @@ package name.abuchen.portfolio.snapshot.trail;
 
 import java.time.LocalDate;
 
+import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.model.TransactionOwner;
 import name.abuchen.portfolio.money.Money;
 
@@ -58,6 +59,13 @@ import name.abuchen.portfolio.money.Money;
     @Override
     public TrailRecord subtract(TrailRecord trail)
     {
-        throw new UnsupportedOperationException();
+        if (trail.isEmpty())
+            return this;
+
+        // an empty trail stands for "nothing", i.e. zero: render 0 - trail
+        // (in the currency of the trail)
+        TrailRecord zero = new DefaultTrail(null, Messages.LabelSum, null,
+                        Money.of(trail.getValue().getCurrencyCode(), 0));
+        return new ArithmeticTrail(ArithmeticTrail.Operation.SUBTRACTION, Messages.LabelDifference, zero, trail);
     }
 }

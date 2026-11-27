@@ -132,15 +132,7 @@ import name.abuchen.portfolio.snapshot.trail.TrailRecord;
      */
     public TrailRecord getDeltaTrail()
     {
-        if (negative.isEmpty())
-            return TrailRecord.of(positive);
-
-        // TrailRecord.subtract() cannot be called on an empty trail. When there
-        // are no inflows the delta is a pure outflow (e.g. a standalone fee),
-        // so use a zero-valued trail as the minuend to render "0 - outflows".
-        TrailRecord inflows = positive.isEmpty() ? TrailRecord.ofZero(getTermCurrency()) : TrailRecord.of(positive);
-
-        return inflows.subtract(TrailRecord.of(negative));
+        return TrailRecord.of(positive).subtract(TrailRecord.of(negative));
     }
 
     private TrailRecord valuationTrail(CurrencyConverter converter, CalculationLineItem.Valuation valuation,
