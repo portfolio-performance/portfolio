@@ -45,7 +45,8 @@ import name.abuchen.portfolio.money.Values;
 public class AdvanceLumpSumCalculation
 {
     public record Item(Portfolio portfolio, Security security, long shares, double partialExemption,
-                    Quote priceStart, Quote priceEnd, Quote distributionsPerShare, Quote baseYieldPerShare,
+                    Quote priceStart, Quote priceEnd, LocalDate priceStartDate, LocalDate priceEndDate,
+                    Quote distributionsPerShare, Quote baseYieldPerShare,
                     Quote advanceLumpSumPerShare, Money advanceLumpSum, Money taxableAmount, Money usedLoss,
                     Money usedExemption, Money tax, boolean hasMissingPrices, boolean hasOutdatedPrices,
                     boolean hasUnresolvedDistributions, boolean hasMissingExchangeRates)
@@ -227,7 +228,8 @@ public class AdvanceLumpSumCalculation
             var tax = BigDecimal.valueOf(net).multiply(taxRate, MC).setScale(0, RoundingMode.HALF_UP).longValue();
 
             items.set(index, new Item(item.portfolio(), item.security(), item.shares(), item.partialExemption(),
-                            item.priceStart(), item.priceEnd(), item.distributionsPerShare(),
+                            item.priceStart(), item.priceEnd(), item.priceStartDate(), item.priceEndDate(),
+                            item.distributionsPerShare(),
                             item.baseYieldPerShare(), item.advanceLumpSumPerShare(), item.advanceLumpSum(),
                             Money.of(currencyCode, net), Money.of(currencyCode, usedLoss),
                             Money.of(currencyCode, usedExemption),
@@ -409,6 +411,8 @@ public class AdvanceLumpSumCalculation
         var currencyCode = converter.getTermCurrency();
         return new Item(portfolio, security, shares, partialExemption, //
                         toQuote(currencyCode, priceStart), toQuote(currencyCode, priceEnd),
+                        openingPrice != null ? openingPrice.getDate() : null,
+                        hasMissingPrices ? null : lastPrice.getDate(),
                         toQuote(currencyCode, distributions), toQuote(currencyCode, baseYield),
                         toQuote(currencyCode, advanceLumpSumPerShare), //
                         toMoney(currencyCode, advanceLumpSum), toMoney(currencyCode, taxable),

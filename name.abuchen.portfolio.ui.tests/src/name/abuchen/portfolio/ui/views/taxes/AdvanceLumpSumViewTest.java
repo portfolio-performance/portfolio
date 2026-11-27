@@ -28,6 +28,7 @@ import name.abuchen.portfolio.snapshot.advancelumpsum.AdvanceLumpSumCalculation.
 import name.abuchen.portfolio.snapshot.advancelumpsum.BaseInterestRate;
 import name.abuchen.portfolio.snapshot.advancelumpsum.BaseInterestRate.Source;
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.util.TextUtil;
 
 @SuppressWarnings("nls")
 public class AdvanceLumpSumViewTest
@@ -41,7 +42,9 @@ public class AdvanceLumpSumViewTest
         var expected = Messages.LabelBaseInterestRate + " 2025: <strong>2,53 %</strong> ("
                         + Messages.LabelBaseInterestRateSourceOfficial + ") | " + Messages.LabelAdvanceLumpSum + ": "
                         + zero + " | " + Messages.LabelTaxableBeforeDeductions + ": " + zero + "\n\n<em>"
-                        + Messages.MsgAdvanceLumpSumInfo + "</em>";
+                        + TextUtil.escapeHtml(Messages.MsgAdvanceLumpSumInfo) + " "
+                        + TextUtil.escapeHtml(Messages.MsgAdvanceLumpSumPriceSource) + "\n"
+                        + TextUtil.escapeHtml(Messages.MsgAdvanceLumpSumTaxCollection) + "</em>";
 
         assertThat(AdvanceLumpSumView.buildSummary(2025, rate, result), is(expected));
     }

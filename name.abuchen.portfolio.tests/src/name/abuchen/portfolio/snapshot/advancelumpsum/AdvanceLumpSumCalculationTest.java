@@ -119,6 +119,8 @@ public class AdvanceLumpSumCalculationTest
         assertThat(item.tax(), is(euro(3.30)));
         assertThat(item.hasMissingPrices(), is(false));
         assertThat(item.hasOutdatedPrices(), is(false));
+        assertThat(item.priceStartDate(), is(LocalDate.parse("2022-12-30")));
+        assertThat(item.priceEndDate(), is(LocalDate.parse("2023-12-29")));
         assertThat(result.getTotalTax(), is(euro(3.30)));
     }
 

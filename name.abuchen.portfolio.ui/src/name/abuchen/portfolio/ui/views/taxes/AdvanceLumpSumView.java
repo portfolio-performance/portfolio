@@ -378,8 +378,9 @@ public class AdvanceLumpSumView extends AbstractFinanceView
         column.setSorter(ColumnViewerSorter.create(e -> e instanceof Item item ? item.partialExemption() : null));
         columns.addColumn(column);
 
-        addQuoteColumn("priceStart", Messages.ColumnPriceStartOfYear, Item::priceStart, false); //$NON-NLS-1$
-        addQuoteColumn("priceEnd", Messages.ColumnPriceEndOfYear, Item::priceEnd, false); //$NON-NLS-1$
+        addQuoteColumn("priceStart", Messages.ColumnPriceStartOfYear, Item::priceStart, Item::priceStartDate, //$NON-NLS-1$
+                        false);
+        addQuoteColumn("priceEnd", Messages.ColumnPriceEndOfYear, Item::priceEnd, Item::priceEndDate, false); //$NON-NLS-1$
         addQuoteColumn("distributions", Messages.ColumnDistributionsPerShare, estimate(Item::distributionsPerShare), //$NON-NLS-1$
                         false);
         addQuoteColumn("baseYield", Messages.ColumnBaseYieldPerShare, estimate(Item::baseYieldPerShare), false); //$NON-NLS-1$
@@ -463,11 +464,30 @@ public class AdvanceLumpSumView extends AbstractFinanceView
 
     private void addQuoteColumn(String id, String label, Function<Item, Quote> value, boolean visible)
     {
+        addQuoteColumn(id, label, value, item -> null, visible);
+    }
+
+    private void addQuoteColumn(String id, String label, Function<Item, Quote> value, Function<Item, LocalDate> date,
+                    boolean visible)
+    {
         var column = new Column(id, label, SWT.RIGHT, 180);
-        column.setLabelProvider(itemLabel(item -> {
-            var quote = value.apply(item);
-            return quote == null ? null : Values.CalculatedQuote.format(quote, client.getBaseCurrency());
-        }));
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object element)
+            {
+                var quote = element instanceof Item item ? value.apply(item) : null;
+                return quote == null ? null : Values.CalculatedQuote.format(quote, client.getBaseCurrency());
+            }
+
+            @Override
+            public String getToolTipText(Object element)
+            {
+                var priceDate = element instanceof Item item ? date.apply(item) : null;
+                return priceDate == null ? null
+                                : MessageFormat.format(Messages.TooltipDateOfPrice, Values.Date.format(priceDate));
+            }
+        });
         column.setSorter(ColumnViewerSorter.create(e -> e instanceof Item item ? value.apply(item) : null));
         column.setVisible(visible);
         columns.addColumn(column);
@@ -698,7 +718,9 @@ public class AdvanceLumpSumView extends AbstractFinanceView
         if (year == LocalDate.now().getYear())
             text.append(TextUtil.escapeHtml(Messages.MsgAdvanceLumpSumCurrentYear)).append('\n');
 
-        text.append("<em>").append(TextUtil.escapeHtml(Messages.MsgAdvanceLumpSumInfo)).append("</em>");
+        text.append("<em>").append(TextUtil.escapeHtml(Messages.MsgAdvanceLumpSumInfo)).append(' ')
+                        .append(TextUtil.escapeHtml(Messages.MsgAdvanceLumpSumPriceSource)).append('\n')
+                        .append(TextUtil.escapeHtml(Messages.MsgAdvanceLumpSumTaxCollection)).append("</em>");
 
         return text.toString();
     }

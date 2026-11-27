@@ -1161,6 +1161,8 @@ public class Messages extends NLS
     public static String MsgAdvanceLumpSumMissingExchangeRates;
     public static String MsgAdvanceLumpSumMissingPrices;
     public static String MsgAdvanceLumpSumOutdatedPrices;
+    public static String MsgAdvanceLumpSumPriceSource;
+    public static String MsgAdvanceLumpSumTaxCollection;
     public static String MsgAdvanceLumpSumUnresolvedDistributions;
     public static String MsgAuthenticationExpired;
     public static String MsgCheckMissingTickerSymbol;
@@ -1545,6 +1547,7 @@ public class Messages extends NLS
     public static String TooltipAverageHoldingPeriod;
     public static String TooltipCurrentDrawdown;
     public static String TooltipDateOfExchangeRate;
+    public static String TooltipDateOfPrice;
     public static String TooltipFIRENumber;
     public static String TooltipHintPressAlt;
     public static String TooltipMaxDrawdown;
