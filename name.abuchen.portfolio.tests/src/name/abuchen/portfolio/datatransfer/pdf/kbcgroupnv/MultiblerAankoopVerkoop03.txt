@@ -1,0 +1,43 @@
+PDFBox Version: 3.0.8
+Portfolio Performance Version: 0.90.0
+System: macosx | aarch64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+yxPduops-XhPhlbAw GIBRtc-qDHNWBp
+Overzicht transacties en rekeninguittreksels voor klantnummer 8074347
+26/11/2026
+EUR-REKENING - 75
+Borderel 121332432 Limit order
+FLTR
+Uitvoeringsdatum : 26/11/2026 Uitvoeringstijdstip : 14:40:24 Valuta : 30/11/2026
+Uw Verkoop Online van 240 IS.III-CO.MSCI E.UC.ETF EUR(ACC) aan 103,78 42.549,80 EUR
+EUR
+Meerwaardebelasting 0,00 EUR
+Makelaarsloon 50,00 EUR
+Beurstaks 51,06 EUR
+Netto credit 42.448,74 EUR
+Wettelijke fiscale informatie Basisbedrag beurstaks 42.549,80 EUR
+Beurstaks 0,12% 51,06 EUR
+Basisbedrag meerwaardebelasting 4.077,44 EUR
+Meerwaardebelasting 10,00%* 407,74 EUR
+*Je koos voor opt-out. Daarom hebben we de meerwaardebelasting niet ingehouden. De gerealiseerde meerwaarden moet je
+aangeven in je belastingaangifte.
+Waardecode IE00B4K48X80
+mRBjrspo-DUubsFXC uWkUxx-cDGBIUS Pagina 1
+6_2_0_6_67_2__________________________________________________________________________________
+KBC BANK NV Documentreferte: 76
+Havenlaan 2, 1080 Brussels, Belgium VAT BE 0462.920.226
+Account N° BE77 4096 5474 0142 - BIC KREDBEBB
+Borderel 937855568 Limit order
+Xetra 2
+Uitvoeringsdatum : 26/11/2026 Uitvoeringstijdstip : 14:49:14 Valuta : 30/11/2026
+Uw Aankoop Online van EUR 42.500 BUNDESREP.DEUTSCH.22-32 0% 36.256,33 EUR
+15/2REGS aan 85,309%
+Makelaarsloon 60,00 EUR
+Netto debit -36.316,33 EUR
+Waardecode DE0001102580
+Heb je nog pDkmxx ? Gelieve je te richten tot de Bolero orderdesk
+gcAzKRbc-gdkxynJZ AzVkJX-eahgADI Pagina 2
+5_7_1_6_74_3__________________________________________________________________________________
+KBC BANK NV Documentreferte: 76
+Havenlaan 2, 1080 Brussels, Belgium VAT BE 0462.920.226
+Account N° BE77 4096 5474 0142 - BIC KREDBEBB

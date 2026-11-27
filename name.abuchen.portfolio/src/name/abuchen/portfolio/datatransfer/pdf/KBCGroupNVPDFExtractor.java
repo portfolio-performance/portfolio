@@ -119,7 +119,21 @@ public class KBCGroupNVPDFExtractor extends AbstractPDFExtractor
                                                         .attributes("name", "currency", "isin") //
                                                         .match("^.* van (?<currency>[A-Z]{3}) [\\.,\\d]+ (?<name>.*) aan [\\.,\\d]+% [\\.,\\d]+ [A-Z]{3}$") //
                                                         .match("^Waardecode (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
-                                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))))
+                                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
+                                        // @formatter:off
+                                        // Uw Aankoop Online van EUR 42.500 BUNDESREP.DEUTSCH.22-32 0% 36.256,33 EUR
+                                        // 15/2REGS aan 85,309%
+                                        // Waardecode DE0001102580
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("name", "name1", "currency", "isin") //
+                                                        .match("^.* van (?<currency>[A-Z]{3}) [\\.,\\d]+ (?<name>.*) [\\.,\\d]+ [A-Z]{3}$") //
+                                                        .match("^(?<name1>.*) aan [\\.,\\d]+%$") //
+                                                        .match("^Waardecode (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
+                                                        .assign((t, v) -> {
+                                                            v.put("name", trim(v.get("name")) + " " + trim(v.get("name1")));
+                                                            t.setSecurity(getOrCreateSecurity(v));
+                                                        }))
 
                         .oneOf( //
                                         // @formatter:off
@@ -167,6 +181,21 @@ public class KBCGroupNVPDFExtractor extends AbstractPDFExtractor
                                                         .attributes("shares") //
                                                         .match("^.* van [A-Z]{3} (?<shares>[\\.,\\d]+).*$") //
                                                         .match("^aan [\\.,\\d]+%$")
+                                                        .assign((t, v) -> {
+                                                            // @formatter:off
+                                                            // Percentage quotation, workaround for bonds
+                                                            // @formatter:on
+                                                            var shares = asBigDecimal(v.get("shares"));
+                                                            t.setShares(Values.Share.factorize(shares.doubleValue() / 100));
+                                                        }),
+                                        // @formatter:off
+                                        // Uw Aankoop Online van EUR 42.500 BUNDESREP.DEUTSCH.22-32 0% 36.256,33 EUR
+                                        // 15/2REGS aan 85,309%
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("shares") //
+                                                        .match("^.* van [A-Z]{3} (?<shares>[\\.,\\d]+).*$") //
+                                                        .match("^.* aan [\\.,\\d]+%$") //
                                                         .assign((t, v) -> {
                                                             // @formatter:off
                                                             // Percentage quotation, workaround for bonds
@@ -302,6 +331,17 @@ public class KBCGroupNVPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("name", "currency", "isin") //
                                                         .match("^.* van [\\.,\\d]+ (?<name>.*) aan [\\.,\\d]+ (?<currency>[A-Z]{3}) [\\.,\\d]+ [A-Z]{3}$") //
+                                                        .match("^Cash Dividend (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]).*$") //
+                                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
+                                        // @formatter:off
+                                        // Uw Uitbetaling dividenden van 220 VANGUARD FD PLC FTSE EM.MKT.UC.ETFD aan 72,00 USD
+                                        // 0,327273 USD
+                                        // Cash Dividend IE00B3VVMM84ex 2025-12-18 pd 2025-12-31
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("name", "currency", "isin") //
+                                                        .match("^.* van [\\.,\\d]+ (?<name>.*) aan [\\.,\\d]+ [A-Z]{3}$") //
+                                                        .match("^[\\.,\\d]+ (?<currency>[A-Z]{3})$") //
                                                         .match("^Cash Dividend (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]).*$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))))
 
@@ -539,6 +579,13 @@ public class KBCGroupNVPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("tax", "currency").optional() //
                         .match("^Beurstaks (?<tax>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
+                        .assign((t, v) -> processTaxEntries(t, v, type))
+
+                        // @formatter:off
+                        // Meerwaardebelasting 0,00 EUR
+                        // @formatter:on
+                        .section("tax", "currency").optional() //
+                        .match("^Meerwaardebelasting (?<tax>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
                         .assign((t, v) -> processTaxEntries(t, v, type));
     }
 
