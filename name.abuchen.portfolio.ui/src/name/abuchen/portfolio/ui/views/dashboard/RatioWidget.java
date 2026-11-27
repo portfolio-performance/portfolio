@@ -32,13 +32,16 @@ public class RatioWidget extends AbstractIndicatorWidget<Object>
     }
 
     @Override
-    public void onWidgetConfigEdited(Class<? extends WidgetConfig> type)
+    protected String getDefaultLabelSuffix()
     {
-        // construct label to indicate the data series (user can manually
-        // change the label later)
-        getWidget().setLabel(WidgetFactory.valueOf(getWidget().getType()).getLabel() + ", " //$NON-NLS-1$
-                        + get(DataSeriesConfig.class).getDataSeries().getLabel() + " / " //$NON-NLS-1$
-                        + get(BaseDataSeriesConfig.class).getDataSeries().getLabel());
+        var configuration = getWidget().getConfiguration();
+        if (!configuration.containsKey(Dashboard.Config.DATA_SERIES.name())
+                        && !configuration.containsKey(Dashboard.Config.SECONDARY_DATA_SERIES.name()))
+            return ""; //$NON-NLS-1$
+
+        // indicate both data series
+        return ", " + get(DataSeriesConfig.class).getDataSeries().getLabel() + " / " //$NON-NLS-1$ //$NON-NLS-2$
+                        + get(BaseDataSeriesConfig.class).getDataSeries().getLabel();
     }
 
     @Override

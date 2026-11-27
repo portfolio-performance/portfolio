@@ -117,11 +117,24 @@ public class LabelConfig implements WidgetConfig
             if (dialog.open() != Window.OK)
                 return;
 
-            delegate.getWidget().setLabel(dialog.getValue());
+            var widget = delegate.getWidget();
+            if (!dialog.getValue().equals(widget.getLabel()))
+                DefaultLabels.clear(widget);
+            widget.setLabel(dialog.getValue());
 
             delegate.update();
             delegate.getClient().touch();
         }));
+
+        if (!DefaultLabels.isDefault(delegate.getWidget()))
+        {
+            manager.add(new SimpleAction(Messages.MenuResetLabel, a -> {
+                DefaultLabels.reset(delegate);
+
+                delegate.update();
+                delegate.getClient().touch();
+            }));
+        }
     }
 
     private InputDialog createSingleLine()

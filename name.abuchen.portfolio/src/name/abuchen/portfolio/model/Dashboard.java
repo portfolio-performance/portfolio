@@ -18,7 +18,13 @@ public final class Dashboard
         COUNT,
         /** collapsed state (true/false) of widgets */
         COLLAPSED,
-        FLAG_COLORED_VALUE;
+        FLAG_COLORED_VALUE,
+        /**
+         * marks the label of a widget or the name of a dashboard as default
+         * text which follows the language of the user interface (or as edited
+         * by the user)
+         */
+        DEFAULT_LABEL;
     }
 
     public static final class Column

@@ -2,6 +2,7 @@ package name.abuchen.portfolio.ui.views.dashboard;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
@@ -82,13 +83,31 @@ public abstract class WidgetDelegate<D>
 
     public void onWidgetConfigEdited(Class<? extends WidgetConfig> type)
     {
-        if (type == DataSeriesConfig.class)
-        {
-            // construct label to indicate the data series (user can manually
-            // change the label later)
-            getWidget().setLabel(WidgetFactory.valueOf(getWidget().getType()).getLabel() + ", " //$NON-NLS-1$
-                            + get(DataSeriesConfig.class).getDataSeries().getLabel());
-        }
+        // update a default label to indicate the data series (a label edited
+        // by the user is kept)
+        DefaultLabels.update(this);
+    }
+
+    /**
+     * Returns the default label of the widget in the current language.
+     */
+    public String getDefaultLabel()
+    {
+        return WidgetFactory.valueOf(getWidget().getType()).getLabel() + getDefaultLabelSuffix();
+    }
+
+    /**
+     * Returns the text appended to the label of the widget type, e.g. the data
+     * series once the user selected one.
+     */
+    protected String getDefaultLabelSuffix()
+    {
+        if (!getWidget().getConfiguration().containsKey(Dashboard.Config.DATA_SERIES.name()))
+            return ""; //$NON-NLS-1$
+
+        return optionallyGet(DataSeriesConfig.class).map(DataSeriesConfig::getDataSeries).filter(Objects::nonNull)
+                        .map(dataSeries -> ", " + dataSeries.getLabel()) //$NON-NLS-1$
+                        .orElse(""); //$NON-NLS-1$
     }
 
     public abstract Composite createControl(Composite parent, DashboardResources resources);

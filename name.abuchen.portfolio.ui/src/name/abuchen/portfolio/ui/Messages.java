@@ -1092,6 +1092,7 @@ public class Messages extends NLS
     public static String MenuResetChartSeries;
     public static String MenuResetColumnName;
     public static String MenuResetColumns;
+    public static String MenuResetLabel;
     public static String MenuSaveChart;
     public static String MenuSaveColumns;
     public static String MenuSelectBenchmarkDataSeries;
