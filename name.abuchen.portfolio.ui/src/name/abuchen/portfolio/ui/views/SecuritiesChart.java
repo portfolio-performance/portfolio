@@ -52,6 +52,7 @@ import name.abuchen.portfolio.model.AttributeType;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.CostMethod;
 import name.abuchen.portfolio.model.LimitPrice;
+import name.abuchen.portfolio.model.LimitPriceResolver;
 import name.abuchen.portfolio.model.Named;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
@@ -401,6 +402,7 @@ public class SecuritiesChart
     private Client client;
     private CurrencyConverter converter;
     private Security[] securities = new Security[0];
+    private LimitPriceResolver limitPriceResolver;
 
     private PriceTimelineChart chart;
 
@@ -963,6 +965,9 @@ public class SecuritiesChart
 
     public void updateChart(Client client, Security[] securities)
     {
+        if (this.client != client)
+            this.limitPriceResolver = null;
+
         this.client = client;
         this.securities = securities;
 
@@ -1335,6 +1340,13 @@ public class SecuritiesChart
             addExtremesMarkerLines(chartInterval, security, chartConfig);
     }
 
+    private LimitPriceResolver getLimitPriceResolver()
+    {
+        if (limitPriceResolver == null)
+            limitPriceResolver = new LimitPriceResolver(client);
+        return limitPriceResolver;
+    }
+
     private void addLimitLines(ChartRange range, Security security)
     {
         security.getAttributes().getMap().forEach((key, val) -> {
@@ -1353,7 +1365,25 @@ public class SecuritiesChart
             if (attributeName.isEmpty())
                 return;
 
-            String lineID = attributeName.get().getName() + " (" + limitAttribute.toString() + ")"; //$NON-NLS-1$ //$NON-NLS-2$
+            long limitQuoteValue;
+            String lineLabel;
+            if (limitAttribute.isStatic())
+            {
+                limitQuoteValue = limitAttribute.getValue();
+                lineLabel = limitAttribute.toString();
+            }
+            else
+            {
+                var resolved = limitAttribute.resolveValue(getLimitPriceResolver(), security);
+                if (resolved.isEmpty())
+                    return;
+
+                limitQuoteValue = resolved.getAsLong();
+                lineLabel = limitAttribute.toString() + ": " //$NON-NLS-1$
+                                + Values.CalculatedQuote.format(limitQuoteValue);
+            }
+
+            String lineID = attributeName.get().getName() + " (" + lineLabel + ")"; //$NON-NLS-1$ //$NON-NLS-2$
 
             // horizontal line: only two points required
             LocalDate[] dates = new LocalDate[2];
@@ -1362,7 +1392,7 @@ public class SecuritiesChart
 
             // both points with same y-value
             double[] values = new double[2];
-            values[0] = values[1] = limitAttribute.getValue() / Values.Quote.divider();
+            values[0] = values[1] = limitQuoteValue / Values.Quote.divider();
 
             @SuppressWarnings("unchecked")
             ILineSeries<Integer> lineSeriesLimit = (ILineSeries<Integer>) chart.getSeriesSet()

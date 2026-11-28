@@ -5,6 +5,8 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
+import java.util.OptionalLong;
 import java.util.function.Supplier;
 
 import org.eclipse.swt.SWT;
@@ -18,6 +20,7 @@ import name.abuchen.portfolio.model.AttributeFieldType;
 import name.abuchen.portfolio.model.AttributeType;
 import name.abuchen.portfolio.model.Dashboard.Widget;
 import name.abuchen.portfolio.model.LimitPrice;
+import name.abuchen.portfolio.model.LimitPriceResolver;
 import name.abuchen.portfolio.model.LimitPriceSettings;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
@@ -40,13 +43,22 @@ public class LimitExceededWidget extends AbstractSecurityListWidget<LimitExceede
     public static class LimitItem extends AbstractSecurityListWidget.Item
     {
         private LimitPrice limit;
+        private OptionalLong resolvedQuote;
         private SecurityPrice price;
         private AttributeType attributeType;
 
         public LimitItem(Security security, LimitPrice limit, SecurityPrice price, AttributeType type)
         {
+            this(security, limit, limit.isStatic() ? OptionalLong.of(limit.getValue()) : OptionalLong.empty(), price,
+                            type);
+        }
+
+        public LimitItem(Security security, LimitPrice limit, OptionalLong resolvedQuote, SecurityPrice price,
+                        AttributeType type)
+        {
             super(security);
             this.limit = limit;
+            this.resolvedQuote = resolvedQuote;
             this.price = price;
             this.attributeType = type;
         }
@@ -66,9 +78,10 @@ public class LimitExceededWidget extends AbstractSecurityListWidget<LimitExceede
     {
         return () -> {
 
-            List<AttributeType> types = get(AttributesConfig.class).getTypes();
+            var types = get(AttributesConfig.class).getTypes();
+            var resolver = new LimitPriceResolver(getClient());
 
-            List<LimitItem> items = new ArrayList<>();
+            var items = new ArrayList<LimitItem>();
 
             for (Security security : getClient().getSecurities())
             {
@@ -78,17 +91,29 @@ public class LimitExceededWidget extends AbstractSecurityListWidget<LimitExceede
                     if (!(attribute instanceof LimitPrice limit))
                         continue;
 
-                    SecurityPrice latest = security.getSecurityPrice(LocalDate.now());
-                    if (latest != null && limit.isExceeded(latest))
+                    var latest = security.getSecurityPrice(LocalDate.now());
+                    if (latest == null)
+                        continue;
+
+                    var resolved = limit.resolveValue(resolver, security);
+                    if (resolved.isPresent()
+                                    && LimitPrice.isExceeded(limit.getRelationalOperator(), resolved.getAsLong(),
+                                                    latest))
                     {
-                        items.add(new LimitItem(security, limit, latest, t));
+                        items.add(new LimitItem(security, limit, resolved, latest, t));
                     }
                 }
             }
 
-            Collections.sort(items, (r, l) -> Double.compare(
-                            AttributeColumn.LimitPriceComparator.calculateNormalizedDistance(l.limit, l.price),
-                            AttributeColumn.LimitPriceComparator.calculateNormalizedDistance(r.limit, r.price)));
+            Collections.sort(items, (r, l) -> {
+                double distL = Objects.requireNonNullElse(AttributeColumn.LimitPriceComparator
+                                .calculateNormalizedDistance(l.limit, l.resolvedQuote, l.price),
+                                Double.NEGATIVE_INFINITY);
+                double distR = Objects.requireNonNullElse(AttributeColumn.LimitPriceComparator
+                                .calculateNormalizedDistance(r.limit, r.resolvedQuote, r.price),
+                                Double.NEGATIVE_INFINITY);
+                return Double.compare(distL, distR);
+            });
 
             return items;
         };
@@ -116,7 +141,7 @@ public class LimitExceededWidget extends AbstractSecurityListWidget<LimitExceede
         price.setForeground(Colors.getTextColor(bgColor));
         price.setText(Values.Quote.format(item.getSecurity().getCurrencyCode(), item.price.getValue()));
 
-        Label limit = createLabel(composite, settings.getFullLabel(item.limit, item.price));
+        Label limit = createLabel(composite, settings.getFullLabel(item.limit, item.resolvedQuote, item.price));
 
         composite.addMouseListener(mouseUpAdapter);
         name.addMouseListener(mouseUpAdapter);

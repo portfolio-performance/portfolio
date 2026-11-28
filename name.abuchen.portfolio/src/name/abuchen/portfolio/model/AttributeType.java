@@ -21,6 +21,7 @@ import com.google.protobuf.NullValue;
 
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.model.LimitPrice.RelationalOperator;
+import name.abuchen.portfolio.model.LimitPrice.TargetMetric;
 import name.abuchen.portfolio.model.proto.v1.PAnyValue;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.util.TextUtil;
@@ -28,6 +29,10 @@ import name.abuchen.portfolio.util.TextUtil;
 public class AttributeType implements Named
 {
     private static final Pattern LIMIT_PRICE_PATTERN = Pattern.compile("^\\s*(<=?|>=?)\\s*(.*)\\s*$"); //$NON-NLS-1$
+    private static final String FORMULA_PROTO_PREFIX = "F:"; //$NON-NLS-1$
+    private static final Pattern LIMIT_FORMULA_PATTERN = Pattern.compile(
+                    "^(?<num>.+?)\\s*(?<pct>%)?\\s*(?:\\*\\s*)?(?<target>PP|AVG(?:\\s*(?:\\((?<groupParen>[^()]*)\\)|\\[(?<groupBracket>[^\\[\\]]*)\\]))?)$", //$NON-NLS-1$
+                    Pattern.CASE_INSENSITIVE);
 
     /* protobuf only */ interface ProtoConverter
     {
@@ -77,6 +82,14 @@ public class AttributeType implements Named
     public static class LimitPriceConverter implements Converter, ProtoConverter
     {
         private final LongConverter delegate = new LongConverter(Values.Quote);
+        private final Pattern numberPattern = buildLocaleDependentNumberPattern();
+        private final DecimalFormat numberFormat;
+
+        public LimitPriceConverter()
+        {
+            this.numberFormat = new DecimalFormat("#,###"); //$NON-NLS-1$
+            this.numberFormat.setParseBigDecimal(true);
+        }
 
         @Override
         public String toString(Object object)
@@ -100,12 +113,60 @@ public class AttributeType implements Named
             if (!operator.isPresent())
                 throw new IllegalArgumentException(Messages.MsgNotAComparator);
 
-            long price = delegate.fromString(m.group(2));
+            var fm = LIMIT_FORMULA_PATTERN.matcher(m.group(2).trim());
+            if (fm.matches())
+                return parseFormulaLimit(value, operator.get(), fm);
 
-            if (price < 0)
+            Long price = delegate.fromString(m.group(2));
+
+            if (price == null || price < 0)
                 throw new IllegalArgumentException(MessageFormat.format(Messages.MsgNotANumber, value));
 
             return new LimitPrice(operator.get(), price);
+        }
+
+        private LimitPrice parseFormulaLimit(String fullInput, RelationalOperator operator, Matcher fm)
+        {
+            var rawNum = fm.group("num").trim(); //$NON-NLS-1$
+            if (!numberPattern.matcher(rawNum).matches())
+                throw new IllegalArgumentException(MessageFormat.format(Messages.MsgNotANumber, fullInput));
+
+            BigDecimal parsed;
+            try
+            {
+                parsed = (BigDecimal) numberFormat.parse(rawNum);
+            }
+            catch (ParseException e)
+            {
+                throw new IllegalArgumentException(MessageFormat.format(Messages.MsgNotANumber, fullInput), e);
+            }
+
+            if (fm.group("pct") != null) //$NON-NLS-1$
+                parsed = parsed.divide(BigDecimal.valueOf(100), Values.MC);
+
+            double factor = parsed.doubleValue();
+            if (!Double.isFinite(factor) || factor <= 0d)
+                throw new IllegalArgumentException(MessageFormat.format(Messages.MsgNotANumber, fullInput));
+
+            var rawTarget = fm.group("target").trim(); //$NON-NLS-1$
+            if ("PP".equalsIgnoreCase(rawTarget)) //$NON-NLS-1$
+                return new LimitPrice(operator, TargetMetric.PURCHASE_PRICE_FIFO, factor, null);
+
+            var groupParen = fm.group("groupParen"); //$NON-NLS-1$
+            var groupBracket = fm.group("groupBracket"); //$NON-NLS-1$
+            var rawGroup = groupParen != null ? groupParen : groupBracket;
+
+            if (rawGroup != null)
+            {
+                var trimmedGroup = rawGroup.trim();
+                if (trimmedGroup.isEmpty() || trimmedGroup.indexOf('\t') >= 0 || trimmedGroup.indexOf('\n') >= 0
+                                || trimmedGroup.indexOf('\r') >= 0)
+                    throw new IllegalArgumentException(MessageFormat.format(Messages.MsgNotANumber, fullInput));
+
+                return new LimitPrice(operator, TargetMetric.AVG_POSITION_VALUE, factor, trimmedGroup);
+            }
+
+            return new LimitPrice(operator, TargetMetric.AVG_POSITION_VALUE, factor, null);
         }
 
         @Override
@@ -114,10 +175,19 @@ public class AttributeType implements Named
             if (object == null)
                 return PAnyValue.newBuilder().setNullValue(NullValue.NULL_VALUE_VALUE).build();
 
-            LimitPrice limitPrice = (LimitPrice) object;
+            var limitPrice = (LimitPrice) object;
 
-            return PAnyValue.newBuilder().setString(limitPrice.getRelationalOperator().getOperatorString()
-                            + Long.toString(limitPrice.getValue())).build();
+            if (limitPrice.isStatic())
+            {
+                return PAnyValue.newBuilder().setString(limitPrice.getRelationalOperator().getOperatorString()
+                                + Long.toString(limitPrice.getValue())).build();
+            }
+
+            var metricCode = limitPrice.getTargetMetric() == TargetMetric.PURCHASE_PRICE_FIFO ? "PP" : "AVG"; //$NON-NLS-1$ //$NON-NLS-2$
+            var group = limitPrice.getGroupFilter() != null ? limitPrice.getGroupFilter() : ""; //$NON-NLS-1$
+            var encoded = FORMULA_PROTO_PREFIX + limitPrice.getRelationalOperator().getOperatorString() + "\t" //$NON-NLS-1$
+                            + Double.toString(limitPrice.getFactor()) + "\t" + metricCode + "\t" + group; //$NON-NLS-1$ //$NON-NLS-2$
+            return PAnyValue.newBuilder().setString(encoded).build();
         }
 
         @Override
@@ -125,7 +195,11 @@ public class AttributeType implements Named
         {
             if (value.hasString())
             {
-                Matcher m = LIMIT_PRICE_PATTERN.matcher(value.getString());
+                var raw = value.getString();
+                if (raw.startsWith(FORMULA_PROTO_PREFIX))
+                    return fromFormulaProto(raw.substring(FORMULA_PROTO_PREFIX.length()));
+
+                var m = LIMIT_PRICE_PATTERN.matcher(raw);
                 if (!m.matches())
                     return null;
 
@@ -143,6 +217,44 @@ public class AttributeType implements Named
             {
                 return null;
             }
+        }
+
+        private LimitPrice fromFormulaProto(String payload)
+        {
+            var parts = payload.split("\t", -1); //$NON-NLS-1$
+            if (parts.length < 3)
+                return null;
+
+            var operator = RelationalOperator.findByOperator(parts[0]);
+            if (operator.isEmpty())
+                return null;
+
+            double factor;
+            try
+            {
+                factor = Double.parseDouble(parts[1]);
+            }
+            catch (NumberFormatException e)
+            {
+                return null;
+            }
+
+            if (!Double.isFinite(factor) || factor <= 0d)
+                return null;
+
+            TargetMetric metric;
+            if ("PP".equals(parts[2])) //$NON-NLS-1$
+                metric = TargetMetric.PURCHASE_PRICE_FIFO;
+            else if ("AVG".equals(parts[2])) //$NON-NLS-1$
+                metric = TargetMetric.AVG_POSITION_VALUE;
+            else
+                return null;
+
+            var group = parts.length >= 4 && !parts[3].isBlank() ? parts[3].trim() : null;
+            if (metric != TargetMetric.AVG_POSITION_VALUE && group != null)
+                return null;
+
+            return new LimitPrice(operator.get(), metric, factor, group);
         }
     }
 

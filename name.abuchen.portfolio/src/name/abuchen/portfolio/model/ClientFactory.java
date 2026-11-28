@@ -1479,7 +1479,7 @@ public class ClientFactory
             for (AttributeType t : typesWithLimit)
             {
                 Object value = attributes.get(t);
-                if (value instanceof LimitPrice lp)
+                if (value instanceof LimitPrice lp && lp.isStatic())
                 {
                     attributes.put(t, new LimitPrice(lp.getRelationalOperator(), lp.getValue() * 10000));
                 }

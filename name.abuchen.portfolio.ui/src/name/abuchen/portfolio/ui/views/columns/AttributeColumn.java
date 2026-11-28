@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.OptionalLong;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
@@ -28,6 +29,8 @@ import name.abuchen.portfolio.model.Bookmark;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.InvestmentPlan;
 import name.abuchen.portfolio.model.LimitPrice;
+import name.abuchen.portfolio.model.LimitPriceResolver;
+import name.abuchen.portfolio.model.LimitPriceResolver.Resolution;
 import name.abuchen.portfolio.model.LimitPriceSettings;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.Security;
@@ -163,10 +166,12 @@ public class AttributeColumn extends Column
     public static final class LimitPriceComparator implements Comparator<Object>
     {
         private final AttributeType attribute;
+        private final LimitPriceResolver resolver;
 
-        private LimitPriceComparator(AttributeType attribute)
+        public LimitPriceComparator(AttributeType attribute, LimitPriceResolver resolver)
         {
             this.attribute = attribute;
+            this.resolver = resolver;
         }
 
         @Override
@@ -217,14 +222,29 @@ public class AttributeColumn extends Column
             if (p == null)
                 return new Pair<>(l.getRelationalOperator().getOperatorString(), () -> null); // no price, no distance
 
-            return new Pair<>(l.getRelationalOperator().getOperatorString(), () -> calculateNormalizedDistance(l, p));
+            return new Pair<>(l.getRelationalOperator().getOperatorString(),
+                            () -> calculateNormalizedDistance(l, l.resolveValue(resolver, s), p));
         }
 
         public static Double calculateNormalizedDistance(LimitPrice limit, SecurityPrice latest)
         {
+            if (!limit.isStatic())
+                return null;
+
+            return calculateNormalizedDistance(limit, OptionalLong.of(limit.getValue()), latest);
+        }
+
+        public static Double calculateNormalizedDistance(LimitPrice limit, OptionalLong resolvedQuote,
+                        SecurityPrice latest)
+        {
+            if (latest == null || resolvedQuote == null || resolvedQuote.isEmpty())
+                return null;
+
             // "normalized relative distance": relative distance, but if exceeded then as positive value, otherwise as negative value
-            double relativeDistanceAbs = Math.abs(limit.calculateRelativeDistance(latest.getValue()));
-            return  limit.isExceeded(latest) ? relativeDistanceAbs : -relativeDistanceAbs;
+            long limitQuote = resolvedQuote.getAsLong();
+            double relativeDistanceAbs = Math.abs(LimitPrice.calculateRelativeDistance(limitQuote, latest.getValue()));
+            return LimitPrice.isExceeded(limit.getRelationalOperator(), limitQuote, latest) ? relativeDistanceAbs
+                            : -relativeDistanceAbs;
         }
     }
 
@@ -232,11 +252,13 @@ public class AttributeColumn extends Column
     {
         private final AttributeType attribute;
         private final LimitPriceSettings settings;
+        private final LimitPriceResolver resolver;
 
-        private LimitPriceLabelProvider(AttributeType attribute)
+        private LimitPriceLabelProvider(AttributeType attribute, LimitPriceResolver resolver)
         {
             this.attribute = attribute;
             this.settings = new LimitPriceSettings(attribute.getProperties());
+            this.resolver = resolver;
         }
 
         @Override
@@ -254,15 +276,98 @@ public class AttributeColumn extends Column
             if (limit == null)
                 return null;
 
-            // add relative/absolute difference to latest price if configured
-            if (settings.getShowAbsoluteDiff() || settings.getShowRelativeDiff())
+            if (limit.isStatic())
             {
-                SecurityPrice latestSecurityPrice = security.getSecurityPrice(LocalDate.now());
-                return settings.getFullLabel(limit, latestSecurityPrice);
+                if (settings.getShowAbsoluteDiff() || settings.getShowRelativeDiff())
+                {
+                    var latestSecurityPrice = security.getSecurityPrice(LocalDate.now());
+                    return settings.getFullLabel(limit, latestSecurityPrice);
+                }
+                else
+                {
+                    return limit.toString();
+                }
+            }
+
+            var resolved = limit.resolveValue(resolver, security);
+            var latestSecurityPrice = (settings.getShowAbsoluteDiff() || settings.getShowRelativeDiff())
+                            ? security.getSecurityPrice(LocalDate.now())
+                            : null;
+            return settings.getFullLabel(limit, resolved, latestSecurityPrice);
+        }
+
+        @Override
+        public String getToolTipText(Object element)
+        {
+            if (resolver == null)
+                return null;
+
+            var security = Adaptor.adapt(Security.class, element);
+            if (security == null)
+                return null;
+
+            var attributes = security.getAttributes();
+            if (attributes == null)
+                return null;
+
+            var limit = (LimitPrice) attributes.get(attribute);
+            if (limit == null || limit.isStatic())
+                return null;
+
+            var res = resolver.resolve(limit, security);
+            switch (res.status())
+            {
+                case RESOLVED:
+                    var sb = new StringBuilder(MessageFormat.format(Messages.TooltipLimitPriceFormulaResolved,
+                                    limit.toString(),
+                                    Values.Quote.format(security.getCurrencyCode(), res.resolvedQuote().getAsLong())));
+                    if (limit.getTargetMetric() == LimitPrice.TargetMetric.PURCHASE_PRICE_FIFO
+                                    && res.fifoPurchaseQuote().isPresent())
+                    {
+                        sb.append('\n').append(MessageFormat.format(Messages.TooltipLimitPricePurchasePriceFifo,
+                                        Values.Quote.format(security.getCurrencyCode(),
+                                                        res.fifoPurchaseQuote().getAsLong())));
+                    }
+                    else if (limit.getTargetMetric() == LimitPrice.TargetMetric.AVG_POSITION_VALUE
+                                    && res.groupAverageValue() != null)
+                    {
+                        sb.append('\n').append(formatGroupAverageLine(limit, res));
+                    }
+                    return sb.toString();
+
+                case NO_HOLDINGS:
+                    var msg = MessageFormat.format(Messages.TooltipLimitPriceUnresolvedNoHoldings, limit.toString());
+                    if (res.groupAverageValue() != null)
+                        return msg + '\n' + formatGroupAverageLine(limit, res);
+                    return msg;
+
+                case UNKNOWN_GROUP:
+                    return MessageFormat.format(Messages.TooltipLimitPriceUnresolvedUnknownGroup, limit.toString(),
+                                    limit.getGroupFilter());
+
+                case EMPTY_GROUP:
+                    return MessageFormat.format(Messages.TooltipLimitPriceUnresolvedEmptyGroup, limit.toString(),
+                                    res.matchedAttributeLabel() != null ? res.matchedAttributeLabel()
+                                                    : limit.getGroupFilter());
+
+                default:
+                    return null;
+            }
+        }
+
+        private String formatGroupAverageLine(LimitPrice limit, Resolution res)
+        {
+            if (limit.getGroupFilter() == null)
+            {
+                return MessageFormat.format(Messages.TooltipLimitPriceAvgPositionAll,
+                                Integer.valueOf(res.groupCount()), Values.Money.format(res.groupAverageValue()));
             }
             else
             {
-                return limit.toString();
+                return MessageFormat.format(Messages.TooltipLimitPriceAvgPositionGroup,
+                                res.matchedAttributeLabel() != null ? res.matchedAttributeLabel()
+                                                : limit.getGroupFilter(),
+                                Integer.valueOf(res.groupCount()), Values.Money.format(res.groupAverageValue()));
             }
         }
 
@@ -282,12 +387,12 @@ public class AttributeColumn extends Column
             if (latestSecurityPrice == null)
                 return null;
 
-            return getColor(limit, latestSecurityPrice);
+            return getColor(limit, latestSecurityPrice, security);
         }
 
-        private Color getColor(LimitPrice limit, SecurityPrice latestSecurityPrice)
+        private Color getColor(LimitPrice limit, SecurityPrice latestSecurityPrice, Security security)
         {
-            if (!limit.isExceeded(latestSecurityPrice))
+            if (!limit.isExceeded(latestSecurityPrice, resolver, security))
                 return null;
 
             switch (limit.getRelationalOperator())
@@ -368,7 +473,7 @@ public class AttributeColumn extends Column
      */
     private static final String ACCOUNT_ID = ID + "account$"; //$NON-NLS-1$
 
-    private AttributeColumn(String idPrefix, final AttributeType attribute)
+    private AttributeColumn(String idPrefix, final AttributeType attribute, LimitPriceResolver limitPriceResolver)
     {
         super(idPrefix + attribute.getId(), attribute.getColumnLabel(), // $NON-NLS-1$
                         attribute.isNumber() ? SWT.RIGHT : SWT.LEFT, 80);
@@ -386,8 +491,8 @@ public class AttributeColumn extends Column
         else if (attribute.getType() == LimitPrice.class)
         {
             setStyle(SWT.RIGHT);
-            setLabelProvider(new LimitPriceLabelProvider(attribute));
-            setComparator(new LimitPriceComparator(attribute));
+            setLabelProvider(new LimitPriceLabelProvider(attribute, limitPriceResolver));
+            setComparator(new LimitPriceComparator(attribute, limitPriceResolver));
             new AttributeEditingSupport(attribute).attachTo(this);
         }
         else if (attribute.getType() == Bookmark.class)
@@ -472,6 +577,8 @@ public class AttributeColumn extends Column
 
     private static List<Column> create(Client client, Class<? extends Attributable> target, String idPrefix)
     {
+        LimitPriceResolver limitPriceResolver = target == Security.class ? new LimitPriceResolver(client) : null;
+
         return client.getSettings() //
                         .getAttributeTypes() //
                         .filter(a -> a.supports(target)) //
@@ -480,7 +587,7 @@ public class AttributeColumn extends Column
                             List<Column> columns = new ArrayList<>();
 
                             // primary column
-                            Column column = new AttributeColumn(idPrefix, attribute);
+                            Column column = new AttributeColumn(idPrefix, attribute, limitPriceResolver);
                             column.setVisible(false);
                             columns.add(column);
 
