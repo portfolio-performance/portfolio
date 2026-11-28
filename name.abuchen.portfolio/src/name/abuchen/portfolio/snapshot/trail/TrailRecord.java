@@ -68,9 +68,15 @@ public interface TrailRecord
         return new ArithmeticTrail(ArithmeticTrail.Operation.ADDITION, Messages.LabelSum, this, trail);
     }
 
+    /**
+     * Subtracts the given trail from this trail. An empty trail stands for
+     * "nothing", i.e. zero: subtracting an empty trail returns this trail
+     * unchanged, and subtracting a trail from an empty trail yields
+     * {@code 0 - trail} (in the currency of the subtracted trail).
+     */
     default TrailRecord subtract(TrailRecord trail)
     {
-        if (trail instanceof EmptyTrail)
+        if (trail.isEmpty())
             return this;
         return new ArithmeticTrail(ArithmeticTrail.Operation.SUBTRACTION, Messages.LabelDifference, this, trail);
     }
