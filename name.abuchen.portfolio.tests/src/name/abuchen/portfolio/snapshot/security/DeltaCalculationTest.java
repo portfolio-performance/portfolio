@@ -314,4 +314,36 @@ public class DeltaCalculationTest
         assertThat(containsConversionOf(trail.getRecord(), PortfolioTransaction.Type.DELIVERY_INBOUND.toString()),
                         is(true));
     }
+
+    /**
+     * Transfers do not contribute to the delta, so the calculation must not
+     * read their amount: a transfer created without a currency code (which
+     * the public API allows) must not fail the calculation.
+     */
+    @Test
+    public void testTransferWithoutCurrencyCode()
+    {
+        Client client = new Client();
+
+        Security security = new SecurityBuilder() //
+                        .addPrice("2020-01-01", Values.Quote.factorize(100)) //
+                        .addPrice("2021-01-31", Values.Quote.factorize(120)) //
+                        .addTo(client);
+
+        Portfolio portfolioA = new PortfolioBuilder() //
+                        .buy(security, "2020-06-01", Values.Share.factorize(10), Values.Amount.factorize(1000)) //
+                        .addTo(client);
+
+        Portfolio portfolioB = new PortfolioBuilder().addTo(client);
+
+        PortfolioTransferEntry transfer = new PortfolioTransferEntry(portfolioA, portfolioB);
+        transfer.setSecurity(security);
+        transfer.setDate(LocalDateTime.parse("2020-09-01T00:00"));
+        transfer.setShares(Values.Share.factorize(10));
+        transfer.insert();
+
+        Interval interval = Interval.of(LocalDate.parse("2020-01-01"), LocalDate.parse("2021-01-31"));
+
+        assertTrailMatchesDelta(client, security, interval);
+    }
 }

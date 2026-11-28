@@ -88,9 +88,16 @@ import name.abuchen.portfolio.snapshot.trail.TrailRecord;
     @Override
     public void visit(CurrencyConverter converter, CalculationLineItem.TransactionItem item, PortfolioTransaction t)
     {
+        name.abuchen.portfolio.model.PortfolioTransaction.Type type = t.getType();
+
+        // transferals do not contribute to the delta: return before reading
+        // the amount, which a transfer is not required to have
+        if (type == name.abuchen.portfolio.model.PortfolioTransaction.Type.TRANSFER_IN
+                        || type == name.abuchen.portfolio.model.PortfolioTransaction.Type.TRANSFER_OUT)
+            return;
+
         Money amount = t.getMonetaryAmount().with(converter.at(t.getDateTime()));
 
-        name.abuchen.portfolio.model.PortfolioTransaction.Type type = t.getType();
         switch (type)
         {
             case BUY:
@@ -103,10 +110,6 @@ import name.abuchen.portfolio.snapshot.trail.TrailRecord;
             case DELIVERY_OUTBOUND:
                 delta.add(amount);
                 positive.add(transactionTrail(converter, item, amount));
-                break;
-            case TRANSFER_IN:
-            case TRANSFER_OUT:
-                // transferals do not contribute to the delta
                 break;
             default:
                 throw new UnsupportedOperationException("unsupported type " + type); //$NON-NLS-1$
