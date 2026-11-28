@@ -214,6 +214,7 @@ public class Messages extends NLS
     public static String LabelStatementOfAssets;
     public static String LabelSuffixEntryCorrected;
     public static String LabelSum;
+    public static String LabelSwissFundData;
     public static String LabelTradeCalendarASX;
     public static String LabelTradeCalendarBIST;
     public static String LabelTradeCalendarDefault;
@@ -301,6 +302,7 @@ public class Messages extends NLS
     public static String MsgErrorParseErrorWithGivenPattern;
     public static String MsgErrorQuandlMissingAPIKey;
     public static String MsgErrorQuandlMissingCode;
+    public static String MsgErrorSwissFundDataNoPrices;
     public static String MsgErrorTradeCollector_MissingHoldingsForSell;
     public static String MsgErrorTradeCollector_MissingHoldingsForTransfer;
     public static String MsgErrorTradeCollector_NoHoldingsForSell;
