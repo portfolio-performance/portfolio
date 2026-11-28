@@ -7,7 +7,6 @@ name.abuchen.portfolio.online.impl.BinanceQuoteFeed
 name.abuchen.portfolio.online.impl.BinanceFuturesUsdsMarginedQuoteFeed
 name.abuchen.portfolio.online.impl.MEXCQuoteFeed
 name.abuchen.portfolio.online.impl.CoinGeckoQuoteFeed
-name.abuchen.portfolio.online.impl.CSQuoteFeed
 name.abuchen.portfolio.online.impl.EODHistoricalDataQuoteFeed
 name.abuchen.portfolio.online.impl.FinnhubQuoteFeed
 name.abuchen.portfolio.online.impl.EurostatHICPQuoteFeed
@@ -19,6 +18,7 @@ name.abuchen.portfolio.online.impl.TwelveDataQuoteFeed
 name.abuchen.portfolio.online.impl.PortfolioReportQuoteFeed
 name.abuchen.portfolio.online.impl.QuandlQuoteFeed
 name.abuchen.portfolio.online.impl.SiftingQuoteFeed
+name.abuchen.portfolio.online.impl.SwissFundDataQuoteFeed
 name.abuchen.portfolio.online.impl.YahooFinanceQuoteFeed
 name.abuchen.portfolio.online.impl.YahooFinanceAdjustedCloseQuoteFeed
 name.abuchen.portfolio.online.impl.HTMLTableQuoteFeed

@@ -41,7 +41,6 @@ import name.abuchen.portfolio.online.impl.AlphavantageQuoteFeed;
 import name.abuchen.portfolio.online.impl.BinanceFuturesUsdsMarginedQuoteFeed;
 import name.abuchen.portfolio.online.impl.BinanceQuoteFeed;
 import name.abuchen.portfolio.online.impl.BitfinexQuoteFeed;
-import name.abuchen.portfolio.online.impl.CSQuoteFeed;
 import name.abuchen.portfolio.online.impl.CoinGeckoQuoteFeed;
 import name.abuchen.portfolio.online.impl.ECBDataPortalQuoteFeed;
 import name.abuchen.portfolio.online.impl.EODHistoricalDataQuoteFeed;
@@ -512,7 +511,6 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
 
         boolean feedURL = feed != null && feed.getId() != null && //
                         (feed.getId().equals(HTMLTableQuoteFeed.ID) //
-                                        || feed.getId().equals(CSQuoteFeed.ID) //
                                         || feed.getId().equals(GenericJSONQuoteFeed.ID));
 
         boolean needsTicker = feed != null && feed.getId() != null //
