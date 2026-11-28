@@ -5,9 +5,9 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 
-import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 
 import name.abuchen.portfolio.model.Client;
@@ -33,6 +33,14 @@ import name.abuchen.portfolio.util.TextUtil;
  * daily series. The saving comes entirely from that laziness - looking a record
  * up in the snapshot is a linear scan over records that were all built anyway.
  * <p/>
+ * <p/>
+ * A report over every instrument of a working file is more than one MCP answer
+ * carries, so its rows are paged like every other list, keyed by the uuid of the
+ * instrument a row is about. Paging is not only about size here: a row's lazy
+ * figures, the daily series behind {@code timeWeighted} and {@code risk}, are
+ * computed while the row is serialized, so a page costs the page and not the
+ * whole report.
+ * <p/>
  * The factory is the host's per-file instance - it registers a listener on the
  * client, so this handler must not construct its own.
  */
@@ -48,43 +56,87 @@ public final class InstrumentPerformanceHandler
     {
     }
 
-    public static JsonElement list(Client client, ExchangeRateProviderFactory factory, String openingDateParam,
-                    String closingDateParam, String currencyParam, String costMethodParam, String taxesAndFeesParam,
-                    String metricsParam)
+    public static JsonElement list(Client client, String fileId, ExchangeRateProviderFactory factory,
+                    String openingDateParam, String closingDateParam, String currencyParam, String costMethodParam,
+                    String taxesAndFeesParam, String metricsParam, String cursorParam, String limitParam)
     {
-        return list(client, converters(factory), openingDateParam, closingDateParam, currencyParam, costMethodParam,
-                        taxesAndFeesParam, metricsParam);
+        var conversions = new ConversionRecorder(factory);
+        var report = list(client, converters(factory, conversions), fileId, openingDateParam, closingDateParam,
+                        currencyParam, costMethodParam, taxesAndFeesParam, metricsParam, cursorParam, limitParam)
+                        .getAsJsonObject();
+        FxWarnings.attach(report, conversions);
+        return report;
     }
 
     /* package */ static JsonElement list(Client client, Function<String, CurrencyConverter> converters,
-                    String openingDateParam, String closingDateParam, String currencyParam, String costMethodParam,
-                    String taxesAndFeesParam, String metricsParam)
+                    String fileId, String openingDateParam, String closingDateParam, String currencyParam,
+                    String costMethodParam, String taxesAndFeesParam, String metricsParam, String cursorParam,
+                    String limitParam)
     {
         var params = parse(client, openingDateParam, closingDateParam, currencyParam, costMethodParam,
                         taxesAndFeesParam, metricsParam);
 
+        // which rows the report holds is decided by the file and the interval alone;
+        // the metric groups, the cost method and the reporting currency only change
+        // what a row says, so they stay out of the scope and a cursor survives them
+        var pagingErrors = new ArrayList<ApiException.FieldError>();
+        var scope = "performance|file=" + (fileId == null ? "" : fileId) //$NON-NLS-1$ //$NON-NLS-2$
+                        + "|openingDate=" + params.openingDate() //$NON-NLS-1$
+                        + "|closingDate=" + params.closingDate(); //$NON-NLS-1$
+        var paging = Paging.parse(Paging.Kind.PERFORMANCE, scope, cursorParam, limitParam, pagingErrors);
+        if (!pagingErrors.isEmpty())
+            throw ApiException.badRequest(pagingErrors);
+
         var records = snapshot(client, converters, params).getRecords();
 
         // the model yields the records in the iteration order of a HashMap, so
-        // sorting is what makes repeated calls comparable at all
+        // sorting is what makes repeated calls comparable at all; two instruments
+        // of the same name - or of names the collator holds equal - are told
+        // apart by their uuid
         var sorted = new ArrayList<>(records);
-        sorted.sort(Comparator.comparing(LazySecurityPerformanceRecord::getSecurityName, TextUtil::compare));
+        sorted.sort(Comparator.comparing(LazySecurityPerformanceRecord::getSecurityName, TextUtil::compare)
+                        .thenComparing(record -> record.getSecurity().getUUID()));
 
-        var items = new JsonArray();
-        for (LazySecurityPerformanceRecord record : sorted)
-            items.add(EntityJson.instrumentPerformance(record, params));
-
+        // serializing a record is what computes its lazy figures - the daily
+        // series behind timeWeighted and risk above all - so this is where the time
+        // goes, and why a page is cheaper than the report: only what a page holds
+        // gets its series built. A paged answer is in the order of the instrument
+        // uuid rather than by name, as a page of the statement of assets is
+        var progress = Progress.current();
+        var rendered = new AtomicInteger();
         var json = EntityJson.instrumentPerformanceContext(params);
-        json.add("items", items); //$NON-NLS-1$
+        paging.apply(Paging.Kind.PERFORMANCE, json, "items", sorted, //$NON-NLS-1$
+                        record -> record.getSecurity().getUUID(), record -> {
+                            progress.checkCancelled();
+                            var done = rendered.getAndIncrement();
+                            progress.step(done, sorted.size(), progressLabel(done, sorted.size(), paging.given()));
+                            return EntityJson.instrumentPerformance(record, params);
+                        });
         return json;
+    }
+
+    /**
+     * What one step of the loop reports. Over a page the report's row count is not
+     * the number of rows this call renders, and "instrument 3 of 898" on a page of
+     * sixty would read as a calculation that stopped early.
+     */
+    private static String progressLabel(int done, int inAll, boolean paged)
+    {
+        if (paged)
+            return "instrument " + (done + 1) + " of this page, " + inAll + " rows in the report"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+
+        return "instrument " + (done + 1) + " of " + inAll; //$NON-NLS-1$ //$NON-NLS-2$
     }
 
     public static JsonElement get(Client client, ExchangeRateProviderFactory factory, String uuid,
                     String openingDateParam, String closingDateParam, String currencyParam, String costMethodParam,
                     String taxesAndFeesParam, String metricsParam)
     {
-        return get(client, converters(factory), uuid, openingDateParam, closingDateParam, currencyParam,
-                        costMethodParam, taxesAndFeesParam, metricsParam);
+        var conversions = new ConversionRecorder(factory);
+        var report = get(client, converters(factory, conversions), uuid, openingDateParam, closingDateParam,
+                        currencyParam, costMethodParam, taxesAndFeesParam, metricsParam).getAsJsonObject();
+        FxWarnings.attach(report, conversions);
+        return report;
     }
 
     /* package */ static JsonElement get(Client client, Function<String, CurrencyConverter> converters, String uuid,
@@ -116,9 +168,11 @@ public final class InstrumentPerformanceHandler
         return json;
     }
 
-    private static Function<String, CurrencyConverter> converters(ExchangeRateProviderFactory factory)
+    /** converters into any currency, each recording what it converted */
+    private static Function<String, CurrencyConverter> converters(ExchangeRateProviderFactory factory,
+                    ConversionRecorder conversions)
     {
-        return currency -> new CurrencyConverterImpl(factory, currency);
+        return currency -> conversions.wrap(new CurrencyConverterImpl(factory, currency));
     }
 
     private static LazySecurityPerformanceSnapshot snapshot(Client client,

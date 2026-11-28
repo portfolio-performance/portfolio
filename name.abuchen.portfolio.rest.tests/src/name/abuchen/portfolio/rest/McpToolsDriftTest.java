@@ -7,6 +7,9 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.notNullValue;
 
+import java.io.IOException;
+import java.io.UncheckedIOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
@@ -46,6 +49,7 @@ public class McpToolsDriftTest
      */
     private static final Set<String> ROUTES_WITHOUT_A_TOOL = Set.of( //
                     "POST /mcp", //
+                    "DELETE /mcp", //
                     "GET /v1/openapi.yaml", //
                     "GET /v1/version", //
                     "POST /v1/auth/requests", //
@@ -54,6 +58,23 @@ public class McpToolsDriftTest
     private static final Pattern TOOL_NAME = Pattern.compile("pp_[a-z0-9_]+");
 
     private static final Pattern PATH_PLACEHOLDER = Pattern.compile("\\{([^}]+)\\}");
+
+    /** writes that only ever add: an assignment, a list or an instrument that was not there, a quote that was not stored */
+    private static final Set<String> ADDING_WRITES = Set.of("pp_assign_vehicle", "pp_create_watchlist", //$NON-NLS-1$ //$NON-NLS-2$
+                    "pp_create_instrument", "pp_update_quotes", "pp_create_cash_account", //$NON-NLS-1$ //$NON-NLS-2$
+                    "pp_create_investment_account", "pp_create_class"); //$NON-NLS-1$
+
+    /**
+     * writes whose second sending is refused, brings a second thing into being,
+     * or - for the one tool that reaches the network - does the work all over
+     * again rather than leaving the world alone
+     */
+    private static final Set<String> ONCE_ONLY_WRITES = Set.of("pp_unassign_vehicle", "pp_create_watchlist", //$NON-NLS-1$ //$NON-NLS-2$
+                    "pp_create_instrument", "pp_update_quotes", "pp_delete_watchlist", "pp_create_cash_account", //$NON-NLS-1$ //$NON-NLS-2$
+                    "pp_create_investment_account", "pp_create_class"); //$NON-NLS-1$
+
+    /** the one tool that contacts something outside the application */
+    private static final Set<String> OPEN_WORLD_TOOLS = Set.of("pp_update_quotes"); //$NON-NLS-1$
 
     private IEclipsePreferences node;
 
@@ -71,10 +92,10 @@ public class McpToolsDriftTest
 
     /** also asserts the document is reachable as a bundle entry, not just in the IDE */
     @Test
-    public void testTheSixteenToolsAreServed()
+    public void testTheToolsAreServed()
     {
-        assertThat(McpTools.all(), hasSize(16));
-        assertThat(McpTools.listPayload().size(), is(16));
+        assertThat(McpTools.all(), hasSize(34));
+        assertThat(McpTools.listPayload().size(), is(34));
     }
 
     @Test
@@ -121,6 +142,12 @@ public class McpToolsDriftTest
             {
                 if (binding.where() == McpTool.Where.QUERY && !accepted.contains(binding.wire()))
                     rejected.add(tool.name() + " -> ?" + binding.wire());
+
+                // a prefixed family is permitted by one declaration: the prefix,
+                // and the star that says any name may stand behind it
+                if (binding.where() == McpTool.Where.QUERY_PREFIX
+                                && !accepted.contains(binding.wire() + Router.DYNAMIC_PARAMETER))
+                    rejected.add(tool.name() + " -> ?" + binding.wire() + Router.DYNAMIC_PARAMETER);
             }
         }
 
@@ -169,7 +196,7 @@ public class McpToolsDriftTest
 
     /** no default file and no active file, on all but the first call */
     @Test
-    public void testFileIsRequiredOnFifteenOfSixteen()
+    public void testFileIsRequiredOnEveryToolButOne()
     {
         var without = new TreeSet<String>();
         for (McpTool tool : McpTools.all())
@@ -196,22 +223,17 @@ public class McpToolsDriftTest
         }
     }
 
-    /** repetition has no representation in the dispatcher, so nothing may declare it */
+    /**
+     * Repetition has no representation in the dispatcher: an array argument
+     * becomes one comma-joined value, which is how this API spells a multi-valued
+     * parameter throughout. {@code explode} was once declared on the array
+     * bindings and never honoured, so it is gone - this is the guard that keeps
+     * the removed concept from coming back as a promise nothing fulfils.
+     */
     @Test
-    public void testArrayQueryBindingsAreNotExploded()
+    public void testNothingDeclaresExplodedQueryParameters()
     {
-        for (McpTool tool : McpTools.all())
-        {
-            var properties = tool.inputSchema().getAsJsonObject("properties");
-            for (McpTool.Binding binding : tool.bindings())
-            {
-                if (binding.where() != McpTool.Where.QUERY)
-                    continue;
-                var type = properties.getAsJsonObject(binding.arg()).get("type");
-                if (type != null && "array".equals(type.getAsString()))
-                    assertThat(tool.name() + "." + binding.arg() + " explode", binding.explode(), is(false));
-            }
-        }
+        assertThat("the authored tool document", toolDocument().contains("\"explode\""), is(false));
     }
 
     @Test
@@ -251,20 +273,38 @@ public class McpToolsDriftTest
             var readOnly = "GET".equals(tool.method());
 
             assertThat(tool.name() + " readOnlyHint", annotations.get("readOnlyHint").getAsBoolean(), is(readOnly));
-            // MCP defaults destructiveHint to true whenever readOnlyHint is
-            // false, and a merge patch clears fields when given null, so it is
-            // not additive either
+
+            // MCP defaults destructiveHint to true whenever readOnlyHint is false,
+            // and that default fits the writes here with the exceptions named
+            // below: a merge patch clears a field when given null and a delete
+            // takes something away - but placing a vehicle into a class and naming
+            // a list that did not exist take away nothing that was there before
+            var destructive = !readOnly && !ADDING_WRITES.contains(tool.name());
             assertThat(tool.name() + " destructiveHint", annotations.get("destructiveHint").getAsBoolean(),
-                            is(!readOnly));
-            assertThat(tool.name() + " idempotentHint", annotations.get("idempotentHint").getAsBoolean(), is(true));
-            // a closed local system, not the open internet
-            assertThat(tool.name() + " openWorldHint", annotations.get("openWorldHint").getAsBoolean(), is(false));
+                            is(destructive));
+
+            // every other request of this surface can be sent again unchanged and
+            // comes back the same. Taking an assignment out cannot, and neither can
+            // naming a list: the second time there is nothing to do and the call is
+            // refused rather than quietly succeeding - a different effect, not a
+            // repeated one
+            var idempotent = !ONCE_ONLY_WRITES.contains(tool.name());
+            assertThat(tool.name() + " idempotentHint", annotations.get("idempotentHint").getAsBoolean(),
+                            is(idempotent));
+
+            // a closed local system, not the open internet - with the one
+            // exception named below: starting the application's price update hands
+            // the job over to providers outside this application, and saying so is
+            // what lets a client ask before it does
+            var openWorld = OPEN_WORLD_TOOLS.contains(tool.name());
+            assertThat(tool.name() + " openWorldHint", annotations.get("openWorldHint").getAsBoolean(),
+                            is(openWorld));
         }
     }
 
-    /** exactly two writes, and they are the two the surface names */
+    /** the writes are the ones the surface names, and no read is secret about it */
     @Test
-    public void testTheWriteToolsAreTheTwoExpectedOnes()
+    public void testTheWriteToolsAreTheExpectedOnes()
     {
         var writes = new TreeSet<String>();
         for (McpTool tool : McpTools.all())
@@ -273,7 +313,11 @@ public class McpToolsDriftTest
                 writes.add(tool.name());
         }
 
-        assertThat(writes, is(new TreeSet<>(Set.of("pp_update_instrument", "pp_delete_instrument"))));
+        assertThat(writes, is(new TreeSet<>(Set.of("pp_update_instrument", "pp_delete_instrument", //
+                        "pp_assign_vehicle", "pp_unassign_vehicle", "pp_update_class", "pp_create_class", //
+                        "pp_create_watchlist", "pp_update_watchlist", "pp_delete_watchlist", //
+                        "pp_create_instrument", "pp_update_quotes", //
+                        "pp_create_cash_account", "pp_create_investment_account")))); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
     }
 
     @Test
@@ -328,5 +372,19 @@ public class McpToolsDriftTest
         var host = new FakeHost(List.of());
         return ApiRoutes.create(new FileAccessRegistry(node), host,
                         new PairingService(new ClientStore(Path.of("target", "unused-client-store")), host));
+    }
+
+    /** the authored document itself, for a guard that only the file can answer */
+    private static String toolDocument()
+    {
+        try (var in = McpToolsDriftTest.class.getResourceAsStream("/mcp-tools.json")) //$NON-NLS-1$
+        {
+            assertThat("mcp-tools.json must be on the bundle classpath", in, is(notNullValue()));
+            return new String(in.readAllBytes(), StandardCharsets.UTF_8); //$NON-NLS-1$
+        }
+        catch (IOException e)
+        {
+            throw new UncheckedIOException(e); //$NON-NLS-1$
+        }
     }
 }

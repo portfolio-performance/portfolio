@@ -13,10 +13,17 @@ public final class Entities
     {
     }
 
+    /**
+     * A UUID is case-insensitive on input (RFC 9562), so an id a client
+     * upper-cased on its way through still finds its entity.
+     */
     public static <T> T byUuid(Collection<T> entities, Function<T, String> uuid, String wanted)
     {
+        if (wanted == null)
+            throw ApiException.notFound();
+
         return entities.stream() //
-                        .filter(entity -> uuid.apply(entity).equals(wanted)) //
+                        .filter(entity -> wanted.equalsIgnoreCase(uuid.apply(entity))) //
                         .findFirst().orElseThrow(ApiException::notFound);
     }
 }

@@ -19,18 +19,25 @@ public record McpTool(String name, String operationId, String method, String pat
     /** where one argument goes when the tool call becomes an HTTP request */
     public enum Where
     {
-        PATH, QUERY, BODY
+        PATH, QUERY, BODY,
+        /**
+         * one query parameter per key of an object argument, behind a prefix:
+         * {@code {"<attribute id>": …}} becomes {@code attribute:<id>=…}. The
+         * route permits that family as {@code attribute:*}, because the ids
+         * belong to the file and not to the catalog.
+         */
+        QUERY_PREFIX
     }
 
     /**
      * @param arg
      *            the argument name as the model sees it
      * @param wire
-     *            the path placeholder, query parameter or body property
-     * @param explode
-     *            false for an array query parameter, joined with commas
+     *            the path placeholder, query parameter or body property - or, for
+     *            a {@link Where#QUERY_PREFIX}, the prefix every generated
+     *            parameter name starts with
      */
-    public record Binding(String arg, Where where, String wire, boolean explode)
+    public record Binding(String arg, Where where, String wire)
     {
     }
 

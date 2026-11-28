@@ -1,0 +1,319 @@
+package name.abuchen.portfolio.rest.internal;
+
+import java.nio.ByteBuffer;
+import java.nio.charset.CharacterCodingException;
+import java.nio.charset.CodingErrorAction;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Base64;
+import java.util.Comparator;
+import java.util.List;
+import java.util.function.Function;
+import java.util.regex.Pattern;
+
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonNull;
+import com.google.gson.JsonObject;
+
+/**
+ * One page of a list, continued from a cursor rather than counted from an
+ * offset. Without {@code cursor} and {@code limit} the whole list is returned
+ * as before, in its usual order, and the response carries no {@code page} - a
+ * client that never pages sees no change.
+ * <p/>
+ * A paged list is in an order of keys that an edit elsewhere does not change:
+ * an instrument's uuid; a holding's vehicle uuid; a trade's instrument uuid,
+ * start, investment account, closing transaction, and the shares, amount and id
+ * of its opening transaction. Every item of a page carries its {@code cursor}, and
+ * {@code page.nextCursor} is the cursor of the page's last item - or
+ * {@code null} on the last page. The next page holds the items after that key.
+ * An item added or removed between two pages therefore does not shift the
+ * others, as it would with an offset: every item that is in the list for the
+ * whole walk through it comes exactly once. An item added before the cursor
+ * comes only with a new walk from the first page; a trade whose start,
+ * investment account or closing transaction changes gets a new key and may
+ * then come twice or not at all. Trades opened by the same file's transactions
+ * are told apart by the id of that transaction, so alike lots keep their
+ * places when one of them is removed between two pages.
+ * <p/>
+ * A cursor is good only for the list it came from: it carries a short hash of
+ * the scope - the file, for trades of one instrument that instrument, and the
+ * filters that decide which items the list holds - and a cursor of another
+ * scope is refused as {@code invalid-value} rather than answered with a page
+ * of a different list.
+ *
+ * @param given
+ *            whether the request named {@code cursor} or {@code limit} at all
+ * @param scope
+ *            the hash of the list's scope, which every cursor of it carries
+ * @param after
+ *            the key the page continues after, or null for the first page
+ * @param limit
+ *            null for no limit
+ */
+public record Paging(boolean given, String scope, String after, Integer limit)
+{
+    /** the whole list, as when neither parameter is sent */
+    public static final Paging ALL = new Paging(false, null, null, null);
+
+    /** one id, as {@code java.util.UUID} writes it - in whatever hex case the file kept */
+    private static final String UUIDS = "[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}"; //$NON-NLS-1$
+
+    private static final String VERSION = "v2"; //$NON-NLS-1$
+
+    /**
+     * Which list a cursor belongs to, so that one list's cursor is refused by
+     * another - and what a key of it looks like, so that a cursor this API did
+     * not write is refused before it is compared with any key.
+     */
+    public enum Kind
+    {
+        /** an instrument's uuid */
+        INSTRUMENTS("i", Pattern.compile(UUIDS)), //$NON-NLS-1$
+        /**
+         * the uuid of the vehicle a row of the statement of assets is about: that
+         * report holds one row per vehicle, so the uuid names the row and nothing
+         * else. Paged, the rows come in the order of that uuid and not by name as
+         * the unpaged answer does - a name is the one thing of a vehicle an edit
+         * can change, and a row that moved between two pages would be read twice
+         * or not at all.
+         */
+        HOLDINGS("h", Pattern.compile(UUIDS)), //$NON-NLS-1$
+        /**
+         * instrument | start | investment account | closing transaction |
+         * shares | currency and amount | id of the transaction that opens the
+         * trade, or a running number for the collector's copies of a lot sold
+         * in parts
+         */
+        TRADES("t", Pattern.compile(UUIDS + "\\|" //$NON-NLS-1$
+                        + "\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\|" //$NON-NLS-1$
+                        + UUIDS + "\\|(" + UUIDS + ")?\\|" //$NON-NLS-1$ //$NON-NLS-2$
+                        + "-?\\d{1,19}\\|[A-Z]{3} -?\\d{1,19}\\|(" + UUIDS + "|\\d{4,})")), //$NON-NLS-1$
+        /**
+         * the date of the last price a page was rendered to: at most one price
+         * per day is stored, so the date alone names an entry of the series
+         */
+        PRICES("p", Pattern.compile("\\d{4}-\\d{2}-\\d{2}")), //$NON-NLS-1$
+        /**
+         * taxonomy id | the ranks from the root down, three digits per level |
+         * class id. The rank path is what puts a page back into the order the
+         * application shows: sorted by it, every class follows its parent and
+         * its own subtree stays together. A class keeps its key while it keeps
+         * its place; reordering a branch moves it, as it moves on screen.
+         */
+        CLASSES("c", Pattern.compile("[^|]+\\|\\d{3}(\\}\\d{3})*\\|[^|]+")), //$NON-NLS-1$
+
+        /**
+         * A booking, keyed by the day and the time it was recorded and by its
+         * uuid. Day and time are fixed width, so the text order of the keys is
+         * the order of the bookings; the uuid of a booking never repeats, and
+         * the two sides of a transfer are two bookings with two uuids.
+         */
+        TRANSACTIONS("x", Pattern.compile("\\d{4}-\\d{2}-\\d{2}\\|\\d{2}:\\d{2}:\\d{2}\\|[^|]+")), //$NON-NLS-1$
+
+        /**
+         * the rank an assignment holds within its class, then the uuid of the
+         * vehicle. Sorted by it, a page of a class's vehicles reads in the order
+         * of the application's table rather than by identifier - and the uuid
+         * behind the rank, because a rank is only unique among the vehicles of
+         * one class and never names a row of the file.
+         */
+        VEHICLES("v", Pattern.compile("\\d{3}\\|" + UUIDS)), //$NON-NLS-1$
+
+        /**
+         * the place a watchlist holds in the file, then its name. A watchlist is
+         * the one thing of the file with no uuid, so its name is all a key of it
+         * could be - but a hand-edited file can hold two lists of one name, and
+         * a key that repeats would hide one of them from any page after it. The
+         * place in front tells them apart and keeps a paged answer in the order
+         * the application shows its lists. A list renamed, added or removed
+         * before the cursor moves the others, as a re-sorted branch does for the
+         * classes of a taxonomy.
+         */
+        WATCHLISTS("w", Pattern.compile("\\d{3}\\|(?s).+")), //$NON-NLS-1$
+
+        /**
+         * the uuid of the instrument a row of the performance report is about, as
+         * in the statement of assets: one row per instrument the interval touched,
+         * so the identifier names the row and nothing else. The interval decides
+         * which rows there are and is in the scope; what a row is made of - the
+         * metric groups, the cost method, the reporting currency - only changes
+         * its figures, so a cursor of one such answer stays good for another.
+         */
+        PERFORMANCE("r", Pattern.compile(UUIDS)); //$NON-NLS-1$
+
+        private final String tag;
+        private final Pattern key;
+
+        Kind(String tag, Pattern key)
+        {
+            this.tag = tag;
+            this.key = key;
+        }
+    }
+
+    /**
+     * The paging a request asked for. An empty {@code cursor} asks for the
+     * first page. A parameter that does not parse - or a cursor of another
+     * list - is reported in {@code errors} and treated as absent, like every
+     * other query parameter of this API.
+     *
+     * @param scope
+     *            what decides which items the list holds: the file, the
+     *            instrument of a sub-collection and the filters, in a fixed
+     *            form; only its hash goes into the cursor
+     */
+    public static Paging parse(Kind kind, String scope, String cursorParam, String limitParam,
+                    List<ApiException.FieldError> errors)
+    {
+        if (cursorParam == null && limitParam == null)
+            return ALL;
+
+        var hash = scopeHash(scope);
+        var after = cursorParam == null || cursorParam.isBlank() ? null
+                        : decode(kind, hash, cursorParam.strip(), errors);
+        var limit = limitParam == null ? null : whole("limit", limitParam, 1, errors); //$NON-NLS-1$
+
+        return new Paging(true, hash, after, limit);
+    }
+
+    /** a short, fixed-length hash of the scope: enough to tell lists apart, not to keep anything secret */
+    /* package */ static String scopeHash(String scope)
+    {
+        try
+        {
+            var digest = MessageDigest.getInstance("SHA-256") //$NON-NLS-1$
+                            .digest((scope == null ? "" : scope).getBytes(StandardCharsets.UTF_8)); //$NON-NLS-1$
+            return Base64.getUrlEncoder().withoutPadding().encodeToString(Arrays.copyOf(digest, 8));
+        }
+        catch (NoSuchAlgorithmException e)
+        {
+            throw new IllegalStateException(e);
+        }
+    }
+
+    private static Integer whole(String field, String value, int minimum, List<ApiException.FieldError> errors)
+    {
+        try
+        {
+            var parsed = Integer.parseInt(value.strip());
+            if (parsed >= minimum)
+                return parsed;
+        }
+        catch (NumberFormatException e)
+        {
+            // reported below, with the bound
+        }
+
+        errors.add(new ApiException.FieldError(field, "invalid-value", //$NON-NLS-1$
+                        field + " must be a whole number of at least " + minimum)); //$NON-NLS-1$
+        return null;
+    }
+
+    /**
+     * The cursor of the item with this key in the list of this scope hash:
+     * opaque to the client, and only good for that list.
+     */
+    public static String encode(Kind kind, String scopeHash, String key)
+    {
+        var plain = VERSION + ':' + kind.tag + ':' + scopeHash + ':' + key;
+        return Base64.getUrlEncoder().withoutPadding().encodeToString(plain.getBytes(StandardCharsets.UTF_8));
+    }
+
+    private static String decode(Kind kind, String scopeHash, String cursor, List<ApiException.FieldError> errors)
+    {
+        try
+        {
+            // strict: bytes that are no UTF-8 are a cursor this API did not write
+            var plain = StandardCharsets.UTF_8.newDecoder().onMalformedInput(CodingErrorAction.REPORT)
+                            .onUnmappableCharacter(CodingErrorAction.REPORT)
+                            .decode(ByteBuffer.wrap(Base64.getUrlDecoder().decode(cursor))).toString();
+            var prefix = VERSION + ':' + kind.tag + ':' + scopeHash + ':';
+            if (plain.startsWith(prefix))
+            {
+                var key = plain.substring(prefix.length());
+                if (kind.key.matcher(key).matches())
+                    return key;
+            }
+        }
+        catch (IllegalArgumentException | CharacterCodingException e)
+        {
+            // reported below
+        }
+
+        errors.add(new ApiException.FieldError("cursor", "invalid-value", //$NON-NLS-1$ //$NON-NLS-2$
+                        "cursor must be a page.nextCursor or an item's cursor from this same list, " //$NON-NLS-1$
+                                        + "taken under the same arguments")); //$NON-NLS-1$
+        return null;
+    }
+
+    /**
+     * Puts the page of {@code items} into the response under {@code listKey}: the
+     * items whose key follows the cursor, in key order, at most {@code limit} of
+     * them, each with its {@code cursor}, and a {@code page} that says where the
+     * next one starts - or all of them, in the order given and with no
+     * {@code page}, when no paging was asked for. Only the items of the page are
+     * rendered.
+     * <p/>
+     * {@code listKey} is {@code "items"} for a plain list and something else for a
+     * report that pages one array among others: the taxonomies keep their headers
+     * in {@code items} and page their {@code classes} beside them.
+     */
+    public <T> void apply(Kind kind, JsonObject response, String listKey, List<T> items, Function<T, String> key,
+                    Function<T, JsonElement> render)
+    {
+        var rendered = new JsonArray();
+        if (!given)
+        {
+            items.forEach(item -> rendered.add(render.apply(item)));
+            response.add(listKey, rendered);
+            return;
+        }
+
+        var ordered = new ArrayList<T>(items);
+        ordered.sort(Comparator.comparing(key));
+
+        var start = 0;
+        if (after != null)
+            while (start < ordered.size() && key.apply(ordered.get(start)).compareTo(after) <= 0)
+                start++;
+
+        var end = limit == null ? ordered.size() : (int) Math.min((long) start + limit, ordered.size());
+
+        for (var ii = start; ii < end; ii++)
+        {
+            var item = ordered.get(ii);
+            var json = render.apply(item);
+            if (json.isJsonObject())
+                json.getAsJsonObject().addProperty("cursor", encode(kind, scope, key.apply(item))); //$NON-NLS-1$
+            rendered.add(json);
+        }
+
+        var next = end < ordered.size() && end > start ? encode(kind, scope, key.apply(ordered.get(end - 1))) : null;
+        response.add("page", describe(limit, items.size(), next)); //$NON-NLS-1$
+        response.add(listKey, rendered);
+    }
+
+    /**
+     * The {@code page} of a response: how many items it was asked to hold, how
+     * many there are in all and the cursor the next one continues after.
+     */
+    public static JsonObject describe(Integer limit, int total, String nextCursor)
+    {
+        var page = new JsonObject();
+        if (limit != null)
+            page.addProperty("limit", limit); //$NON-NLS-1$
+        else
+            page.add("limit", JsonNull.INSTANCE); //$NON-NLS-1$
+        page.addProperty("total", total); //$NON-NLS-1$
+        if (nextCursor != null)
+            page.addProperty("nextCursor", nextCursor); //$NON-NLS-1$
+        else
+            page.add("nextCursor", JsonNull.INSTANCE); //$NON-NLS-1$
+        return page;
+    }
+}

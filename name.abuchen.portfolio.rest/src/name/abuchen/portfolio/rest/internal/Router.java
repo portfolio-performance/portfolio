@@ -7,6 +7,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Stream;
 
 public class Router
 {
@@ -19,11 +20,20 @@ public class Router
     {
     }
 
-    private record Route(String method, String[] segments, Set<String> queryParams, Handler handler)
+    private record Route(String method, String[] segments, Set<String> queryParams, List<String> queryPrefixes,
+                    Handler handler)
     {
     }
 
     private final List<Route> routes = new ArrayList<>();
+
+    /**
+     * A declared parameter name ending in a star permits any name behind that
+     * prefix. One route needs it: the instrument list takes one parameter per
+     * custom attribute, and an attribute id belongs to the file - the routing
+     * table is built once, when the server starts, and cannot know them.
+     */
+    public static final String DYNAMIC_PARAMETER = "*"; //$NON-NLS-1$
 
     /**
      * Registers a route and rejects query parameters not declared for it before
@@ -34,31 +44,69 @@ public class Router
         // declaration order is the specification's order, which reads better in
         // the error message than an alphabetical list would
         var permitted = new LinkedHashSet<>(List.of(queryParams));
+        var prefixes = permitted.stream() //
+                        .filter(name -> name.endsWith(DYNAMIC_PARAMETER)) //
+                        .map(name -> name.substring(0, name.length() - DYNAMIC_PARAMETER.length())) //
+                        .toList();
 
-        routes.add(new Route(method, split(pattern), permitted, request -> {
-            rejectUnknownQueryParams(request, permitted);
+        routes.add(new Route(method, split(pattern), permitted, prefixes, request -> {
+            rejectUnknownQueryParams(request, permitted, prefixes);
             return handler.handle(request);
         }));
     }
 
+    /**
+     * Matches the path against the registered routes.
+     * <p/>
+     * Among the routes whose path matches, the one with the fewest placeholders
+     * wins, whatever the registration order. A literal segment is a decision
+     * about that path; a placeholder is a variable, and letting the variable win
+     * is how {@code /instruments/attribute-types} could be answered as if
+     * {@code attribute-types} were an instrument uuid. Registration order still
+     * decides between routes of equal specificity, and the OpenAPI drift test
+     * reads the table in registration order.
+     */
     public Match match(String method, String path)
     {
         var segments = split(path);
         var pathMatched = false;
+        Match mostSpecific = null;
+        int fewestPlaceholders = Integer.MAX_VALUE;
 
         for (Route route : routes)
         {
             var params = matchSegments(route.segments(), segments);
             if (params == null)
                 continue;
+
             pathMatched = true;
-            if (route.method().equals(method))
-                return new Match(route.handler(), params);
+            if (!route.method().equals(method))
+                continue;
+
+            var placeholders = countPlaceholders(route.segments());
+            if (placeholders < fewestPlaceholders)
+            {
+                fewestPlaceholders = placeholders;
+                mostSpecific = new Match(route.handler(), params);
+            }
         }
+
+        if (mostSpecific != null)
+            return mostSpecific;
 
         if (pathMatched)
             throw new ApiException(405, "method-not-allowed", "Method not allowed"); //$NON-NLS-1$ //$NON-NLS-2$
         throw ApiException.notFound();
+    }
+
+    private static int countPlaceholders(String[] segments)
+    {
+        return (int) Stream.of(segments).filter(Router::isPlaceholder).count();
+    }
+
+    private static boolean isPlaceholder(String segment)
+    {
+        return segment.startsWith("{") && segment.endsWith("}"); //$NON-NLS-1$ //$NON-NLS-2$
     }
 
     /**
@@ -85,10 +133,10 @@ public class Router
     }
 
     /** Reports all unknown parameters and includes the permitted names. */
-    private static void rejectUnknownQueryParams(Request request, Set<String> permitted)
+    private static void rejectUnknownQueryParams(Request request, Set<String> permitted, List<String> prefixes)
     {
         var unknown = request.queryParams().keySet().stream() //
-                        .filter(name -> !permitted.contains(name)) //
+                        .filter(name -> !isPermitted(name, permitted, prefixes)) //
                         .sorted() // parseQuery does not preserve order; the response should be stable
                         .toList();
 
@@ -101,11 +149,21 @@ public class Router
                         .toList());
     }
 
+    private static boolean isPermitted(String name, Set<String> permitted, List<String> prefixes)
+    {
+        if (permitted.contains(name))
+            return true;
+
+        return prefixes.stream().anyMatch(name::startsWith);
+    }
+
     /** Builds the client-facing message for an unknown parameter. */
     private static String explain(String name, Set<String> permitted)
     {
         var accepted = permitted.isEmpty() ? "this endpoint accepts no query parameters" //$NON-NLS-1$
-                        : "this endpoint accepts: " + String.join(", ", permitted); //$NON-NLS-1$ //$NON-NLS-2$
+                        : "this endpoint accepts: " + String.join(", ", permitted.stream() // a trailing star is a prefix, so spell out what stands behind it
+                                        .map(entry -> entry.endsWith(DYNAMIC_PARAMETER) ? entry + "<id>" : entry) //
+                                        .toList()); //$NON-NLS-1$ //$NON-NLS-2$
 
         var casing = permitted.stream().filter(name::equalsIgnoreCase).findFirst()
                         .map(match -> "parameter names are case-sensitive, did you mean '" + match + "'? ") //$NON-NLS-1$ //$NON-NLS-2$
@@ -128,7 +186,7 @@ public class Router
         for (int ii = 0; ii < pattern.length; ii++)
         {
             var expected = pattern[ii];
-            if (expected.startsWith("{") && expected.endsWith("}")) //$NON-NLS-1$ //$NON-NLS-2$
+            if (isPlaceholder(expected))
                 params.put(expected.substring(1, expected.length() - 1), actual[ii]);
             else if (!expected.equals(actual[ii]))
                 return null;
@@ -138,6 +196,14 @@ public class Router
 
     private static String[] split(String path)
     {
-        return path.replaceAll("^/+|/+$", "").split("/"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        // scanned, not matched: "/+$" tries a run of slashes again from each of
+        // its characters, which is quadratic in the length of the run
+        var start = 0;
+        while (start < path.length() && path.charAt(start) == '/')
+            start++;
+        var end = path.length();
+        while (end > start && path.charAt(end - 1) == '/')
+            end--;
+        return path.substring(start, end).split("/"); //$NON-NLS-1$
     }
 }

@@ -1,9 +1,14 @@
 package name.abuchen.portfolio.rest.internal;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.startsWith;
 
+import java.nio.ByteBuffer;
 import java.time.LocalDate;
+import java.util.Arrays;
+import java.util.Base64;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -12,6 +17,7 @@ import com.google.gson.JsonParser;
 import com.google.gson.JsonPrimitive;
 
 import name.abuchen.portfolio.model.AttributeFieldType;
+import name.abuchen.portfolio.util.ImageUtil;
 
 @SuppressWarnings("nls")
 public class AttributeCodecTest
@@ -26,12 +32,168 @@ public class AttributeCodecTest
     }
 
     @Test
-    public void testSupportedExcludesCompound()
+    public void testReadableAndWritableGatesDifferByOneType()
     {
-        assertThat(AttributeCodec.isSupported(AttributeFieldType.PERCENT), is(true));
-        assertThat(AttributeCodec.isSupported(AttributeFieldType.IMAGE), is(false));
-        assertThat(AttributeCodec.isSupported(AttributeFieldType.BOOKMARK), is(false));
-        assertThat(AttributeCodec.isSupported(AttributeFieldType.LIMIT_PRICE), is(false));
+        assertThat(AttributeCodec.isReadable(AttributeFieldType.PERCENT), is(true));
+        assertThat(AttributeCodec.isWritable(AttributeFieldType.PERCENT), is(true));
+
+        // an image travels in and never back out
+        assertThat(AttributeCodec.isReadable(AttributeFieldType.IMAGE), is(false));
+        assertThat(AttributeCodec.isWritable(AttributeFieldType.IMAGE), is(true));
+
+        // a limit price reads and writes; only the bookmark stays out entirely
+        assertThat(AttributeCodec.isReadable(AttributeFieldType.LIMIT_PRICE), is(true));
+        assertThat(AttributeCodec.isWritable(AttributeFieldType.LIMIT_PRICE), is(true));
+
+        assertThat(AttributeCodec.isReadable(AttributeFieldType.BOOKMARK), is(false));
+        assertThat(AttributeCodec.isWritable(AttributeFieldType.BOOKMARK), is(false));
+    }
+
+    @Test
+    public void testLimitPriceRoundTripsDotDecimalOperatorFirst()
+    {
+        var stored = (name.abuchen.portfolio.model.LimitPrice) AttributeCodec.decode(AttributeFieldType.LIMIT_PRICE,
+                        new JsonPrimitive("<=62.5"));
+        assertThat(stored.getRelationalOperator().getOperatorString(), is("<="));
+        // Quote precision 8: 62.5 -> 6_250_000_000
+        assertThat(stored.getValue(), is(6_250_000_000L));
+
+        // the answer drops trailing zeros and keeps one shape: same bytes in, same bytes out
+        assertThat(AttributeCodec.encode(AttributeFieldType.LIMIT_PRICE, stored).getAsString(), is("<=62.5"));
+        var whole = (name.abuchen.portfolio.model.LimitPrice) AttributeCodec.decode(AttributeFieldType.LIMIT_PRICE,
+                        new JsonPrimitive(">100"));
+        assertThat(AttributeCodec.encode(AttributeFieldType.LIMIT_PRICE, whole).getAsString(), is(">100"));
+    }
+
+    @Test
+    public void testLimitPriceRejectsAnythingNotInTheWireForm()
+    {
+        // no operator, comma decimal, wrong operator order, exponent, too precise - all refused
+        for (var wrong : new String[] { "62.5", "<=62,5", "=>62.5", "<= 6.25e1", "<=1.234567890" })
+        {
+            try
+            {
+                AttributeCodec.decode(AttributeFieldType.LIMIT_PRICE, new JsonPrimitive(wrong));
+                Assert.fail("expected InvalidValueException for " + wrong);
+            }
+            catch (AttributeCodec.InvalidValueException e)
+            {
+                // expected
+            }
+        }
+    }
+
+    /** a genuine 32x32 PNG (the application ships it in kommer.xml) */
+    private static final String PNG_BASE64 = "iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAACXBIWXMAAA7EAAAOxAGVKw4bAAAA9klEQVRYw+1VOxKCMBB9oKXjeRibdJ7ADOewRiupHa/BwAUsU+l5PECgQdmE8A9QmDezA8OE3bdv9wHw7/DIvQ8AERcJgNOIRGGcsuzCxdHz8bkl7N3xivwV1R+OQV5d97nE8xqKwJBTkqi61lWYihzYERI0p0+iVlBhNhTlLOV3phoJaYgaASvdNyhxaDqjK2AdXSRsK2DM0UZi2yfBEMQpywBsepCcx4aGPK02tKnAOeKCtx3wgFecsgclRglMXcKg60Cp0r2pY+s27IPZbTiEwOoKLEVC+RfoLlhiDEqN1XeAKrDUDihfQjcCZ0O3A86GbgkdCrigXo85i+2YAAAAAElFTkSuQmCC";
+    private static final String DATA_URL = "data:image/png;base64," + PNG_BASE64;
+
+    @Test
+    public void testImageDecodesToTheRenderedForm()
+    {
+        // raw base64 in, the prefixed data-url the application renders from out
+        assertThat(AttributeCodec.decode(AttributeFieldType.IMAGE, new JsonPrimitive(PNG_BASE64)), is(DATA_URL));
+        // the prefixed form in, the very same bytes out: sending it twice changes nothing
+        assertThat(AttributeCodec.decode(AttributeFieldType.IMAGE, new JsonPrimitive(DATA_URL)), is(DATA_URL));
+    }
+
+    @Test
+    public void testImageRejectsTextThatIsNoPng()
+    {
+        try
+        {
+            AttributeCodec.decode(AttributeFieldType.IMAGE, new JsonPrimitive("not a logo"));
+            Assert.fail("expected InvalidValueException");
+        }
+        catch (AttributeCodec.InvalidValueException e)
+        {
+            // expected: no base64, no PNG
+        }
+
+        try
+        {
+            // valid base64 ("hello"), but no PNG behind it
+            AttributeCodec.decode(AttributeFieldType.IMAGE, new JsonPrimitive("aGVsbG8="));
+            Assert.fail("expected InvalidValueException");
+        }
+        catch (AttributeCodec.InvalidValueException e)
+        {
+            // expected
+        }
+    }
+
+    /**
+     * A PNG is not only its magic. The header that follows says how much the
+     * renderer will be asked to lay out, and the application reads these bytes
+     * back with {@code ImageIO} - which allocates by that claim, not by the
+     * bytes that were sent.
+     */
+    @Test
+    public void testImageRefusesAHeaderADecoderWouldRegret()
+    {
+        // the magic of a PNG, and a header that stops mid-way through it
+        try
+        {
+            decodeImage(Arrays.copyOf(pngClaiming(1, 1), 20));
+            Assert.fail("expected InvalidValueException");
+        }
+        catch (AttributeCodec.InvalidValueException e)
+        {
+            assertThat(e.getMessage(), is("the bytes are not a PNG image"));
+        }
+
+        // a well-formed header, a few bytes behind it, claiming an image no
+        // desktop is meant to hold
+        try
+        {
+            decodeImage(pngClaiming(100_000, 100_000));
+            Assert.fail("expected InvalidValueException");
+        }
+        catch (AttributeCodec.InvalidValueException e)
+        {
+            assertThat(e.getMessage(), containsString("100000"));
+        }
+
+        // and a header of a size the renderer will lay out without a second
+        // thought: accepted, even though hardly any bytes follow it
+        assertThat(decodeImage(pngClaiming(64, 64)), startsWith(ImageUtil.BASE64PREFIX));
+    }
+
+    /** the smallest PNG header a decoder reads, declaring the given size */
+    private static byte[] pngClaiming(int width, int height)
+    {
+        var header = ByteBuffer.allocate(33);
+        header.put(new byte[] {(byte) 0x89, 'P', 'N', 'G', '\r', '\n', 0x1A, '\n'});
+        header.putInt(13); // the IHDR chunk holds thirteen bytes of header
+        header.put(new byte[] {'I', 'H', 'D', 'R'});
+        header.putInt(width).putInt(height);
+        header.put(new byte[] {8, 6, 0, 0, 0}); // depth, colour, compression, filter, interlace
+        header.putInt(0); // and its CRC, whatever it happens to be
+        return header.array();
+    }
+
+    private static String decodeImage(byte[] bytes)
+    {
+        return (String) AttributeCodec.decode(AttributeFieldType.IMAGE,
+                        new JsonPrimitive(Base64.getEncoder().encodeToString(bytes)));
+    }
+
+    @Test
+    public void testImageRejectsMoreThanTheCap()
+    {
+        var padded = new byte[AttributeCodec.MAX_IMAGE_BYTES + 1];
+        var magic = new byte[] {(byte) 0x89, 'P', 'N', 'G', '\r', '\n', 0x1A, '\n'};
+        System.arraycopy(magic, 0, padded, 0, magic.length);
+
+        try
+        {
+            AttributeCodec.decode(AttributeFieldType.IMAGE,
+                            new JsonPrimitive(java.util.Base64.getEncoder().encodeToString(padded)));
+            Assert.fail("expected InvalidValueException");
+        }
+        catch (AttributeCodec.InvalidValueException e)
+        {
+            // expected
+        }
     }
 
     @Test

@@ -1,14 +1,19 @@
 package name.abuchen.portfolio.rest.internal;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.anyOf;
 import static org.hamcrest.Matchers.closeTo;
+import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.greaterThan;
+import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.lessThan;
 import static org.hamcrest.Matchers.not;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
@@ -16,6 +21,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 
+import org.hamcrest.Matcher;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -26,6 +32,7 @@ import name.abuchen.portfolio.junit.PortfolioBuilder;
 import name.abuchen.portfolio.junit.SecurityBuilder;
 import name.abuchen.portfolio.junit.TestCurrencyConverter;
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.money.CurrencyConverter;
@@ -35,6 +42,7 @@ import name.abuchen.portfolio.money.ExchangeRate;
 import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
+import name.abuchen.portfolio.util.TradeCalendarManager;
 
 @SuppressWarnings("nls")
 public class InstrumentPerformanceTest
@@ -42,14 +50,24 @@ public class InstrumentPerformanceTest
     private static final String OPENING = "2024-01-01";
     private static final String CLOSING = "2024-12-31";
 
+    /** the file the route resolved, which a paging cursor binds to */
+    private static final String FILE = "C:/portfolio/Richard.portfolio";
+
     // -- calling the two routes ------------------------------------------
 
     /** calls the collection with a factory of its own, as the host would provide it */
     private static JsonObject list(Client client, String opening, String closing, String currency, String costMethod,
                     String taxesAndFees, String metrics)
     {
-        return InstrumentPerformanceHandler.list(client, new ExchangeRateProviderFactory(client), opening, closing,
-                        currency, costMethod, taxesAndFees, metrics).getAsJsonObject();
+        return list(client, opening, closing, currency, costMethod, taxesAndFees, metrics, null, null);
+    }
+
+    /** as above, paging the rows - the way the route calls it, with the file it resolved */
+    private static JsonObject list(Client client, String opening, String closing, String currency, String costMethod,
+                    String taxesAndFees, String metrics, String cursor, String limit)
+    {
+        return InstrumentPerformanceHandler.list(client, FILE, new ExchangeRateProviderFactory(client), opening,
+                        closing, currency, costMethod, taxesAndFees, metrics, cursor, limit).getAsJsonObject();
     }
 
     private static JsonObject list(Client client)
@@ -64,6 +82,55 @@ public class InstrumentPerformanceTest
     }
 
     // -- shape and echoes ------------------------------------------------
+
+    /**
+     * A standard deviation needs two returns. Monday to Tuesday is one, and a
+     * volatility of 0 would read as a measured absence of risk; Friday to
+     * Tuesday spans two trading days and is measured.
+     */
+    @Test
+    public void testOneDailyReturnHasNoSpread()
+    {
+        var oneDay = withMinimalCalendar(
+                        () -> onlyItem(list(heldPosition(), "2024-12-30", "2024-12-31", null, null, null, "risk"))
+                                        .getAsJsonObject("risk"));
+        assertThat(oneDay.get("volatility").isJsonNull(), is(true));
+        assertThat(oneDay.get("semiVolatility").isJsonNull(), is(true));
+        assertThat(oneDay.get("maxDrawdown").isJsonNull(), is(false));
+
+        var twoDays = withMinimalCalendar(
+                        () -> onlyItem(list(heldPosition(), "2024-12-27", "2024-12-31", null, null, null, "risk"))
+                                        .getAsJsonObject("risk"));
+        assertThat(twoDays.get("volatility").isJsonNull(), is(false));
+    }
+
+    /**
+     * Reported in review: the returns a spread is measured from are those of
+     * days the instrument was held on. A long interval whose position starts on
+     * a Tuesday and closes on the Wednesday after has one such return - no
+     * spread, so null, not the 0 the calculation gives for one return.
+     */
+    @Test
+    public void testAPositionHeldForOneReturnHasNoSpreadInALongInterval()
+    {
+        var client = new Client();
+        var security = new SecurityBuilder() //
+                        .addPrice("2024-06-03", Values.Quote.factorize(100)) //
+                        .addPrice("2024-12-16", Values.Quote.factorize(100)) //
+                        .addPrice("2024-12-17", Values.Quote.factorize(101)) //
+                        .addPrice("2024-12-18", Values.Quote.factorize(103)) //
+                        .addTo(client);
+        security.setName("ACME");
+        var account = new AccountBuilder().deposit_("2024-06-03", Values.Amount.factorize(1000)).addTo(client);
+        new PortfolioBuilder(account) //
+                        .buy(security, "2024-12-17", Values.Share.factorize(1), Values.Amount.factorize(101)) //
+                        .addTo(client);
+
+        var risk = withMinimalCalendar(() -> onlyItem(list(client, "2024-06-03", "2024-12-18", null, null, null, "risk"))
+                        .getAsJsonObject("risk"));
+        assertThat(risk.get("volatility").isJsonNull(), is(true));
+        assertThat(risk.get("semiVolatility").isJsonNull(), is(true));
+    }
 
     /**
      * A position carried through the whole interval: 10 shares valued 1000 at
@@ -98,6 +165,9 @@ public class InstrumentPerformanceTest
 
         // a position held all year with no flows returns its bare 20 %
         assertThat(item.get("timeWeighted").getAsJsonObject().get("ttwror").getAsDouble(), closeTo(0.20, 1e-6));
+
+        // EUR reported in EUR: nothing fell back, but the array is still there
+        assertThat(result.get("fxWarnings").getAsJsonArray().size(), is(0));
     }
 
     /** all six parameters are echoed, so the numbers are self-describing */
@@ -108,12 +178,206 @@ public class InstrumentPerformanceTest
 
         assertThat(result.get("openingDate").getAsString(), is(OPENING));
         assertThat(result.get("closingDate").getAsString(), is(CLOSING));
+        assertThat(result.get("timeWeightedUntil").getAsString(), is(CLOSING));
         assertThat(result.get("reportingCurrency").getAsString(), is("USD"));
         assertThat(result.get("costMethod").getAsString(), is("moving-average"));
         assertThat(result.get("taxesAndFees").getAsString(), is("excluded"));
 
         assertThat(groupNames(result), is(List.of("valuation", "gains", "income", "expenses", "moneyWeighted",
                         "timeWeighted", "risk")));
+    }
+
+    /**
+     * A report in a currency the file has no rates for shows those amounts at
+     * face value, and names the pair: the echo of `reportingCurrency` alone
+     * would leave the reader assuming the exchange rate had been applied.
+     */
+    @Test
+    public void testFxWarningsNameThePairWithoutRates()
+    {
+        var result = list(heldPosition(), OPENING, CLOSING, "ARS", null, null, "valuation");
+
+        var warnings = result.get("fxWarnings").getAsJsonArray();
+        assertThat(warnings.size(), is(1));
+        assertThat(warnings.get(0).getAsJsonObject().get("currency").getAsString(), is("EUR"));
+        assertThat(warnings.get(0).getAsJsonObject().get("reportingCurrency").getAsString(), is("ARS"));
+        assertThat(warnings.get(0).getAsJsonObject().get("reason").getAsString(), is("no-series"));
+    }
+
+    /**
+     * The file's other currencies are not this report's business. An account in a
+     * currency no instrument in the response is about is not money that was
+     * converted, and naming it would point the reader at amounts that are not
+     * there - which the file's whole currency list did.
+     */
+    @Test
+    public void testFxWarningsDoNotNameCurrenciesTheReportNeverConverted()
+    {
+        var client = heldPosition();
+        new AccountBuilder("ARS").deposit_("2024-01-01", Values.Amount.factorize(100)).addTo(client);
+
+        assertThat(list(client).get("fxWarnings").getAsJsonArray().size(), is(0));
+        assertThat(item(client, instrumentOf(client).getUUID(), null).get("fxWarnings").getAsJsonArray().size(),
+                        is(0));
+    }
+
+    /**
+     * What the report converted is more than the instruments it names: a
+     * transaction can be recorded in a currency the instrument does not carry, and
+     * its fees are converted with it. That currency must be named. A fee that
+     * carries its own forex value is not such a conversion - the rate is stored on
+     * the unit, so the fee's other currency needs no rate series and must not be
+     * claimed as a fallback.
+     */
+    @Test
+    public void testFxWarningsNameTheCurrencyATransactionWasConvertedFrom()
+    {
+        var client = new Client();
+
+        var security = new SecurityBuilder().addPrice("2023-06-01", Values.Quote.factorize(100))
+                        .addPrice(CLOSING, Values.Quote.factorize(120)) //
+                        .addTo(client);
+        security.setName("ACME");
+
+        var account = new AccountBuilder().deposit_("2023-06-01", Values.Amount.factorize(1000)).addTo(client);
+        var portfolio = new PortfolioBuilder(account).addTo(client);
+
+        // bought in ARS; the fee carries its own BBD value with a stored rate, so
+        // only the transaction's currency is ever looked up in a rate series
+        var inside = new PortfolioTransaction(LocalDateTime.of(2024, 6, 1, 0, 0), "ARS",
+                        Values.Amount.factorize(1000), security, Values.Share.factorize(10),
+                        PortfolioTransaction.Type.BUY, 0, 0);
+        inside.addUnit(new Transaction.Unit(Transaction.Unit.Type.FEE, //
+                        Money.of("ARS", Values.Amount.factorize(30)), //
+                        Money.of("BBD", Values.Amount.factorize(25)), java.math.BigDecimal.valueOf(1.2)));
+        portfolio.addTransaction(inside);
+
+        // a currency the interval never touched is not this report's business
+        var outside = new PortfolioTransaction(LocalDateTime.of(2022, 1, 1, 0, 0), "CLP",
+                        Values.Amount.factorize(500), security, Values.Share.factorize(5),
+                        PortfolioTransaction.Type.DELIVERY_INBOUND, 0, 0);
+        portfolio.addTransaction(outside);
+
+        assertThat(currenciesOfWarnings(list(client)), contains("ARS"));
+        assertThat(currenciesOfWarnings(list(client)), not(hasItem("BBD")));
+        assertThat(currenciesOfWarnings(item(client, security.getUUID(), null)), contains("ARS"));
+    }
+
+    /**
+     * A dividend is booked on a cash account, not in the investment account, and
+     * is converted from that account's currency. An account in a currency with
+     * no rates therefore has to be named even though no trade of the instrument
+     * is in it.
+     */
+    @Test
+    public void testFxWarningsNameTheCurrencyOfADividendAccount()
+    {
+        var client = heldPosition();
+        var security = instrumentOf(client);
+        new AccountBuilder("ARS").dividend("2024-06-03", Values.Amount.factorize(50), security).addTo(client);
+
+        assertThat(currenciesOfWarnings(list(client)), contains("ARS"));
+        assertThat(currenciesOfWarnings(item(client, security.getUUID(), null)), contains("ARS"));
+    }
+
+    /**
+     * The item route must give exactly the figures of the instrument's element
+     * in the collection - with dividends, a partial sale, fees and taxes, and a
+     * second instrument beside it. (Computing the item on a client filtered to
+     * the one instrument does not: the filter books a sale's taxes differently.)
+     */
+    @Test
+    public void testTheItemHasTheFiguresOfItsElementInTheCollection()
+    {
+        var client = heldPosition(
+                        (account, security) -> account.dividend("2024-06-03", Values.Amount.factorize(50),
+                                        Values.Amount.factorize(10), security),
+                        (portfolio, security) -> portfolio.sell(security, "2024-09-02", Values.Share.factorize(4),
+                                        Values.Amount.factorize(470), Values.Amount.factorize(5),
+                                        Values.Amount.factorize(3)));
+        heldSecurity(client, "Beta", CurrencyUnit.EUR, (account, security) -> {
+        }, (portfolio, security) -> {
+        });
+        var acme = instrumentOf(client);
+
+        for (var metrics : List.of("valuation,gains,income,expenses,moneyWeighted,timeWeighted,risk", "valuation"))
+        {
+            var collection = list(client, OPENING, CLOSING, null, null, null, metrics);
+            JsonObject element = null;
+            for (var entry : collection.getAsJsonArray("items"))
+                if (entry.getAsJsonObject().get("uuid").getAsString().equals(acme.getUUID()))
+                    element = entry.getAsJsonObject();
+
+            var item = InstrumentPerformanceHandler.get(client, new ExchangeRateProviderFactory(client),
+                            acme.getUUID(), OPENING, CLOSING, null, null, null, metrics).getAsJsonObject();
+
+            for (var field : element.entrySet())
+                assertThat(field.getKey(), item.get(field.getKey()), is(field.getValue()));
+        }
+    }
+
+    /** the currencies the report's {@code fxWarnings} named */
+    private static List<String> currenciesOfWarnings(JsonObject report)
+    {
+        var currencies = new ArrayList<String>();
+        for (var warning : report.get("fxWarnings").getAsJsonArray())
+            currencies.add(warning.getAsJsonObject().get("currency").getAsString());
+        return currencies;
+    }
+
+    /**
+     * A closing date in the future stays allowed - a planned transaction is how
+     * a user simulates - but the time-weighted and risk figures stop at today,
+     * and the context says so on the collection and on the item route alike.
+     */
+    @Test
+    public void testAFutureClosingDateSaysWhereTheTimeWeightedFiguresStopped()
+    {
+        // the handler reads today itself; a call across midnight may answer
+        // either day, so the date is read before and after each call
+        var before = LocalDate.now();
+        var future = before.plusDays(30).toString();
+        var client = heldPosition();
+
+        var result = list(client, OPENING, future, null, null, null, null);
+        assertThat(result.get("closingDate").getAsString(), is(future));
+        assertThat(result.get("timeWeightedUntil").getAsString(), isTodayBetween(before, LocalDate.now()));
+
+        var uuid = client.getSecurities().get(0).getUUID();
+        var beforeItem = LocalDate.now();
+        var item = InstrumentPerformanceHandler.get(client, new ExchangeRateProviderFactory(client), uuid, OPENING,
+                        future, null, null, null, null).getAsJsonObject();
+        assertThat(item.get("timeWeightedUntil").getAsString(), isTodayBetween(beforeItem, LocalDate.now()));
+    }
+
+    /**
+     * A period that opens today or later has no price movement to measure:
+     * every return and risk ratio is null rather than a measured zero, and the
+     * money figures are still there.
+     */
+    @Test
+    public void testAPeriodEntirelyAfterTodayHasNoReturnsOrRiskRatios()
+    {
+        var opening = LocalDate.now().plusDays(1).toString();
+        var closing = LocalDate.now().plusDays(60).toString();
+        // a planned purchase inside the period: the money figures count it
+        var planned = LocalDate.now().plusDays(10).toString();
+        var client = tradedPosition((portfolio, security) -> portfolio.buy(security, planned,
+                        Values.Share.factorize(5), Values.Amount.factorize(600)));
+
+        var row = onlyItem(list(client, opening, closing, null, null, null, null));
+
+        assertThat(row.getAsJsonObject("moneyWeighted").get("irr").isJsonNull(), is(true));
+        assertThat(row.getAsJsonObject("timeWeighted").get("ttwror").isJsonNull(), is(true));
+        assertThat(row.getAsJsonObject("timeWeighted").get("ttwrorAnnualized").isJsonNull(), is(true));
+        assertThat(row.getAsJsonObject("risk").get("volatility").isJsonNull(), is(true));
+        assertThat(row.getAsJsonObject("risk").get("semiVolatility").isJsonNull(), is(true));
+        assertThat(row.getAsJsonObject("risk").get("maxDrawdown").isJsonNull(), is(true));
+        // non-null in the 1.0 contract, so 0 rather than null
+        assertThat(row.getAsJsonObject("risk").get("longestDrawdownDays").getAsInt(), is(0));
+        // 15 shares at the last price, 120: the planned five included
+        assertThat(row.getAsJsonObject("valuation").get("shares").getAsDouble(), is(15d));
+        assertThat(money(row.getAsJsonObject("valuation"), "closingValue"), is(1800d));
     }
 
     /** the echo states the value that was applied, not an omitted property */
@@ -201,7 +465,8 @@ public class InstrumentPerformanceTest
         Function<String, CurrencyConverter> converters = currency -> new CountingConverter(
                         new CurrencyConverterImpl(factory, currency), counter);
 
-        InstrumentPerformanceHandler.list(client, converters, OPENING, CLOSING, null, null, null, metrics);
+        InstrumentPerformanceHandler.list(client, converters, FILE, OPENING, CLOSING, null, null, null, metrics, null,
+                        null);
         return counter.get();
     }
 
@@ -249,6 +514,170 @@ public class InstrumentPerformanceTest
         assertThat(names(list(client)), is(List.of("Alpha", "Mu", "Zeta")));
         assertThat(names(list(client)), is(List.of("Alpha", "Mu", "Zeta")));
         assertThat(names(list(client)), is(List.of("Alpha", "Mu", "Zeta")));
+    }
+
+    /**
+     * Instruments of the same name - one fund held in two currencies, say - are
+     * ordered by their uuid, so their order does not follow the HashMap either.
+     */
+    @Test
+    public void testInstrumentsOfTheSameNameAreOrderedByUuid()
+    {
+        var client = new Client();
+        var expected = new ArrayList<String>();
+        for (var ii = 0; ii < 5; ii++)
+            expected.add(heldSecurity(client, "ACME", CurrencyUnit.EUR, (account, security) -> {},
+                            (portfolio, security) -> {}).getUUID());
+        expected.sort(null);
+
+        assertThat(uuids(list(client)), is(expected));
+        assertThat(uuids(list(client)), is(expected));
+    }
+
+    // -- paging -----------------------------------------------------------
+
+    /**
+     * Without {@code cursor} or {@code limit} the report is exactly what it
+     * always was: every row, no {@code page} beside them, no {@code cursor} on a
+     * row.
+     */
+    @Test
+    public void testWithoutPagingNothingIsAdded()
+    {
+        var client = severalInstruments(4);
+
+        var report = list(client);
+        assertThat(report.has("page"), is(false));
+        assertThat(uuids(report), hasSize(4));
+        for (var item : report.get("items").getAsJsonArray())
+            assertThat(item.getAsJsonObject().has("cursor"), is(false));
+    }
+
+    /** the first page holds the rows asked for and says where the next one starts */
+    @Test
+    public void testAPageHoldsTheRowsAskedForAndNamesTheNext()
+    {
+        var client = severalInstruments(5);
+
+        var page = list(client, OPENING, CLOSING, null, null, null, null, null, "2");
+        assertThat(uuids(page), hasSize(2));
+
+        var pageInfo = page.get("page").getAsJsonObject();
+        assertThat(pageInfo.get("limit").getAsInt(), is(2));
+        assertThat(pageInfo.get("total").getAsInt(), is(5));
+        var next = pageInfo.get("nextCursor").getAsString();
+        assertThat(next.isBlank(), is(false));
+
+        // every row carries its own cursor, and the page's next one is the last
+        // row of the page continued after
+        var items = page.get("items").getAsJsonArray();
+        assertThat(items.size(), is(2));
+        assertThat(items.get(0).getAsJsonObject().has("cursor"), is(true));
+        assertThat(items.get(1).getAsJsonObject().get("cursor").getAsString(), is(next));
+    }
+
+    /**
+     * Walking the pages holds every row exactly once. Paged, the rows come in the
+     * order of the instrument uuid rather than by name as the unpaged report does:
+     * a name is the one thing of an instrument an edit can change, and a row that
+     * moved between two pages would be read twice or not at all.
+     */
+    @Test
+    public void testAWalkThroughThePagesHoldsEveryRowOnce()
+    {
+        var client = severalInstruments(7);
+
+        var expected = uuids(list(client));
+        expected.sort(null);
+
+        var seen = new ArrayList<String>();
+        String cursor = null;
+        var pages = 0;
+        while (true)
+        {
+            var page = list(client, OPENING, CLOSING, null, null, null, null, cursor, "3");
+            seen.addAll(uuids(page));
+            pages++;
+
+            var next = page.get("page").getAsJsonObject().get("nextCursor");
+            if (next.isJsonNull())
+                break;
+            cursor = next.getAsString();
+        }
+
+        assertThat(pages, is(3));
+        assertThat(seen, is(expected));
+    }
+
+    /**
+     * What a row is made of is not what decides which rows the report holds:
+     * metrics, cost method, taxes and the reporting currency change the figures of
+     * the same rows, so a cursor of one such answer stays good for another.
+     */
+    @Test
+    public void testACursorSurvivesTheArgumentsThatOnlyChangeFigures()
+    {
+        var client = severalInstruments(4);
+        var cursor = list(client, OPENING, CLOSING, null, null, null, null, null, "2") //
+                        .get("page").getAsJsonObject().get("nextCursor").getAsString();
+
+        var same = uuids(list(client, OPENING, CLOSING, null, null, null, null, cursor, "2"));
+        var other = uuids(list(client, OPENING, CLOSING, CurrencyUnit.EUR, "moving-average", "excluded", "valuation",
+                        cursor, "2"));
+
+        assertThat(same.isEmpty(), is(false));
+        assertThat(other, is(same));
+    }
+
+    /** a cursor of another interval belongs to another report and is refused, not obeyed */
+    @Test
+    public void testACursorOfAnotherIntervalIsRefused()
+    {
+        var client = severalInstruments(4);
+        var cursor = list(client, OPENING, CLOSING, null, null, null, null, null, "2") //
+                        .get("page").getAsJsonObject().get("nextCursor").getAsString();
+
+        assertFieldError(() -> list(client, "2024-02-01", CLOSING, null, null, null, null, cursor, "2"), "cursor",
+                        "invalid-value");
+    }
+
+    /** and so is a cursor of another file, however it got there */
+    @Test
+    public void testACursorOfAnotherFileIsRefused()
+    {
+        var client = severalInstruments(4);
+        var cursor = list(client, OPENING, CLOSING, null, null, null, null, null, "2") //
+                        .get("page").getAsJsonObject().get("nextCursor").getAsString();
+
+        assertFieldError(() -> InstrumentPerformanceHandler.list(client, "C:/portfolio/Andere.portfolio",
+                        new ExchangeRateProviderFactory(client), OPENING, CLOSING, null, null, null, null, cursor,
+                        "2"), "cursor", "invalid-value");
+    }
+
+    /** the uuid of a row of this very report, but written as a cursor of another list */
+    @Test
+    public void testACursorOfAnotherListIsRefused()
+    {
+        var client = severalInstruments(3);
+        var uuid = uuids(list(client)).get(0);
+
+        var foreign = Paging.encode(Paging.Kind.HOLDINGS,
+                        Paging.scopeHash("performance|file=" + FILE + "|openingDate=" + OPENING + "|closingDate="
+                                        + CLOSING),
+                        uuid);
+
+        assertFieldError(() -> list(client, OPENING, CLOSING, null, null, null, null, foreign, "2"), "cursor",
+                        "invalid-value");
+    }
+
+    /** a limit below one is the same mistake as anywhere else in this API */
+    @Test
+    public void testALimitOfZeroIsRefused()
+    {
+        var client = severalInstruments(3);
+
+        assertFieldError(() -> list(client, OPENING, CLOSING, null, null, null, null, null, "0"), "limit",
+                        "invalid-value");
     }
 
     // -- interval boundaries ---------------------------------------------
@@ -399,8 +828,8 @@ public class InstrumentPerformanceTest
     public void testIdentityForAForeignCurrencyPosition()
     {
         var result = InstrumentPerformanceHandler
-                        .list(forexPosition(), TestCurrencyConverter::new, "2014-12-31", "2015-01-16", "USD", null,
-                                        null, null)
+                        .list(forexPosition(), TestCurrencyConverter::new, FILE, "2014-12-31", "2015-01-16", "USD",
+                                        null, null, null, null, null)
                         .getAsJsonObject();
 
         var item = onlyItem(result);
@@ -528,7 +957,8 @@ public class InstrumentPerformanceTest
 
         var closingValue = money(onlyItem(list(client)).get("valuation").getAsJsonObject(), "closingValue");
 
-        var holdings = HoldingsHandler.list(client, new ExchangeRateProviderFactory(client), CLOSING, null)
+        var holdings = HoldingsHandler.list(client, null, new ExchangeRateProviderFactory(client), CLOSING, null, null,
+                        null, null, null) //
                         .getAsJsonObject();
         var holding = holdings.get("items").getAsJsonArray().asList().stream() //
                         .map(element -> element.getAsJsonObject())
@@ -657,7 +1087,38 @@ public class InstrumentPerformanceTest
 
     // -- fixtures --------------------------------------------------------
 
+    /**
+     * The returns a volatility is measured from skip the holidays of the
+     * process-wide default calendar - with the German one, December 31 is not
+     * a trading day. The tests that count returns fix the calendar to the
+     * minimal one, whose few holidays none of their dates is, and give the
+     * previous one back.
+     */
+    private static <T> T withMinimalCalendar(java.util.function.Supplier<T> call)
+    {
+        var previous = TradeCalendarManager.getDefaultInstance().getCode();
+        TradeCalendarManager.setDefaultCalendarCode(TradeCalendarManager.MINIMAL_CALENDAR_CODE);
+        try
+        {
+            return call.get();
+        }
+        finally
+        {
+            TradeCalendarManager.setDefaultCalendarCode(previous);
+        }
+    }
+
     /** 10 shares bought at 100 before the interval, valued at 120 at its end */
+    /** n instruments the interval touched, enough for a report of more than one page */
+    private static Client severalInstruments(int n)
+    {
+        var client = new Client();
+        for (var ii = 0; ii < n; ii++)
+            heldSecurity(client, "Instrument " + ii, CurrencyUnit.EUR, (account, security) -> {},
+                            (portfolio, security) -> {});
+        return client;
+    }
+
     private static Client heldPosition()
     {
         return heldPosition((account, security) -> {
@@ -814,6 +1275,14 @@ public class InstrumentPerformanceTest
         return names;
     }
 
+    private static List<String> uuids(JsonObject result)
+    {
+        var uuids = new ArrayList<String>();
+        result.get("items").getAsJsonArray()
+                        .forEach(element -> uuids.add(element.getAsJsonObject().get("uuid").getAsString()));
+        return uuids;
+    }
+
     private static void assertFieldError(Runnable call, String field, String code)
     {
         assertThat(codeOf(errorsOf(call), field), is(code));
@@ -837,5 +1306,11 @@ public class InstrumentPerformanceTest
     {
         return errors.stream().filter(error -> field.equals(error.field())).map(ApiException.FieldError::code)
                         .findFirst().orElseThrow(() -> new AssertionError("no error on field " + field));
+    }
+
+    /** the date read before a call or the one read after it, if it crossed midnight */
+    private static Matcher<String> isTodayBetween(LocalDate before, LocalDate after)
+    {
+        return anyOf(is(before.toString()), is(after.toString()));
     }
 }
