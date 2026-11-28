@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.ui.addons;
 
 import java.util.Objects;
+import java.util.function.Consumer;
 
 import jakarta.inject.Inject;
 
@@ -47,6 +48,29 @@ public class Preference2EnvAddon
 
         if (broker != null && !Objects.equals(currentScheme, ValueColorScheme.current().getIdentifier()))
             broker.post(UIConstants.Event.Global.VALUE_COLOR_SCHEME_CHANGED, scheme);
+    }
+
+    @Inject
+    @Optional
+    public void setCustomPositiveColor(
+                    @Preference(value = UIConstants.Preferences.VALUE_COLOR_SCHEME_CUSTOM_POSITIVE) String hex)
+    {
+        applyCustomColor(hex, ValueColorScheme::setCustomPositiveColor);
+    }
+
+    @Inject
+    @Optional
+    public void setCustomNegativeColor(
+                    @Preference(value = UIConstants.Preferences.VALUE_COLOR_SCHEME_CUSTOM_NEGATIVE) String hex)
+    {
+        applyCustomColor(hex, ValueColorScheme::setCustomNegativeColor);
+    }
+
+    private void applyCustomColor(String hex, Consumer<String> setter)
+    {
+        setter.accept(hex);
+        if (broker != null)
+            broker.post(UIConstants.Event.Global.VALUE_COLOR_SCHEME_CHANGED, hex);
     }
 
     @Inject
