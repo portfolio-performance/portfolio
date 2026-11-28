@@ -391,6 +391,10 @@ public class McpCompactTest
         var json = cut.substring(0, cut.indexOf("\n\n[TRUNCATED"));
         var parsed = JsonParser.parseString(json).getAsJsonObject().getAsJsonObject("items");
 
+        // the header survives whole: rows without it are numbers whose meaning a
+        // reader has to guess, which is worse than the short table it reads for
+        assertThat(parsed.getAsJsonArray("columns").size(), is(3));
+
         for (var row : parsed.getAsJsonArray("rows"))
             assertThat(row.getAsJsonArray().size(), is(3));
     }
