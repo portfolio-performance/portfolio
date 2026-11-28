@@ -83,6 +83,7 @@ import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
+import name.abuchen.portfolio.online.impl.SwissFundDataQuoteFeed;
 import name.abuchen.portfolio.online.impl.YahooFinanceQuoteFeed;
 import name.abuchen.portfolio.util.ProgressMonitorInputStream;
 import name.abuchen.portfolio.util.TextUtil;
@@ -963,6 +964,8 @@ public class ClientFactory
                 // added exDate date field
             case 69: // NOSONAR
                 // add (optional) weight to client filter
+            case 70: // NOSONAR
+                migrateCreditSuisseQuoteFeed(client);
 
                 client.setVersion(Client.CURRENT_VERSION);
                 break;
@@ -1815,6 +1818,39 @@ public class ClientFactory
 
         for (var t : client.getTaxonomies())
             t.setSource(null);
+    }
+
+    private static void migrateCreditSuisseQuoteFeed(Client client)
+    {
+        // the Credit Suisse quote feed (used for VIAC funds) has been removed
+        // because the service does not exist anymore. Swiss Fund Data
+        // publishes the prices of these funds and identifies the share class
+        // by ISIN. The old feed URL contained the ISIN of the fund.
+
+        var creditSuisseFeedId = "CREDITSUISSE_HTML_TABLE"; //$NON-NLS-1$
+        var isinPattern = Pattern.compile("[A-Z]{2}[A-Z0-9]{9}[0-9]"); //$NON-NLS-1$
+
+        for (Security security : client.getSecurities())
+        {
+            if (creditSuisseFeedId.equals(security.getFeed()))
+            {
+                if ((security.getIsin() == null || security.getIsin().isBlank()) && security.getFeedURL() != null)
+                {
+                    var matcher = isinPattern.matcher(security.getFeedURL());
+                    if (matcher.find())
+                        security.setIsin(matcher.group());
+                }
+
+                security.setFeed(SwissFundDataQuoteFeed.ID);
+                security.setFeedURL(null);
+            }
+
+            if (creditSuisseFeedId.equals(security.getLatestFeed()))
+            {
+                security.setLatestFeed(SwissFundDataQuoteFeed.ID);
+                security.setLatestFeedURL(null);
+            }
+        }
     }
 
     private static synchronized XStream xstreamReader()
