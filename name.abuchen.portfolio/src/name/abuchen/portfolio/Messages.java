@@ -134,7 +134,6 @@ public class Messages extends NLS
     public static String LabelCostMethodFIFO;
     public static String LabelCostMethodMovingAverage;
     public static String LabelCostMethodMovingAverageAbbr;
-    public static String LabelCreditSuisseHTMLTable;
     public static String LabelCryptocurrency;
     public static String LabelDefaultReferenceAccountName;
     public static String LabelDeposits;
@@ -302,7 +301,6 @@ public class Messages extends NLS
     public static String MsgErrorParseErrorWithGivenPattern;
     public static String MsgErrorQuandlMissingAPIKey;
     public static String MsgErrorQuandlMissingCode;
-    public static String MsgErrorSecurityHasMalformedURL;
     public static String MsgErrorTradeCollector_MissingHoldingsForSell;
     public static String MsgErrorTradeCollector_MissingHoldingsForTransfer;
     public static String MsgErrorTradeCollector_NoHoldingsForSell;
