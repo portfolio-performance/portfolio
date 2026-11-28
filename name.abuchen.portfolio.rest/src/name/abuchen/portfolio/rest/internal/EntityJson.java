@@ -23,10 +23,8 @@ import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.online.QuoteFeed;
 import name.abuchen.portfolio.rest.FileAccessRegistry.FileAccess;
 import name.abuchen.portfolio.rest.spi.OpenFile;
-import name.abuchen.portfolio.snapshot.AssetPosition;
 import name.abuchen.portfolio.snapshot.ClientPerformanceSnapshot;
 import name.abuchen.portfolio.snapshot.ClientPerformanceSnapshot.CategoryType;
-import name.abuchen.portfolio.snapshot.ClientSnapshot;
 import name.abuchen.portfolio.snapshot.SecurityPosition;
 import name.abuchen.portfolio.snapshot.security.LazySecurityPerformanceRecord;
 import name.abuchen.portfolio.snapshot.trades.Trade;
@@ -171,28 +169,6 @@ public final class EntityJson
         json.addProperty("use", access.uuid()); //$NON-NLS-1$
         json.addProperty("label", file.getLabel()); //$NON-NLS-1$
         json.addProperty("path", file.getPath()); //$NON-NLS-1$
-        return json;
-    }
-
-    /**
-     * The statement of assets: every holding - securities and cash accounts
-     * uniformly - valued at the snapshot date in the reporting currency.
-     */
-    public static JsonObject toJson(ClientSnapshot snapshot, String reportingCurrency)
-    {
-        var total = snapshot.getMonetaryAssets();
-
-        var json = new JsonObject();
-        json.addProperty("date", snapshot.getTime().toString()); //$NON-NLS-1$
-        json.addProperty("reportingCurrency", reportingCurrency); //$NON-NLS-1$
-        json.add("totalAssets", toJson(total)); //$NON-NLS-1$
-
-        var items = new JsonArray();
-        snapshot.getAssetPositions() //
-                        .sorted(new AssetPosition.ByDescription()) //
-                        .forEach(position -> items.add(holding(position.getPosition(), position.getValuation(), total,
-                                        snapshot.getTime())));
-        json.add("items", items); //$NON-NLS-1$
         return json;
     }
 

@@ -38,6 +38,7 @@ import name.abuchen.portfolio.rest.ApiRoutes;
 import name.abuchen.portfolio.rest.ClientStore;
 import name.abuchen.portfolio.rest.FileAccessRegistry;
 import name.abuchen.portfolio.rest.PairingService;
+import name.abuchen.portfolio.rest.internal.Paging;
 import name.abuchen.portfolio.rest.internal.Request;
 import name.abuchen.portfolio.rest.internal.Router;
 import name.abuchen.portfolio.rest.testsupport.FakeHost;
@@ -432,9 +433,11 @@ public class McpToolCallTest
     }
 
     /**
-     * An unmarked truncation is read as a complete answer. A list that cannot
-     * be paged - the holdings - is still cut after a whole item, and says so,
-     * with the advice surviving the cut.
+     * An unmarked truncation is read as a complete answer. A list whose answer
+     * carries nothing to page from - here a holdings report without item cursors,
+     * as a caller that asked for the whole list is answered - is still cut after a
+     * whole item, and says so, with the advice surviving the cut. The paged answer
+     * of the same tool is the next test.
      */
     @Test
     public void testAnOversizedResultThatCannotBePagedIsTruncatedWithAMarker()
@@ -463,6 +466,163 @@ public class McpToolCallTest
         assertThat(fitted, containsString("TRUNCATED"));
         assertThat(fitted, containsString("ask a narrower question"));
         assertThat(fitted, containsString("more positions than fit in one answer"));
+    }
+
+    /**
+     * A statement of assets larger than one answer is not cut: the rows carry
+     * their cursors, so it goes out as a page, the guidance says where the next
+     * one starts, and `total` says how far the page is from the whole file. That
+     * is the difference from the test above - a cut names what was lost, a page
+     * says where to go on - and the reason the holdings report was given paging.
+     */
+    @Test
+    public void testAnOversizedHoldingsAnswerComesBackAsAPage()
+    {
+        var tool = McpTools.byName("pp_list_holdings").orElseThrow();
+
+        var items = new JsonArray();
+        for (int ii = 0; ii < 300; ii++)
+        {
+            var holding = new JsonObject();
+            holding.addProperty("type", "instrument");
+            holding.addProperty("uuid", String.format("00000000-0000-0000-0000-%012d", ii));
+            holding.addProperty("name", "ACME " + ii + " " + "x".repeat(600));
+            holding.addProperty("weight", 0.001);
+            holding.addProperty("cursor", Paging.encode(Paging.Kind.HOLDINGS, "scope", "u" + ii));
+            items.add(holding);
+        }
+        var payload = new JsonObject();
+        payload.addProperty("date", "2024-12-31");
+        payload.add("items", items);
+
+        var fitted = McpEndpoint.fit(tool, JsonParser.parseString("{\"file\":\"sample\"}").getAsJsonObject(),
+                        payload, McpEndpoint.MAX_RESULT_CHARS);
+
+        assertThat(fitted.length(), is(lessThanOrEqualTo(McpEndpoint.MAX_RESULT_CHARS)));
+        assertThat(fitted, not(containsString("TRUNCATED")));
+        assertThat(fitted, containsString("One page of a list of 300"));
+        assertThat(fitted, containsString("nextCursor"));
+        assertThat(fitted, containsString("\"total\":300"));
+
+        // the page holds some rows, and deliberately not all of them: it is a page.
+        // the guidance comes first, the body after it, so the body is what follows
+        // the last blank line
+        var body = fitted.substring(fitted.lastIndexOf("\n\n") + 2);
+        var rows = JsonParser.parseString(body).getAsJsonObject() //
+                        .get("items").getAsJsonObject().get("rows").getAsJsonArray();
+        assertThat(rows.size(), greaterThan(1));
+        assertThat(rows.size(), lessThan(300));
+    }
+
+    /**
+     * The same for the answer that measured too large on a real file: the
+     * watchlists with their instruments. They page by their place in the file, so
+     * what is too big goes out as a page of whole lists with a cursor - not a list
+     * cut in half, and not a run of lists silently absent.
+     */
+    @Test
+    public void testAnOversizedWatchlistsAnswerComesBackAsAPage()
+    {
+        var tool = McpTools.byName("pp_list_watchlists").orElseThrow();
+
+        var items = new JsonArray();
+        for (int ii = 0; ii < 60; ii++)
+        {
+            var watchlist = new JsonObject();
+            watchlist.addProperty("name", "Beobachtung " + ii);
+            watchlist.addProperty("instrumentCount", 20);
+
+            var instruments = new JsonArray();
+            for (int jj = 0; jj < 20; jj++)
+            {
+                var instrument = new JsonObject();
+                instrument.addProperty("uuid", String.format("00000000-0000-0000-0000-%012d", jj));
+                instrument.addProperty("name", "Instrument " + jj + " der Liste " + ii);
+                instruments.add(instrument);
+            }
+            watchlist.add("instruments", instruments);
+            watchlist.addProperty("cursor", Paging.encode(Paging.Kind.WATCHLISTS, "scope",
+                            String.format("%03d|Beobachtung %d", Integer.valueOf(ii), Integer.valueOf(ii))));
+            items.add(watchlist);
+        }
+        var payload = new JsonObject();
+        payload.add("items", items);
+
+        var fitted = McpEndpoint.fit(tool, JsonParser.parseString("{\"file\":\"sample\"}").getAsJsonObject(),
+                        payload, McpEndpoint.MAX_RESULT_CHARS);
+
+        assertThat(fitted.length(), is(lessThanOrEqualTo(McpEndpoint.MAX_RESULT_CHARS)));
+        assertThat(fitted, not(containsString("TRUNCATED")));
+        assertThat(fitted, containsString("One page of a list of 60"));
+        assertThat(fitted, containsString("nextCursor"));
+        assertThat(fitted, containsString("\"total\":60"));
+
+        // the page holds some of the lists and never part of one: what it holds of
+        // a list is all of it - the guidance comes first, so the body follows the
+        // last blank line
+        var body = fitted.substring(fitted.lastIndexOf("\n\n") + 2);
+        var rows = JsonParser.parseString(body).getAsJsonObject() //
+                        .get("items").getAsJsonObject().get("rows").getAsJsonArray();
+        assertThat(rows.size(), greaterThan(1));
+        assertThat(rows.size(), lessThan(60));
+    }
+
+    /**
+     * The report that measured too large on a real file over a year. Its rows page
+     * by the instrument's uuid, so a too big answer goes out as a page of rows with
+     * a cursor - not a report broken off inside a row, and not the tail of the file
+     * silently missing.
+     */
+    @Test
+    public void testAnOversizedInstrumentPerformanceAnswerComesBackAsAPage()
+    {
+        var tool = McpTools.byName("pp_list_instrument_performance").orElseThrow();
+
+        var items = new JsonArray();
+        for (int ii = 0; ii < 120; ii++)
+        {
+            var uuid = String.format("00000000-0000-0000-0000-%012d", Integer.valueOf(ii));
+
+            var row = new JsonObject();
+            row.addProperty("uuid", uuid);
+            row.addProperty("name", "Instrument " + ii + " der langen Liste mit ein paar Worten mehr");
+
+            var valuation = new JsonObject();
+            valuation.addProperty("shares", 152.5);
+            valuation.addProperty("closingValue", 18432.1);
+            valuation.addProperty("periodCostBasis", 16218.9);
+            row.add("valuation", valuation);
+
+            var timeWeighted = new JsonObject();
+            timeWeighted.addProperty("ttwror", 0.0812);
+            timeWeighted.addProperty("ttwrorAnnualized", 0.0791);
+            row.add("timeWeighted", timeWeighted);
+
+            var risk = new JsonObject();
+            risk.addProperty("volatility", 0.142);
+            risk.addProperty("maxDrawdown", 0.231);
+            row.add("risk", risk);
+
+            row.addProperty("cursor", Paging.encode(Paging.Kind.PERFORMANCE, "scope", uuid));
+            items.add(row);
+        }
+        var payload = new JsonObject();
+        payload.add("items", items);
+
+        var fitted = McpEndpoint.fit(tool, JsonParser.parseString("{\"file\":\"sample\"}").getAsJsonObject(),
+                        payload, McpEndpoint.MAX_RESULT_CHARS);
+
+        assertThat(fitted.length(), is(lessThanOrEqualTo(McpEndpoint.MAX_RESULT_CHARS)));
+        assertThat(fitted, not(containsString("TRUNCATED")));
+        assertThat(fitted, containsString("One page of a list of 120"));
+        assertThat(fitted, containsString("nextCursor"));
+
+        // some rows, never all of them, and the guidance in front of the body
+        var body = fitted.substring(fitted.lastIndexOf("\n\n") + 2);
+        var rows = JsonParser.parseString(body).getAsJsonObject() //
+                        .get("items").getAsJsonObject().get("rows").getAsJsonArray();
+        assertThat(rows.size(), greaterThan(1));
+        assertThat(rows.size(), lessThan(120));
     }
 
     /**
@@ -528,11 +688,12 @@ public class McpToolCallTest
 
     /**
      * A report that was narrowed to fit and still did not fit cannot be told to
-     * narrow it again: the advice has to name what is left to change instead, and
-     * it has to survive the cut, which is the part a model acts on.
+     * narrow it again: its rows page, and the page says both where the rest of the
+     * rows are and which metric groups are gone - the latter for a reason that is
+     * not paging, and a reader who asked for all seven has to be able to tell.
      */
     @Test
-    public void testTheAdviceAfterANarrowedReportNamesWhatIsLeftToChange()
+    public void testANarrowedReportThatStillDoesNotFitComesBackAsAPageNamingTheGroupsItLeftOut()
     {
         var account = new AccountBuilder().addTo(client);
 
@@ -553,12 +714,13 @@ public class McpToolCallTest
                         "{\"file\":\"sample\",\"openingDate\":\"2024-01-01\",\"closingDate\":\"2024-12-31\"}"));
 
         assertThat(result.length(), is(lessThanOrEqualTo(McpEndpoint.MAX_RESULT_CHARS)));
-        assertThat(result, containsString("TRUNCATED"));
-        assertThat(result, containsString("already leaves out"));
+        assertThat(result, not(containsString("TRUNCATED")));
+        assertThat(result, containsString("One page of a list of 200"));
+        assertThat(result, containsString("It also leaves out"));
         assertThat(result, containsString("`timeWeighted`"));
         assertThat(result, not(containsString("ask again without them")));
         assertThat(result, containsString("pp_get_instrument_performance"));
-        assertThat(result, containsString("pp_get_instrument_performance for one instrument at a time."));
+        assertThat(result, containsString("pp_get_instrument_performance answers."));
     }
 
     /**

@@ -2,6 +2,7 @@ package name.abuchen.portfolio.rest.internal;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
@@ -16,6 +17,10 @@ import name.abuchen.portfolio.model.Watchlist;
  * selection of names - and unlike everything else in the file it has no
  * identifier of its own, so its name is all a reader can address it by and no
  * uuid anywhere in the file points at one.
+ * <p/>
+ * A file holds more of them than one MCP answer carries once the contents are
+ * asked for, so the lists are paged like every other list: one list is one item
+ * of a page, contents and all, and a page never ends in the middle of one.
  */
 public final class WatchlistsHandler
 {
@@ -32,8 +37,13 @@ public final class WatchlistsHandler
      *            whether each list also carries the instruments it holds; by
      *            default it only says how many it has, because a working list
      *            carries several hundred of them
+     * @param cursorParam
+     *            where the page continues after, as {@code page.nextCursor} gave it
+     * @param limitParam
+     *            how many lists the page holds at most
      */
-    public static JsonObject list(Client client, String instrumentParam, String withInstrumentsParam)
+    public static JsonObject list(Client client, String fileId, String instrumentParam,
+                    String withInstrumentsParam, String cursorParam, String limitParam)
     {
         var errors = new ArrayList<ApiException.FieldError>();
 
@@ -42,21 +52,45 @@ public final class WatchlistsHandler
                         Security::getUUID, errors);
         var withInstruments = flag("withInstruments", withInstrumentsParam, errors); //$NON-NLS-1$
 
+        // the file and what it is narrowed to decide which lists the answer holds
+        var scope = "watchlists|file=" + (fileId == null ? "" : fileId) //$NON-NLS-1$ //$NON-NLS-2$
+                        + "|instrument=" + (instrument == null ? "" : instrument.getUUID()); //$NON-NLS-1$ //$NON-NLS-2$
+        var paging = Paging.parse(Paging.Kind.WATCHLISTS, scope, cursorParam, limitParam, errors);
+
         if (!errors.isEmpty())
             throw ApiException.badRequest(errors);
 
-        var items = new JsonArray();
+        var listed = new ArrayList<Entry>();
+        var rank = 0;
         for (var watchlist : client.getWatchlists())
         {
-            if (instrument != null && !holds(watchlist, instrument))
-                continue;
-
-            items.add(watchlistJson(watchlist, withInstruments));
+            if (instrument == null || holds(watchlist, instrument))
+                listed.add(new Entry(rank, watchlist));
+            rank++;
         }
 
-        return EntityJson.envelope(items,
-                        instrument != null ? "no watchlist of this file holds this instrument" //$NON-NLS-1$
-                                        : "this file has no watchlists"); //$NON-NLS-1$
+        var json = new JsonObject();
+        paging.apply(Paging.Kind.WATCHLISTS, json, "items", listed, Entry::key, //$NON-NLS-1$
+                        entry -> watchlistJson(entry.watchlist(), withInstruments));
+        if (listed.isEmpty())
+            json.addProperty("empty", instrument != null ? "no watchlist of this file holds this instrument" //$NON-NLS-1$
+                            : "this file has no watchlists"); //$NON-NLS-1$
+
+        return json;
+    }
+
+    /**
+     * A list of the file and its place in it, which is what makes its key unique:
+     * the name alone is not, because a hand-edited file can hold two lists of one
+     * name and this API has no second way of telling them apart.
+     */
+    private record Entry(int rank, Watchlist watchlist)
+    {
+        String key()
+        {
+            return String.format(Locale.ROOT, "%03d|%s", Integer.valueOf(rank), //$NON-NLS-1$
+                            watchlist.getName());
+        }
     }
 
     private static boolean holds(Watchlist watchlist, Security instrument)

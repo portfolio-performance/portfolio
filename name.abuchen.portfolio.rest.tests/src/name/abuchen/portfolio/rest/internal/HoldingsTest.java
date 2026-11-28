@@ -2,11 +2,17 @@ package name.abuchen.portfolio.rest.internal;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.closeTo;
+import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import org.junit.Assert;
 import org.junit.Assume;
@@ -35,15 +41,23 @@ public class HoldingsTest
     /** calls the handler with a factory of its own, as the host would provide it */
     private static JsonElement list(Client client, String date, String currency)
     {
-        return HoldingsHandler.list(client, new ExchangeRateProviderFactory(client), date, currency, null, null);
+        return list(client, date, currency, null, null);
     }
 
     /** the same, narrowed to one account - an investment account or a cash account */
     private static JsonElement list(Client client, String date, String currency, String investmentAccount,
                     String cashAccount)
     {
-        return HoldingsHandler.list(client, new ExchangeRateProviderFactory(client), date, currency, investmentAccount,
-                        cashAccount);
+        return HoldingsHandler.list(client, null, new ExchangeRateProviderFactory(client), date, currency,
+                        investmentAccount, cashAccount, null, null);
+    }
+
+    /** the same, asking for one page of the rows */
+    private static JsonObject page(Client client, String date, String currency, String investmentAccount,
+                    String cashAccount, String cursor, String limit)
+    {
+        return HoldingsHandler.list(client, null, new ExchangeRateProviderFactory(client), date, currency,
+                        investmentAccount, cashAccount, cursor, limit).getAsJsonObject();
     }
 
     @Test
@@ -701,6 +715,226 @@ public class HoldingsTest
             assertThat(e.getStatus(), is(400));
             assertThat(e.getErrors().get(0).field(), is("reportingCurrency"));
             assertThat(e.getErrors().get(0).code(), is("unknown-currency"));
+        }
+    }
+
+    // // paging: a working file holds more positions than one MCP answer carries
+
+    /** three instruments in one depot and its settlement cash: four rows of the statement */
+    private record Many(Client client, Account cash, Portfolio depot, List<Security> securities)
+    {
+        /** every row of the whole statement, in the order a paged walk goes through them */
+        List<String> pagedUuids()
+        {
+            var uuids = securities.stream().map(Security::getUUID).collect(Collectors.toCollection(ArrayList::new));
+            uuids.add(cash.getUUID());
+            uuids.sort(Comparator.naturalOrder());
+            return uuids;
+        }
+    }
+
+    private static Many many()
+    {
+        var client = new Client();
+
+        var cash = new AccountBuilder() //
+                        .deposit_("2026-01-01", Values.Amount.factorize(10_000)) //
+                        .addTo(client);
+        cash.setName("Cash");
+
+        var depot = new PortfolioBuilder(cash);
+        var securities = new ArrayList<Security>();
+        for (var ii = 0; ii < 3; ii++)
+        {
+            var security = new SecurityBuilder() //
+                            .addPrice("2026-07-01", Values.Quote.factorize(100 + ii)) //
+                            .addTo(client);
+            security.setName("ACME " + ii);
+
+            depot.buy(security, "2026-01-15", Values.Share.factorize(10), Values.Amount.factorize(1000 + ii));
+            securities.add(security);
+        }
+
+        var portfolio = depot.addTo(client);
+        portfolio.setName("Depot");
+
+        return new Many(client, cash, portfolio, securities);
+    }
+
+    /** unpaged, the statement is what it always was: the whole file in the application's order */
+    @Test
+    public void testWithoutPagingNothingIsAdded()
+    {
+        var m = many();
+        var holdings = list(m.client(), "2026-07-20", null).getAsJsonObject();
+
+        assertThat(holdings.has("page"), is(false));
+        assertThat(holdings.get("items").getAsJsonArray().size(), is(4));
+        for (var item : holdings.get("items").getAsJsonArray())
+            assertThat(item.getAsJsonObject().has("cursor"), is(false));
+
+        var names = new ArrayList<String>();
+        holdings.get("items").getAsJsonArray()
+                        .forEach(item -> names.add(item.getAsJsonObject().get("name").getAsString()));
+        assertThat(names, contains("ACME 0", "ACME 1", "ACME 2", "Cash"));
+    }
+
+    /** one page: as many rows as were asked for, the count of all of them, and the cursor onward */
+    @Test
+    public void testAPageHoldsTheRowsAskedForAndNamesTheNext()
+    {
+        var m = many();
+        var first = page(m.client(), "2026-07-20", null, null, null, null, "2");
+
+        var page = first.get("page").getAsJsonObject();
+        assertThat(page.get("limit").getAsInt(), is(2));
+        assertThat(page.get("total").getAsInt(), is(4));
+        assertThat(page.get("nextCursor").isJsonNull(), is(false));
+
+        var items = first.get("items").getAsJsonArray();
+        assertThat(items.size(), is(2));
+
+        // paged, the rows are in the order of the paging key - the vehicle's uuid -
+        // and the last one's cursor is the cursor the next page continues after
+        var ordered = m.pagedUuids();
+        assertThat(items.get(0).getAsJsonObject().get("uuid").getAsString(), is(ordered.get(0)));
+        assertThat(items.get(1).getAsJsonObject().get("uuid").getAsString(), is(ordered.get(1)));
+        assertThat(items.get(1).getAsJsonObject().get("cursor").getAsString(),
+                        is(page.get("nextCursor").getAsString()));
+    }
+
+    /** the walk through every page holds each row exactly once, and all of them */
+    @Test
+    public void testAWalkThroughThePagesHoldsEveryRowOnce()
+    {
+        var m = many();
+
+        var seen = new ArrayList<String>();
+        var pages = 0;
+        String cursor = null;
+        boolean anotherPage = true;
+
+        while (anotherPage)
+        {
+            var answer = page(m.client(), "2026-07-20", null, null, null, cursor, "2");
+            assertThat(answer.get("page").getAsJsonObject().get("total").getAsInt(), is(4));
+
+            answer.get("items").getAsJsonArray()
+                            .forEach(item -> seen.add(item.getAsJsonObject().get("uuid").getAsString()));
+
+            var next = answer.get("page").getAsJsonObject().get("nextCursor");
+            anotherPage = !next.isJsonNull();
+            cursor = anotherPage ? next.getAsString() : null;
+            pages++;
+        }
+
+        assertThat(pages, is(2));
+        assertThat(seen.size(), is(4));
+        assertThat(seen, containsInAnyOrder(m.pagedUuids().toArray(new String[0])));
+    }
+
+    /**
+     * A page narrows the rows and nothing else: the file's total stays the file's,
+     * so the weights on a page are the shares of the whole statement and a reader
+     * cannot mistake a part of the file for the sum of it.
+     */
+    @Test
+    public void testAPageKeepsTheWholeFilesTotalAndWeights()
+    {
+        var m = many();
+        var first = page(m.client(), "2026-07-20", null, null, null, null, "1");
+        var whole = list(m.client(), "2026-07-20", null).getAsJsonObject();
+
+        assertThat(first.get("totalAssets").getAsJsonObject().get("value").getAsDouble(),
+                        is(whole.get("totalAssets").getAsJsonObject().get("value").getAsDouble()));
+
+        var row = first.get("items").getAsJsonArray().get(0).getAsJsonObject();
+        var same = findByUuid(whole, row.get("uuid").getAsString());
+        assertThat(row.get("valuation").getAsJsonObject().get("value").getAsDouble(),
+                        is(same.get("valuation").getAsJsonObject().get("value").getAsDouble()));
+        assertThat(row.get("weight").getAsDouble(), closeTo(same.get("weight").getAsDouble(), 1e-10));
+    }
+
+    /** scoped, the page counts the rows of that one account, and says so in its total */
+    @Test
+    public void testAScopedReportPagesItsOwnRows()
+    {
+        var m = many();
+        var answer = page(m.client(), "2026-07-20", null, m.depot().getUUID(), null, null, "2");
+
+        assertThat(answer.get("page").getAsJsonObject().get("total").getAsInt(), is(3));
+        assertThat(answer.get("scope").getAsJsonObject().get("uuid").getAsString(), is(m.depot().getUUID()));
+        assertThat(answer.get("items").getAsJsonArray().size(), is(2));
+
+        // still the depot's own value, not the file's: 100 + 101 + 102 for ten shares each
+        assertThat(answer.get("totalAssets").getAsJsonObject().get("value").getAsDouble(), is(3030d));
+    }
+
+    /**
+     * A cursor names the list it was written for. The same rows narrowed to one
+     * account, the same file valued at another day, and a cursor of another list
+     * altogether are refused rather than answered with a page of something else.
+     */
+    @Test
+    public void testACursorOfAnotherListIsRefused()
+    {
+        var m = many();
+        var cursor = page(m.client(), "2026-07-20", null, null, null, null, "2") //
+                        .get("page").getAsJsonObject().get("nextCursor").getAsString();
+
+        assertCursorRefused(m.client(), "2026-07-20", m.depot().getUUID(), null, cursor);
+        assertCursorRefused(m.client(), "2026-07-21", null, null, cursor);
+        assertCursorRefused(m.client(), "2026-07-20", null, null,
+                        Paging.encode(Paging.Kind.INSTRUMENTS, Paging.scopeHash(""), m.cash().getUUID()));
+    }
+
+    private static void assertCursorRefused(Client client, String date, String investmentAccount, String cashAccount,
+                    String cursor)
+    {
+        try
+        {
+            page(client, date, null, investmentAccount, cashAccount, cursor, "2");
+            Assert.fail("expected ApiException for cursor " + cursor);
+        }
+        catch (ApiException e)
+        {
+            assertThat(e.getStatus(), is(400));
+            assertThat(e.getErrors().get(0).field(), is("cursor"));
+            assertThat(e.getErrors().get(0).code(), is("invalid-value"));
+        }
+    }
+
+    /** the reporting currency changes the figures of the same rows, so it keeps a cursor good */
+    @Test
+    public void testAnotherReportingCurrencyKeepsTheCursorGood()
+    {
+        var client = new Client();
+        var cash = new AccountBuilder().deposit_("2026-01-01", Values.Amount.factorize(10_000)).addTo(client);
+        cash.setName("Cash");
+        new AccountBuilder("USD").deposit_("2026-01-01", Values.Amount.factorize(100)).addTo(client);
+
+        var eur = page(client, "2026-07-20", "EUR", null, null, null, "1");
+        var againInUsd = page(client, "2026-07-20", "USD", null, null,
+                        eur.get("page").getAsJsonObject().get("nextCursor").getAsString(), "1");
+
+        assertThat(againInUsd.get("page").getAsJsonObject().get("total").getAsInt(), is(2));
+    }
+
+    @Test
+    public void testLimitBelowOneIs400()
+    {
+        var m = many();
+
+        try
+        {
+            page(m.client(), "2026-07-20", null, null, null, null, "0");
+            Assert.fail("expected ApiException");
+        }
+        catch (ApiException e)
+        {
+            assertThat(e.getStatus(), is(400));
+            assertThat(e.getErrors().get(0).field(), is("limit"));
+            assertThat(e.getErrors().get(0).code(), is("invalid-value"));
         }
     }
 

@@ -26,9 +26,9 @@ import com.google.gson.JsonObject;
  * client that never pages sees no change.
  * <p/>
  * A paged list is in an order of keys that an edit elsewhere does not change:
- * an instrument's uuid; a trade's instrument uuid, start, investment account,
- * closing transaction, and the shares, amount and id of its opening
- * transaction. Every item of a page carries its {@code cursor}, and
+ * an instrument's uuid; a holding's vehicle uuid; a trade's instrument uuid,
+ * start, investment account, closing transaction, and the shares, amount and id
+ * of its opening transaction. Every item of a page carries its {@code cursor}, and
  * {@code page.nextCursor} is the cursor of the page's last item - or
  * {@code null} on the last page. The next page holds the items after that key.
  * An item added or removed between two pages therefore does not shift the
@@ -75,6 +75,15 @@ public record Paging(boolean given, String scope, String after, Integer limit)
         /** an instrument's uuid */
         INSTRUMENTS("i", Pattern.compile(UUIDS)), //$NON-NLS-1$
         /**
+         * the uuid of the vehicle a row of the statement of assets is about: that
+         * report holds one row per vehicle, so the uuid names the row and nothing
+         * else. Paged, the rows come in the order of that uuid and not by name as
+         * the unpaged answer does - a name is the one thing of a vehicle an edit
+         * can change, and a row that moved between two pages would be read twice
+         * or not at all.
+         */
+        HOLDINGS("h", Pattern.compile(UUIDS)), //$NON-NLS-1$
+        /**
          * instrument | start | investment account | closing transaction |
          * shares | currency and amount | id of the transaction that opens the
          * trade, or a running number for the collector's copies of a lot sold
@@ -113,7 +122,29 @@ public record Paging(boolean given, String scope, String after, Integer limit)
          * behind the rank, because a rank is only unique among the vehicles of
          * one class and never names a row of the file.
          */
-        VEHICLES("v", Pattern.compile("\\d{3}\\|" + UUIDS)); //$NON-NLS-1$
+        VEHICLES("v", Pattern.compile("\\d{3}\\|" + UUIDS)), //$NON-NLS-1$
+
+        /**
+         * the place a watchlist holds in the file, then its name. A watchlist is
+         * the one thing of the file with no uuid, so its name is all a key of it
+         * could be - but a hand-edited file can hold two lists of one name, and
+         * a key that repeats would hide one of them from any page after it. The
+         * place in front tells them apart and keeps a paged answer in the order
+         * the application shows its lists. A list renamed, added or removed
+         * before the cursor moves the others, as a re-sorted branch does for the
+         * classes of a taxonomy.
+         */
+        WATCHLISTS("w", Pattern.compile("\\d{3}\\|(?s).+")), //$NON-NLS-1$
+
+        /**
+         * the uuid of the instrument a row of the performance report is about, as
+         * in the statement of assets: one row per instrument the interval touched,
+         * so the identifier names the row and nothing else. The interval decides
+         * which rows there are and is in the scope; what a row is made of - the
+         * metric groups, the cost method, the reporting currency - only changes
+         * its figures, so a cursor of one such answer stays good for another.
+         */
+        PERFORMANCE("r", Pattern.compile(UUIDS)); //$NON-NLS-1$
 
         private final String tag;
         private final Pattern key;

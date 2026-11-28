@@ -805,6 +805,19 @@ public final class McpEnvelope
     public static String fitPage(McpTool tool, JsonObject arguments, JsonElement payload, int maxChars,
                     Boolean changed)
     {
+        return fitPage(tool, arguments, payload, maxChars, changed, List.of());
+    }
+
+    /**
+     * @param dropped
+     *            metric groups the answer at hand already left out to fit, which
+     *            the guidance names: a page after a narrowing is the second
+     *            reduction, and a reader who asked for every group should learn
+     *            that some are gone for a different reason than paging.
+     */
+    public static String fitPage(McpTool tool, JsonObject arguments, JsonElement payload, int maxChars,
+                    Boolean changed, List<String> dropped)
+    {
         if (tool.binding("cursor") == null || payload == null || !payload.isJsonObject()) //$NON-NLS-1$
             return null;
 
@@ -830,7 +843,7 @@ public final class McpEnvelope
         while (low <= high)
         {
             var count = (low + high) >>> 1;
-            var rendered = renderPage(tool, arguments, report, paged, all, count, total, changed);
+            var rendered = renderPage(tool, arguments, report, paged, all, count, total, changed, dropped);
             if (rendered.length() <= maxChars)
             {
                 best = rendered;
@@ -867,7 +880,7 @@ public final class McpEnvelope
     }
 
     private static String renderPage(McpTool tool, JsonObject arguments, JsonObject report, String paged,
-                    JsonArray all, int count, int total, Boolean changed)
+                    JsonArray all, int count, int total, Boolean changed, List<String> dropped)
     {
         var slice = new JsonArray();
         for (var ii = 0; ii < count; ii++)
@@ -887,12 +900,12 @@ public final class McpEnvelope
         kept.add("page", Paging.describe(count, total, next));
         kept.add(paged, withoutCursors(slice));
 
-        return render(tool, arguments, kept, List.of(), pageAdvice(tool, count, total, next), Integer.MAX_VALUE,
-                        changed);
+        return render(tool, arguments, kept, dropped, pageAdvice(tool, count, total, next, dropped),
+                        Integer.MAX_VALUE, changed);
     }
 
     /** what the reader of a page is told, before the items it holds */
-    private static String pageAdvice(McpTool tool, int count, int total, String next)
+    private static String pageAdvice(McpTool tool, int count, int total, String next, List<String> dropped)
     {
         var advice = new StringBuilder("**One page of a list of " + total + ".** This answer holds " + count
                         + " of them; the others are not in it. Call " + tool.name()
@@ -900,11 +913,18 @@ public final class McpEnvelope
                         + "\"` for the next page - `page.nextCursor` says the same - and do not present this page as "
                         + "the whole list.");
 
+        if (!dropped.isEmpty())
+            advice.append(" It also leaves out " + joinedNames(dropped)
+                            + ": the answer was narrowed to fit once already, and it is a page because even that was "
+                            + "too large.");
+
         switch (tool.name())
         {
             case "pp_list_instruments" -> advice.append(" To find one instrument, `query` is quicker than paging.");
             case "pp_list_trades" -> advice.append(" A question about a period or one instrument is answered "
                             + "faster with `from`/`to`, `status`, or pp_list_instrument_trades.");
+            case "pp_list_instrument_performance" -> advice.append(" All groups of one instrument, without paging, "
+                            + "is what pp_get_instrument_performance answers.");
             default -> {
                 // the paging itself is the advice
             }
@@ -1072,7 +1092,8 @@ public final class McpEnvelope
         if ("pp_list_instrument_performance".equals(tool.name()) && !alreadyDropped.isEmpty())
         {
             return "This report already leaves out " + joinedNames(alreadyDropped)
-                    + ", and it still did not fit. Dropping those groups again changes nothing: shorten the interval, "
+                    + ", and it still did not fit. Dropping those groups again changes nothing: page the rows with "
+                    + "`cursor` set to `page.nextCursor`, shorten the interval, "
                     + "or use pp_get_instrument_performance for one instrument at a time.";
         }
 
@@ -1084,13 +1105,20 @@ public final class McpEnvelope
                             + "name, or the ISIN, WKN or ticker symbol - to get just the matching instruments and their "
                             + "`uuid`, then pp_get_instrument for one of them. pp_list_holdings names every instrument "
                             + "currently held.";
-            case "pp_list_holdings" -> "This portfolio has more positions than fit in one answer. Narrow it: call again "
-                            + "with `investmentAccount` set to one account from pp_list_investment_accounts, or with "
+            case "pp_list_holdings" -> "This portfolio has more positions than fit in one answer. Page through them "
+                            + "with `cursor` set to `page.nextCursor`, or narrow it: call again with "
+                            + "`investmentAccount` set to one account from pp_list_investment_accounts, or with "
                             + "`cashAccount` for a single balance - either values that one account and states it once, "
                             + "in `scope`. pp_get_instrument answers for an individual position.";
+            case "pp_list_watchlists" -> "The instruments carried along with the lists are what makes this answer "
+                            + "large, and one list is never split across pages: page the lists themselves with `limit` "
+                            + "and `page.nextCursor`, or ask after the members of one list with pp_list_instruments and "
+                            + "`watchlist` set to its name, which pages them by `uuid`. `instrument` narrows to the "
+                            + "lists holding one instrument.";
             case "pp_list_instrument_performance" -> "This report has more instruments than fit in one answer. What "
                             + "dominates the size is the number of instruments, not the metric groups - each instrument "
-                            + "carries a handful of figures whatever is asked for: shorten the interval, or use "
+                            + "carries a handful of figures whatever is asked for: page the rows with `cursor` set to "
+                            + "`page.nextCursor`, shorten the interval, or use "
                             + "pp_get_instrument_performance for one instrument at a time.";
             case "pp_list_taxonomies" -> "This file has more classes than fit in one answer. The taxonomy headers in "
                             + "`items` are always whole - read them, then page the classes with `limit` and "

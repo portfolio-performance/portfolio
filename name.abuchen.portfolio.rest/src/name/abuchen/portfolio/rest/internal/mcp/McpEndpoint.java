@@ -1057,6 +1057,14 @@ public final class McpEndpoint
             if (smaller.length() <= maxChars)
                 return smaller;
 
+            // fewer groups and still no single answer: the rows page then, as in
+            // every other list - the cursors of that payload are what a page needs,
+            // so it is narrowed from the one that still carries them
+            var pageOfGroups = McpEnvelope.fitPage(tool, narrowed,
+                            McpEnvelope.narrow(paged, plan.get().keep()), maxChars, changed, plan.get().dropped());
+            if (pageOfGroups != null)
+                return pageOfGroups;
+
             // the dropped groups are not advice any more: they are already gone
             return McpEnvelope.render(tool, narrowed, smallerPayload, plan.get().dropped(),
                             McpEnvelope.oversizeAdvice(tool, plan.get().dropped()), maxChars);

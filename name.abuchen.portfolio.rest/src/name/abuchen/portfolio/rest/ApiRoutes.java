@@ -74,6 +74,10 @@ public final class ApiRoutes
     private static final String[] INSTRUMENT_PERFORMANCE_PARAMS = { "openingDate", "closingDate", //$NON-NLS-1$ //$NON-NLS-2$
                     "reportingCurrency", "costMethod", "taxesAndFees", "metrics" }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 
+    /** As above; the collection of rows additionally pages by the instrument's uuid. */
+    private static final String[] INSTRUMENT_PERFORMANCE_LIST_PARAMS = { "openingDate", "closingDate", //$NON-NLS-1$ //$NON-NLS-2$
+                    "reportingCurrency", "costMethod", "taxesAndFees", "metrics", "cursor", "limit" }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
+
     /** Query parameters shared by both trade routes. */
     private static final String[] TRADE_PARAMS = { "status", "grouping", "costMethod", "taxesAndFees", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
                     "reportingCurrency", "from", "to", "cursor", "limit" }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
@@ -506,11 +510,13 @@ public final class ApiRoutes
                         }));
 
         router.add("GET", "/v1/files/{file}/holdings", calc(resolver, ui, calculation, //$NON-NLS-1$ //$NON-NLS-2$
-                        (context, req) -> Response.json(200, HoldingsHandler.list(context.client(), context.factory(),
-                                        req.queryParam("date"), //$NON-NLS-1$
+                        (context, req) -> Response.json(200, HoldingsHandler.list(context.client(), context.fileId(),
+                                        context.factory(), req.queryParam("date"), //$NON-NLS-1$
                                         req.queryParam("reportingCurrency"), //$NON-NLS-1$
-                                        req.queryParam("investmentAccount"), req.queryParam("cashAccount")))), //$NON-NLS-1$ //$NON-NLS-2$
-                        "date", "reportingCurrency", "investmentAccount", "cashAccount"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+                                        req.queryParam("investmentAccount"), req.queryParam("cashAccount"), //$NON-NLS-1$ //$NON-NLS-2$
+                                        req.queryParam("cursor"), req.queryParam("limit")))), //$NON-NLS-1$ //$NON-NLS-2$
+                        "date", "reportingCurrency", "investmentAccount", "cashAccount", "cursor", "limit"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
+
 
         // how the file classifies its vehicles: the trees, their target weights
         // and their direct assignments - the shape of a portfolio, which no other
@@ -607,11 +613,14 @@ public final class ApiRoutes
                         (client, req) -> FileInfoHandler.info(client)));
 
         // the named baskets of instruments: how full each one is, and which of
-        // them holds one instrument
-        router.add("GET", "/v1/files/{file}/watchlists", read(resolver, ui, //$NON-NLS-1$ //$NON-NLS-2$
-                        (client, req) -> WatchlistsHandler.list(client, req.queryParam("instrument"), //$NON-NLS-1$
-                                        req.queryParam("withInstruments"))), //$NON-NLS-1$
-                        "instrument", "withInstruments"); //$NON-NLS-1$ //$NON-NLS-2$
+        // them holds one instrument. Paged by their place in the file, because
+        // their contents are what makes this answer larger than one result.
+        router.add("GET", "/v1/files/{file}/watchlists", readFile(resolver, ui, //$NON-NLS-1$ //$NON-NLS-2$
+                        (resolved, req) -> WatchlistsHandler.list(resolved.file().getClient(), //$NON-NLS-1$
+                                        resolved.file().getPath(), req.queryParam("instrument"), //$NON-NLS-1$
+                                        req.queryParam("withInstruments"), req.queryParam("cursor"), //$NON-NLS-1$ //$NON-NLS-2$
+                                        req.queryParam("limit"))), //$NON-NLS-1$
+                        "instrument", "withInstruments", "cursor", "limit"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 
         // A watchlist has no identifier, so both changes address it by name and
         // carry that name in the body: a list name is free text, free text can
@@ -651,14 +660,16 @@ public final class ApiRoutes
         // the performance report broken down by instrument. Five segments like
         // /files/{file}/instruments/{uuid}, but segment 4 is a literal in both
         // and they differ, so first-match routing cannot confuse the two and no
-        // registration-order guard is needed
+        // registration-order guard is needed. Only the collection pages: the item
+        // route answers one object, which has no next page
         router.add("GET", "/v1/files/{file}/performance/instruments", calc(resolver, ui, calculation, //$NON-NLS-1$ //$NON-NLS-2$
-                        (context, req) -> Response.json(200, InstrumentPerformanceHandler.list(context.client(),
-                                        context.factory(), req.queryParam("openingDate"), //$NON-NLS-1$
+                        (context, req) -> Response.json(200, InstrumentPerformanceHandler.list(context.client(), //$NON-NLS-1$
+                                        context.fileId(), context.factory(), req.queryParam("openingDate"), //$NON-NLS-1$
                                         req.queryParam("closingDate"), req.queryParam("reportingCurrency"), //$NON-NLS-1$ //$NON-NLS-2$
                                         req.queryParam("costMethod"), req.queryParam("taxesAndFees"), //$NON-NLS-1$ //$NON-NLS-2$
-                                        req.queryParam("metrics")))), //$NON-NLS-1$
-                        INSTRUMENT_PERFORMANCE_PARAMS);
+                                        req.queryParam("metrics"), req.queryParam("cursor"), //$NON-NLS-1$
+                                        req.queryParam("limit")))), //$NON-NLS-1$
+                        INSTRUMENT_PERFORMANCE_LIST_PARAMS);
         router.add("GET", "/v1/files/{file}/performance/instruments/{uuid}", calc(resolver, ui, calculation, //$NON-NLS-1$ //$NON-NLS-2$
                         (context, req) -> Response.json(200, InstrumentPerformanceHandler.get(context.client(),
                                         context.factory(), req.pathParam("uuid"), req.queryParam("openingDate"), //$NON-NLS-1$ //$NON-NLS-2$

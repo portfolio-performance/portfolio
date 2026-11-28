@@ -6,6 +6,7 @@ import static org.hamcrest.Matchers.closeTo;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.lessThan;
 import static org.hamcrest.Matchers.not;
@@ -49,14 +50,24 @@ public class InstrumentPerformanceTest
     private static final String OPENING = "2024-01-01";
     private static final String CLOSING = "2024-12-31";
 
+    /** the file the route resolved, which a paging cursor binds to */
+    private static final String FILE = "C:/portfolio/Richard.portfolio";
+
     // -- calling the two routes ------------------------------------------
 
     /** calls the collection with a factory of its own, as the host would provide it */
     private static JsonObject list(Client client, String opening, String closing, String currency, String costMethod,
                     String taxesAndFees, String metrics)
     {
-        return InstrumentPerformanceHandler.list(client, new ExchangeRateProviderFactory(client), opening, closing,
-                        currency, costMethod, taxesAndFees, metrics).getAsJsonObject();
+        return list(client, opening, closing, currency, costMethod, taxesAndFees, metrics, null, null);
+    }
+
+    /** as above, paging the rows - the way the route calls it, with the file it resolved */
+    private static JsonObject list(Client client, String opening, String closing, String currency, String costMethod,
+                    String taxesAndFees, String metrics, String cursor, String limit)
+    {
+        return InstrumentPerformanceHandler.list(client, FILE, new ExchangeRateProviderFactory(client), opening,
+                        closing, currency, costMethod, taxesAndFees, metrics, cursor, limit).getAsJsonObject();
     }
 
     private static JsonObject list(Client client)
@@ -291,8 +302,7 @@ public class InstrumentPerformanceTest
 
         for (var metrics : List.of("valuation,gains,income,expenses,moneyWeighted,timeWeighted,risk", "valuation"))
         {
-            var collection = InstrumentPerformanceHandler.list(client, new ExchangeRateProviderFactory(client), OPENING,
-                            CLOSING, null, null, null, metrics).getAsJsonObject();
+            var collection = list(client, OPENING, CLOSING, null, null, null, metrics);
             JsonObject element = null;
             for (var entry : collection.getAsJsonArray("items"))
                 if (entry.getAsJsonObject().get("uuid").getAsString().equals(acme.getUUID()))
@@ -455,7 +465,8 @@ public class InstrumentPerformanceTest
         Function<String, CurrencyConverter> converters = currency -> new CountingConverter(
                         new CurrencyConverterImpl(factory, currency), counter);
 
-        InstrumentPerformanceHandler.list(client, converters, OPENING, CLOSING, null, null, null, metrics);
+        InstrumentPerformanceHandler.list(client, converters, FILE, OPENING, CLOSING, null, null, null, metrics, null,
+                        null);
         return counter.get();
     }
 
@@ -521,6 +532,152 @@ public class InstrumentPerformanceTest
 
         assertThat(uuids(list(client)), is(expected));
         assertThat(uuids(list(client)), is(expected));
+    }
+
+    // -- paging -----------------------------------------------------------
+
+    /**
+     * Without {@code cursor} or {@code limit} the report is exactly what it
+     * always was: every row, no {@code page} beside them, no {@code cursor} on a
+     * row.
+     */
+    @Test
+    public void testWithoutPagingNothingIsAdded()
+    {
+        var client = severalInstruments(4);
+
+        var report = list(client);
+        assertThat(report.has("page"), is(false));
+        assertThat(uuids(report), hasSize(4));
+        for (var item : report.get("items").getAsJsonArray())
+            assertThat(item.getAsJsonObject().has("cursor"), is(false));
+    }
+
+    /** the first page holds the rows asked for and says where the next one starts */
+    @Test
+    public void testAPageHoldsTheRowsAskedForAndNamesTheNext()
+    {
+        var client = severalInstruments(5);
+
+        var page = list(client, OPENING, CLOSING, null, null, null, null, null, "2");
+        assertThat(uuids(page), hasSize(2));
+
+        var pageInfo = page.get("page").getAsJsonObject();
+        assertThat(pageInfo.get("limit").getAsInt(), is(2));
+        assertThat(pageInfo.get("total").getAsInt(), is(5));
+        var next = pageInfo.get("nextCursor").getAsString();
+        assertThat(next.isBlank(), is(false));
+
+        // every row carries its own cursor, and the page's next one is the last
+        // row of the page continued after
+        var items = page.get("items").getAsJsonArray();
+        assertThat(items.size(), is(2));
+        assertThat(items.get(0).getAsJsonObject().has("cursor"), is(true));
+        assertThat(items.get(1).getAsJsonObject().get("cursor").getAsString(), is(next));
+    }
+
+    /**
+     * Walking the pages holds every row exactly once. Paged, the rows come in the
+     * order of the instrument uuid rather than by name as the unpaged report does:
+     * a name is the one thing of an instrument an edit can change, and a row that
+     * moved between two pages would be read twice or not at all.
+     */
+    @Test
+    public void testAWalkThroughThePagesHoldsEveryRowOnce()
+    {
+        var client = severalInstruments(7);
+
+        var expected = uuids(list(client));
+        expected.sort(null);
+
+        var seen = new ArrayList<String>();
+        String cursor = null;
+        var pages = 0;
+        while (true)
+        {
+            var page = list(client, OPENING, CLOSING, null, null, null, null, cursor, "3");
+            seen.addAll(uuids(page));
+            pages++;
+
+            var next = page.get("page").getAsJsonObject().get("nextCursor");
+            if (next.isJsonNull())
+                break;
+            cursor = next.getAsString();
+        }
+
+        assertThat(pages, is(3));
+        assertThat(seen, is(expected));
+    }
+
+    /**
+     * What a row is made of is not what decides which rows the report holds:
+     * metrics, cost method, taxes and the reporting currency change the figures of
+     * the same rows, so a cursor of one such answer stays good for another.
+     */
+    @Test
+    public void testACursorSurvivesTheArgumentsThatOnlyChangeFigures()
+    {
+        var client = severalInstruments(4);
+        var cursor = list(client, OPENING, CLOSING, null, null, null, null, null, "2") //
+                        .get("page").getAsJsonObject().get("nextCursor").getAsString();
+
+        var same = uuids(list(client, OPENING, CLOSING, null, null, null, null, cursor, "2"));
+        var other = uuids(list(client, OPENING, CLOSING, CurrencyUnit.EUR, "moving-average", "excluded", "valuation",
+                        cursor, "2"));
+
+        assertThat(same.isEmpty(), is(false));
+        assertThat(other, is(same));
+    }
+
+    /** a cursor of another interval belongs to another report and is refused, not obeyed */
+    @Test
+    public void testACursorOfAnotherIntervalIsRefused()
+    {
+        var client = severalInstruments(4);
+        var cursor = list(client, OPENING, CLOSING, null, null, null, null, null, "2") //
+                        .get("page").getAsJsonObject().get("nextCursor").getAsString();
+
+        assertFieldError(() -> list(client, "2024-02-01", CLOSING, null, null, null, null, cursor, "2"), "cursor",
+                        "invalid-value");
+    }
+
+    /** and so is a cursor of another file, however it got there */
+    @Test
+    public void testACursorOfAnotherFileIsRefused()
+    {
+        var client = severalInstruments(4);
+        var cursor = list(client, OPENING, CLOSING, null, null, null, null, null, "2") //
+                        .get("page").getAsJsonObject().get("nextCursor").getAsString();
+
+        assertFieldError(() -> InstrumentPerformanceHandler.list(client, "C:/portfolio/Andere.portfolio",
+                        new ExchangeRateProviderFactory(client), OPENING, CLOSING, null, null, null, null, cursor,
+                        "2"), "cursor", "invalid-value");
+    }
+
+    /** the uuid of a row of this very report, but written as a cursor of another list */
+    @Test
+    public void testACursorOfAnotherListIsRefused()
+    {
+        var client = severalInstruments(3);
+        var uuid = uuids(list(client)).get(0);
+
+        var foreign = Paging.encode(Paging.Kind.HOLDINGS,
+                        Paging.scopeHash("performance|file=" + FILE + "|openingDate=" + OPENING + "|closingDate="
+                                        + CLOSING),
+                        uuid);
+
+        assertFieldError(() -> list(client, OPENING, CLOSING, null, null, null, null, foreign, "2"), "cursor",
+                        "invalid-value");
+    }
+
+    /** a limit below one is the same mistake as anywhere else in this API */
+    @Test
+    public void testALimitOfZeroIsRefused()
+    {
+        var client = severalInstruments(3);
+
+        assertFieldError(() -> list(client, OPENING, CLOSING, null, null, null, null, null, "0"), "limit",
+                        "invalid-value");
     }
 
     // -- interval boundaries ---------------------------------------------
@@ -671,8 +828,8 @@ public class InstrumentPerformanceTest
     public void testIdentityForAForeignCurrencyPosition()
     {
         var result = InstrumentPerformanceHandler
-                        .list(forexPosition(), TestCurrencyConverter::new, "2014-12-31", "2015-01-16", "USD", null,
-                                        null, null)
+                        .list(forexPosition(), TestCurrencyConverter::new, FILE, "2014-12-31", "2015-01-16", "USD",
+                                        null, null, null, null, null)
                         .getAsJsonObject();
 
         var item = onlyItem(result);
@@ -800,7 +957,8 @@ public class InstrumentPerformanceTest
 
         var closingValue = money(onlyItem(list(client)).get("valuation").getAsJsonObject(), "closingValue");
 
-        var holdings = HoldingsHandler.list(client, new ExchangeRateProviderFactory(client), CLOSING, null, null, null) //
+        var holdings = HoldingsHandler.list(client, null, new ExchangeRateProviderFactory(client), CLOSING, null, null,
+                        null, null, null) //
                         .getAsJsonObject();
         var holding = holdings.get("items").getAsJsonArray().asList().stream() //
                         .map(element -> element.getAsJsonObject())
@@ -951,6 +1109,16 @@ public class InstrumentPerformanceTest
     }
 
     /** 10 shares bought at 100 before the interval, valued at 120 at its end */
+    /** n instruments the interval touched, enough for a report of more than one page */
+    private static Client severalInstruments(int n)
+    {
+        var client = new Client();
+        for (var ii = 0; ii < n; ii++)
+            heldSecurity(client, "Instrument " + ii, CurrencyUnit.EUR, (account, security) -> {},
+                            (portfolio, security) -> {});
+        return client;
+    }
+
     private static Client heldPosition()
     {
         return heldPosition((account, security) -> {

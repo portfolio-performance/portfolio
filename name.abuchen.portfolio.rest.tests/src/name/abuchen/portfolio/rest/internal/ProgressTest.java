@@ -25,6 +25,9 @@ import name.abuchen.portfolio.money.Values;
 @SuppressWarnings("nls")
 public class ProgressTest
 {
+    /** the file the route resolved, which a paging cursor binds to */
+    private static final String FILE = "C:/portfolio/Richard.portfolio";
+
     /** records the steps, and gives up after the given number */
     private static final class Recording implements Progress
     {
@@ -67,8 +70,9 @@ public class ProgressTest
         var client = threeTradedInstruments();
         var progress = new Recording(Integer.MAX_VALUE);
 
-        Progress.runWith(progress, () -> InstrumentPerformanceHandler.list(client,
-                        new ExchangeRateProviderFactory(client), "2024-01-01", "2024-12-31", null, null, null, null));
+        Progress.runWith(progress, () -> InstrumentPerformanceHandler.list(client, FILE,
+                        new ExchangeRateProviderFactory(client), "2024-01-01", "2024-12-31", null, null, null, null,
+                        null, null));
 
         assertThat(progress.steps, is(List.of("0/3 instrument 1 of 3", "1/3 instrument 2 of 3",
                         "2/3 instrument 3 of 3")));
@@ -84,9 +88,9 @@ public class ProgressTest
 
         try
         {
-            Progress.runWith(progress, () -> InstrumentPerformanceHandler.list(client,
-                            new ExchangeRateProviderFactory(client), "2024-01-01", "2024-12-31", null, null, null,
-                            null));
+            Progress.runWith(progress, () -> InstrumentPerformanceHandler.list(client, FILE,
+                            new ExchangeRateProviderFactory(client), "2024-01-01", "2024-12-31", null, null, null, null,
+                            null, null));
             fail("expected the calculation to stop");
         }
         catch (CancellationException e)

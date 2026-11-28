@@ -1564,9 +1564,15 @@ paths:
         is all a reader can quote back, and no uuid anywhere points at a list.
 
         By default each list only says how full it is (`instrumentCount`);
-        `withInstruments=true` adds the instruments as `{uuid, name}` pairs.
-        Ask for that together with `instrument`, because a working list carries
-        several hundred and this answer is never paged.
+        `withInstruments=true` adds the instruments as `{uuid, name}` pairs - and
+        a working list carries several hundred of them, so these lists are paged
+        like the others: `limit` lists, `page.total` as many as the file holds,
+        `page.nextCursor` where the next page starts. One list is one item of a
+        page, contents and all, so a page never ends inside a list. Paged, the
+        lists come in the order of the file rather than by name, because a file
+        can hold two lists of one name and a cursor has to tell them apart. For
+        the members of one list, `/instruments` with `watchlist` set to its name
+        is the narrower question.
 
         A watchlist says nothing about ownership: an instrument can be watched
         without being held, and held without being watched. What is owned and
@@ -1591,6 +1597,8 @@ paths:
             `instrumentCount` states the size either way.
           schema:
             type: boolean
+        - $ref: "#/components/parameters/Cursor"
+        - $ref: "#/components/parameters/Limit"
       responses:
         "200":
           description: The watchlists of the file, in the order the file keeps them.
@@ -1606,6 +1614,8 @@ paths:
                       Present only when no list came back, saying which kind of
                       nothing that is: a file without watchlists says it has
                       none, while an instrument no list holds says so.
+                  page:
+                    $ref: "#/components/schemas/Page"
                   items:
                     type: array
                     items:
@@ -1622,6 +1632,12 @@ paths:
                             unique.
                         instrumentCount:
                           type: integer
+                        cursor:
+                          type: string
+                          description: |
+                            Only when paging: the list's place in the file and
+                            its name, what a page continues after. Opaque - a
+                            page is asked for with `page.nextCursor`.
                         instruments:
                           type: array
                           description: |
@@ -2249,7 +2265,12 @@ paths:
         Every holding — instrument positions and cash account balances uniformly —
         valued at the given date in the reporting currency. Instrument positions
         with zero shares at the date are omitted; cash accounts always appear,
-        even with a zero balance. Items are sorted by name.
+        even with a zero balance. Unpaged, items are sorted by name; paged, they
+        are in the order of the vehicle's `uuid`, and a working file holds more
+        positions than one MCP answer carries — so a too large result travels as
+        pages rather than being cut. A cursor belongs to the file, the `date`
+        and the account the report was narrowed to; the `reportingCurrency`
+        changes the figures of the same rows and keeps a cursor good.
       parameters:
         - name: date
           in: query
@@ -2284,6 +2305,8 @@ paths:
             `investmentAccount`; cannot be combined with it.
           schema:
             type: string
+        - $ref: "#/components/parameters/Cursor"
+        - $ref: "#/components/parameters/Limit"
         - $ref: "#/components/parameters/ReportingCurrency"
       responses:
         "200":
@@ -2350,6 +2373,8 @@ paths:
                     type: array
                     items:
                       $ref: "#/components/schemas/Holding"
+                  page:
+                    $ref: "#/components/schemas/Page"
               examples:
                 default:
                   value:
@@ -3287,7 +3312,8 @@ paths:
         Per-instrument return, valuation, gains, income, expenses and risk over
         the same interval the aggregate `GET .../performance` covers, in the
         reporting currency. Items are sorted by name, then by `uuid` for
-        instruments of the same name.
+        instruments of the same name; paged, they come in the order of the `uuid`
+        instead, as a cursor needs a key an edit cannot change.
 
         **Which instruments appear.** Every instrument the interval touched:
         any transaction inside it, or a non-zero position at either end. A
@@ -3301,7 +3327,9 @@ paths:
         `?metrics=` to leave that series unbuilt. Asking for `timeWeighted` and
         `risk` together costs no more than asking for either, as they share one
         series. A request for all groups over every instrument of a large file
-        with a long interval is slow; there is no pagination.
+        with a long interval is slow, and is what `cursor` and `limit` are for
+        here: the daily series of a row is built while that row is serialized,
+        so a page costs the page and not the report.
 
         **Matching the aggregate report.** Capital gains match the aggregate
         endpoint with `taxesAndFees=excluded`, its fees and taxes being separate
@@ -3323,6 +3351,8 @@ paths:
         - $ref: "#/components/parameters/InstrumentCostMethod"
         - $ref: "#/components/parameters/TaxesAndFees"
         - $ref: "#/components/parameters/Metrics"
+        - $ref: "#/components/parameters/Cursor"
+        - $ref: "#/components/parameters/Limit"
       responses:
         "200":
           description: The per-instrument performance over the interval
@@ -3334,6 +3364,8 @@ paths:
                   - type: object
                     required: [items]
                     properties:
+                      page:
+                        $ref: "#/components/schemas/Page"
                       items:
                         type: array
                         items:
@@ -3825,7 +3857,10 @@ paths:
       summary: List one instrument's trades
       description: |
         The trades of a single instrument — a sub-collection of the
-        instrument, filtered exactly as `GET .../trades` is.
+        instrument, filtered exactly as `GET .../trades` is. Paging is the same
+        as there: `cursor` and `limit` are accepted, and a list larger than one
+        answer comes back as its first page, with `page` beside `items` and a
+        `cursor` on every trade.
 
         An instrument that exists but was never traded has an **empty** list of
         trades, not no list: this returns `200` with `items: []`, not a `404`.
@@ -4279,7 +4314,14 @@ components:
       description: |
         How a paged list goes on - present only when the request named
         `cursor` or `limit`. A paged list is in an order of keys that an edit
-        elsewhere in the file does not change: instruments by `uuid`; trades by
+        elsewhere in the file does not change: instruments by `uuid`; holdings by
+        the `uuid` of the vehicle a row values; the rows of the performance report
+        by the `uuid` of the instrument a row is about; stored prices by the date
+        of the price; the classes of a taxonomy by their place in its tree and the
+        vehicles of one class by their rank within it; transactions by the day and
+        time they were recorded; watchlists by their place in the
+        file with the name behind it, since a file can hold two lists of one
+        name; trades, and equally the trades of one instrument, by
         instrument, start, investment account, closing transaction and the
         shares, amount and id of the opening transaction. A page continues
         after the key of its cursor, so an item added or removed between two
@@ -4287,11 +4329,18 @@ components:
         the whole walk comes exactly once. An item added before the cursor comes
         only with a new walk from the first page; a trade whose start,
         investment account or closing transaction changes gets a new key, and
-        may then come twice or not at all. Trades opened by transactions of the
+        may then come twice or not at all - and so does a watchlist renamed,
+        added or removed before the cursor. Trades opened by transactions of the
         file are told apart by the id of that transaction, so removing one of
         several alike lots cannot hide the others from a cursor that has passed
         them. For trades, `fxWarnings`, `fxStaleRates` and `warnings` describe
-        the whole list, not only the page.
+        the whole list, not only the page; for the statement of assets,
+        `totalAssets` - and with it every `weight` - is the whole report's, so a
+        page never adds up to the file. A performance cursor binds to the file and
+        the interval: `metrics`, `costMethod`, `taxesAndFees` and
+        `reportingCurrency` change the figures of the same rows and keep a cursor
+        good, while `fxWarnings` and `fxStaleRates` can only concern the rows a
+        page actually serialized.
       required: [limit, total, nextCursor]
       properties:
         limit:
@@ -4959,6 +5008,11 @@ components:
           description: |
             The holding's value in its own currency, before conversion into the
             reporting currency. Present only when the two currencies differ.
+        cursor:
+          type: string
+          description: |
+            Present when the statement of assets is paged: send it, or
+            `page.nextCursor`, as `cursor` to continue after this holding.
 
     Performance:
       type: object
@@ -5166,7 +5220,8 @@ components:
       description: |
         One instrument's performance over the interval. Only the identity fields
         are always present; each metric group appears exactly if it was
-        selected.
+        selected. On the rows of the paged list the row also carries its
+        `cursor`; the single-instrument answer does not.
       required: [uuid, name, currencyCode]
       properties:
         uuid:
@@ -5220,6 +5275,14 @@ components:
                 model cannot define it.
         risk:
           $ref: "#/components/schemas/InstrumentRisk"
+        cursor:
+          type: string
+          description: |
+            Only on the rows of `GET .../performance/instruments` when that list
+            is paged: this instrument's `uuid`, as a cursor. Send it, or
+            `page.nextCursor`, as `cursor` to continue after this instrument. The
+            single-instrument route answers with these same fields and never with
+            a cursor, because it has no page to continue.
 
     InstrumentValuation:
       type: object

@@ -103,7 +103,9 @@ becomes a later thin adapter over the same service layer. The individual decisio
   and never below 1.
   Deliberately no preference: every slot is a whole file's daily valuation in memory.
 - **Lists can be paged, and an MCP result too large for one answer is sent as a page.** `cursor` and
-  `limit` on the instruments and the trades are opt-in: without them REST answers the whole list, as
+  `limit` are opt-in on the instruments, the stored prices, the taxonomies, the transactions, the
+  trades, the trades of one instrument, the statement of assets, the watchlists and the rows of the
+  performance report: without them REST answers the whole list, as
   before. A page continues after the key of its cursor, not at a count, so an edit between two pages
   neither skips nor repeats an item. Over MCP, a list larger than one result is sent as many whole
   items as fit, with `page` and a line naming the next `cursor`, instead of being cut - a client that cuts a result itself

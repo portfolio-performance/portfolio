@@ -106,11 +106,16 @@ exists. Same switch, same port, same tokens; there is nothing extra to install.
   of 20 rows or more, the fields only one row in ten or fewer has move into one column `more` - an
   object per row, or `null`. Each result says in a line what applies to it, and only what applies:
   the `null` line only where a `null` is sent.
-- **A list too large for one result comes back as its first page.** The instruments and the trades
-  take `cursor` and `limit`; when the whole list does not fit, the result holds as many whole items
-  as do, a `page` (`limit`, `total`, `nextCursor`) and a line before the items naming the `cursor`
-  to ask for next. Over MCP the lists are always in the order paging uses — instruments by `uuid` —
-  so that any page can be continued. Any other result cut to fit ends after a whole row, and says so.
+- **A list too large for one result comes back as its first page.** The instruments, the stored
+  prices, the taxonomies, the transactions, the trades, the trades of one instrument, the statement of
+  assets, the watchlists and the rows of the performance report take `cursor` and `limit`; when the whole
+  list does not fit, the result holds as many whole items as do, a `page` (`limit`, `total`,
+  `nextCursor`) and a line before the items
+  naming the `cursor` to ask for next. Over MCP the lists are always in the order paging uses —
+  instruments by `uuid`, holdings and performance rows by the `uuid` of what a row is about, watchlists
+  by their place in the file — so that any page can be continued. One item is never split: a page of
+  watchlists holds whole lists, instruments and all. Any other result cut to fit ends after a whole row,
+  and says so.
 - **One result holds at most 10,000 characters** — the floor, and what every measured client carries
   whole. A larger result is never cut: it comes back as a page with a cursor. A client measured
   roomier, such as Claude Desktop (cuts at 150,000), can raise the limit so fewer collections need
@@ -148,23 +153,35 @@ named by the `referenceCashAccount` field.
 All list responses are an envelope — `{"items": [...]}`, never a bare array — so that fields beside
 `items` can be added later without breaking clients. A list response is complete unless the caller
 asks for a page: `cursor` and `limit` are opt-in on the instruments, the stored prices, the
-taxonomies, the transactions and the trades, and only a response to them carries `page` — `limit`
-(or `null`), `total` and `nextCursor` (`null` on the last page) — and a `cursor` on every item. An
-empty `cursor` asks for the first page; a page continues after the key of the cursor it was given.
-Paged, a list is in an order of keys that an edit elsewhere does not change — instruments by `uuid`;
-prices by the date of the price; the classes of a taxonomy by their place in its tree, and the
-vehicles of one class by their rank within it; transactions by the day and time they were recorded;
-trades by instrument, start, investment account, closing transaction and the shares, amount and id of
-the opening transaction — so an item added or removed between two pages does not shift the others:
-every item that stays in the list for the whole walk comes exactly once. An item added before the
-cursor comes only with a new walk from the first page, and a trade whose start, investment account or
-closing transaction changes gets a new key. Trades opened by transactions of the file are told apart
-by the id of that transaction, so removing one of several alike lots cannot hide the others from a
-cursor that has passed them. A
-cursor is good only for its own list — the same file, for one instrument's prices or trades that
-instrument, and the same narrowing: `query`, `watchlist`, `classification` and every
-`attribute:<id>` for the instruments, `status`, `grouping`, `from` and `to` for the trades — and is
-refused as `invalid-value` otherwise. REST never truncates.
+taxonomies, the transactions, the trades, the trades of one instrument, the statement of assets, the
+watchlists and the rows of the
+performance report, and only a response to them
+carries `page` — `limit` (or `null`), `total` and `nextCursor` (`null` on the last page) — and a
+`cursor` on every item. An empty `cursor` asks for the first page; a page continues after the key of
+the cursor it was given. Paged, a list is in an order of keys that an edit elsewhere does not change
+— instruments by `uuid`; holdings by the `uuid` of the vehicle a row values and the rows of the
+performance report by the `uuid` of the instrument a row is about (unpaged both are by
+name, as the application shows them); prices by the date of the price; the classes of a taxonomy by
+their place in its tree, and the vehicles of one class by their rank within it; the watchlists by
+their place in the file with the name behind it, since a hand-edited file can hold two lists of one
+name; transactions by the
+day and time they were recorded; trades, and equally the trades of one instrument, by instrument,
+start, investment account, closing
+transaction and the shares, amount and id of the opening transaction — so an item added or removed
+between two pages does not shift the others: every item that stays in the list for the whole walk
+comes exactly once. An item added before the cursor comes only with a new walk from the first page,
+and a trade whose start, investment account or closing transaction changes gets a new key, as does a
+watchlist that is renamed — or one added or removed before the cursor, which moves the others. Trades
+opened by transactions of the file are told apart by the id of that transaction, so removing one of
+several alike lots cannot hide the others from a cursor that has passed them. A cursor is good only
+for its own list — the same file, for one instrument's prices or trades that instrument, for the
+performance report the same interval, and the same
+narrowing: `query`, `watchlist`, `classification` and every `attribute:<id>` for the instruments,
+`status`, `grouping`, `from` and `to` for the trades, `date`, `investmentAccount` and `cashAccount`
+for the holdings, `instrument` for the watchlists (the `reportingCurrency`, and for the performance
+report also `metrics`, `costMethod` and `taxesAndFees`, change the figures of the same rows and keep a
+cursor good) — and is refused as `invalid-value` otherwise. REST never
+truncates.
 
 ### `GET /v1/files` — the files you may address
 

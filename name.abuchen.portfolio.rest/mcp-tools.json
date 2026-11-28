@@ -931,7 +931,7 @@
       "operationId": "listWatchlists",
       "method": "GET",
       "pathTemplate": "/v1/files/{file}/watchlists",
-      "description": "The watchlists of a file: named baskets of instruments that the application quotes together. A watchlist is not an account and holds nothing - it is a selection of names, the answer to which instruments one keeps an eye on - and it is the one thing in a file without an identifier: `name` is all a reader can quote back, and no uuid anywhere points at a list.\n\nBy default each list only says how full it is (`instrumentCount`); `withInstruments=true` adds the instruments as `{uuid, name}` pairs, which is worth asking for only together with `instrument`, because a working list carries several hundred and this answer is never paged. `instrument` narrows to the lists holding that one instrument - how to ask where a name is kept without pulling every list of the file along.\n\nA watchlist says nothing about ownership: an instrument can be watched without being held, and held without being watched. What is owned and what it is worth is `pp_list_holdings`. When nothing comes back, `empty` says whether the file has no watchlists at all or only none holding what was asked for - two different answers that an empty list cannot tell apart.",
+      "description": "The watchlists of a file: named baskets of instruments that the application quotes together. A watchlist is not an account and holds nothing - it is a selection of names, the answer to which instruments one keeps an eye on - and it is the one thing in a file without an identifier: `name` is all a reader can quote back, and no uuid anywhere points at a list.\n\nBy default each list only says how full it is (`instrumentCount`); `withInstruments=true` adds the instruments as `{uuid, name}` pairs - and a working list carries several hundred of them, so this list is paged like the others: `limit` lists, `page.total` as many as the file holds, `page.nextCursor` where the next page starts. One list is one item of a page, contents and all, so a page never ends inside a list. Paged, the lists come in the order of the file rather than by name, because a file can hold two lists of one name and a cursor has to tell them apart. For the members of one list, `pp_list_instruments` with `watchlist` set to its name is the narrower question. `instrument` narrows to the lists holding that one instrument - how to ask where a name is kept without pulling every list of the file along.\n\nA watchlist says nothing about ownership: an instrument can be watched without being held, and held without being watched. What is owned and what it is worth is `pp_list_holdings`. When nothing comes back, `empty` says whether the file has no watchlists at all or only none holding what was asked for - two different answers that an empty list cannot tell apart.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -946,6 +946,15 @@
           "withInstruments": {
             "type": "boolean",
             "description": "Whether each list also carries the instruments it holds. Off by default: a working list holds several hundred, and `instrumentCount` states the size either way."
+          },
+          "cursor": {
+            "type": "string",
+            "description": "Where a page of lists continues: `page.nextCursor` of the page before, exactly as given. Omit it to start at the first. Only good for the same file and the same `instrument` narrowing; a list renamed, added or removed before the cursor moves the others, as a class reordered in a taxonomy does."
+          },
+          "limit": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "At most this many watchlists. A list is one item of a page, contents and all, so a page never breaks one up. Omit it for as many as fit in one answer."
           }
         },
         "required": [
@@ -974,6 +983,16 @@
           "arg": "withInstruments",
           "where": "query",
           "wire": "withInstruments"
+        },
+        {
+          "arg": "cursor",
+          "where": "query",
+          "wire": "cursor"
+        },
+        {
+          "arg": "limit",
+          "where": "query",
+          "wire": "limit"
         }
       ]
     },
@@ -1300,7 +1319,7 @@
       "operationId": "listHoldings",
       "method": "GET",
       "pathTemplate": "/v1/files/{file}/holdings",
-      "description": "The statement of assets: everything the file holds on one date and what it is worth, instrument positions and cash account balances in a single list, each with its share of total assets. This is the only place a cash balance can be read and the only place a position's value can be, because the account tools carry neither.\n\nEach position is valued at the most recent price on or before the date, in the instrument's own currency, and that price's own date travels with it. A `priceNote` says when that price needs naming: stale - more than one trading day of the instrument's own calendar passed without a quote, so a weekend or a holiday never counts - or maintained by hand, with its age. Name it when you report a value built on that price. Positions already closed by the date drop out; cash accounts stay in even at zero. A cash account can hold a negative balance - a loan or a credit card - and then has a negative weight, while the others are divided by the smaller net total and can exceed 1; the weights add up to 1 within their rounding to 8 decimals - unless total assets are zero, when every weight is 0.\n\nWithout an account parameter this is the whole file, and an instrument held in two investment accounts is a single row. `investmentAccount` or `cashAccount` narrows the report to that one account: the answer then states its `scope` once at the top and gains no column per row, `totalAssets` is that account's value, and every `weight` is the share of it rather than of the file. A scoped report is the shorter answer whenever the question is about one account, and the only way to see where a position sits.",
+      "description": "The statement of assets: everything the file holds on one date and what it is worth, instrument positions and cash account balances in a single list, each with its share of total assets. This is the only place a cash balance can be read and the only place a position's value can be, because the account tools carry neither.\n\nEach position is valued at the most recent price on or before the date, in the instrument's own currency, and that price's own date travels with it. A `priceNote` says when that price needs naming: stale - more than one trading day of the instrument's own calendar passed without a quote, so a weekend or a holiday never counts - or maintained by hand, with its age. Name it when you report a value built on that price. Positions already closed by the date drop out; cash accounts stay in even at zero. A cash account can hold a negative balance - a loan or a credit card - and then has a negative weight, while the others are divided by the smaller net total and can exceed 1; the weights add up to 1 within their rounding to 8 decimals - unless total assets are zero, when every weight is 0.\n\nWithout an account parameter this is the whole file, and an instrument held in two investment accounts is a single row. `investmentAccount` or `cashAccount` narrows the report to that one account: the answer then states its `scope` once at the top and gains no column per row, `totalAssets` is that account's value, and every `weight` is the share of it rather than of the file. A scoped report is the shorter answer whenever the question is about one account, and the only way to see where a position sits.\n\nA working file holds more positions than one answer carries, so this list pages like the others: a too large answer comes back as its first page, `page.total` says how many rows the whole report holds, and `page.nextCursor` says where the next page continues. Paged, the rows are in the order of the vehicle's `uuid` rather than by name. `totalAssets` and every `weight` are the whole report's, not the page's - adding up one page gives a part of the file, and the page says so.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -1324,6 +1343,15 @@
           "cashAccount": {
             "type": "string",
             "description": "Restrict the report to the balance of this one cash account, as its `uuid` from pp_list_cash_accounts. Cannot be combined with `investmentAccount`."
+          },
+          "cursor": {
+            "type": "string",
+            "description": "Where a page of positions continues: `page.nextCursor` of the page before, exactly as given. Omit it to start at the first. Only good for the same file, the same `date` and the same account narrowing; the `reportingCurrency` changes the figures of the same rows and keeps a cursor good."
+          },
+          "limit": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "At most this many holdings. Omit it for as many as fit in one answer."
           }
         },
         "required": [
@@ -1362,6 +1390,16 @@
           "arg": "cashAccount",
           "where": "query",
           "wire": "cashAccount"
+        },
+        {
+          "arg": "cursor",
+          "where": "query",
+          "wire": "cursor"
+        },
+        {
+          "arg": "limit",
+          "where": "query",
+          "wire": "limit"
         }
       ]
     },
@@ -1806,7 +1844,7 @@
       "operationId": "listInstrumentPerformance",
       "method": "GET",
       "pathTemplate": "/v1/files/{file}/performance/instruments",
-      "description": "How each instrument performed over an interval, one row per instrument, over the same period as pp_get_overall_performance. Its capital gains match the overall report with `taxesAndFees: excluded`; the rows still do not add up to it, because cash accounts, account fees and fees on transfers belong to no instrument. Every instrument the interval touched appears, including one sold during it: that row shows zero shares and a zero closing value but real realized gains, dividends and fees, and leaving it out would quietly erase part of the period.\n\n`irr` and `ttwrorAnnualized` are compounded to a year, so a short period - or a position held only briefly within it - can show an extreme figure; `ttwror` is the plain return over the period. The risk figures need at least two daily returns and are `null` otherwise. `expenses` counts charges as positive and refunds as negative - the opposite sign to the overall report's breakdown.\n\nThis is the largest response the API produces and there is no pagination. Narrow `metrics` when a whole file is more than the question needs, or ask about a single instrument with pp_get_instrument_performance.\n\nEvery figure is computed for this request and stored nowhere, so a row is reproducible only by asking again with the same dates and settings — the row itself cannot be fetched back.",
+      "description": "How each instrument performed over an interval, one row per instrument, over the same period as pp_get_overall_performance. Its capital gains match the overall report with `taxesAndFees: excluded`; the rows still do not add up to it, because cash accounts, account fees and fees on transfers belong to no instrument. Every instrument the interval touched appears, including one sold during it: that row shows zero shares and a zero closing value but real realized gains, dividends and fees, and leaving it out would quietly erase part of the period.\n\n`irr` and `ttwrorAnnualized` are compounded to a year, so a short period - or a position held only briefly within it - can show an extreme figure; `ttwror` is the plain return over the period. The risk figures need at least two daily returns and are `null` otherwise. `expenses` counts charges as positive and refunds as negative - the opposite sign to the overall report's breakdown.\n\nThis is the largest response the API produces, so the rows page like every other list: `limit` rows, `page.total` how many the interval touched, and `page.nextCursor` where the next page continues; a row is keyed by the instrument's `uuid`, so paged, the rows come in the order of that uuid rather than by name. Paging is also what makes a working file affordable rather than merely shorter: the day-by-day valuations behind `timeWeighted` and `risk` are computed while a row is serialized, so a page costs the page and not the whole report. A cursor stays good across `metrics`, `costMethod`, `taxesAndFees` and `reportingCurrency`, which change the figures of the same rows and not which rows there are, and is refused once the interval changes. Narrowing is still the cheaper question: leave whole groups of figures out with `metrics`, or ask one instrument with pp_get_instrument_performance.\n\nEvery figure is computed for this request and stored nowhere, so a row is reproducible only by asking again with the same dates and settings — the row itself cannot be fetched back.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -1862,6 +1900,15 @@
               ]
             },
             "description": "Which groups of figures to include. Defaults to all seven; an unselected group is simply absent, and a selected one means exactly what it means when all are asked for. An empty list names no group and is refused.\n\n- `valuation` — shares held, opening and closing value, the period's cost basis\n- `gains` — realized and unrealized capital gains, each with the part caused by exchange rates\n- `income` — dividends received, how many, and the date of the most recent\n- `expenses` — the fees and taxes charged, net of refunds: positive, but negative when refunds outweigh charges in the period\n- `moneyWeighted` — the annualized internal rate of return\n- `timeWeighted` — the true time-weighted return, plain and annualized\n- `risk` — volatility, semi-volatility, deepest drawdown, longest drawdown in days\n\n`timeWeighted` and `risk` each need a day-by-day valuation of every instrument in the file, which is what makes this request expensive; the two share that work, so both together cost no more than either alone. The other five are cheap. Narrow this when a response is too large to return whole, and widen it when a figure you need is missing."
+          },
+          "cursor": {
+            "type": "string",
+            "description": "Where a page of the rows continues: `page.nextCursor` of the page before, exactly as given. Omit it to start at the first. Good only for the same file and the same interval; `metrics`, `costMethod`, `taxesAndFees` and `reportingCurrency` change the figures of the same rows and keep a cursor good."
+          },
+          "limit": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "At most this many instruments' rows; omit it for as many as fit in one answer."
           }
         },
         "required": [
@@ -1911,6 +1958,16 @@
           "arg": "metrics",
           "where": "query",
           "wire": "metrics"
+        },
+        {
+          "arg": "cursor",
+          "where": "query",
+          "wire": "cursor"
+        },
+        {
+          "arg": "limit",
+          "where": "query",
+          "wire": "limit"
         }
       ]
     },
@@ -2294,7 +2351,7 @@
       "operationId": "listInstrumentTrades",
       "method": "GET",
       "pathTemplate": "/v1/files/{file}/instruments/{uuid}/trades",
-      "description": "The matched purchases and sales of a single instrument, computed and filtered exactly as pp_list_trades is but scoped to one `uuid`. Use it when the question is about one position rather than the whole file, and to keep a large file's trades down to an answerable size.\n\nAn instrument that has simply never been traded answers with an empty list rather than an error. As in the file-wide tool, a trade has no id and is recomputed on every call — identify one by the filter that produced it — and `direction` still decides which way the subtraction runs. `return` is the gain over the holding period; `irr` is compounded to a year, so a trade held for a few days can show an enormous `irr`, which is the annualization rather than a mistake, and one held a day or two often has none (`null`). `holdingPeriodDays` is share-weighted, and `note` is the note of the trade's last transaction.",
+      "description": "The matched purchases and sales of a single instrument, computed and filtered exactly as pp_list_trades is but scoped to one `uuid`. Use it when the question is about one position rather than the whole file, and to keep a large file's trades down to an answerable size. Paging is the same as there: what does not fit in one answer comes back as a page, `page` saying how many trades the position has in all and `page.nextCursor` where the next page continues.\n\nAn instrument that has simply never been traded answers with an empty list rather than an error. As in the file-wide tool, a trade has no id and is recomputed on every call — identify one by the filter that produced it — and `direction` still decides which way the subtraction runs. `return` is the gain over the holding period; `irr` is compounded to a year, so a trade held for a few days can show an enormous `irr`, which is the annualization rather than a mistake, and one held a day or two often has none (`null`). `holdingPeriodDays` is share-weighted, and `note` is the note of the trade's last transaction.",
       "inputSchema": {
         "type": "object",
         "properties": {
